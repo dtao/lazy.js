@@ -82,6 +82,10 @@
     return new DropIterator(this, count);
   };
 
+  Iterator.prototype.uniq = function() {
+    return new UniqIterator(this);
+  };
+
   var MapIterator = function(parent, mapFn) {
     Iterator.call(this, null, parent);
 
@@ -131,11 +135,23 @@
     });
   };
 
+  var UniqIterator = function(parent, count) {
+    Iterator.call(this, null, parent);
+
+    var set = {};
+    this.changeIteration(function(action, e) {
+      if (e in set) { return; }
+      set[e] = true;
+      return action(e);
+    });
+  };
+
   MapIterator.prototype = Iterator.prototype;
   FilterIterator.prototype = Iterator.prototype;
   ReverseIterator.prototype = Iterator.prototype;
   TakeIterator.prototype = Iterator.prototype;
   DropIterator.prototype = Iterator.prototype;
+  UniqIterator.prototype = Iterator.prototype;
 
   global.Lazy = function(source) {
     return new Iterator(source);

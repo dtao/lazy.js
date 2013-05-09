@@ -17,13 +17,13 @@ describe("Lazy", function() {
       happy  = new Person("Happy", "F")
     ];
 
-    Person.accessed = 0;
+    Person.accesses = 0;
   });
 
   function ensureLaziness(action) {
     it("doesn't eagerly iterate the collection", function() {
       action();
-      expect(Person.accessed).toEqual(0);
+      expect(Person.accesses).toEqual(0);
     });
   }
 
@@ -103,13 +103,24 @@ describe("Lazy", function() {
     });
   });
 
+  describe("uniq", function() {
+    ensureLaziness(function() { Lazy(people).map(Person.getGender).uniq(); });
+
+    it("only returns 1 of each unique value", function() {
+      var genders = Lazy(people).map(Person.getGender).uniq().toArray();
+      expect(genders).toEqual(["M", "F"]);
+    });
+  });
+
   describe("chaining methods together", function() {
     ensureLaziness(function() {
       Lazy(people)
         .filter(Person.isFemale)
         .map(Person.getName)
         .reverse()
-        .take(2);
+        .drop(1)
+        .take(2)
+        .uniq();
     });
 
     it("applies the effects of all chained methods", function() {
@@ -119,6 +130,7 @@ describe("Lazy", function() {
         .reverse()
         .drop(1)
         .take(2)
+        .uniq()
         .toArray();
       expect(girlNames).toEqual(["Lauren", "Mary"]);
     });

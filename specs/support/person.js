@@ -1,16 +1,12 @@
 var Person = function(name, gender) {
   this.getName = function() {
-    Person.accessed += 1;
+    Person.accesses += 1;
     return name;
   };
 
   this.getGender = function() {
-    Person.accessed += 1;
+    Person.accesses += 1;
     return gender;
-  };
-
-  this.isAccessed = function() {
-    return accessed;
   };
 
   this.jasmineToString = function() {
@@ -22,6 +18,10 @@ Person.getName = function(p) {
   return p.getName();
 };
 
+Person.getGender = function(p) {
+  return p.getGender();
+};
+
 Person.isFemale = function(p) {
   return p.getGender() === "F";
 };
@@ -30,4 +30,4 @@ Person.isMale = function(p) {
   return p.getGender() === "M";
 };
 
-Person.accessed = 0;
+Person.accesses = 0;
