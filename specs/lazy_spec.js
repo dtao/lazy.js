@@ -37,14 +37,23 @@ describe("Lazy", function() {
     });
   });
 
-  // describe("reverse", function() {
-  //   itIsLazy(function() { Lazy(people).reverse(); });
+  describe("reverse", function() {
+    itIsLazy(function() { Lazy(people).reverse(); });
 
-  //   it("iterates the collection backwards", function() {
-  //     var reversed = Lazy(people).reverse().toArray();
-  //     expect(reversed).toEqual([happy, daniel, adam, lauren]);
-  //   });
-  // });
+    it("iterates the collection backwards", function() {
+      var reversed = Lazy(people).reverse().toArray();
+      expect(reversed).toEqual([happy, daniel, adam, lauren]);
+    });
+  });
+
+  describe("take", function() {
+    itIsLazy(function() { Lazy(people).take(2); });
+
+    it("only selects the first N elements from the collection", function() {
+      var firstTwo = Lazy(people).take(2).toArray();
+      expect(firstTwo).toEqual([lauren, adam]);
+    });
+  });
   
   describe("chaining methods together", function() {
     itIsLazy(function() {
@@ -55,8 +64,9 @@ describe("Lazy", function() {
       var girlNames = Lazy(people)
         .filter(Person.isFemale)
         .map(Person.getName)
+        .reverse()
         .toArray();
-      expect(girlNames).toEqual(["Lauren", "Happy"]);
+      expect(girlNames).toEqual(["Happy", "Lauren"]);
     });
   });
 });
