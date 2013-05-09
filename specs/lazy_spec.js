@@ -20,7 +20,7 @@ describe("Lazy", function() {
     Person.accessed = 0;
   });
 
-  function itIsLazy(action) {
+  function ensureLaziness(action) {
     it("doesn't eagerly iterate the collection", function() {
       action();
       expect(Person.accessed).toEqual(0);
@@ -28,7 +28,7 @@ describe("Lazy", function() {
   }
 
   describe("map", function() {
-    itIsLazy(function() { Lazy(people).map(Person.getName); });
+    ensureLaziness(function() { Lazy(people).map(Person.getName); });
 
     it("maps the collection using a mapper function", function() {
       var names = Lazy(people).map(Person.getName).toArray();
@@ -44,7 +44,7 @@ describe("Lazy", function() {
   });
 
   describe("filter", function() {
-    itIsLazy(function() { Lazy(people).filter(Person.isMale); });
+    ensureLaziness(function() { Lazy(people).filter(Person.isMale); });
     
     it("selects values from the collection using a selector function", function() {
       var boys = Lazy(people).filter(Person.isMale).toArray();
@@ -61,7 +61,7 @@ describe("Lazy", function() {
   });
 
   describe("reject", function() {
-    itIsLazy(function() { Lazy(people).reject(Person.isMale); });
+    ensureLaziness(function() { Lazy(people).reject(Person.isMale); });
 
     it("does the opposite of filter", function() {
       var girls = Lazy(people).reject(Person.isMale).toArray();
@@ -70,7 +70,7 @@ describe("Lazy", function() {
   });
 
   describe("reverse", function() {
-    itIsLazy(function() { Lazy(people).reverse(); });
+    ensureLaziness(function() { Lazy(people).reverse(); });
 
     it("iterates the collection backwards", function() {
       var reversed = Lazy(people).reverse().toArray();
@@ -86,7 +86,7 @@ describe("Lazy", function() {
   });
 
   describe("take", function() {
-    itIsLazy(function() { Lazy(people).take(2); });
+    ensureLaziness(function() { Lazy(people).take(2); });
 
     it("only selects the first N elements from the collection", function() {
       var firstTwo = Lazy(people).take(2).toArray();
@@ -95,7 +95,7 @@ describe("Lazy", function() {
   });
 
   describe("drop", function() {
-    itIsLazy(function() { Lazy(people).drop(2); });
+    ensureLaziness(function() { Lazy(people).drop(2); });
 
     it("skips the first N elements from the collection", function() {
       var children = Lazy(people).drop(2).toArray();
@@ -104,7 +104,7 @@ describe("Lazy", function() {
   });
 
   describe("chaining methods together", function() {
-    itIsLazy(function() {
+    ensureLaziness(function() {
       Lazy(people)
         .filter(Person.isFemale)
         .map(Person.getName)
