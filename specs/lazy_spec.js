@@ -84,7 +84,16 @@ describe("Lazy", function() {
       expect(firstTwo).toEqual([david, mary]);
     });
   });
-  
+
+  describe("drop", function() {
+    itIsLazy(function() { Lazy(people).drop(2); });
+
+    it("skips the first N elements from the collection", function() {
+      var children = Lazy(people).drop(2).toArray();
+      expect(children).toEqual([lauren, adam, daniel, happy]);
+    });
+  });
+
   describe("chaining methods together", function() {
     itIsLazy(function() {
       Lazy(people)
@@ -99,9 +108,10 @@ describe("Lazy", function() {
         .filter(Person.isFemale)
         .map(Person.getName)
         .reverse()
+        .drop(1)
         .take(2)
         .toArray();
-      expect(girlNames).toEqual(["Happy", "Lauren"]);
+      expect(girlNames).toEqual(["Lauren", "Mary"]);
     });
   });
 });

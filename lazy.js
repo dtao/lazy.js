@@ -72,6 +72,10 @@
     return new TakeIterator(this, count);
   };
 
+  Iterator.prototype.drop = function(count) {
+    return new DropIterator(this, count);
+  };
+
   var MapIterator = function(parent, mapFn) {
     Iterator.call(this, null, parent);
 
@@ -79,7 +83,6 @@
       return action(mapFn(e));
     });
   };
-  MapIterator.prototype = Iterator.prototype;
 
   var FilterIterator = function(parent, filterFn) {
     Iterator.call(this, null, parent);
@@ -90,7 +93,6 @@
       }
     });
   };
-  FilterIterator.prototype = Iterator.prototype;
 
   var ReverseIterator = function(parent) {
     Iterator.call(this, null, parent);
@@ -98,7 +100,6 @@
     this.each = parent.reverseEach;
     this.reverseEach = parent.each;
   };
-  ReverseIterator.prototype = Iterator.prototype;
 
   var TakeIterator = function(parent, count) {
     Iterator.call(this, null, parent);
@@ -109,7 +110,22 @@
       return action(e);
     });
   };
+
+  var DropIterator = function(parent, count) {
+    Iterator.call(this, null, parent);
+
+    var i = 0;
+    this.changeIteration(function(action, e) {
+      if (i++ < count) { return; }
+      return action(e);
+    });
+  };
+
+  MapIterator.prototype = Iterator.prototype;
+  FilterIterator.prototype = Iterator.prototype;
+  ReverseIterator.prototype = Iterator.prototype;
   TakeIterator.prototype = Iterator.prototype;
+  DropIterator.prototype = Iterator.prototype;
 
   global.Lazy = function(source) {
     return new Iterator(source);
