@@ -27,10 +27,6 @@
       length: length,
 
       moveNext: function() {
-        if (source.moveNext) {
-          return source.moveNext();
-        }
-
         if (index >= iterator.length() - 1) {
           return false;
         }
@@ -39,10 +35,6 @@
       },
 
       getCurrent: function() {
-        if (source.getCurrent) {
-          return source.getCurrent();
-        }
-
         return iterator.get(index);
       }
     };
@@ -103,17 +95,8 @@
     });
   }
 
-  global.Lazy = {
-    map: function(source, mapper) {
-      return createMapper(source, mapper);
-    },
-
-    filter: function(source, filter) {
-      return createFilter(source, filter);
-    },
-
-    reverse: function(source) {
-      return createReverse(source);
-    }
+  global.Lazy = function(source) {
+    return createIterator(source);
   };
+
 })(window);
