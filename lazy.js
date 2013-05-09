@@ -26,10 +26,14 @@
   }
 
   var Iterator = function(parent, source) {
-    var length, memoized;
+    var length, cached;
 
     this.parent = parent;
     this.source = source;
+
+    this.get = function(i) {
+      return this.source ? this.source[i] : this.parent.get(i);
+    };
 
     this.length = function() {
       if (typeof length === "undefined") {
@@ -38,16 +42,12 @@
       return length;
     };
 
-    this.memoize = function() {
-      if (!memoized) {
-        memoized = this.toArray();
+    this.cache = function() {
+      if (!cached) {
+        cached = this.toArray();
       }
-      return memoized;
+      return cached;
     };
-  };
-
-  Iterator.prototype.get = function(i) {
-    return this.source ? this.source[i] : this.parent.get(i);
   };
 
   Iterator.prototype.each = function(fn) {
