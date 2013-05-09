@@ -64,6 +64,12 @@
     return new FilterIterator(this, filterFn);
   };
 
+  Iterator.prototype.reject = function(rejectFn) {
+    return new FilterIterator(this, function(e) {
+      return !rejectFn(e);
+    });
+  };
+
   Iterator.prototype.reverse = function() {
     return new ReverseIterator(this);
   };
@@ -92,6 +98,10 @@
         return action(e);
       }
     });
+  };
+
+  var RejectIterator = function(parent, rejectFn) {
+    Iterator.call(this, null, parent);
   };
 
   var ReverseIterator = function(parent) {
