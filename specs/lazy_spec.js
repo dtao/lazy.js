@@ -37,29 +37,26 @@ describe("Lazy", function() {
     });
   });
 
-  describe("reverse", function() {
-    itIsLazy(function() { Lazy(people).reverse(); });
+  // describe("reverse", function() {
+  //   itIsLazy(function() { Lazy(people).reverse(); });
 
-    it("iterates the collection backwards", function() {
-      var reversed = Lazy(people).reverse().toArray();
-      expect(reversed).toEqual([happy, daniel, adam, lauren]);
-    });
-  });
+  //   it("iterates the collection backwards", function() {
+  //     var reversed = Lazy(people).reverse().toArray();
+  //     expect(reversed).toEqual([happy, daniel, adam, lauren]);
+  //   });
+  // });
   
   describe("chaining methods together", function() {
     itIsLazy(function() {
-      Lazy(people).filter(Person.isFemale).map(Person.getName).reverse();
+      Lazy(people).filter(Person.isFemale).map(Person.getName);
     });
 
-    // This doesn't work because the design is fundamentally broken.
-    // Will need to investigate!
-    xit("applies the effects of all chained methods", function() {
+    it("applies the effects of all chained methods", function() {
       var girlNames = Lazy(people)
         .filter(Person.isFemale)
         .map(Person.getName)
-        .reverse()
         .toArray();
-      expect(girlNames).toEqual(["Happy", "Lauren"]);
+      expect(girlNames).toEqual(["Lauren", "Happy"]);
     });
   });
 });

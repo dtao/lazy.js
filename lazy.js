@@ -1,102 +1,52 @@
 (function(global) {
-  function override(base, name, override) {
-    var orig = base[name];
-    base["_" + name] = function() {
-      return orig.apply(base, arguments);
-    };
-    base[name] = function() {
-      return override.apply(base, arguments);
-    };
-  }
-
-  function createIterator(source, overrides) {
-    var index = -1;
-    overrides = overrides || {};
-
-    function get(i) {
-      return source instanceof Array ? source[i] : source.get(i);
-    }
-
-    function length() {
-      return source instanceof Array ? source.length : source.length();
-    }
-
-    var iterator = {
-      get: get,
-
-      length: length,
-
-      moveNext: function() {
-        if (index >= iterator.length() - 1) {
-          return false;
-        }
-        ++index;
-        return true;
-      },
-
-      getCurrent: function() {
-        return iterator.get(index);
-      }
-    };
-
-    for (var key in overrides) {
-      override(iterator, key, overrides[key]);
-    }
-
-    iterator.map = function(mapper) {
-      return createMapper(iterator, mapper);
-    };
-
-    iterator.filter = function(filter) {
-      return createFilter(iterator, filter);
-    };
-
-    iterator.reverse = function() {
-      return createReverse(iterator);
-    };
-
-    iterator.toArray = function() {
-      var array = [];
-      while (iterator.moveNext()) {
-        array.push(iterator.getCurrent());
-      }
-      return array;
-    }
-
-    return iterator;
+  var Iterator = function(source) {
+    this.source = source;
   };
 
-  function createMapper(source, mapper) {
-    return createIterator(source, {
-      getCurrent: function() {
-        return mapper(this._getCurrent());
-      }
-    });
-  }
+  Iterator.prototype.each = function(fn) {
+    for (var i = 0; i < this.source.length; ++i) {
+      fn(this.source[i]);
+    }
+  };
 
-  function createFilter(source, filter) {
-    return createIterator(source, {
-      moveNext: function() {
-        while (this._moveNext()) {
-          if (filter(this.getCurrent())) {
-            return true;
-          }
+  Iterator.prototype.toArray = function() {
+    var array = [];
+    this.each(function(e) {
+      array.push(e);
+    });
+    return array;
+  };
+
+  Iterator.prototype.map = function(mapFn) {
+    return new MapIterator(this, mapFn);
+  };
+
+  Iterator.prototype.filter = function(filterFn) {
+    return new FilterIterator(this, filterFn);
+  };
+
+  var MapIterator = function(parent, mapFn) {
+    this.each = function(action) {
+      parent.each(function(e) {
+        action(mapFn(e));
+      });
+    };
+  };
+  MapIterator.prototype = Iterator.prototype;
+
+  var FilterIterator = function(parent, filterFn) {
+    this.each = function(action) {
+      parent.each(function(e) {
+        if (filterFn(e)) {
+          action(e);
         }
-        return false;
-      }
-    });
-  }
-
-  function createReverse(source) {
-    return createIterator(source, {
-      get: function(i) {
-        return this._get(this.length() - i - 1);
-      }
-    });
-  }
+      });
+    };
+  };
+  FilterIterator.prototype = Iterator.prototype;
 
   global.Lazy = function(source) {
-    return createIterator(source);
+    return new Iterator(source);
   };
 
 })(window);
