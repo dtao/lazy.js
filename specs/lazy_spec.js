@@ -103,6 +103,15 @@ describe("Lazy", function() {
     });
   });
 
+  describe("sortBy", function() {
+    ensureLaziness(function() { Lazy(people).sortBy(Person.getAge); });
+
+    it("sorts the result by the specified selector", function() {
+      var peopleByName = Lazy(people).sortBy(Person.getName).toArray();
+      expect(peopleByName).toEqual([adam, daniel, david, happy, lauren, mary]);
+    });
+  });
+
   describe("uniq", function() {
     ensureLaziness(function() { Lazy(people).map(Person.getGender).uniq(); });
 

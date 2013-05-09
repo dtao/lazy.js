@@ -5,6 +5,26 @@
     return constructor;
   };
 
+  function compare(x, y, fn) {
+    if (typeof fn === "function") {
+      return compare(fn(x), fn(y));
+    }
+
+    if (x === y) {
+      return 0;
+    }
+
+    return x > y ? 1 : -1;
+  };
+
+  function forEach(array, fn) {
+    for (var i = 0; i < array.length; ++i) {
+      if (fn(array[i]) === false) {
+        break;
+      }
+    }
+  }
+
   var Iterator = function(parent, source) {
     var memoized;
 
@@ -88,6 +108,10 @@
     return new DropIterator(this, count);
   };
 
+  Iterator.prototype.sortBy = function(sortFn) {
+    return new SortIterator(this, sortFn);
+  };
+
   Iterator.prototype.uniq = function() {
     return new UniqIterator(this);
   };
@@ -130,6 +154,22 @@
       if (i++ < count) { return; }
       return action(e);
     });
+  });
+
+  var SortIterator = inherit(Iterator, function(parent, sortFn) {
+    Iterator.call(this, parent);
+
+    this.each = function(action) {
+      var sorted = parent.toArray();
+      sorted.sort(function(x, y) { return compare(x, y, sortFn); });
+      forEach(sorted, action);
+    };
+
+    this.reverseEach = function(action) {
+      var sorted = parent.toArray();
+      sorted.sort(function(x, y) { return compare(y, x, sortFn); });
+      forEach(sorted, action);
+    };
   });
 
   var UniqIterator = inherit(Iterator, function(parent, count) {
