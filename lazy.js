@@ -1,8 +1,9 @@
 (function(global) {
-  var Iterator = function(source) {
+  var Iterator = function(source, parent) {
     var memoized;
 
     this.source = source;
+    this.parent = parent;
 
     this.memoize = function() {
       if (!memoized) {
@@ -13,11 +14,11 @@
   };
 
   Iterator.prototype.get = function(i) {
-    return this.source ? this.source[i] : this.memoize()[i];
+    return this.source ? this.source[i] : this.parent.get(i);
   };
 
   Iterator.prototype.length = function() {
-    return this.source ? this.source.length : this.memoize().length;
+    return this.source ? this.source.length : this.parent.length();
   };
 
   Iterator.prototype.each = function(fn) {
@@ -30,8 +31,21 @@
 
   Iterator.prototype.reverseEach = function(fn) {
     for (var i = this.length() - 1; i >= 0; --i) {
-      fn(this.get(i));
+      if (fn(this.get(i)) === false) {
+        break;
+      }
     }
+  };
+
+  Iterator.prototype.changeIteration = function(eachFn) {
+    var parent = this.parent;
+
+    this.each = function(action) {
+      parent.each(function(e) { eachFn(action, e); });
+    };
+    this.reverseEach = function(action) {
+      parent.reverseEach(function(e) { eachFn(action, e); });
+    };
   };
 
   Iterator.prototype.toArray = function() {
@@ -59,59 +73,41 @@
   };
 
   var MapIterator = function(parent, mapFn) {
-    Iterator.call(this);
+    Iterator.call(this, null, parent);
 
-    this.each = function(action) {
-      parent.each(function(e) {
-        action(mapFn(e));
-      });
-    };
+    this.changeIteration(function(action, e) {
+      return action(mapFn(e));
+    });
   };
   MapIterator.prototype = Iterator.prototype;
 
   var FilterIterator = function(parent, filterFn) {
-    Iterator.call(this);
+    Iterator.call(this, null, parent);
 
-    this.each = function(action) {
-      parent.each(function(e) {
-        if (filterFn(e)) {
-          action(e);
-        }
-      });
-    };
+    this.changeIteration(function(action, e) {
+      if (filterFn(e)) {
+        return action(e);
+      }
+    });
   };
   FilterIterator.prototype = Iterator.prototype;
 
   var ReverseIterator = function(parent) {
-    Iterator.call(this);
+    Iterator.call(this, null, parent);
 
-    this.each = function(action) {
-      parent.reverseEach(function(e) {
-        action(e);
-      });
-    };
-
-    this.reverseEach = function(action) {
-      parent.each(function(e) {
-        action(e);
-      });
-    };
+    this.each = parent.reverseEach;
+    this.reverseEach = parent.each;
   };
   ReverseIterator.prototype = Iterator.prototype;
 
   var TakeIterator = function(parent, count) {
-    Iterator.call(this);
+    Iterator.call(this, null, parent);
 
-    this.each = function(action) {
-      var i = 0;
-      parent.each(function(e) {
-        if (i >= count) {
-          return false;
-        }
-        ++i;
-        return action(e);
-      });
-    };
+    var i = 0;
+    this.changeIteration(function(action, e) {
+      if (i++ >= count) { return false; }
+      return action(e);
+    });
   };
   TakeIterator.prototype = Iterator.prototype;
 
