@@ -1,8 +1,5 @@
-Lazy.js
-=======
-
 Like underscore.js, but <strike>better</strike> different
----------------------------------------------------------
+=========================================================
 
 First and foremost, **lazy.js** is like [underscore.js](http://underscorejs.org/)&mdash;essentially
 a library with a lot of useful functions for dealing with collections, arrays, and objects&mdash;but
@@ -18,7 +15,8 @@ for (var i = 1; i <= 1000; ++i) {
 }
 ```
 
-### Lazy evaluation
+Lazy evaluation
+---------------
 
 ```javascript
 function square(x) { return x * x; }
@@ -38,7 +36,8 @@ _.chain(array).map(square).map(inc).filter(isEven).take(5).value();
 Lazy(array).map(square).map(inc).filter(isEven).take(5).toArray();
 ```
 
-### Arbitrary sequence generation
+Arbitrary sequence generation
+-----------------------------
 
 ```javascript
 /* Unlike underscore.js, lazy.js also provides the ability to generate arbitrary sequences which can
@@ -66,7 +65,8 @@ powersOfTwo
   });
 ```
 
-### Available Functions
+Available functions
+-------------------
 
 It shouldn't take long for lazy.js to reach functional parity with underscore.js. Currently the
 following functions are available:
