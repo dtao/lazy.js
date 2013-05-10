@@ -81,6 +81,7 @@ following functions are available:
 - `rest` (aka `tail` or `drop`)
 - `last`
 - `sortBy`
+- `groupBy`
 - `uniq`
 - `every` (aka `all`)
 - `some` (aka `any`)

@@ -92,7 +92,11 @@
   };
 
   Iterator.prototype.sortBy = function(sortFn) {
-    return new SortIterator(this, sortFn);
+    return new SortByIterator(this, sortFn);
+  };
+
+  Iterator.prototype.groupBy = function(keyFn) {
+    return new GroupByIterator(this, keyFn);
   };
 
   Iterator.prototype.uniq = function() {
@@ -276,11 +280,30 @@
     };
   });
 
-  var SortIterator = CachingIterator.inherit(function(parent, sortFn) {
+  var SortByIterator = CachingIterator.inherit(function(parent, sortFn) {
     this.each = function(action) {
       var sorted = parent.toArray();
       sorted.sort(function(x, y) { return compare(x, y, sortFn); });
       forEach(sorted, action);
+    };
+  });
+
+  // TODO: This should really return an object, not an jagged array. Will
+  // require a bit of rework -- but hopefully not too much!
+  var GroupByIterator = CachingIterator.inherit(function(parent, keyFn) {
+    this.each = function(action) {
+      var grouped = {};
+      parent.each(function(e) {
+        var key = keyFn(e);
+        if (!grouped[key]) {
+          grouped[key] = [e];
+        } else {
+          grouped[key].push(e);
+        }
+      });
+      for (var key in grouped) {
+        action([key, grouped[key]]);
+      }
     };
   });
 
