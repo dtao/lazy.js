@@ -52,6 +52,7 @@
       });
 
     updateChart();
+    finishedLoading();
   }
 
   window.Verifier = function(expectation) {
