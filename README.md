@@ -82,6 +82,7 @@ following functions are available:
 - `last`
 - `sortBy`
 - `groupBy`
+- `countBy`
 - `uniq`
 - `every` (aka `all`)
 - `some` (aka `any`)

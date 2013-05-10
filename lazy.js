@@ -99,6 +99,10 @@
     return new GroupByIterator(this, keyFn);
   };
 
+  Iterator.prototype.countBy = function(keyFn) {
+    return new CountByIterator(this, keyFn);
+  };
+
   Iterator.prototype.uniq = function() {
     return new UniqIterator(this);
   };
@@ -299,6 +303,24 @@
           grouped[key] = [e];
         } else {
           grouped[key].push(e);
+        }
+      });
+      for (var key in grouped) {
+        action([key, grouped[key]]);
+      }
+    };
+  });
+
+  // TODO: This should return an object too (like GroupByIterator).
+  var CountByIterator = CachingIterator.inherit(function(parent, keyFn) {
+    this.each = function(action) {
+      var grouped = {};
+      parent.each(function(e) {
+        var key = keyFn(e);
+        if (!grouped[key]) {
+          grouped[key] = 1;
+        } else {
+          grouped[key] += 1;
         }
       });
       for (var key in grouped) {
