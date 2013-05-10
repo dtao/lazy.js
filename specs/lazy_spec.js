@@ -219,14 +219,27 @@ describe("Lazy", function() {
       underscore: function() { return _(arr).filter(isEven); }
     });
 
+    compareToUnderscore("map -> filter", {
+      lazy: function() { return Lazy(arr).map(inc).filter(isEven).toArray(); },
+      underscore: function() { return _.chain(arr).map(inc).filter(isEven).value(); }
+    });
+
     compareToUnderscore("map -> map -> map", {
       lazy: function() { return Lazy(arr).map(inc).map(square).map(dec).toArray(); },
       underscore: function() { return _.chain(arr).map(inc).map(square).map(dec).value(); }
     });
 
-    compareToUnderscore("map -> filter -> reverse", {
-      lazy: function() { return Lazy(arr).map(inc).filter(isEven).reverse().toArray(); },
-      underscore: function() { return _.chain(arr).map(inc).filter(isEven).reverse().value(); }
+    compareToUnderscore("map -> map -> map -> map -> map", {
+      lazy: function() {
+        return Lazy(arr)
+          .map(inc).map(inc).map(inc).map(inc).map(inc)
+          .toArray(); 
+      },
+      underscore: function() {
+        return _.chain(arr)
+          .map(inc).map(inc).map(inc).map(inc).map(inc)
+          .value();
+      }
     });
 
     compareToUnderscore("filter -> take", {
