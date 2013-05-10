@@ -48,6 +48,10 @@
   width: 90%;
 }
 
+#benchmark-results-table.empty tr {
+  display: none;
+}
+
 #benchmark-results-table th,
 #benchmark-results-table td {
   padding: 0.5ex 0.5em;

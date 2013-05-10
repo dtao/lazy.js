@@ -1,4 +1,7 @@
 (function() {
+  // Set this to false to give your poor CPU some rest if/while doing TDD.
+  var RUN_PERFORMANCE_TESTS = true;
+
   var benchmarkSuite = new Benchmark.Suite();
   Benchmark.options.maxTime = 1;
 
@@ -21,7 +24,7 @@
   }
 
   function addBenchmarkResultToTable(result) {
-    var table = $("#benchmark-results-table");
+    var table = $("#benchmark-results-table").removeClass("empty");
     var row   = $("<tr>").addClass("benchmark-result").appendTo(table);
     $("<td>").text(result.lazy.name).appendTo(row);
     $("<td>").text(result.lazy.hz.toFixed(5)).appendTo(row);
@@ -32,6 +35,10 @@
     barChart = barChart || document.getElementById("benchmark-results-chart");
     $(barChart).height(50 + (benchmarkResults.length * 100));
     HighTables.renderChart(barChart);
+  }
+
+  function finishedLoading() {
+    $("#benchmark-results").removeClass("loading");
   }
 
   function sortResults() {
@@ -45,8 +52,6 @@
       });
 
     updateChart();
-
-    $("#benchmark-results").removeClass("loading");
   }
 
   window.Verifier = function(expectation) {
@@ -90,6 +95,10 @@
       sortResults();
     });
 
-    benchmarkSuite.run({ async: true });
+    if (RUN_PERFORMANCE_TESTS) {
+      benchmarkSuite.run({ async: true });
+    } else {
+      finishedLoading();
+    }
   };
 })();
