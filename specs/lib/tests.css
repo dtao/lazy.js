@@ -1,0 +1,48 @@
+#HTMLReporter {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 50%;
+  bottom: 0;
+  overflow: auto;
+}
+
+#benchmark-results {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  right: 0;
+  bottom: 0;
+  overflow: auto;
+}
+
+#benchmark-results.loading {
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+}
+
+#benchmark-results-chart {
+  margin: auto;
+  width: 90%;
+}
+
+#benchmark-results-table {
+  border-collapse: collapse;
+  margin: auto;
+  width: 90%;
+}
+
+#benchmark-results-table th,
+#benchmark-results-table td {
+  padding: 0.5ex 0.5em;
+  text-align: left;
+}
+
+#benchmark-results-table th:last-child,
+#benchmark-results-table td:last-child {
+  text-align: right;
+}
+
+#benchmark-results-table tr:nth-child(even) {
+  background-color: #bbb;
+}

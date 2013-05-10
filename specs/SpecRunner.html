@@ -5,9 +5,14 @@
   <title>Lazy.js Specs</title>
 
   <link rel="stylesheet" type="text/css" href="lib/jasmine.css">
+  <link rel="stylesheet" type="text/css" href="lib/tests.css">
 
   <script type="text/javascript" src="lib/jasmine.js"></script>
   <script type="text/javascript" src="lib/jasmine-html.js"></script>
+  <script type="text/javascript" src="lib/benchmark.js"></script>
+  <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+  <script type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
+  <script type="text/javascript" src="lib/hightables.js"></script>
   <script type="text/javascript" src="lib/boot.js"></script>
 
   <!-- include source files here... -->
@@ -20,5 +25,19 @@
 </head>
 
 <body>
+  <div id="benchmark-results" class="loading">
+    <div id="benchmark-results-chart" class="bar-chart"
+      data-source="#benchmark-results-table"
+      data-options="benchmarkChartOptions">
+    </div>
+
+    <table id="benchmark-results-table">
+      <tr>
+        <th>Test</th>
+        <th>Speed</th>
+      </tr>
+    </table>
+  </div>
 </body>
+
 </html>
