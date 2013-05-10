@@ -76,9 +76,12 @@ following functions are available:
 - `reject`
 - `first` (aka `head` or `take`)
 - `rest` (aka `tail` or `drop`)
+- `last`
 - `sortBy`
 - `uniq`
 - `every` (aka `all`)
 - `some` (aka `any`)
+- `indexOf`
+- `contains`
 
 This library is experimental and still a work in progress.

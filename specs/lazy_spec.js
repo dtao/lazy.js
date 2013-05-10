@@ -206,6 +206,41 @@ describe("Lazy", function() {
     });
   });
 
+  describe("first", function() {
+    it("returns the first element in the collection", function() {
+      var firstGirl = Lazy(people).filter(Person.isFemale).first();
+      expect(firstGirl).toEqual(mary);
+    });
+  });
+
+  describe("last", function() {
+    it("returns the last element in the collection", function() {
+      var lastBoy = Lazy(people).filter(Person.isMale).last();
+      expect(lastBoy).toEqual(daniel);
+    });
+
+    it("iterates from the tail if possible", function() {
+      Lazy(people).map(Person.getGender).last();
+      expect(Person.objectsTouched).toEqual(1);
+    });
+  });
+
+  describe("indexOf", function() {
+    it("returns the index of the specified element in the collection", function() {
+      expect(Lazy(people).indexOf(adam)).toEqual(3);
+    });
+  });
+
+  describe("contains", function() {
+    it("returns true if the collection contains the specified element", function() {
+      expect(Lazy(people).contains(adam)).toBe(true);
+    });
+
+    it("returns false if the collection does not contain the specified element", function() {
+      expect(Lazy(people).contains(new Person("Joe", 25, "M"))).toBe(false);
+    });
+  });
+
   describe("chaining methods together", function() {
     ensureLaziness(function() {
       Lazy(people)

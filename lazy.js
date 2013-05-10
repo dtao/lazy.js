@@ -1,28 +1,4 @@
 (function(global) {
-  function compare(x, y, fn) {
-    if (typeof fn === "function") {
-      return compare(fn(x), fn(y));
-    }
-
-    if (x === y) {
-      return 0;
-    }
-
-    return x > y ? 1 : -1;
-  }
-
-  function forEach(array, fn) {
-    for (var i = 0; i < array.length; ++i) {
-      if (fn(array[i]) === false) {
-        break;
-      }
-    }
-  }
-
-  function indent(depth) {
-    return new Array(depth).join("  ");
-  }
-
   var Iterator = function(parent, source) {
     this.parent = parent;
     this.source = source;
@@ -96,7 +72,17 @@
   Iterator.prototype.first =
   Iterator.prototype.head =
   Iterator.prototype.take = function(count) {
+    if (typeof count === "undefined") {
+      return this.get(0);
+    }
     return new TakeIterator(this, count);
+  };
+
+  Iterator.prototype.last = function(count) {
+    if (typeof count === "undefined") {
+      return this.get(this.length() - 1);
+    }
+    return this.reverse().first();
   };
 
   Iterator.prototype.rest =
@@ -135,6 +121,23 @@
       }
     });
     return success;
+  };
+
+  Iterator.prototype.indexOf = function(value) {
+    var index = 0;
+    var foundIndex = -1;
+    this.each(function(e) {
+      if (e === value) {
+        foundIndex = index;
+        return false;
+      }
+      ++index;
+    });
+    return foundIndex;
+  };
+
+  Iterator.prototype.contains = function(value) {
+    return this.indexOf(value) !== -1;
   };
 
   Iterator.inherit = function(fn) {
@@ -281,5 +284,31 @@
   global.Lazy.generate = function(iteratorFn) {
     return new Generator(iteratorFn);
   };
+
+  /*** Useful utility methods ***/
+
+  function compare(x, y, fn) {
+    if (typeof fn === "function") {
+      return compare(fn(x), fn(y));
+    }
+
+    if (x === y) {
+      return 0;
+    }
+
+    return x > y ? 1 : -1;
+  }
+
+  function forEach(array, fn) {
+    for (var i = 0; i < array.length; ++i) {
+      if (fn(array[i]) === false) {
+        break;
+      }
+    }
+  }
+
+  function indent(depth) {
+    return new Array(depth).join("  ");
+  }
 
 })(window);
