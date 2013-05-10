@@ -49,6 +49,10 @@
     return {
       plotOptions: {
         series: { animation: false }
+      },
+
+      yAxis: {
+        type: "logarithmic",
       }
     };
   };
