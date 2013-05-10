@@ -1,7 +1,6 @@
 (function() {
-  Benchmark.options.maxTime = 1;
-
   var benchmarkSuite = new Benchmark.Suite();
+  Benchmark.options.maxTime = 1;
 
   var jasmineEnv = jasmine.getEnv();
   jasmineEnv.updateInterval = 1000;
@@ -21,8 +20,9 @@
 
     var table = $("#benchmark-results-table");
     var row   = $("<tr>").addClass("benchmark-result").appendTo(table);
-    var name  = $("<td>").text(result.name).appendTo(row);
-    var speed = $("<td>").text(result.hz).appendTo(row);
+    $("<td>").text(result.lazy.name).appendTo(row);
+    $("<td>").text(result.lazy.hz).appendTo(row);
+    $("<td>").text(result.underscore.hz).appendTo(row);
 
     barChart = barChart || document.getElementById("benchmark-results-chart");
     HighTables.renderChart(barChart);
@@ -32,7 +32,7 @@
     $("tr.benchmark-result").remove();
 
     Lazy(benchmarkResults)
-      .sortBy(function(r) { return r.hz; })
+      .sortBy(function(r) { return r.lazy.hz - r.underscore.hz; })
       .reverse()
       .each(function(result) {
         addBenchmarkResult(result);
@@ -40,14 +40,6 @@
 
     $("#benchmark-results").removeClass("loading");
   }
-
-  benchmarkSuite.on("cycle", function(e) {
-    addBenchmarkResult(e.target);
-  });
-
-  benchmarkSuite.on("complete", function() {
-    sortResults();
-  });
 
   window.Verifier = function(expectation) {
     this.verify = expectation;
@@ -61,15 +53,29 @@
     };
   };
 
-  window.runTest = function(description, spec) {
-    it(description, function() {
-      spec().verify();
+  window.compareToUnderscore = function(description, specs) {
+    it("returns the same result as underscore for '" + description + "'", function() {
+      expect(specs.lazy()).toEqual(specs.underscore());
     });
-    benchmarkSuite.add(description, spec);
+
+    benchmarkSuite.add(description, specs.lazy);
+    benchmarkSuite.add(description, specs.underscore);
   };
 
   window.onload = function() {
     jasmineEnv.execute();
+
+    benchmarkSuite.on("complete", function() {
+      for (var i = 0; i < benchmarkSuite.length; i += 2) {
+        addBenchmarkResult({
+          lazy: benchmarkSuite[i],
+          underscore: benchmarkSuite[i + 1]
+        });
+      }
+
+      sortResults();
+    });
+
     benchmarkSuite.run({ async: true });
   };
 })();
