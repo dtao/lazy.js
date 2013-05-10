@@ -48,6 +48,16 @@ describe("Lazy", function() {
         }
       });
     });
+
+    it("provides 'random access'", function() {
+      var naturalNumbers = Lazy.generate(function(i) { return i + 1; });
+      expect(naturalNumbers.get(9)).toEqual(10);
+    });
+
+    it("throws an exception if you try to get its length", function() {
+      var naturalNumbers = Lazy.generate(function(i) { return i + 1; });
+      expect(function() { naturalNumbers.length(); }).toThrow();
+    });
   });
 
   describe("map", function() {
@@ -64,6 +74,16 @@ describe("Lazy", function() {
         "Daniel",
         "Happy"
       ]);
+    });
+
+    it("provides indexed access into the collection", function() {
+      var lastName = Lazy(people).map(Person.getName).get(people.length - 1);
+      expect(lastName).toEqual("Happy");
+    });
+
+    it("does not require iteration to index into the collection", function() {
+      var lastName = Lazy(people).map(Person.getName).get(people.length - 1);
+      expect(Person.objectsTouched).toEqual(1);
     });
   });
 
@@ -107,6 +127,17 @@ describe("Lazy", function() {
         mary,
         david
       ]);
+    });
+
+    it("provides indexed access into the collection", function() {
+      var lastPerson = Lazy(people).reverse().get(0);
+      expect(lastPerson).toEqual(happy);
+    });
+
+    it("does not create an array to index into the collection", function() {
+      var reversed = Lazy(people).reverse();
+      var lastPerson = reversed.get(0);
+      expect(reversed.arrayCount()).toEqual(0);
     });
   });
 

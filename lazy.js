@@ -32,14 +32,14 @@
     if (!this.parent) {
       this.arraysCreated = 0;
     }
+  };
 
-    this.get = function(i) {
-      return source ? source[i] : parent.get(i);
-    };
+  Iterator.prototype.get = function(i) {
+    return this.source ? this.source[i] : this.parent.get(i);
+  };
 
-    this.length = function() {
-      return source ? source.length : parent.length();
-    };
+  Iterator.prototype.length = function() {
+    return this.source ? this.source.length : this.parent.length();
   };
 
   Iterator.prototype.root = function() {
@@ -229,6 +229,12 @@
 
   var Generator = Iterator.inherit(function(generatorFn) {
     Iterator.call(this);
+
+    this.get = generatorFn;
+
+    this.length = function() {
+      throw "Cannot get the length of a generated sequence.";
+    };
 
     this.each = function(action) {
       var i = 0;
