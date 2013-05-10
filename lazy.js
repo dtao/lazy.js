@@ -140,6 +140,31 @@
     return this.indexOf(value) !== -1;
   };
 
+  Iterator.prototype.reduce = function(aggregator, memo) {
+    this.each(function(e) {
+      memo = aggregator(memo, e);
+    });
+    return memo;
+  };
+
+  Iterator.prototype.min = function() {
+    return this.reduce(function(least, value) {
+      if (typeof least === "undefined") {
+        return value;
+      }
+      return value < least ? value : least;
+    });
+  };
+
+  Iterator.prototype.max = function() {
+    return this.reduce(function(greatest, value) {
+      if (typeof greatest === "undefined") {
+        return value;
+      }
+      return value > greatest ? value : greatest;
+    });
+  };
+
   Iterator.inherit = function(fn) {
     var constructor = function() {
       var parent = arguments[0];

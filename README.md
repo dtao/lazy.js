@@ -72,6 +72,7 @@ It shouldn't take long for lazy.js to reach functional parity with underscore.js
 following functions are available:
 
 - `map`
+- `reduce`
 - `filter`
 - `reject`
 - `first` (aka `head` or `take`)
@@ -83,5 +84,7 @@ following functions are available:
 - `some` (aka `any`)
 - `indexOf`
 - `contains`
+- `min`
+- `max`
 
 This library is experimental and still a work in progress.

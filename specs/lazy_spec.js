@@ -225,6 +225,15 @@ describe("Lazy", function() {
     });
   });
 
+  describe("reduce", function() {
+    it("aggregates the values in the collection according to some function", function() {
+      var sumOfAges = Lazy(people).map(Person.getAge).reduce(function(sum, age) {
+        return sum + age;
+      }, 0);
+      expect(sumOfAges).toEqual(240);
+    });
+  });
+
   describe("indexOf", function() {
     it("returns the index of the specified element in the collection", function() {
       expect(Lazy(people).indexOf(adam)).toEqual(3);
@@ -238,6 +247,26 @@ describe("Lazy", function() {
 
     it("returns false if the collection does not contain the specified element", function() {
       expect(Lazy(people).contains(new Person("Joe", 25, "M"))).toBe(false);
+    });
+  });
+
+  describe("min", function() {
+    it("returns undefined for an empty collection", function() {
+      expect(Lazy([]).min()).toBeUndefined();
+    });
+
+    it("returns the minimum value from the collection", function() {
+      expect(Lazy(people).map(Person.getAge).min()).toEqual(25);
+    });
+  });
+
+  describe("max", function() {
+    it("returns undefined for an empty collection", function() {
+      expect(Lazy([]).max()).toBeUndefined();
+    });
+
+    it("returns the maximum value from the collection", function() {
+      expect(Lazy(people).map(Person.getAge).max()).toEqual(63);
     });
   });
 
