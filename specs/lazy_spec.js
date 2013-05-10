@@ -164,46 +164,34 @@ describe("Lazy", function() {
 
     var arr = createArray(1000);
 
-    compareToUnderscore("map", function() {
-      return {
-        lazy: function() { return Lazy(arr).map(square).toArray(); },
-        underscore: function() { return _(arr).map(square); }
-      };
-    }());
+    compareToUnderscore("map", {
+      lazy: function() { return Lazy(arr).map(square).toArray(); },
+      underscore: function() { return _(arr).map(square); }
+    });
 
-    compareToUnderscore("filter", function() {
-      return {
-        lazy: function() { return Lazy(arr).filter(isEven).toArray(); },
-        underscore: function() { return _(arr).filter(isEven); }
-      };
-    }());
+    compareToUnderscore("filter", {
+      lazy: function() { return Lazy(arr).filter(isEven).toArray(); },
+      underscore: function() { return _(arr).filter(isEven); }
+    });
 
-    compareToUnderscore("map -> map -> map", function() {
-      return {
-        lazy: function() { return Lazy(arr).map(inc).map(square).map(dec).toArray(); },
-        underscore: function() { return _.chain(arr).map(inc).map(square).map(dec).value(); }
-      };
-    }());
+    compareToUnderscore("map -> map -> map", {
+      lazy: function() { return Lazy(arr).map(inc).map(square).map(dec).toArray(); },
+      underscore: function() { return _.chain(arr).map(inc).map(square).map(dec).value(); }
+    });
 
-    compareToUnderscore("map -> filter -> reverse", function() {
-      return {
-        lazy: function() { return Lazy(arr).map(inc).filter(isEven).reverse().toArray(); },
-        underscore: function() { return _.chain(arr).map(inc).filter(isEven).reverse().value(); }
-      };
-    }());
+    compareToUnderscore("map -> filter -> reverse", {
+      lazy: function() { return Lazy(arr).map(inc).filter(isEven).reverse().toArray(); },
+      underscore: function() { return _.chain(arr).map(inc).filter(isEven).reverse().value(); }
+    });
 
-    compareToUnderscore("filter -> take", function() {
-      return {
-        lazy: function() { return Lazy(arr).filter(isEven).take(5).toArray(); },
-        underscore: function() { return _.chain(arr).filter(isEven).first(5).value(); }
-      };
-    }());
+    compareToUnderscore("filter -> take", {
+      lazy: function() { return Lazy(arr).filter(isEven).take(5).toArray(); },
+      underscore: function() { return _.chain(arr).filter(isEven).first(5).value(); }
+    });
 
-    compareToUnderscore("filter -> drop -> take", function() {
-      return {
-        lazy: function() { return Lazy(arr).filter(isEven).drop(100).take(5).toArray(); },
-        underscore: function() { return _.chain(arr).filter(isEven).rest(100).first(5).value(); }
-      }
-    }());
+    compareToUnderscore("filter -> drop -> take", {
+      lazy: function() { return Lazy(arr).filter(isEven).drop(100).take(5).toArray(); },
+      underscore: function() { return _.chain(arr).filter(isEven).rest(100).first(5).value(); }
+    });
   });
 });
