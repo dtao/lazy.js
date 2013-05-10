@@ -157,8 +157,9 @@ describe("Lazy", function() {
       return array;
     }
 
-    function square(x) { return x * x; }
     function inc(x) { return x + 1; }
+    function dec(x) { return x - 1; }
+    function square(x) { return x * x; }
     function isEven(x) { return x % 2 === 0; }
 
     var arr = createArray(1000);
@@ -174,6 +175,13 @@ describe("Lazy", function() {
       return {
         lazy: function() { return Lazy(arr).filter(isEven).toArray(); },
         underscore: function() { return _(arr).filter(isEven); }
+      };
+    }());
+
+    compareToUnderscore("map -> map -> map", function() {
+      return {
+        lazy: function() { return Lazy(arr).map(inc).map(square).map(dec).toArray(); },
+        underscore: function() { return _.chain(arr).map(inc).map(square).map(dec).value(); }
       };
     }());
 
