@@ -1,10 +1,4 @@
 (function(global) {
-  function inherit(base, fn) {
-    var constructor = fn;
-    constructor.prototype = base.prototype;
-    return constructor;
-  };
-
   function compare(x, y, fn) {
     if (typeof fn === "function") {
       return compare(fn(x), fn(y));
@@ -150,15 +144,22 @@
     return new UniqIterator(this);
   };
 
-  var MapIterator = inherit(Iterator, function(parent, mapFn) {
-    Iterator.call(this, parent);
+  Iterator.inherit = function(fn) {
+    var constructor = function() {
+      Iterator.call(this, arguments[0]);
+      fn.apply(this, arguments);
+    };
+    constructor.prototype = Iterator.prototype;
+    return constructor;
+  };
+
+  var MapIterator = Iterator.inherit(function(parent, mapFn) {
     this.changeIteration(function(action, e) {
       return action(mapFn(e));
     });
   });
 
-  var FilterIterator = inherit(Iterator, function(parent, filterFn) {
-    Iterator.call(this, parent);
+  var FilterIterator = Iterator.inherit(function(parent, filterFn) {
     this.changeIteration(function(action, e) {
       if (filterFn(e)) {
         return action(e);
@@ -166,14 +167,12 @@
     });
   });
 
-  var ReverseIterator = inherit(Iterator, function(parent) {
-    Iterator.call(this, parent);
+  var ReverseIterator = Iterator.inherit(function(parent) {
     this.each = parent.reverseEach;
     this.reverseEach = parent.each;
   });
 
-  var TakeIterator = inherit(Iterator, function(parent, count) {
-    Iterator.call(this, parent);
+  var TakeIterator = Iterator.inherit(function(parent, count) {
     var i = 0;
     this.changeIteration(function(action, e) {
       var result = action(e);
@@ -182,8 +181,7 @@
     });
   });
 
-  var DropIterator = inherit(Iterator, function(parent, count) {
-    Iterator.call(this, parent);
+  var DropIterator = Iterator.inherit(function(parent, count) {
     var i = 0;
     this.changeIteration(function(action, e) {
       if (i++ < count) { return; }
@@ -191,9 +189,7 @@
     });
   });
 
-  var SortIterator = inherit(Iterator, function(parent, sortFn) {
-    Iterator.call(this, parent);
-
+  var SortIterator = Iterator.inherit(function(parent, sortFn) {
     this.each = function(action) {
       var sorted = parent.toArray();
       sorted.sort(function(x, y) { return compare(x, y, sortFn); });
@@ -207,8 +203,7 @@
     };
   });
 
-  var UniqIterator = inherit(Iterator, function(parent, count) {
-    Iterator.call(this, parent);
+  var UniqIterator = Iterator.inherit(function(parent, count) {
     var set = {};
     this.changeIteration(function(action, e) {
       if (e in set) { return; }
@@ -217,8 +212,29 @@
     });
   });
 
+  var Generator = Iterator.inherit(function(generatorFn) {
+    Iterator.call(this);
+
+    this.each = function(action) {
+      var i = 0;
+      while (true) {
+        if (action(generatorFn(i++)) === false) {
+          break;
+        }
+      }
+    };
+
+    this.reverseEach = function(action) {
+      throw "You cannot reverse a generated sequence.";
+    };
+  });
+
   global.Lazy = function(source) {
     return new Iterator(null, source);
+  };
+
+  global.Lazy.generate = function(iteratorFn) {
+    return new Generator(iteratorFn);
   };
 
 })(window);

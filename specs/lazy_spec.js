@@ -27,6 +27,29 @@ describe("Lazy", function() {
     });
   }
 
+  describe("generate", function() {
+    it("allows generation of arbitrary sequences", function() {
+      var sequence = Lazy.generate(function(i) { return i; })
+        .drop(1)
+        .take(3)
+        .toArray();
+
+      expect(sequence).toEqual([1, 2, 3]);
+    });
+
+    it("can be iterated just like any other sequence", function() {
+      var randomNumbers = Lazy.generate(function(i) { return Math.random(); });
+
+      // Iterate over the numbers until there's a number > 0.5.
+      randomNumbers.each(function(x) {
+        console.log(x);
+        if (x > 0.5) {
+          return false;
+        }
+      });
+    });
+  });
+
   describe("map", function() {
     ensureLaziness(function() { Lazy(people).map(Person.getName); });
 
