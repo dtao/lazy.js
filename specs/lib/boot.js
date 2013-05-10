@@ -17,14 +17,20 @@
   var benchmarkResults = [];
   function addBenchmarkResult(result) {
     benchmarkResults.push(result);
+    addBenchmarkResultToTable(result);
+  }
 
+  function addBenchmarkResultToTable(result) {
     var table = $("#benchmark-results-table");
     var row   = $("<tr>").addClass("benchmark-result").appendTo(table);
     $("<td>").text(result.lazy.name).appendTo(row);
     $("<td>").text(result.lazy.hz.toFixed(5)).appendTo(row);
     $("<td>").text(result.underscore.hz.toFixed(5)).appendTo(row);
+  }
 
+  function updateChart() {
     barChart = barChart || document.getElementById("benchmark-results-chart");
+    $(barChart).height(50 + (benchmarkResults.length * 100));
     HighTables.renderChart(barChart);
   }
 
@@ -35,8 +41,10 @@
       .sortBy(function(r) { return r.lazy.hz - r.underscore.hz; })
       .reverse()
       .each(function(result) {
-        addBenchmarkResult(result);
+        addBenchmarkResultToTable(result);
       });
+
+    updateChart();
 
     $("#benchmark-results").removeClass("loading");
   }
@@ -77,6 +85,7 @@
           lazy: currentResultSet[0],
           underscore: currentResultSet[1]
         });
+        updateChart();
         currentResultSet = [];
       }
     });
