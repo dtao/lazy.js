@@ -1,7 +1,12 @@
-var Person = function(name, gender) {
+var Person = function(name, age, gender) {
   this.getName = function() {
     Person.accesses += 1;
     return name;
+  };
+
+  this.getAge = function() {
+    Person.accesses += 1;
+    return age;
   };
 
   this.getGender = function() {
@@ -16,6 +21,10 @@ var Person = function(name, gender) {
 
 Person.getName = function(p) {
   return p.getName();
+};
+
+Person.getAge = function(p) {
+  return p.getAge();
 };
 
 Person.getGender = function(p) {
