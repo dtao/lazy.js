@@ -42,7 +42,6 @@ describe("Lazy", function() {
 
       // Iterate over the numbers until there's a number > 0.5.
       randomNumbers.each(function(x) {
-        console.log(x);
         if (x > 0.5) {
           return false;
         }
