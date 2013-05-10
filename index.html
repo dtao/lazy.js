@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Lazy.js</title>
+
+  <link rel="stylesheet" type="text/css" href="lib/jasmine.css">
+  <link rel="stylesheet" type="text/css" href="lib/tests.css">
+
+  <script type="text/javascript" src="lib/jasmine.js"></script>
+  <script type="text/javascript" src="lib/jasmine-html.js"></script>
+  <script type="text/javascript" src="lib/benchmark.js"></script>
+  <script type="text/javascript" src="lib/underscore.js"></script>
+  <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+  <script type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
+  <script type="text/javascript" src="lib/hightables.js"></script>
+  <script type="text/javascript" src="lib/boot.js"></script>
+
+  <!-- include source files here... -->
+  <script type="text/javascript" src="lazy.js"></script>
+
+  <!-- include spec files here... -->
+  <script type="text/javascript" src="support/person.js"></script>
+  <script type="text/javascript" src="lazy_spec.js"></script>
+
+</head>
+
+<body>
+  <div id="benchmark-results" class="loading">
+    <div id="benchmark-results-chart" class="bar-chart"
+      data-source="#benchmark-results-table"
+      data-options="benchmarkChartOptions">
+    </div>
+
+    <table id="benchmark-results-table">
+      <tr>
+        <th>Test</th>
+        <th>Lazy.js</th>
+        <th>Underscore.js</th>
+      </tr>
+    </table>
+  </div>
+</body>
+
+</html>

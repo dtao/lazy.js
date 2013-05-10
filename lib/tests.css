@@ -1,0 +1,78 @@
+#HTMLReporter {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 50%;
+  overflow: auto;
+}
+
+#benchmark-results {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  right: 0;
+  overflow: auto;
+
+  font-family: Monaco, "Lucida Console", monospace;
+  font-size: 14px;
+}
+
+#benchmark-results.loading {
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+}
+
+#benchmark-results.loading:after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 128px;
+  width: 128px;
+  margin-top: -64px;
+  margin-left: -64px;
+  background: url("loading.gif");
+}
+
+#benchmark-results-chart {
+  margin: auto;
+  width: 90%;
+}
+
+#benchmark-results-table {
+  border-collapse: collapse;
+  margin: auto;
+  width: 90%;
+}
+
+#benchmark-results-table th,
+#benchmark-results-table td {
+  padding: 0.5ex 0.5em;
+  text-align: left;
+  width: 25%;
+}
+
+#benchmark-results-table th:first-child,
+#benchmark-results-table td:first-child {
+  width: 50%;
+}
+
+#benchmark-results-table th:nth-child(n+2),
+#benchmark-results-table td:nth-child(n+2) {
+  text-align: right;
+}
+
+#benchmark-results-table tr:first-child {
+  border-bottom: 1px solid black;
+}
+
+#benchmark-results-table tr:nth-child(even) {
+  background-color: #bbb;
+}
+
+#benchmark-results-table tr:nth-child(n+2):hover {
+  background-color: #def;
+}
