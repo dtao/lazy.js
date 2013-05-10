@@ -1,21 +1,39 @@
 var Person = function(name, age, gender) {
-  this.getName = function() {
+  var accessed = false;
+
+  function markAccessed() {
     Person.accesses += 1;
+    if (!accessed) {
+      accessed = true;
+      Person.objectsTouched += 1;
+    }
+  }
+
+  this.getName = function() {
+    markAccessed();
     return name;
   };
 
   this.getAge = function() {
-    Person.accesses += 1;
+    markAccessed();
     return age;
   };
 
   this.getGender = function() {
-    Person.accesses += 1;
+    markAccessed();
     return gender;
   };
 
-  this.jasmineToString = function() {
+  this.reset = function() {
+    accessed = false;
+  };
+
+  this.toString = function() {
     return name;
+  };
+
+  this.jasmineToString = function() {
+    return this.toString();
   };
 };
 
@@ -39,4 +57,15 @@ Person.isMale = function(p) {
   return p.getGender() === "M";
 };
 
-Person.accesses = 0;
+Person.reset = function(people) {
+  if (people) {
+    for (var i = 0; i < people.length; ++i) {
+      people[i].reset();
+    }
+  }
+
+  Person.accesses = 0;
+  Person.objectsTouched = 0;
+};
+
+Person.reset();

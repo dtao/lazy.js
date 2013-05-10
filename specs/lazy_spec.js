@@ -17,7 +17,7 @@ describe("Lazy", function() {
       happy  = new Person("Happy", 25, "F")
     ];
 
-    Person.accesses = 0;
+    Person.reset(people);
   });
 
   function ensureLaziness(action) {
@@ -145,6 +145,17 @@ describe("Lazy", function() {
         .toArray();
 
       expect(girlNames).toEqual(["Lauren", "Mary"]);
+    });
+
+    it("only ever touches as many objects as necessary", function() {
+      var firstMale = Lazy(people)
+        .filter(Person.isMale)
+        .map(Person.getGender)
+        .take(1)
+        .toArray();
+
+      expect(firstMale).toEqual(["M"]);
+      expect(Person.objectsTouched).toEqual(1);
     });
   });
 

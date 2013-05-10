@@ -50,6 +50,10 @@
     };
   };
 
+  Iterator.prototype.get = function(i) {
+    return this.source ? this.source[i] : this.parent.get(i);
+  };
+
   Iterator.prototype.each = function(fn) {
     for (var i = 0; i < this.length(); ++i) {
       if (fn(this.get(i)) === false) {
@@ -145,8 +149,9 @@
     Iterator.call(this, parent);
     var i = 0;
     this.changeIteration(function(action, e) {
-      if (i++ >= count) { return false; }
-      return action(e);
+      var result = action(e);
+      if (++i >= count) { return false; }
+      return result;
     });
   });
 
