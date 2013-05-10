@@ -140,11 +140,18 @@
     return this.indexOf(value) !== -1;
   };
 
-  Iterator.prototype.reduce = function(aggregator, memo) {
+  Iterator.prototype.reduce =
+  Iterator.prototype.inject =
+  Iterator.prototype.foldl = function(aggregator, memo) {
     this.each(function(e) {
       memo = aggregator(memo, e);
     });
     return memo;
+  };
+
+  Iterator.prototype.reduceRight =
+  Iterator.prototype.foldr = function(aggregator, memo) {
+    return this.reverse().reduce(aggregator, memo);
   };
 
   Iterator.prototype.find =

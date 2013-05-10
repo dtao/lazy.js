@@ -72,7 +72,8 @@ It shouldn't take long for lazy.js to reach functional parity with underscore.js
 following functions are available:
 
 - `map`
-- `reduce`
+- `reduce` (aka `inject` or `foldl`)
+- `reduceRight` (aka `foldr`)
 - `filter`
 - `reject`
 - `find`

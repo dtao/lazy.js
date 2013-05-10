@@ -242,6 +242,24 @@ describe("Lazy", function() {
       }, 0);
       expect(sumOfAges).toEqual(240);
     });
+
+    it("traverses the collection from left to right", function() {
+      var firstInitials = Lazy(people).reduce(function(array, person) {
+        array.push(person.getName().charAt(0));
+        return array;
+      }, []);
+      expect(firstInitials).toEqual(["D", "M", "L", "A", "D", "H"]);
+    });
+  });
+
+  describe("reduceRight", function() {
+    it("traverses the collection from right to left", function() {
+      var firstInitials = Lazy(people).reduceRight(function(array, person) {
+        array.push(person.getName().charAt(0));
+        return array;
+      }, []);
+      expect(firstInitials).toEqual(["H", "D", "A", "L", "M", "D"]);
+    });
   });
 
   describe("indexOf", function() {
