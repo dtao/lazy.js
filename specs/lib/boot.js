@@ -21,8 +21,8 @@
     var table = $("#benchmark-results-table");
     var row   = $("<tr>").addClass("benchmark-result").appendTo(table);
     $("<td>").text(result.lazy.name).appendTo(row);
-    $("<td>").text(result.lazy.hz).appendTo(row);
-    $("<td>").text(result.underscore.hz).appendTo(row);
+    $("<td>").text(result.lazy.hz.toFixed(5)).appendTo(row);
+    $("<td>").text(result.underscore.hz.toFixed(5)).appendTo(row);
 
     barChart = barChart || document.getElementById("benchmark-results-chart");
     HighTables.renderChart(barChart);
@@ -65,14 +65,19 @@
   window.onload = function() {
     jasmineEnv.execute();
 
-    benchmarkSuite.on("complete", function() {
-      for (var i = 0; i < benchmarkSuite.length; i += 2) {
+    var currentResultSet = [];
+    benchmarkSuite.on("cycle", function(e) {
+      currentResultSet.push(e.target);
+      if (currentResultSet.length === 2) {
         addBenchmarkResult({
-          lazy: benchmarkSuite[i],
-          underscore: benchmarkSuite[i + 1]
+          lazy: currentResultSet[0],
+          underscore: currentResultSet[1]
         });
+        currentResultSet = [];
       }
+    });
 
+    benchmarkSuite.on("complete", function() {
       sortResults();
     });
 
