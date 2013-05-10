@@ -25,15 +25,21 @@
     }
   }
 
+  function indent(depth) {
+    return new Array(depth).join("  ");
+  }
+
   var Iterator = function(parent, source) {
     var length, cached;
 
     this.parent = parent;
     this.source = source;
+    this.depth  = parent ? parent.depth + 1 : 0;
 
-    this.get = function(i) {
-      return this.source ? this.source[i] : this.parent.get(i);
-    };
+    // We'll count how many arrays we create from the root.
+    if (!this.parent) {
+      this.arraysCreated = 0;
+    }
 
     this.length = function() {
       if (typeof length === "undefined") {
@@ -48,6 +54,18 @@
       }
       return cached;
     };
+  };
+
+  Iterator.prototype.root = function() {
+    var ancestor = this;
+    while (ancestor.parent) {
+      ancestor = ancestor.parent;
+    }
+    return ancestor;
+  };
+
+  Iterator.prototype.arrayCount = function() {
+    return this.root().arraysCreated;
   };
 
   Iterator.prototype.get = function(i) {
@@ -81,11 +99,20 @@
     };
   };
 
+  Iterator.prototype.log = function(msg) {
+    console.log(indent(this.depth) + msg);
+  };
+
   Iterator.prototype.toArray = function() {
     var array = [];
     this.each(function(e) {
       array.push(e);
     });
+
+    // Temporarily keeping track of how many arrays get created,
+    // for testing purposes.
+    this.root().arraysCreated += 1;
+
     return array;
   };
 

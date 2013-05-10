@@ -147,15 +147,49 @@ describe("Lazy", function() {
       expect(girlNames).toEqual(["Lauren", "Mary"]);
     });
 
-    it("only ever touches as many objects as necessary", function() {
-      var firstMale = Lazy(people)
-        .filter(Person.isMale)
-        .map(Person.getGender)
-        .take(1)
-        .toArray();
+    describe("filter -> take", function() {
+      it("only ever touches as many objects as necessary", function() {
+        var firstMale = Lazy(people)
+          .filter(Person.isMale)
+          .map(Person.getGender)
+          .take(1)
+          .toArray();
 
-      expect(firstMale).toEqual(["M"]);
-      expect(Person.objectsTouched).toEqual(1);
+        expect(firstMale).toEqual(["M"]);
+        expect(Person.objectsTouched).toEqual(1);
+      });
+    });
+
+    describe("take -> map", function() {
+      it("maps the items taken (just making sure)", function() {
+        var firstTwoGenders = Lazy(people)
+          .take(2)
+          .map(Person.getGender)
+          .toArray();
+
+        expect(firstTwoGenders).toEqual(["M", "F"]);
+      });
+    });
+
+    describe("map -> map -> map", function() {
+      function getAgeGroup(age) {
+        return age < 50 ? "young" : "old";
+      }
+
+      function getFirstLetter(str) {
+        return str.charAt(0);
+      }
+
+      it("only creates one array from the combination of maps", function() {
+        var ages = Lazy(people)
+          .map(Person.getAge)
+          .map(getAgeGroup)
+          .map(getFirstLetter);
+
+        ages.toArray();
+
+        expect(ages.arrayCount()).toEqual(1);
+      });
     });
   });
 
