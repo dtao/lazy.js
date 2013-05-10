@@ -176,6 +176,36 @@ describe("Lazy", function() {
     });
   });
 
+  describe("all", function() {
+    it("returns true if the condition holds true for every element", function() {
+      var allPeople = Lazy(people).all(function(x) {
+        return x instanceof Person;
+      });
+
+      expect(allPeople).toBe(true);
+    });
+
+    it("returns false if the condition does not hold true for every element", function() {
+      var allMales = Lazy(people).all(Person.isMale);
+      expect(allMales).toBe(false);
+    });
+  });
+
+  describe("any", function() {
+    it("returns true if the condition holds true for any element", function() {
+      var anyMales = Lazy(people).any(Person.isMale);
+      expect(anyMales).toBe(true);
+    });
+
+    it("returns false if the condition does not hold true for any element", function() {
+      var anyUnknownGender = Lazy(people).any(function(x) {
+        return x.getGender() === "?";
+      });
+
+      expect(anyUnknownGender).toBe(false);
+    });
+  });
+
   describe("chaining methods together", function() {
     ensureLaziness(function() {
       Lazy(people)
@@ -303,6 +333,16 @@ describe("Lazy", function() {
     compareToUnderscore("filter -> drop -> take", {
       lazy: function() { return Lazy(arr).filter(isEven).drop(100).take(5).toArray(); },
       underscore: function() { return _.chain(arr).filter(isEven).rest(100).first(5).value(); }
+    });
+
+    compareToUnderscore("map -> any", {
+      lazy: function() { return Lazy(arr).map(inc).any(isEven); },
+      underscore: function() { return _.chain(arr).map(inc).any(isEven).value(); }
+    });
+
+    compareToUnderscore("map -> all", {
+      lazy: function() { return Lazy(arr).map(inc).all(isEven); },
+      underscore: function() { return _.chain(arr).map(inc).every(isEven).value(); }
     });
   });
 });

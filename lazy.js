@@ -109,6 +109,28 @@
     return new UniqIterator(this);
   };
 
+  Iterator.prototype.all = function(predicate) {
+    var success = true;
+    this.each(function(e) {
+      if (!predicate(e)) {
+        success = false;
+        return false;
+      }
+    });
+    return success;
+  };
+
+  Iterator.prototype.any = function(predicate) {
+    var success = false;
+    this.each(function(e) {
+      if (predicate(e)) {
+        success = true;
+        return false;
+      }
+    });
+    return success;
+  };
+
   Iterator.inherit = function(fn) {
     var constructor = function() {
       var parent = arguments[0];
