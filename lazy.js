@@ -70,10 +70,10 @@
     var parent = this.parent;
 
     this.each = function(action) {
-      parent.each(function(e) { eachFn(action, e); });
+      parent.each(function(e) { return eachFn(action, e); });
     };
     this.reverseEach = function(action) {
-      parent.reverseEach(function(e) { eachFn(action, e); });
+      parent.reverseEach(function(e) { return eachFn(action, e); });
     };
   };
 
