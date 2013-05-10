@@ -176,6 +176,16 @@ describe("Lazy", function() {
     });
   });
 
+  describe("find", function() {
+    it("returns the first element matching the specified predicate", function() {
+      var firstSon = Lazy(people).find(function(p) {
+        return p.getGender() === "M" && p.getName() !== "David";
+      });
+
+      expect(firstSon).toBe(adam);
+    });
+  });
+
   describe("all", function() {
     it("returns true if the condition holds true for every element", function() {
       var allPeople = Lazy(people).all(function(x) {

@@ -75,6 +75,7 @@ following functions are available:
 - `reduce`
 - `filter`
 - `reject`
+- `find`
 - `first` (aka `head` or `take`)
 - `rest` (aka `tail` or `drop`)
 - `last`

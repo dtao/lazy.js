@@ -147,6 +147,11 @@
     return memo;
   };
 
+  Iterator.prototype.find =
+  Iterator.prototype.detect = function(predicate) {
+    return this.filter(predicate).first();
+  };
+
   Iterator.prototype.min = function() {
     return this.reduce(function(least, value) {
       if (typeof least === "undefined") {
