@@ -93,10 +93,14 @@
     return new ReverseIterator(this);
   };
 
+  Iterator.prototype.first =
+  Iterator.prototype.head =
   Iterator.prototype.take = function(count) {
     return new TakeIterator(this, count);
   };
 
+  Iterator.prototype.rest =
+  Iterator.prototype.tail =
   Iterator.prototype.drop = function(count) {
     return new DropIterator(this, count);
   };
@@ -109,6 +113,7 @@
     return new UniqIterator(this);
   };
 
+  Iterator.prototype.every =
   Iterator.prototype.all = function(predicate) {
     var success = true;
     this.each(function(e) {
@@ -120,6 +125,7 @@
     return success;
   };
 
+  Iterator.prototype.some =
   Iterator.prototype.any = function(predicate) {
     var success = false;
     this.each(function(e) {

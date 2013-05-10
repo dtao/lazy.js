@@ -1,13 +1,26 @@
-Like underscore.js, but with lazy evaluation.
+Lazy.js
+=======
 
-Here's an example:
+Like underscore.js, but <strike>better</strike> different
+---------------------------------------------------------
+
+First and foremost, **lazy.js** is like [underscore.js](http://underscorejs.org/)&mdash;essentially
+a library with a lot of useful functions for dealing with collections, arrays, and objects&mdash;but
+with some important differences.
+
+Let's look at some code.
 
 ```javascript
+// We'll be using this array in the examples that follow.
 var array = [];
 for (var i = 1; i <= 1000; ++i) {
   array.push(i);
 }
+```
 
+### Lazy evaluation
+
+```javascript
 function square(x) { return x * x; }
 function inc(x) { return x + 1; }
 function isEven(x) { return x % 2 === 0; }
@@ -24,5 +37,48 @@ _.chain(array).map(square).map(inc).filter(isEven).take(5).value();
  */
 Lazy(array).map(square).map(inc).filter(isEven).take(5).toArray();
 ```
+
+### Arbitrary sequence generation
+
+```javascript
+/* Unlike underscore.js, lazy.js also provides the ability to generate arbitrary sequences which can
+ * be treated just like arrays for the purpose of mapping, filtering, etc.
+ */
+var powersOfTwo = Lazy.generate(function(i) { return Math.pow(2, i); });
+
+/* Output:
+ * 2
+ * 3
+ * 5
+ * 9
+ * 17
+ * 33
+ * 65
+ * 129
+ * 257
+ * 513
+ */
+powersOfTwo
+  .map(inc)
+  .take(10)
+  .each(function(n) {
+    console.log(n);
+  });
+```
+
+### Available Functions
+
+It shouldn't take long for lazy.js to reach functional parity with underscore.js. Currently the
+following functions are available:
+
+- `map`
+- `filter`
+- `reject`
+- `first` (aka `head` or `take`)
+- `rest` (aka `tail` or `drop`)
+- `sortBy`
+- `uniq`
+- `every` (aka `all`)
+- `some` (aka `any`)
 
 This library is experimental and still a work in progress.
