@@ -42,6 +42,7 @@
     var array = [];
     this.each(function(e) {
       array.push(e);
+      if (arguments.length === 1) {
     });
 
     // Temporarily keeping track of how many arrays get created,
@@ -107,8 +108,18 @@
     return new UniqIterator(this);
   };
 
-  Iterator.prototype.without = function(values) {
-    var set = new Set(values);
+  Iterator.prototype.shuffle = function() {
+    return new ShuffleIterator(this);
+  };
+
+  Iterator.prototype.flatten = function() {
+    return new FlattenIterator(this);
+  };
+
+  Iterator.prototype.without =
+  Iterator.prototype.difference = function() {
+    // TODO: The Set construction here should actually also be lazy.
+    var set = new Set(Array.prototype.slice.call(arguments, 0));
     return this.reject(function(e) {
       return set.contains(e);
     });
@@ -128,6 +139,10 @@
 
   Iterator.prototype.some =
   Iterator.prototype.any = function(predicate) {
+    if (!predicate) {
+      predicate = function() { return true; };
+    }
+
     var success = false;
     this.each(function(e) {
       if (predicate(e)) {
@@ -136,6 +151,10 @@
       }
     });
     return success;
+  };
+
+  Iterator.prototype.isEmpty = function() {
+    return !this.any();
   };
 
   Iterator.prototype.indexOf = function(value) {
@@ -347,6 +366,28 @@
     };
   });
 
+  var ShuffleIterator = CachingIterator.inherit(function(parent) {
+    this.each = function(action) {
+      var shuffled = parent.toArray();
+      for (var i = shuffled.length - 1; i >= 0; --i) {
+        swap(shuffled, i, Math.floor(Math.random() * i) + 1);
+      }
+      forEach(shuffled, action);
+    };
+  });
+
+  var FlattenIterator = CachingIterator.inherit(function(parent) {
+    this.each = function(action) {
+      parent.each(function(e) {
+        if (e instanceof Array) {
+          Lazy(e).flatten().each(action);
+        } else {
+          action(e);
+        }
+      });
+    };
+  });
+
   var Generator = Iterator.inherit(function(generatorFn) {
     Iterator.call(this);
 
@@ -381,9 +422,9 @@
 
   var Set = function(values) {
     var object = {};
-    for (var i = 0; i < values.length; ++i) {
-      object[values[i]] = true;
-    }
+    Lazy(values).flatten().each(function(e) {
+      object[e] = true;
+    });
 
     this.contains = function(value) {
       return object[value];
@@ -406,6 +447,12 @@
     for (var i = 0; i < array.length; ++i) {
       if (fn(array[i]) === false) {
         break;
+  function swap(array, i, j) {
+    var temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+  }
+
       }
     }
   }

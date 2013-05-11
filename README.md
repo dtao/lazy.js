@@ -84,6 +84,10 @@ following functions are available:
 - `groupBy`
 - `countBy`
 - `uniq`
+- `without`
+- `difference`
+- `flatten`
+- `shuffle`
 - `every` (aka `all`)
 - `some` (aka `any`)
 - `indexOf`

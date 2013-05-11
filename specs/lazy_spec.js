@@ -201,14 +201,73 @@ describe("Lazy", function() {
   describe("without", function() {
     var integers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    ensureLaziness(function() { Lazy(integers).without([3, 8]); });
+    ensureLaziness(function() { Lazy(people).without(adam, lauren); });
 
-    it("returns only the values in collection not in the specified array", function() {
+    it("returns the values in collection not including the specified values", function() {
       var withoutFibonaccis = Lazy(integers)
-        .without([1, 2, 3, 5, 8])
+        .without(1, 2, 3, 5, 8)
         .toArray();
 
       expect(withoutFibonaccis).toEqual([4, 6, 7, 9, 10]);
+    });
+  });
+
+  describe("difference", function() {
+    var integers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+    ensureLaziness(function() { Lazy(people).difference([daniel, happy]); });
+
+    it("returns only the values in collection not in the specified array(s)", function() {
+      var minusFibonaccis = Lazy(integers)
+        .difference([1, 2, 3], [5, 8])
+        .toArray();
+
+      expect(minusFibonaccis).toEqual([4, 6, 7, 9, 10]);
+    });
+  });
+
+  describe("shuffle", function() {
+    ensureLaziness(function() { Lazy(people).shuffle(); });
+
+    // Not 100% sure of a great way to do this, so... let's just go with a
+    // probabilistic test.
+    it("shuffles the collection", function() {
+      var shuffledCollections = Lazy.generate(function() {})
+        .take(10)
+        .map(function() { return Lazy(people).shuffle().toArray(); });
+
+      var firstResult = shuffledCollections.first();
+      shuffledCollections.each(function(collection) {
+        // Verify the elements in the collection
+        var resorted = Lazy(collection)
+          .sortBy(Person.getAge)
+          .reverse()
+          .toArray();
+        expect(resorted).toEqual(people);
+      });
+
+      // TODO: Write code that verifies not all collections are the same.
+      var differences = 0;
+      shuffledCollections.drop(1).each(function(collection) {
+        for (var i = 0; i < collection.length; ++i) {
+          if (collection[i] !== firstResult[i]) {
+            ++differences;
+            return false;
+          }
+        }
+      });
+
+      expect(differences).toBeGreaterThan(0);
+    });
+  });
+
+  describe("flatten", function() {
+    ensureLaziness(function() { Lazy([[david], [mary], [lauren], [adam]]).flatten(); });
+
+    it("flattens nested arrays of arrays into one big array", function() {
+      var nested = [[david], [mary], [lauren, adam], [[daniel], happy]];
+      var flattened = Lazy(nested).flatten().toArray();
+      expect(flattened).toEqual([david, mary, lauren, adam, daniel, happy]);
     });
   });
 
