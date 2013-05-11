@@ -42,7 +42,6 @@
     var array = [];
     this.each(function(e) {
       array.push(e);
-      if (arguments.length === 1) {
     });
 
     // Temporarily keeping track of how many arrays get created,
@@ -447,14 +446,14 @@
     for (var i = 0; i < array.length; ++i) {
       if (fn(array[i]) === false) {
         break;
+      }
+    }
+  }
+
   function swap(array, i, j) {
     var temp = array[i];
     array[i] = array[j];
     array[j] = temp;
-  }
-
-      }
-    }
   }
 
   function indent(depth) {
