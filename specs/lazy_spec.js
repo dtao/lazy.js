@@ -473,20 +473,37 @@ describe("Lazy", function() {
   });
 
   describe("compared to underscore", function() {
-    function createArray(size) {
-      var array = [];
-      for (var i = 1; i <= size; ++i) {
-        array.push(i);
-      }
-      return array;
-    }
-
     function inc(x) { return x + 1; }
     function dec(x) { return x - 1; }
     function square(x) { return x * x; }
     function isEven(x) { return x % 2 === 0; }
 
-    var arr = createArray(1000);
+    var arr = Lazy.generate(function(i) { return i; })
+      .take(1000)
+      .toArray();
+
+    var jaggedArray = [
+      [1, 2, 3],
+      [
+        [4, 5, 6],
+        [7, 8, 9],
+        [
+          [10, 11],
+          12
+        ],
+        13,
+        14,
+        [15, 16],
+        17
+      ],
+      [
+        18,
+        19,
+        20,
+        [21, 22]
+      ],
+      [23, 24, 25]
+    ];
 
     compareToUnderscore("map", {
       lazy: function() { return Lazy(arr).map(square).toArray(); },
@@ -497,6 +514,16 @@ describe("Lazy", function() {
       lazy: function() { return Lazy(arr).filter(isEven).toArray(); },
       underscore: function() { return _(arr).filter(isEven); }
     });
+
+    compareToUnderscore("flatten", {
+      lazy: function() { return Lazy(jaggedArray).flatten().toArray(); },
+      underscore: function() { return _(jaggedArray).flatten(); }
+    });
+
+    compareToUnderscore("shuffle", {
+      lazy: function() { return Lazy(arr).shuffle().toArray(); },
+      underscore: function() { return _(arr).shuffle(); }
+    }, false);
 
     compareToUnderscore("map -> filter", {
       lazy: function() { return Lazy(arr).map(inc).filter(isEven).toArray(); },

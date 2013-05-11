@@ -67,10 +67,12 @@
     };
   };
 
-  window.compareToUnderscore = function(description, specs) {
-    it("returns the same result as underscore for '" + description + "'", function() {
-      expect(specs.lazy()).toEqual(specs.underscore());
-    });
+  window.compareToUnderscore = function(description, specs, shouldMatch) {
+    if (shouldMatch !== false) {
+      it("returns the same result as underscore for '" + description + "'", function() {
+        expect(specs.lazy()).toEqual(specs.underscore());
+      });
+    }
 
     benchmarkSuite.add(description, specs.lazy);
     benchmarkSuite.add(description, specs.underscore);
