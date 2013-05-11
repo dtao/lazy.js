@@ -379,7 +379,7 @@
     this.each = function(action) {
       parent.each(function(e) {
         if (e instanceof Array) {
-          Lazy(e).flatten().each(action);
+          recursiveForEach(e, action);
         } else {
           action(e);
         }
@@ -446,6 +446,16 @@
     for (var i = 0; i < array.length; ++i) {
       if (fn(array[i]) === false) {
         break;
+      }
+    }
+  }
+
+  function recursiveForEach(array, fn) {
+    for (var i = 0; i < array.length; ++i) {
+      if (array[i] instanceof Array) {
+        recursiveForEach(array[i], fn);
+      } else {
+        fn(array[i]);
       }
     }
   }
