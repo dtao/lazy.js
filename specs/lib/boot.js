@@ -33,7 +33,7 @@
 
   function updateChart() {
     barChart = barChart || document.getElementById("benchmark-results-chart");
-    $(barChart).height(50 + (benchmarkResults.length * 100));
+    $(barChart).height(50 + (benchmarkResults.length * 50));
     HighTables.renderChart(barChart);
   }
 

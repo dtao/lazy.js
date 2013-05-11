@@ -535,19 +535,6 @@ describe("Lazy", function() {
       underscore: function() { return _.chain(arr).map(inc).map(square).map(dec).value(); }
     });
 
-    compareToUnderscore("map -> map -> map -> map -> map", {
-      lazy: function() {
-        return Lazy(arr)
-          .map(inc).map(inc).map(inc).map(inc).map(inc)
-          .toArray(); 
-      },
-      underscore: function() {
-        return _.chain(arr)
-          .map(inc).map(inc).map(inc).map(inc).map(inc)
-          .value();
-      }
-    });
-
     compareToUnderscore("filter -> take", {
       lazy: function() { return Lazy(arr).filter(isEven).take(5).toArray(); },
       underscore: function() { return _.chain(arr).filter(isEven).first(5).value(); }
