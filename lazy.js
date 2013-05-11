@@ -360,6 +360,9 @@
   });
 
   global.Lazy = function(source) {
+    if (source instanceof Iterator) {
+      return source;
+    }
     return new Iterator(null, source);
   };
 

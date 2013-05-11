@@ -27,6 +27,16 @@ describe("Lazy", function() {
     });
   }
 
+  it("wraps an array which can be easily unwrapped", function() {
+    var result = Lazy(people);
+    expect(result.toArray()).toEqual(people);
+  });
+
+  it("has no effect if wrapping an already-lazy collection", function() {
+    var doubleWrapped = Lazy(Lazy(people));
+    expect(doubleWrapped.toArray()).toEqual(people);
+  });
+
   describe("generate", function() {
     it("allows generation of arbitrary sequences", function() {
       var sequence = Lazy.generate(function(i) { return i; })
