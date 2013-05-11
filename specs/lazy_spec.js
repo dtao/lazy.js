@@ -198,6 +198,20 @@ describe("Lazy", function() {
     });
   });
 
+  describe("without", function() {
+    var integers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+    ensureLaziness(function() { Lazy(integers).without([3, 8]); });
+
+    it("returns only the values in collection not in the specified array", function() {
+      var withoutFibonaccis = Lazy(integers)
+        .without([1, 2, 3, 5, 8])
+        .toArray();
+
+      expect(withoutFibonaccis).toEqual([4, 6, 7, 9, 10]);
+    });
+  });
+
   describe("uniq", function() {
     ensureLaziness(function() { Lazy(people).map(Person.getGender).uniq(); });
 

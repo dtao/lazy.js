@@ -107,6 +107,13 @@
     return new UniqIterator(this);
   };
 
+  Iterator.prototype.without = function(values) {
+    var set = new Set(values);
+    return this.reject(function(e) {
+      return set.contains(e);
+    });
+  };
+
   Iterator.prototype.every =
   Iterator.prototype.all = function(predicate) {
     var success = true;
@@ -371,6 +378,17 @@
   };
 
   /*** Useful utility methods ***/
+
+  var Set = function(values) {
+    var object = {};
+    for (var i = 0; i < values.length; ++i) {
+      object[values[i]] = true;
+    }
+
+    this.contains = function(value) {
+      return object[value];
+    };
+  };
 
   function compare(x, y, fn) {
     if (typeof fn === "function") {
