@@ -1,9 +1,14 @@
-Like underscore.js, but <strike>better</strike> different
-=========================================================
+Like underscore.js, but different
+=================================
 
 First and foremost, **lazy.js** is like [underscore.js](http://underscorejs.org/)&mdash;essentially
 a library with a lot of useful functions for dealing with collections, arrays, and objects&mdash;but
 with some important differences.
+
+One of those differences is **lazy evaluation**, which directly translates to superior performance
+in many cases. Here's a teaser for you:
+
+![lazy.js versus underscore](http://dtao.github.io/lazy.js/lib/LazyVsUnderscore.png)
 
 Let's look at some code.
 
