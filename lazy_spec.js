@@ -17,7 +17,7 @@ describe("Lazy", function() {
       happy  = new Person("Happy", 25, "F")
     ];
 
-    Person.accesses = 0;
+    Person.reset(people);
   });
 
   function ensureLaziness(action) {
@@ -26,6 +26,48 @@ describe("Lazy", function() {
       expect(Person.accesses).toEqual(0);
     });
   }
+
+  it("wraps an array which can be easily unwrapped", function() {
+    var result = Lazy(people);
+    expect(result.toArray()).toEqual(people);
+  });
+
+  it("has no effect if wrapping an already-lazy collection", function() {
+    var doubleWrapped = Lazy(Lazy(people));
+    expect(doubleWrapped.toArray()).toEqual(people);
+  });
+
+  describe("generate", function() {
+    it("allows generation of arbitrary sequences", function() {
+      var sequence = Lazy.generate(function(i) { return i; })
+        .drop(1)
+        .take(3)
+        .toArray();
+
+      expect(sequence).toEqual([1, 2, 3]);
+    });
+
+    it("can be iterated just like any other sequence", function() {
+      var randomNumbers = Lazy.generate(function(i) { return Math.random(); });
+
+      // Iterate over the numbers until there's a number > 0.5.
+      randomNumbers.each(function(x) {
+        if (x > 0.5) {
+          return false;
+        }
+      });
+    });
+
+    it("provides 'random access'", function() {
+      var naturalNumbers = Lazy.generate(function(i) { return i + 1; });
+      expect(naturalNumbers.get(9)).toEqual(10);
+    });
+
+    it("throws an exception if you try to get its length", function() {
+      var naturalNumbers = Lazy.generate(function(i) { return i + 1; });
+      expect(function() { naturalNumbers.length(); }).toThrow();
+    });
+  });
 
   describe("map", function() {
     ensureLaziness(function() { Lazy(people).map(Person.getName); });
@@ -41,6 +83,16 @@ describe("Lazy", function() {
         "Daniel",
         "Happy"
       ]);
+    });
+
+    it("provides indexed access into the collection", function() {
+      var lastName = Lazy(people).map(Person.getName).get(people.length - 1);
+      expect(lastName).toEqual("Happy");
+    });
+
+    it("does not require iteration to index into the collection", function() {
+      var lastName = Lazy(people).map(Person.getName).get(people.length - 1);
+      expect(Person.objectsTouched).toEqual(1);
     });
   });
 
@@ -85,6 +137,17 @@ describe("Lazy", function() {
         david
       ]);
     });
+
+    it("provides indexed access into the collection", function() {
+      var lastPerson = Lazy(people).reverse().get(0);
+      expect(lastPerson).toEqual(happy);
+    });
+
+    it("does not create an array to index into the collection", function() {
+      var reversed = Lazy(people).reverse();
+      var lastPerson = reversed.get(0);
+      expect(reversed.arrayCount()).toEqual(0);
+    });
   });
 
   describe("take", function() {
@@ -114,12 +177,228 @@ describe("Lazy", function() {
     });
   });
 
+  describe("groupBy", function() {
+    ensureLaziness(function() { Lazy(people).groupBy(Person.getGender); });
+
+    it("groups the collection by a specified selector function", function() {
+      var byGender = Lazy(people).groupBy(Person.getGender).toArray();
+      expect(byGender).toEqual([
+        ["M", [david, adam, daniel]],
+        ["F", [mary, lauren, happy]]
+      ]);
+    });
+  });
+
+  describe("countBy", function() {
+    ensureLaziness(function() { Lazy(people).countBy(Person.getGender); });
+
+    it("counts the collection by a specified selector function", function() {
+      var byGender = Lazy(people).countBy(Person.getGender).toArray();
+      expect(byGender).toEqual([["M", 3], ["F", 3]]);
+    });
+  });
+
+  describe("without", function() {
+    var integers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+    ensureLaziness(function() { Lazy(people).without(adam, lauren); });
+
+    it("returns the values in collection not including the specified values", function() {
+      var withoutFibonaccis = Lazy(integers)
+        .without(1, 2, 3, 5, 8)
+        .toArray();
+
+      expect(withoutFibonaccis).toEqual([4, 6, 7, 9, 10]);
+    });
+  });
+
+  describe("difference", function() {
+    var integers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+    ensureLaziness(function() { Lazy(people).difference([daniel, happy]); });
+
+    it("returns only the values in collection not in the specified array(s)", function() {
+      var minusFibonaccis = Lazy(integers)
+        .difference([1, 2, 3], [5, 8])
+        .toArray();
+
+      expect(minusFibonaccis).toEqual([4, 6, 7, 9, 10]);
+    });
+  });
+
+  describe("shuffle", function() {
+    ensureLaziness(function() { Lazy(people).shuffle(); });
+
+    // Not 100% sure of a great way to do this, so... let's just go with a
+    // probabilistic test.
+    it("shuffles the collection", function() {
+      var shuffledCollections = Lazy.generate(function() {})
+        .take(10)
+        .map(function() { return Lazy(people).shuffle().toArray(); });
+
+      var firstResult = shuffledCollections.first();
+      shuffledCollections.each(function(collection) {
+        // Verify the elements in the collection
+        var resorted = Lazy(collection)
+          .sortBy(Person.getAge)
+          .reverse()
+          .toArray();
+        expect(resorted).toEqual(people);
+      });
+
+      // TODO: Write code that verifies not all collections are the same.
+      var differences = 0;
+      shuffledCollections.drop(1).each(function(collection) {
+        for (var i = 0; i < collection.length; ++i) {
+          if (collection[i] !== firstResult[i]) {
+            ++differences;
+            return false;
+          }
+        }
+      });
+
+      expect(differences).toBeGreaterThan(0);
+    });
+  });
+
+  describe("flatten", function() {
+    ensureLaziness(function() { Lazy([[david], [mary], [lauren], [adam]]).flatten(); });
+
+    it("flattens nested arrays of arrays into one big array", function() {
+      var nested = [[david], [mary], [lauren, adam], [[daniel], happy]];
+      var flattened = Lazy(nested).flatten().toArray();
+      expect(flattened).toEqual([david, mary, lauren, adam, daniel, happy]);
+    });
+  });
+
   describe("uniq", function() {
     ensureLaziness(function() { Lazy(people).map(Person.getGender).uniq(); });
 
     it("only returns 1 of each unique value", function() {
       var genders = Lazy(people).map(Person.getGender).uniq().toArray();
       expect(genders).toEqual(["M", "F"]);
+    });
+  });
+
+  describe("find", function() {
+    it("returns the first element matching the specified predicate", function() {
+      var firstSon = Lazy(people).find(function(p) {
+        return p.getGender() === "M" && p.getName() !== "David";
+      });
+
+      expect(firstSon).toBe(adam);
+    });
+  });
+
+  describe("all", function() {
+    it("returns true if the condition holds true for every element", function() {
+      var allPeople = Lazy(people).all(function(x) {
+        return x instanceof Person;
+      });
+
+      expect(allPeople).toBe(true);
+    });
+
+    it("returns false if the condition does not hold true for every element", function() {
+      var allMales = Lazy(people).all(Person.isMale);
+      expect(allMales).toBe(false);
+    });
+  });
+
+  describe("any", function() {
+    it("returns true if the condition holds true for any element", function() {
+      var anyMales = Lazy(people).any(Person.isMale);
+      expect(anyMales).toBe(true);
+    });
+
+    it("returns false if the condition does not hold true for any element", function() {
+      var anyUnknownGender = Lazy(people).any(function(x) {
+        return x.getGender() === "?";
+      });
+
+      expect(anyUnknownGender).toBe(false);
+    });
+  });
+
+  describe("first", function() {
+    it("returns the first element in the collection", function() {
+      var firstGirl = Lazy(people).filter(Person.isFemale).first();
+      expect(firstGirl).toEqual(mary);
+    });
+  });
+
+  describe("last", function() {
+    it("returns the last element in the collection", function() {
+      var lastBoy = Lazy(people).filter(Person.isMale).last();
+      expect(lastBoy).toEqual(daniel);
+    });
+
+    it("iterates from the tail if possible", function() {
+      Lazy(people).map(Person.getGender).last();
+      expect(Person.objectsTouched).toEqual(1);
+    });
+  });
+
+  describe("reduce", function() {
+    it("aggregates the values in the collection according to some function", function() {
+      var sumOfAges = Lazy(people).map(Person.getAge).reduce(function(sum, age) {
+        return sum + age;
+      }, 0);
+      expect(sumOfAges).toEqual(240);
+    });
+
+    it("traverses the collection from left to right", function() {
+      var firstInitials = Lazy(people).reduce(function(array, person) {
+        array.push(person.getName().charAt(0));
+        return array;
+      }, []);
+      expect(firstInitials).toEqual(["D", "M", "L", "A", "D", "H"]);
+    });
+  });
+
+  describe("reduceRight", function() {
+    it("traverses the collection from right to left", function() {
+      var firstInitials = Lazy(people).reduceRight(function(array, person) {
+        array.push(person.getName().charAt(0));
+        return array;
+      }, []);
+      expect(firstInitials).toEqual(["H", "D", "A", "L", "M", "D"]);
+    });
+  });
+
+  describe("indexOf", function() {
+    it("returns the index of the specified element in the collection", function() {
+      expect(Lazy(people).indexOf(adam)).toEqual(3);
+    });
+  });
+
+  describe("contains", function() {
+    it("returns true if the collection contains the specified element", function() {
+      expect(Lazy(people).contains(adam)).toBe(true);
+    });
+
+    it("returns false if the collection does not contain the specified element", function() {
+      expect(Lazy(people).contains(new Person("Joe", 25, "M"))).toBe(false);
+    });
+  });
+
+  describe("min", function() {
+    it("returns undefined for an empty collection", function() {
+      expect(Lazy([]).min()).toBeUndefined();
+    });
+
+    it("returns the minimum value from the collection", function() {
+      expect(Lazy(people).map(Person.getAge).min()).toEqual(25);
+    });
+  });
+
+  describe("max", function() {
+    it("returns undefined for an empty collection", function() {
+      expect(Lazy([]).max()).toBeUndefined();
+    });
+
+    it("returns the maximum value from the collection", function() {
+      expect(Lazy(people).map(Person.getAge).max()).toEqual(63);
     });
   });
 
@@ -146,64 +425,134 @@ describe("Lazy", function() {
 
       expect(girlNames).toEqual(["Lauren", "Mary"]);
     });
+
+    describe("filter -> take", function() {
+      it("only ever touches as many objects as necessary", function() {
+        var firstMale = Lazy(people)
+          .filter(Person.isMale)
+          .map(Person.getGender)
+          .take(1)
+          .toArray();
+
+        expect(firstMale).toEqual(["M"]);
+        expect(Person.objectsTouched).toEqual(1);
+      });
+    });
+
+    describe("take -> map", function() {
+      it("maps the items taken (just making sure)", function() {
+        var firstTwoGenders = Lazy(people)
+          .take(2)
+          .map(Person.getGender)
+          .toArray();
+
+        expect(firstTwoGenders).toEqual(["M", "F"]);
+      });
+    });
+
+    describe("map -> map -> map", function() {
+      function getAgeGroup(age) {
+        return age < 50 ? "young" : "old";
+      }
+
+      function getFirstLetter(str) {
+        return str.charAt(0);
+      }
+
+      it("only creates one array from the combination of maps", function() {
+        var ages = Lazy(people)
+          .map(Person.getAge)
+          .map(getAgeGroup)
+          .map(getFirstLetter);
+
+        ages.toArray();
+
+        expect(ages.arrayCount()).toEqual(1);
+      });
+    });
   });
 
   describe("compared to underscore", function() {
-    function createArray(size) {
-      var array = [];
-      for (var i = 1; i <= size; ++i) {
-        array.push(i);
-      }
-      return array;
-    }
-
     function inc(x) { return x + 1; }
     function dec(x) { return x - 1; }
     function square(x) { return x * x; }
     function isEven(x) { return x % 2 === 0; }
 
-    var arr = createArray(1000);
+    var arr = Lazy.generate(function(i) { return i; })
+      .take(1000)
+      .toArray();
 
-    compareToUnderscore("map", function() {
-      return {
-        lazy: function() { return Lazy(arr).map(square).toArray(); },
-        underscore: function() { return _(arr).map(square); }
-      };
-    }());
+    var jaggedArray = [
+      [1, 2, 3],
+      [
+        [4, 5, 6],
+        [7, 8, 9],
+        [
+          [10, 11],
+          12
+        ],
+        13,
+        14,
+        [15, 16],
+        17
+      ],
+      [
+        18,
+        19,
+        20,
+        [21, 22]
+      ],
+      [23, 24, 25]
+    ];
 
-    compareToUnderscore("filter", function() {
-      return {
-        lazy: function() { return Lazy(arr).filter(isEven).toArray(); },
-        underscore: function() { return _(arr).filter(isEven); }
-      };
-    }());
+    compareToUnderscore("map", {
+      lazy: function() { return Lazy(arr).map(square).toArray(); },
+      underscore: function() { return _(arr).map(square); }
+    });
 
-    compareToUnderscore("map -> map -> map", function() {
-      return {
-        lazy: function() { return Lazy(arr).map(inc).map(square).map(dec).toArray(); },
-        underscore: function() { return _.chain(arr).map(inc).map(square).map(dec).value(); }
-      };
-    }());
+    compareToUnderscore("filter", {
+      lazy: function() { return Lazy(arr).filter(isEven).toArray(); },
+      underscore: function() { return _(arr).filter(isEven); }
+    });
 
-    compareToUnderscore("map -> filter -> reverse", function() {
-      return {
-        lazy: function() { return Lazy(arr).map(inc).filter(isEven).reverse().toArray(); },
-        underscore: function() { return _.chain(arr).map(inc).filter(isEven).reverse().value(); }
-      };
-    }());
+    compareToUnderscore("flatten", {
+      lazy: function() { return Lazy(jaggedArray).flatten().toArray(); },
+      underscore: function() { return _(jaggedArray).flatten(); }
+    });
 
-    compareToUnderscore("filter -> take", function() {
-      return {
-        lazy: function() { return Lazy(arr).filter(isEven).take(5).toArray(); },
-        underscore: function() { return _.chain(arr).filter(isEven).first(5).value(); }
-      };
-    }());
+    compareToUnderscore("shuffle", {
+      lazy: function() { return Lazy(arr).shuffle().toArray(); },
+      underscore: function() { return _(arr).shuffle(); }
+    }, false);
 
-    compareToUnderscore("filter -> drop -> take", function() {
-      return {
-        lazy: function() { return Lazy(arr).filter(isEven).drop(100).take(5).toArray(); },
-        underscore: function() { return _.chain(arr).filter(isEven).rest(100).first(5).value(); }
-      }
-    }());
+    compareToUnderscore("map -> filter", {
+      lazy: function() { return Lazy(arr).map(inc).filter(isEven).toArray(); },
+      underscore: function() { return _.chain(arr).map(inc).filter(isEven).value(); }
+    });
+
+    compareToUnderscore("map -> map -> map", {
+      lazy: function() { return Lazy(arr).map(inc).map(square).map(dec).toArray(); },
+      underscore: function() { return _.chain(arr).map(inc).map(square).map(dec).value(); }
+    });
+
+    compareToUnderscore("filter -> take", {
+      lazy: function() { return Lazy(arr).filter(isEven).take(5).toArray(); },
+      underscore: function() { return _.chain(arr).filter(isEven).first(5).value(); }
+    });
+
+    compareToUnderscore("filter -> drop -> take", {
+      lazy: function() { return Lazy(arr).filter(isEven).drop(100).take(5).toArray(); },
+      underscore: function() { return _.chain(arr).filter(isEven).rest(100).first(5).value(); }
+    });
+
+    compareToUnderscore("map -> any", {
+      lazy: function() { return Lazy(arr).map(inc).any(isEven); },
+      underscore: function() { return _.chain(arr).map(inc).any(isEven).value(); }
+    });
+
+    compareToUnderscore("map -> all", {
+      lazy: function() { return Lazy(arr).map(inc).all(isEven); },
+      underscore: function() { return _.chain(arr).map(inc).every(isEven).value(); }
+    });
   });
 });

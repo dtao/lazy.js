@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>Lazy.js</title>
+  <title>Lazy.js Specs</title>
 
   <link rel="stylesheet" type="text/css" href="lib/jasmine.css">
   <link rel="stylesheet" type="text/css" href="lib/tests.css">
@@ -29,10 +29,12 @@
   <div id="benchmark-results" class="loading">
     <div id="benchmark-results-chart" class="bar-chart"
       data-source="#benchmark-results-table"
-      data-options="benchmarkChartOptions">
+      data-transpose="true"
+      data-options="benchmarkChartOptions"
+      style="height: 0;">
     </div>
 
-    <table id="benchmark-results-table">
+    <table id="benchmark-results-table" class="empty">
       <tr>
         <th>Test</th>
         <th>Lazy.js</th>
