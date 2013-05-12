@@ -291,6 +291,30 @@ describe("Lazy", function() {
     });
   });
 
+  describe("zip", function() {
+    var names;
+
+    beforeEach(function() {
+      names = Lazy(people).map(Person.getName).toArray();
+      Person.reset(people);
+    });
+
+    ensureLaziness(function() { Lazy(names).zip(people); });
+
+    it("merges together the values of each array", function() {
+      var zipped = Lazy(names).zip(people).toArray();
+
+      expect(zipped).toEqual([
+        ["David", david],
+        ["Mary", mary],
+        ["Lauren", lauren],
+        ["Adam", adam],
+        ["Daniel", daniel],
+        ["Happy", happy]
+      ]);
+    });
+  });
+
   describe("find", function() {
     it("returns the first element matching the specified predicate", function() {
       var firstSon = Lazy(people).find(function(p) {
@@ -493,6 +517,14 @@ describe("Lazy", function() {
       .take(1000)
       .toArray();
 
+    var nextArr = Lazy.generate(function(i) { return 1000 + i; })
+      .take(1000)
+      .toArray();
+
+    var lotsOfDupes = Lazy.generate(function() { return Math.floor(Math.random() * 10) + 1; })
+      .take(1000)
+      .toArray();
+
     var jaggedArray = [
       [1, 2, 3],
       [
@@ -531,10 +563,20 @@ describe("Lazy", function() {
       underscore: function() { return _(jaggedArray).flatten(); }
     });
 
+    compareToUnderscore("uniq", {
+      lazy: function() { return Lazy(lotsOfDupes).uniq().toArray(); },
+      underscore: function() { return _(lotsOfDupes).uniq(); }
+    });
+
     compareToUnderscore("shuffle", {
       lazy: function() { return Lazy(arr).shuffle().toArray(); },
       underscore: function() { return _(arr).shuffle(); }
     }, false);
+
+    compareToUnderscore("zip", {
+      lazy: function() { return Lazy(arr).zip(nextArr).toArray(); },
+      underscore: function() { return _(arr).zip(nextArr); }
+    });
 
     compareToUnderscore("map -> filter", {
       lazy: function() { return Lazy(arr).map(inc).filter(isEven).toArray(); },

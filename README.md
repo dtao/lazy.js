@@ -89,6 +89,7 @@ following functions are available:
 - `groupBy`
 - `countBy`
 - `uniq`
+- `zip`
 - `without`
 - `difference`
 - `flatten`

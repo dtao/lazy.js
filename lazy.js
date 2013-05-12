@@ -107,6 +107,11 @@
     return new UniqIterator(this);
   };
 
+  Iterator.prototype.zip = function() {
+    var arrays = Array.prototype.slice.call(arguments, 0);
+    return new ZipIterator(this, arrays);
+  };
+
   Iterator.prototype.shuffle = function() {
     return new ShuffleIterator(this);
   };
@@ -365,6 +370,22 @@
         if (e in set) { return; }
         set[e] = true;
         return action(e);
+      });
+    };
+  });
+
+  var ZipIterator = CachingIterator.inherit(function(parent, arrays) {
+    this.each = function(action) {
+      var i = 0;
+      parent.each(function(e) {
+        var group = [e];
+        for (var j = 0; j < arrays.length; ++j) {
+          if (arrays[j].length > i) {
+            group.push(arrays[j][i]);
+          }
+        }
+        action(group);
+        ++i;
       });
     };
   });
