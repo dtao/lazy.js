@@ -92,6 +92,7 @@ following functions are available:
 - `without`
 - `difference`
 - `flatten`
+- `compact`
 - `shuffle`
 - `every` (aka `all`)
 - `some` (aka `any`)

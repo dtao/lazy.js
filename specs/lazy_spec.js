@@ -271,6 +271,17 @@ describe("Lazy", function() {
     });
   });
 
+  describe("compact", function() {
+    var mostlyFalsy = ["foo", false, null, 0, "", undefined, NaN];
+
+    ensureLaziness(function() { Lazy(mostlyFalsy).compact(); });
+
+    it("removes all falsy values from an array", function() {
+      var compacted = Lazy(mostlyFalsy).compact().toArray();
+      expect(compacted).toEqual(["foo"]);
+    });
+  });
+
   describe("uniq", function() {
     ensureLaziness(function() { Lazy(people).map(Person.getGender).uniq(); });
 

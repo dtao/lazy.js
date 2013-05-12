@@ -115,6 +115,10 @@
     return new FlattenIterator(this);
   };
 
+  Iterator.prototype.compact = function() {
+    return new CompactIterator(this);
+  };
+
   Iterator.prototype.without =
   Iterator.prototype.difference = function() {
     // TODO: The Set construction here should actually also be lazy.
@@ -381,6 +385,16 @@
         if (e instanceof Array) {
           recursiveForEach(e, action);
         } else {
+          action(e);
+        }
+      });
+    };
+  });
+
+  var CompactIterator = CachingIterator.inherit(function(parent) {
+    this.each = function(action) {
+      parent.each(function(e) {
+        if (e) {
           action(e);
         }
       });
