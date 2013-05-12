@@ -29,7 +29,9 @@
   <div id="benchmark-results" class="loading">
     <div id="benchmark-results-chart" class="bar-chart"
       data-source="#benchmark-results-table"
+      data-value-columns="2,3"
       data-transpose="true"
+      data-y-min="0"
       data-options="benchmarkChartOptions"
       style="height: 0;">
     </div>
@@ -39,6 +41,7 @@
         <th>Test</th>
         <th>Lazy.js</th>
         <th>Underscore.js</th>
+        <th>Difference</th>
       </tr>
     </table>
   </div>

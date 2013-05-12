@@ -26,9 +26,12 @@
   function addBenchmarkResultToTable(result) {
     var table = $("#benchmark-results-table").removeClass("empty");
     var row   = $("<tr>").addClass("benchmark-result").appendTo(table);
+    var diff  = (result.lazy.hz - result.underscore.hz) / result.underscore.hz * 100;
+    var style = diff > 0 ? "positive" : "negative";
     $("<td>").text(result.lazy.name).appendTo(row);
     $("<td>").text(result.lazy.hz.toFixed(5)).appendTo(row);
     $("<td>").text(result.underscore.hz.toFixed(5)).appendTo(row);
+    $("<td>").text(diff.toFixed(2) + "%").addClass(style).appendTo(row);
   }
 
   function updateChart() {
