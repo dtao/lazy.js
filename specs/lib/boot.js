@@ -26,7 +26,7 @@
   function addBenchmarkResultToTable(result) {
     var table = $("#benchmark-results-table").removeClass("empty");
     var row   = $("<tr>").addClass("benchmark-result").appendTo(table);
-    var diff  = (result.lazy.hz - result.underscore.hz) / result.underscore.hz * 100;
+    var diff  = percentDifference(result.lazy.hz, result.underscore.hz);
     var style = diff > 0 ? "positive" : "negative";
     $("<td>").text(result.lazy.name).appendTo(row);
     $("<td>").text(result.lazy.hz.toFixed(5)).appendTo(row);
@@ -48,8 +48,7 @@
     $("tr.benchmark-result").remove();
 
     Lazy(benchmarkResults)
-      .sortBy(function(r) { return r.lazy.hz - r.underscore.hz; })
-      .reverse()
+      .sortBy(function(r) { return percentDifference(r.lazy.hz, r.underscore.hz); })
       .each(function(result) {
         addBenchmarkResultToTable(result);
       });
@@ -58,14 +57,18 @@
     finishedLoading();
   }
 
-  window.Verifier = function(expectation) {
-    this.verify = expectation;
-  };
+  function percentDifference(x, y) {
+    return (x - y) / y * 100;
+  }
 
   window.benchmarkChartOptions = function() {
     return {
       plotOptions: {
         series: { animation: false }
+      },
+
+      yAxis: {
+        type: "logarithmic"
       }
     };
   };
