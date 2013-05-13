@@ -263,6 +263,26 @@ describe("Lazy", function() {
     });
   });
 
+  describe("union", function() {
+    var oneThroughTen = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    var fiveThroughFifteen = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+
+    it("returns all the elements in any of the arrays", function() {
+      var union = Lazy(oneThroughTen).union(fiveThroughFifteen).toArray();
+      expect(union).toEqual([1, 2, 3, 4, 5, 6, 7, 8,  9, 10, 11, 12, 13, 14, 15]);
+    });
+  });
+
+  describe("intersection", function() {
+    var oneThroughTen = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    var fiveThroughFifteen = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+
+    it("returns only the elements in all of the arrays", function() {
+      var intersection = Lazy(oneThroughTen).intersection(fiveThroughFifteen).toArray();
+      expect(intersection).toEqual([5, 6, 7, 8, 9, 10]);
+    });
+  });
+
   describe("shuffle", function() {
     ensureLaziness(function() { Lazy(people).shuffle(); });
 
@@ -586,6 +606,10 @@ describe("Lazy", function() {
       .take(1000)
       .toArray();
 
+    var between = Lazy.generate(function(i) { return 500 + i; })
+      .take(1000)
+      .toArray();
+
     var lotsOfDupes = Lazy.generate(function() { return Math.floor(Math.random() * 10) + 1; })
       .take(1000)
       .toArray();
@@ -631,6 +655,16 @@ describe("Lazy", function() {
     compareToUnderscore("uniq", {
       lazy: function() { return Lazy(lotsOfDupes).uniq().toArray(); },
       underscore: function() { return _(lotsOfDupes).uniq(); }
+    });
+
+    compareToUnderscore("union", {
+      lazy: function() { return Lazy(arr).union(between).toArray(); },
+      underscore: function() { return _.union(arr, between); }
+    });
+
+    compareToUnderscore("intersection", {
+      lazy: function() { return Lazy(arr).intersection(between).toArray(); },
+      underscore: function() { return _.intersection(arr, between); }
     });
 
     compareToUnderscore("shuffle", {

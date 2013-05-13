@@ -97,6 +97,8 @@ following functions are available:
 - `zip`
 - `without`
 - `difference`
+- `union`
+- `intersection`
 - `flatten`
 - `compact`
 - `shuffle`

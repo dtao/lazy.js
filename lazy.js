@@ -160,11 +160,15 @@
 
   Iterator.prototype.without =
   Iterator.prototype.difference = function() {
-    // TODO: The Set construction here should actually also be lazy.
-    var set = new Set(Array.prototype.slice.call(arguments, 0));
-    return this.reject(function(e) {
-      return set.contains(e);
-    });
+    return new WithoutIterator(this, Array.prototype.slice.call(arguments, 0));
+  };
+
+  Iterator.prototype.union = function() {
+    return new UnionIterator(this, Array.prototype.slice.call(arguments, 0));
+  };
+
+  Iterator.prototype.intersection = function() {
+    return new IntersectionIterator(this, Array.prototype.slice.call(arguments, 0));
   };
 
   Iterator.prototype.every =
@@ -397,13 +401,59 @@
     };
   });
 
-  var UniqIterator = CachingIterator.inherit(function(parent, count) {
+  var UniqIterator = CachingIterator.inherit(function(parent) {
     this.each = function(action) {
       var set = {};
       parent.each(function(e) {
         if (e in set) { return; }
         set[e] = true;
         return action(e);
+      });
+    };
+  });
+
+  var WithoutIterator = CachingIterator.inherit(function(parent, values) {
+    this.each = function(action) {
+      var set = new Set(values);
+      parent.each(function(e) {
+        if (!set.contains(e)) {
+          return action(e);
+        }
+      });
+    };
+  });
+
+  var UnionIterator = CachingIterator.inherit(function(parent, arrays) {
+    this.each = function(action) {
+      var set = new Set();
+      parent.each(function(e) {
+        if (!set.contains(e)) {
+          set.add(e);
+          action(e);
+        }
+      });
+      Lazy(arrays).flatten().each(function(e) {
+        if (!set.contains(e)) {
+          set.add(e);
+          action(e);
+        }
+      });
+    };
+  });
+
+  var IntersectionIterator = CachingIterator.inherit(function(parent, arrays) {
+    this.each = function(action) {
+      var sets = Lazy(arrays)
+        .map(function(values) { return new Set(values); })
+        .toArray();
+
+      parent.each(function(e) {
+        for (var i = 0; i < sets.length; ++i) {
+          if (!sets[i].contains(e)) {
+            return;
+          }
+        }
+        action(e);
       });
     };
   });
@@ -490,9 +540,13 @@
 
   var Set = function(values) {
     var object = {};
-    Lazy(values).flatten().each(function(e) {
+    Lazy(values || []).flatten().each(function(e) {
       object[e] = true;
     });
+
+    this.add = function(value) {
+      object[value] = true;
+    };
 
     this.contains = function(value) {
       return object[value];
