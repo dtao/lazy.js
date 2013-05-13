@@ -69,6 +69,20 @@ describe("Lazy", function() {
     });
   });
 
+  describe("range", function() {
+    it("returns a sequence from 0 to stop (exclusive), incremented by 1", function() {
+      expect(Lazy.range(5).toArray()).toEqual([0, 1, 2, 3, 4]);
+    });
+
+    it("returns a sequence from start to stop, incremented by 1", function() {
+      expect(Lazy.range(2, 7).toArray()).toEqual([2, 3, 4, 5, 6]);
+    });
+
+    it("returns a sequence from start to stop, incremented by step", function() {
+      expect(Lazy.range(0, 30, 5).toArray()).toEqual([0, 5, 10, 15, 20, 25]);
+    });
+  });
+
   describe("map", function() {
     ensureLaziness(function() { Lazy(people).map(Person.getName); });
 
@@ -598,17 +612,9 @@ describe("Lazy", function() {
     function square(x) { return x * x; }
     function isEven(x) { return x % 2 === 0; }
 
-    var arr = Lazy.generate(function(i) { return i; })
-      .take(1000)
-      .toArray();
-
-    var nextArr = Lazy.generate(function(i) { return 1000 + i; })
-      .take(1000)
-      .toArray();
-
-    var between = Lazy.generate(function(i) { return 500 + i; })
-      .take(1000)
-      .toArray();
+    var arr = Lazy.range(1000).toArray();
+    var nextArr = Lazy.range(1000, 2000).toArray();
+    var between = Lazy.range(500, 1500).toArray();
 
     var lotsOfDupes = Lazy.generate(function() { return Math.floor(Math.random() * 10) + 1; })
       .take(1000)

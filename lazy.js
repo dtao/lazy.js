@@ -536,6 +536,14 @@
     return new Generator(iteratorFn);
   };
 
+  global.Lazy.range = function() {
+    var start = arguments.length > 1 ? arguments[0] : 0,
+        stop  = arguments.length > 1 ? arguments[1] : arguments[0],
+        step  = arguments.length > 2 ? arguments[2] : 1;
+    return this.generate(function(i) { return start + (step * i); })
+      .take(Math.floor((stop - start) / step));
+  };
+
   /*** Useful utility methods ***/
 
   var Set = function(values) {
