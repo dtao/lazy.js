@@ -11,8 +11,8 @@
   <script type="text/javascript" src="lib/jasmine-html.js"></script>
   <script type="text/javascript" src="lib/benchmark.js"></script>
   <script type="text/javascript" src="lib/underscore.js"></script>
-  <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-  <script type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
+  <script type="text/javascript" src="lib/jquery.js"></script>
+  <script type="text/javascript" src="lib/highcharts.js"></script>
   <script type="text/javascript" src="lib/hightables.js"></script>
   <script type="text/javascript" src="lib/boot.js"></script>
 
@@ -28,8 +28,9 @@
 <body>
   <div id="benchmark-results" class="loading">
     <div id="benchmark-results-chart" class="bar-chart"
+      data-title="Performance Difference - lazy.js versus underscore.js"
       data-source="#benchmark-results-table"
-      data-transpose="true"
+      data-value-columns="4"
       data-options="benchmarkChartOptions"
       style="height: 0;">
     </div>
@@ -39,6 +40,7 @@
         <th>Test</th>
         <th>Lazy.js</th>
         <th>Underscore.js</th>
+        <th>Difference</th>
       </tr>
     </table>
   </div>

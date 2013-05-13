@@ -55,6 +55,18 @@
     return new MapIterator(this, mapFn);
   };
 
+  Iterator.prototype.pluck = function(propertyName) {
+    return new MapIterator(this, function(e) {
+      return e[propertyName];
+    });
+  };
+
+  Iterator.prototype.invoke = function(methodName) {
+    return new MapIterator(this, function(e) {
+      return e[methodName]();
+    });
+  };
+
   Iterator.prototype.filter = function(filterFn) {
     return new FilterIterator(this, filterFn);
   };
@@ -62,6 +74,17 @@
   Iterator.prototype.reject = function(rejectFn) {
     return new FilterIterator(this, function(e) {
       return !rejectFn(e);
+    });
+  };
+
+  Iterator.prototype.where = function(properties) {
+    return new FilterIterator(this, function(e) {
+      for (var p in properties) {
+        if (e[p] !== properties[p]) {
+          return false;
+        }
+      }
+      return true;
     });
   };
 
@@ -78,11 +101,22 @@
     return new TakeIterator(this, count);
   };
 
+  Iterator.prototype.initial = function(count) {
+    if (typeof count === "undefined") {
+      count = 1;
+    }
+    return this.take(this.length() - count);
+  };
+
   Iterator.prototype.last = function(count) {
     if (typeof count === "undefined") {
       return this.get(this.length() - 1);
     }
     return this.reverse().first();
+  };
+
+  Iterator.prototype.findWhere = function(properties) {
+    return this.where(properties).first();
   };
 
   Iterator.prototype.rest =
@@ -107,6 +141,11 @@
     return new UniqIterator(this);
   };
 
+  Iterator.prototype.zip = function() {
+    var arrays = Array.prototype.slice.call(arguments, 0);
+    return new ZipIterator(this, arrays);
+  };
+
   Iterator.prototype.shuffle = function() {
     return new ShuffleIterator(this);
   };
@@ -115,13 +154,21 @@
     return new FlattenIterator(this);
   };
 
+  Iterator.prototype.compact = function() {
+    return new CompactIterator(this);
+  };
+
   Iterator.prototype.without =
   Iterator.prototype.difference = function() {
-    // TODO: The Set construction here should actually also be lazy.
-    var set = new Set(Array.prototype.slice.call(arguments, 0));
-    return this.reject(function(e) {
-      return set.contains(e);
-    });
+    return new WithoutIterator(this, Array.prototype.slice.call(arguments, 0));
+  };
+
+  Iterator.prototype.union = function() {
+    return new UnionIterator(this, Array.prototype.slice.call(arguments, 0));
+  };
+
+  Iterator.prototype.intersection = function() {
+    return new IntersectionIterator(this, Array.prototype.slice.call(arguments, 0));
   };
 
   Iterator.prototype.every =
@@ -354,13 +401,75 @@
     };
   });
 
-  var UniqIterator = CachingIterator.inherit(function(parent, count) {
+  var UniqIterator = CachingIterator.inherit(function(parent) {
     this.each = function(action) {
       var set = {};
       parent.each(function(e) {
         if (e in set) { return; }
         set[e] = true;
         return action(e);
+      });
+    };
+  });
+
+  var WithoutIterator = CachingIterator.inherit(function(parent, values) {
+    this.each = function(action) {
+      var set = new Set(values);
+      parent.each(function(e) {
+        if (!set.contains(e)) {
+          return action(e);
+        }
+      });
+    };
+  });
+
+  var UnionIterator = CachingIterator.inherit(function(parent, arrays) {
+    this.each = function(action) {
+      var set = new Set();
+      parent.each(function(e) {
+        if (!set.contains(e)) {
+          set.add(e);
+          action(e);
+        }
+      });
+      Lazy(arrays).flatten().each(function(e) {
+        if (!set.contains(e)) {
+          set.add(e);
+          action(e);
+        }
+      });
+    };
+  });
+
+  var IntersectionIterator = CachingIterator.inherit(function(parent, arrays) {
+    this.each = function(action) {
+      var sets = Lazy(arrays)
+        .map(function(values) { return new Set(values); })
+        .toArray();
+
+      parent.each(function(e) {
+        for (var i = 0; i < sets.length; ++i) {
+          if (!sets[i].contains(e)) {
+            return;
+          }
+        }
+        action(e);
+      });
+    };
+  });
+
+  var ZipIterator = CachingIterator.inherit(function(parent, arrays) {
+    this.each = function(action) {
+      var i = 0;
+      parent.each(function(e) {
+        var group = [e];
+        for (var j = 0; j < arrays.length; ++j) {
+          if (arrays[j].length > i) {
+            group.push(arrays[j][i]);
+          }
+        }
+        action(group);
+        ++i;
       });
     };
   });
@@ -381,6 +490,16 @@
         if (e instanceof Array) {
           recursiveForEach(e, action);
         } else {
+          action(e);
+        }
+      });
+    };
+  });
+
+  var CompactIterator = CachingIterator.inherit(function(parent) {
+    this.each = function(action) {
+      parent.each(function(e) {
+        if (e) {
           action(e);
         }
       });
@@ -417,13 +536,25 @@
     return new Generator(iteratorFn);
   };
 
+  global.Lazy.range = function() {
+    var start = arguments.length > 1 ? arguments[0] : 0,
+        stop  = arguments.length > 1 ? arguments[1] : arguments[0],
+        step  = arguments.length > 2 ? arguments[2] : 1;
+    return this.generate(function(i) { return start + (step * i); })
+      .take(Math.floor((stop - start) / step));
+  };
+
   /*** Useful utility methods ***/
 
   var Set = function(values) {
     var object = {};
-    Lazy(values).flatten().each(function(e) {
+    Lazy(values || []).flatten().each(function(e) {
       object[e] = true;
     });
+
+    this.add = function(value) {
+      object[value] = true;
+    };
 
     this.contains = function(value) {
       return object[value];

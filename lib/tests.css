@@ -80,3 +80,11 @@
 #benchmark-results-table tr:nth-child(n+2):hover {
   background-color: #def;
 }
+
+#benchmark-results-table td.positive {
+  color: green;
+}
+
+#benchmark-results-table td.negative {
+  color: red;
+}
