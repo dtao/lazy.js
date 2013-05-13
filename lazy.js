@@ -101,11 +101,22 @@
     return new TakeIterator(this, count);
   };
 
+  Iterator.prototype.initial = function(count) {
+    if (typeof count === "undefined") {
+      count = 1;
+    }
+    return this.take(this.length() - count);
+  };
+
   Iterator.prototype.last = function(count) {
     if (typeof count === "undefined") {
       return this.get(this.length() - 1);
     }
     return this.reverse().first();
+  };
+
+  Iterator.prototype.findWhere = function(properties) {
+    return this.where(properties).first();
   };
 
   Iterator.prototype.rest =

@@ -85,8 +85,10 @@ following functions are available:
 - `where`
 - `invoke`
 - `find`
+- `findWhere`
 - `first` (aka `head` or `take`)
 - `rest` (aka `tail` or `drop`)
+- `initial`
 - `last`
 - `sortBy`
 - `groupBy`

@@ -182,6 +182,20 @@ describe("Lazy", function() {
     });
   });
 
+  describe("initial", function() {
+    ensureLaziness(function() { Lazy(people).initial(); });
+
+    it("selects all but the last element from the collection", function() {
+      var allButHappy = Lazy(people).initial().toArray();
+      expect(allButHappy).toEqual([david, mary, lauren, adam, daniel]);
+    });
+
+    it("if N is given, selects all but the last N elements from the collection", function() {
+      var allButDanAndHappy = Lazy(people).initial(2).toArray();
+      expect(allButDanAndHappy).toEqual([david, mary, lauren, adam]);
+    });
+  });
+
   describe("drop", function() {
     ensureLaziness(function() { Lazy(people).drop(2); });
 
@@ -359,6 +373,20 @@ describe("Lazy", function() {
     it("returns all of the elements with the specified key-value pairs", function() {
       var namedDavid = Lazy(peopleDtos).where({ name: "David" }).toArray();
       expect(namedDavid).toEqual([{ name: "David", age: 63, gender: "M" }]);
+    });
+  });
+
+  describe("findWhere", function() {
+    var peopleDtos;
+
+    beforeEach(function() {
+      peopleDtos = Lazy(people).map(Person.toDto).toArray();
+      Person.reset(people);
+    });
+
+    it("like where, but only returns the first match", function() {
+      var namedDavid = Lazy(peopleDtos).findWhere({ name: "David" });
+      expect(namedDavid).toEqual({ name: "David", age: 63, gender: "M" });
     });
   });
 
