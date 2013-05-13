@@ -96,9 +96,32 @@ describe("Lazy", function() {
     });
   });
 
+  describe("pluck", function() {
+    var peopleDtos;
+
+    beforeEach(function() {
+      peopleDtos = Lazy(people).map(Person.toDto).toArray();
+      Person.reset(people);
+    });
+
+    it("extracts the specified property from every element in the collection", function() {
+      var names = Lazy(peopleDtos).pluck("name").toArray();
+      expect(names).toEqual(["David", "Mary", "Lauren", "Adam", "Daniel", "Happy"]);
+    });
+  });
+
+  describe("invoke", function() {
+    ensureLaziness(function() { Lazy(people).invoke("getName"); });
+
+    it("invokes the named method on every element in the collection", function() {
+      var names = Lazy(people).invoke("getName").toArray();
+      expect(names).toEqual(["David", "Mary", "Lauren", "Adam", "Daniel", "Happy"]);
+    });
+  });
+
   describe("filter", function() {
     ensureLaziness(function() { Lazy(people).filter(Person.isMale); });
-    
+
     it("selects values from the collection using a selector function", function() {
       var boys = Lazy(people).filter(Person.isMale).toArray();
       expect(boys).toEqual([david, adam, daniel]);
@@ -322,6 +345,20 @@ describe("Lazy", function() {
       });
 
       expect(firstSon).toBe(adam);
+    });
+  });
+
+  describe("where", function() {
+    var peopleDtos;
+
+    beforeEach(function() {
+      peopleDtos = Lazy(people).map(Person.toDto).toArray();
+      Person.reset(people);
+    });
+
+    it("returns all of the elements with the specified key-value pairs", function() {
+      var namedDavid = Lazy(peopleDtos).where({ name: "David" }).toArray();
+      expect(namedDavid).toEqual([{ name: "David", age: 63, gender: "M" }]);
     });
   });
 

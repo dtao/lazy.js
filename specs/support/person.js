@@ -28,6 +28,14 @@ var Person = function(name, age, gender) {
     accessed = false;
   };
 
+  this.toDto = function() {
+    return {
+      name: name,
+      age: age,
+      gender: gender
+    };
+  };
+
   this.toString = function() {
     return name;
   };
@@ -55,6 +63,10 @@ Person.isFemale = function(p) {
 
 Person.isMale = function(p) {
   return p.getGender() === "M";
+};
+
+Person.toDto = function(p) {
+  return p.toDto();
 };
 
 Person.reset = function(people) {

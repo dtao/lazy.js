@@ -55,6 +55,18 @@
     return new MapIterator(this, mapFn);
   };
 
+  Iterator.prototype.pluck = function(propertyName) {
+    return new MapIterator(this, function(e) {
+      return e[propertyName];
+    });
+  };
+
+  Iterator.prototype.invoke = function(methodName) {
+    return new MapIterator(this, function(e) {
+      return e[methodName]();
+    });
+  };
+
   Iterator.prototype.filter = function(filterFn) {
     return new FilterIterator(this, filterFn);
   };
@@ -62,6 +74,17 @@
   Iterator.prototype.reject = function(rejectFn) {
     return new FilterIterator(this, function(e) {
       return !rejectFn(e);
+    });
+  };
+
+  Iterator.prototype.where = function(properties) {
+    return new FilterIterator(this, function(e) {
+      for (var p in properties) {
+        if (e[p] !== properties[p]) {
+          return false;
+        }
+      }
+      return true;
     });
   };
 
