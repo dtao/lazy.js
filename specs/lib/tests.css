@@ -1,6 +1,31 @@
-#HTMLReporter {
+@import url(http://fonts.googleapis.com/css?family=Happy+Monkey);
+
+body {
+  background-color: #fff;
+}
+
+header {
   position: absolute;
   top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background-color: #fff;
+  border-bottom: 10px solid #eee;
+  color: #eee;
+}
+
+header h1 {
+  margin: 0 auto;
+  padding: 0;
+  font-family: "Happy Monkey", cursive;
+  font-size: 60px;
+  line-height: 60px;
+}
+
+#HTMLReporter {
+  position: absolute;
+  top: 70px;
   bottom: 0;
   left: 0;
   right: 50%;
@@ -9,7 +34,7 @@
 
 #benchmark-results {
   position: absolute;
-  top: 0;
+  top: 70px;
   bottom: 0;
   left: 50%;
   right: 0;
@@ -56,12 +81,12 @@
 #benchmark-results-table td {
   padding: 0.5ex 0.5em;
   text-align: left;
-  width: 25%;
+  width: 35%;
 }
 
 #benchmark-results-table th:first-child,
 #benchmark-results-table td:first-child {
-  width: 50%;
+  width: 30%;
 }
 
 #benchmark-results-table th:nth-child(n+2),
@@ -74,17 +99,23 @@
 }
 
 #benchmark-results-table tr:nth-child(even) {
-  background-color: #bbb;
+  background-color: #eee;
 }
 
 #benchmark-results-table tr:nth-child(n+2):hover {
   background-color: #def;
 }
 
-#benchmark-results-table td.positive {
+#benchmark-results-table span.positive,
+#benchmark-results-table span.negative {
+  display: inline-block;
+  margin-left: 8px;
+}
+
+#benchmark-results-table span.positive {
   color: green;
 }
 
-#benchmark-results-table td.negative {
+#benchmark-results-table span.negative {
   color: red;
 }

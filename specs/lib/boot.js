@@ -30,13 +30,14 @@
     var style = diff > 0 ? "positive" : "negative";
     $("<td>").text(result.lazy.name).appendTo(row);
     $("<td>").text(result.lazy.hz.toFixed(5)).appendTo(row);
-    $("<td>").text(result.underscore.hz.toFixed(5)).appendTo(row);
-    $("<td>").text(diff.toFixed(2) + "%").addClass(style).appendTo(row);
+
+    var lastCell = $("<td>").text(result.underscore.hz.toFixed(5)).appendTo(row);
+    $("<span>").text("(" + diff.toFixed(2) + "%)").addClass(style).appendTo(lastCell);
   }
 
   function updateChart() {
     barChart = barChart || document.getElementById("benchmark-results-chart");
-    $(barChart).height(50 + (benchmarkResults.length * 50));
+    $(barChart).height(100 + (benchmarkResults.length * 50));
     HighTables.renderChart(barChart);
   }
 
@@ -65,10 +66,6 @@
     return {
       plotOptions: {
         series: { animation: false }
-      },
-
-      yAxis: {
-        type: "logarithmic"
       }
     };
   };

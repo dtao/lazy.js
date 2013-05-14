@@ -26,11 +26,15 @@
 </head>
 
 <body>
+  <header>
+    <h1>lazy.js</h1>
+  </header>
+
   <div id="benchmark-results" class="loading">
     <div id="benchmark-results-chart" class="bar-chart"
-      data-title="Performance Difference - lazy.js versus underscore.js"
+      data-title="Ops/second - lazy.js versus underscore.js"
       data-source="#benchmark-results-table"
-      data-value-columns="4"
+      data-transpose="true"
       data-options="benchmarkChartOptions"
       style="height: 0;">
     </div>
@@ -40,7 +44,6 @@
         <th>Test</th>
         <th>Lazy.js</th>
         <th>Underscore.js</th>
-        <th>Difference</th>
       </tr>
     </table>
   </div>

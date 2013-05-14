@@ -612,12 +612,12 @@ describe("Lazy", function() {
     function square(x) { return x * x; }
     function isEven(x) { return x % 2 === 0; }
 
-    var arr = Lazy.range(1000).toArray();
-    var nextArr = Lazy.range(1000, 2000).toArray();
-    var between = Lazy.range(500, 1500).toArray();
+    var arr = Lazy.range(100).toArray();
+    var nextArr = Lazy.range(100, 200).toArray();
+    var between = Lazy.range(50, 150).toArray();
 
     var lotsOfDupes = Lazy.generate(function() { return Math.floor(Math.random() * 10) + 1; })
-      .take(1000)
+      .take(100)
       .toArray();
 
     var jaggedArray = [
