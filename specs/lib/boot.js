@@ -81,15 +81,6 @@
   window.onload = function() {
     jasmineEnv.execute();
 
-    $.ajax({
-      url: "../README.md",
-      type: "GET",
-      dataType: "text",
-      success: function(md) {
-        $("#docs").html(markdown.toHTML(md));
-      }
-    });
-
     $("nav ul li a").on("click", function() {
       var link   = $(this);
       var target = link.attr("href");
