@@ -28,15 +28,10 @@
   }
 
   function addBenchmarkResult(result) {
-    var count = parseInt(result.lazy.name.match(/(\d+) elements/)[1], 10);
-    if (count !== 10 && count !== 100 && count !== 1000) {
-      return;
-    }
-
-    benchmarkResults[count] = benchmarkResults[count] || [];
-    benchmarkResults[count].push(result);
-    addBenchmarkResultToTable(count, result);
-    return count;
+    var elementCount = result.lazy.elementCount;
+    benchmarkResults[elementCount] = benchmarkResults[elementCount] || [];
+    benchmarkResults[elementCount].push(result);
+    addBenchmarkResultToTable(elementCount, result);
   }
 
   function addBenchmarkResultToTable(count, result) {
@@ -100,8 +95,12 @@
     }
 
     arrays.each(function(array) {
-      benchmarkSuite.add(description + " (" + array.length + " elements)", function() { options.lazy(array); });
-      benchmarkSuite.add(description + " (" + array.length + " elements)", function() { options.underscore(array); });
+      benchmarkSuite.add(description, function() { options.lazy(array); });
+      benchmarkSuite.add(description, function() { options.underscore(array); });
+
+      // Essentially, tag these for later reference.
+      benchmarkSuite[benchmarkSuite.length - 1].elementCount = array.length;
+      benchmarkSuite[benchmarkSuite.length - 2].elementCount = array.length;
     });
   };
 
@@ -134,10 +133,11 @@
     benchmarkSuite.on("cycle", function(e) {
       currentResultSet.push(e.target);
       if (currentResultSet.length === 2) {
-        updateChart(addBenchmarkResult({
+        addBenchmarkResult({
           lazy: currentResultSet[0],
           underscore: currentResultSet[1]
-        }));
+        });
+        updateChart(e.target.elementCount);
         currentResultSet = [];
       }
     });
