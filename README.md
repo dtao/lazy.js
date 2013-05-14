@@ -5,7 +5,7 @@ If [underscore.js](http://underscorejs.org/) is "the tie to go along with [jQuer
 
 The primary differentiator that distinguishes lazy.js from underscore.js is **lazy evaluation**, which directly translates to superior performance in many cases. Here's a teaser based on some common operations using arrays with 100 elements each on Chrome:
 
-![lazy.js versus underscore](http://dtao.github.io/lazy.js/lib/LazyVsUnderscore.png)
+![lazy.js versus underscore](http://dtao.github.io/lazy.js/lib/LazyVsUnderscore2.png)
 
 Now let's look at a little bit of code. (For the following snippets, let's say `array` contains the integers from 1 to 1000.)
 
