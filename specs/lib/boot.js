@@ -52,27 +52,6 @@
     HighTables.renderChart(chart);
   }
 
-  function updateCharts() {
-    updateChart(10);
-    updateChart(100);
-    updateChart(1000);
-  }
-
-  function sortResults() {
-    $("tr.benchmark-result").remove();
-
-    for (var key in benchmarkResults) {
-      Lazy(benchmarkResults[key])
-        .sortBy(function(r) { return r.lazy.hz; })
-        .each(function(result) {
-          addBenchmarkResultToTable(key, result);
-        });
-    }
-
-    updateCharts();
-    finishedLoading();
-  }
-
   window.benchmarkChartOptions = function() {
     return {
       plotOptions: {
@@ -150,7 +129,7 @@
     });
 
     benchmarkSuite.on("complete", function() {
-      sortResults();
+      finishedLoading();
     });
 
     if (RUN_PERFORMANCE_TESTS) {
