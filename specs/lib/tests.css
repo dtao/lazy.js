@@ -71,12 +71,12 @@ table.empty tr {
   display: none;
 }
 
-table tr.expanded .indenter a:before {
-  content: "-";
+table tr.expanded .indenter a {
+  background: url(collapse.png) no-repeat left;
 }
 
-table tr.collapsed .indenter a:before {
-  content: "+";
+table tr.collapsed .indenter a {
+  background: url(expand.png) no-repeat left;
 }
 
 table th,
