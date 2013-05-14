@@ -5,6 +5,8 @@
   var benchmarkSuite = new Benchmark.Suite();
   Benchmark.options.maxTime = 0.1;
 
+  window.lodash = _.noConflict();
+
   var jasmineEnv = jasmine.getEnv();
   jasmineEnv.updateInterval = 1000;
 
@@ -37,10 +39,12 @@
   function addBenchmarkResultToTable(count, result) {
     var table = $("#benchmark-results-table-" + count).removeClass("empty");
     var row   = $("<tr>").addClass("benchmark-result").appendTo(table);
-    var style = result.lazy.hz > result.underscore.hz ? "positive" : "negative";
+    var style = result.lazy.hz > result.underscore.hz &&
+                result.lazy.hz > result.lodash.hz ? "positive" : "negative";
 
     $("<td>").text(result.lazy.name).appendTo(row);
     $("<td>").text(result.underscore.hz.toFixed(2)).appendTo(row);
+    $("<td>").text(result.lodash.hz.toFixed(2)).appendTo(row);
     $("<td>").text(result.lazy.hz.toFixed(2)).addClass(style).appendTo(row);
   }
 
@@ -78,15 +82,21 @@
       it("returns the same result as underscore for '" + description + "'", function() {
         expect(options.lazy(smallArray)).toEqual(options.underscore(smallArray));
       });
+
+      it("returns the same result as lodash for '" + description + "'", function() {
+        expect(options.lazy(smallArray)).toEqual(options.lodash(smallArray));
+      });
     }
 
     arrays.each(function(array) {
       benchmarkSuite.add(description, function() { options.lazy(array); });
       benchmarkSuite.add(description, function() { options.underscore(array); });
+      benchmarkSuite.add(description, function() { options.lodash(array); });
 
       // Essentially, tag these for later reference.
       benchmarkSuite[benchmarkSuite.length - 1].elementCount = array.length;
       benchmarkSuite[benchmarkSuite.length - 2].elementCount = array.length;
+      benchmarkSuite[benchmarkSuite.length - 3].elementCount = array.length;
     });
   };
 
@@ -118,10 +128,11 @@
     var currentResultSet = [];
     benchmarkSuite.on("cycle", function(e) {
       currentResultSet.push(e.target);
-      if (currentResultSet.length === 2) {
+      if (currentResultSet.length === 3) {
         addBenchmarkResult({
           lazy: currentResultSet[0],
-          underscore: currentResultSet[1]
+          underscore: currentResultSet[1],
+          lodash: currentResultSet[2]
         });
         updateChart(e.target.elementCount);
         currentResultSet = [];
