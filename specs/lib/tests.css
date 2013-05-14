@@ -102,12 +102,12 @@ table th,
 table td {
   padding: 0.5ex 0.5em;
   text-align: left;
-  width: 25%;
+  width: 20%;
 }
 
 table th:first-child,
 table td:first-child {
-  width: 50%;
+  width: 40%;
 }
 
 table th:nth-child(n+2),
