@@ -80,6 +80,10 @@ nav.subnav ul li:hover a {
   color: #89a;
 }
 
+figure {
+  text-align: center;
+}
+
 .column-chart {
   position: relative;
 }
