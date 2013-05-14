@@ -7,13 +7,13 @@ The primary differentiator that distinguishes lazy.js from underscore.js is **la
 
 For example, the following chart illustrates the performance of lazy.js versus underscore.js for several common operations using arrays with 10 elements each on Chrome:
 
-![lazy.js versus underscore](http://dtao.github.io/lazy.js/lib/LazyVsUnderscore10Elements.png)
+![lazy.js versus underscore](http://dtao.github.io/lazy.js/specs/lib/LazyVsUnderscore10Elements.png)
 
 You can see that the performance difference becomes much more significant for arrays with 100 elements:
 
-![lazy.js versus underscore](http://dtao.github.io/lazy.js/lib/LazyVsUnderscore100Elements.png)
+![lazy.js versus underscore](http://dtao.github.io/lazy.js/specs/lib/LazyVsUnderscore100Elements.png)
 
-This difference [gets crazier and crazier](http://dtao.github.io/lazy.js/lib/LazyVsUnderscore1000Elements.png) as you increase the sizes of the collections involved.
+This difference [gets crazier and crazier](http://dtao.github.io/lazy.js/specs/lib/LazyVsUnderscore1000Elements.png) as you increase the sizes of the collections involved.
 
 Now let's look at a little bit of code. (For the following snippets, let's say `array` contains the integers from 1 to 1000.)
 
