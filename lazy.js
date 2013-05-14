@@ -1,5 +1,5 @@
 (function(exports) {
-  var Iterator = function(parent, source) {
+  var Sequence = function(parent, source) {
     this.parent = parent;
     this.source = source;
     this.depth  = parent ? parent.depth + 1 : 0;
@@ -10,15 +10,15 @@
     }
   };
 
-  Iterator.prototype.get = function(i) {
+  Sequence.prototype.get = function(i) {
     return this.source ? this.source[i] : this.parent.get(i);
   };
 
-  Iterator.prototype.length = function() {
+  Sequence.prototype.length = function() {
     return this.source ? this.source.length : this.parent.length();
   };
 
-  Iterator.prototype.root = function() {
+  Sequence.prototype.root = function() {
     var ancestor = this;
     while (ancestor.parent) {
       ancestor = ancestor.parent;
@@ -26,19 +26,19 @@
     return ancestor;
   };
 
-  Iterator.prototype.arrayCount = function() {
+  Sequence.prototype.arrayCount = function() {
     return this.root().arraysCreated;
   };
 
-  Iterator.prototype.each = function(fn) {
+  Sequence.prototype.each = function(fn) {
     forEach(this.source, fn);
   };
 
-  Iterator.prototype.log = function(msg) {
+  Sequence.prototype.log = function(msg) {
     console.log(indent(this.depth) + msg);
   };
 
-  Iterator.prototype.toArray = function() {
+  Sequence.prototype.toArray = function() {
     var array = [];
     this.each(function(e) {
       array.push(e);
@@ -51,7 +51,7 @@
     return array;
   };
 
-  Iterator.prototype.toObject = function() {
+  Sequence.prototype.toObject = function() {
     var object = {};
     this.each(function(e) {
       object[e[0]] = e[1];
@@ -60,34 +60,34 @@
     return object;
   };
 
-  Iterator.prototype.map = function(mapFn) {
-    return new MapIterator(this, mapFn);
+  Sequence.prototype.map = function(mapFn) {
+    return new MapSequence(this, mapFn);
   };
 
-  Iterator.prototype.pluck = function(propertyName) {
-    return new MapIterator(this, function(e) {
+  Sequence.prototype.pluck = function(propertyName) {
+    return new MapSequence(this, function(e) {
       return e[propertyName];
     });
   };
 
-  Iterator.prototype.invoke = function(methodName) {
-    return new MapIterator(this, function(e) {
+  Sequence.prototype.invoke = function(methodName) {
+    return new MapSequence(this, function(e) {
       return e[methodName]();
     });
   };
 
-  Iterator.prototype.filter = function(filterFn) {
-    return new FilterIterator(this, filterFn);
+  Sequence.prototype.filter = function(filterFn) {
+    return new FilterSequence(this, filterFn);
   };
 
-  Iterator.prototype.reject = function(rejectFn) {
-    return new FilterIterator(this, function(e) {
+  Sequence.prototype.reject = function(rejectFn) {
+    return new FilterSequence(this, function(e) {
       return !rejectFn(e);
     });
   };
 
-  Iterator.prototype.where = function(properties) {
-    return new FilterIterator(this, function(e) {
+  Sequence.prototype.where = function(properties) {
+    return new FilterSequence(this, function(e) {
       for (var p in properties) {
         if (e[p] !== properties[p]) {
           return false;
@@ -97,91 +97,91 @@
     });
   };
 
-  Iterator.prototype.reverse = function() {
-    return new ReverseIterator(this);
+  Sequence.prototype.reverse = function() {
+    return new ReverseSequence(this);
   };
 
-  Iterator.prototype.first =
-  Iterator.prototype.head =
-  Iterator.prototype.take = function(count) {
+  Sequence.prototype.first =
+  Sequence.prototype.head =
+  Sequence.prototype.take = function(count) {
     if (typeof count === "undefined") {
       return this.get(0);
     }
-    return new TakeIterator(this, count);
+    return new TakeSequence(this, count);
   };
 
-  Iterator.prototype.initial = function(count) {
+  Sequence.prototype.initial = function(count) {
     if (typeof count === "undefined") {
       count = 1;
     }
     return this.take(this.length() - count);
   };
 
-  Iterator.prototype.last = function(count) {
+  Sequence.prototype.last = function(count) {
     if (typeof count === "undefined") {
       return this.get(this.length() - 1);
     }
     return this.reverse().first();
   };
 
-  Iterator.prototype.findWhere = function(properties) {
+  Sequence.prototype.findWhere = function(properties) {
     return this.where(properties).first();
   };
 
-  Iterator.prototype.rest =
-  Iterator.prototype.tail =
-  Iterator.prototype.drop = function(count) {
-    return new DropIterator(this, count);
+  Sequence.prototype.rest =
+  Sequence.prototype.tail =
+  Sequence.prototype.drop = function(count) {
+    return new DropSequence(this, count);
   };
 
-  Iterator.prototype.sortBy = function(sortFn) {
-    return new SortByIterator(this, sortFn);
+  Sequence.prototype.sortBy = function(sortFn) {
+    return new SortBySequence(this, sortFn);
   };
 
-  Iterator.prototype.groupBy = function(keyFn) {
-    return new GroupByIterator(this, keyFn);
+  Sequence.prototype.groupBy = function(keyFn) {
+    return new GroupBySequence(this, keyFn);
   };
 
-  Iterator.prototype.countBy = function(keyFn) {
-    return new CountByIterator(this, keyFn);
+  Sequence.prototype.countBy = function(keyFn) {
+    return new CountBySequence(this, keyFn);
   };
 
-  Iterator.prototype.uniq = function() {
-    return new UniqIterator(this);
+  Sequence.prototype.uniq = function() {
+    return new UniqSequence(this);
   };
 
-  Iterator.prototype.zip = function() {
+  Sequence.prototype.zip = function() {
     var arrays = Array.prototype.slice.call(arguments, 0);
-    return new ZipIterator(this, arrays);
+    return new ZipSequence(this, arrays);
   };
 
-  Iterator.prototype.shuffle = function() {
-    return new ShuffleIterator(this);
+  Sequence.prototype.shuffle = function() {
+    return new ShuffleSequence(this);
   };
 
-  Iterator.prototype.flatten = function() {
-    return new FlattenIterator(this);
+  Sequence.prototype.flatten = function() {
+    return new FlattenSequence(this);
   };
 
-  Iterator.prototype.compact = function() {
+  Sequence.prototype.compact = function() {
     return this.filter(function(e) { return !!e; });
   };
 
-  Iterator.prototype.without =
-  Iterator.prototype.difference = function() {
-    return new WithoutIterator(this, Array.prototype.slice.call(arguments, 0));
+  Sequence.prototype.without =
+  Sequence.prototype.difference = function() {
+    return new WithoutSequence(this, Array.prototype.slice.call(arguments, 0));
   };
 
-  Iterator.prototype.union = function() {
-    return new UnionIterator(this, Array.prototype.slice.call(arguments, 0));
+  Sequence.prototype.union = function() {
+    return new UnionSequence(this, Array.prototype.slice.call(arguments, 0));
   };
 
-  Iterator.prototype.intersection = function() {
-    return new IntersectionIterator(this, Array.prototype.slice.call(arguments, 0));
+  Sequence.prototype.intersection = function() {
+    return new IntersectionSequence(this, Array.prototype.slice.call(arguments, 0));
   };
 
-  Iterator.prototype.every =
-  Iterator.prototype.all = function(predicate) {
+  Sequence.prototype.every =
+  Sequence.prototype.all = function(predicate) {
     var success = true;
     this.each(function(e) {
       if (!predicate(e)) {
@@ -192,8 +192,8 @@
     return success;
   };
 
-  Iterator.prototype.some =
-  Iterator.prototype.any = function(predicate) {
+  Sequence.prototype.some =
+  Sequence.prototype.any = function(predicate) {
     if (!predicate) {
       predicate = function() { return true; };
     }
@@ -208,11 +208,11 @@
     return success;
   };
 
-  Iterator.prototype.isEmpty = function() {
+  Sequence.prototype.isEmpty = function() {
     return !this.any();
   };
 
-  Iterator.prototype.indexOf = function(value) {
+  Sequence.prototype.indexOf = function(value) {
     var index = 0;
     var foundIndex = -1;
     this.each(function(e) {
@@ -225,7 +225,7 @@
     return foundIndex;
   };
 
-  Iterator.prototype.lastIndexOf = function(value) {
+  Sequence.prototype.lastIndexOf = function(value) {
     var index = this.reverse().indexOf(value);
     if (index !== -1) {
       index = this.length() - index - 1;
@@ -233,7 +233,7 @@
     return index;
   };
 
-  Iterator.prototype.sortedIndex = function(value) {
+  Sequence.prototype.sortedIndex = function(value) {
     var lower = 0;
     var upper = this.length();
     var i;
@@ -249,30 +249,30 @@
     return lower;
   };
 
-  Iterator.prototype.contains = function(value) {
+  Sequence.prototype.contains = function(value) {
     return this.indexOf(value) !== -1;
   };
 
-  Iterator.prototype.reduce =
-  Iterator.prototype.inject =
-  Iterator.prototype.foldl = function(aggregator, memo) {
+  Sequence.prototype.reduce =
+  Sequence.prototype.inject =
+  Sequence.prototype.foldl = function(aggregator, memo) {
     this.each(function(e) {
       memo = aggregator(memo, e);
     });
     return memo;
   };
 
-  Iterator.prototype.reduceRight =
-  Iterator.prototype.foldr = function(aggregator, memo) {
+  Sequence.prototype.reduceRight =
+  Sequence.prototype.foldr = function(aggregator, memo) {
     return this.reverse().reduce(aggregator, memo);
   };
 
-  Iterator.prototype.find =
-  Iterator.prototype.detect = function(predicate) {
+  Sequence.prototype.find =
+  Sequence.prototype.detect = function(predicate) {
     return this.filter(predicate).first();
   };
 
-  Iterator.prototype.min = function() {
+  Sequence.prototype.min = function() {
     return this.reduce(function(least, value) {
       if (typeof least === "undefined") {
         return value;
@@ -281,7 +281,7 @@
     });
   };
 
-  Iterator.prototype.max = function() {
+  Sequence.prototype.max = function() {
     return this.reduce(function(greatest, value) {
       if (typeof greatest === "undefined") {
         return value;
@@ -290,17 +290,17 @@
     });
   };
 
-  Iterator.inherit = function(fn) {
+  Sequence.inherit = function(fn) {
     var constructor = function() {
       var parent = arguments[0];
-      Iterator.call(this, parent);
+      Sequence.call(this, parent);
       fn.apply(this, arguments);
     };
-    constructor.prototype = Iterator.prototype;
+    constructor.prototype = Sequence.prototype;
     return constructor;
   };
 
-  var CachingIterator = Iterator.inherit(function(parent) {
+  var CachingSequence = Sequence.inherit(function(parent) {
     var cached;
 
     this.cache = function() {
@@ -319,17 +319,17 @@
     };
   });
 
-  CachingIterator.inherit = function(fn) {
+  CachingSequence.inherit = function(fn) {
     var constructor = function() {
       var parent = arguments[0];
-      CachingIterator.call(this, parent);
+      CachingSequence.call(this, parent);
       fn.apply(this, arguments);
     };
-    constructor.prototype = CachingIterator.prototype;
+    constructor.prototype = CachingSequence.prototype;
     return constructor;
   };
 
-  var MapIterator = Iterator.inherit(function(parent, mapFn) {
+  var MapSequence = Sequence.inherit(function(parent, mapFn) {
     this.get = function(i) {
       return mapFn(parent.get(i));
     };
@@ -341,7 +341,7 @@
     };
   });
 
-  var FilterIterator = CachingIterator.inherit(function(parent, filterFn) {
+  var FilterSequence = CachingSequence.inherit(function(parent, filterFn) {
     this.each = function(action) {
       parent.each(function(e) {
         if (filterFn(e)) {
@@ -351,7 +351,7 @@
     };
   });
 
-  var ReverseIterator = Iterator.inherit(function(parent) {
+  var ReverseSequence = Sequence.inherit(function(parent) {
     this.get = function(i) {
       return parent.get(parent.length() - i - 1);
     };
@@ -370,7 +370,7 @@
     };
   });
 
-  var TakeIterator = CachingIterator.inherit(function(parent, count) {
+  var TakeSequence = CachingSequence.inherit(function(parent, count) {
     this.each = function(action) {
       var i = 0;
       parent.each(function(e) {
@@ -381,7 +381,7 @@
     };
   });
 
-  var DropIterator = CachingIterator.inherit(function(parent, count) {
+  var DropSequence = CachingSequence.inherit(function(parent, count) {
     this.each = function(action) {
       var i = 0;
       parent.each(function(e) {
@@ -391,7 +391,7 @@
     };
   });
 
-  var SortByIterator = CachingIterator.inherit(function(parent, sortFn) {
+  var SortBySequence = CachingSequence.inherit(function(parent, sortFn) {
     this.each = function(action) {
       var sorted = parent.toArray();
       sorted.sort(function(x, y) { return compare(x, y, sortFn); });
@@ -401,7 +401,7 @@
 
   // TODO: This should really return an object, not an jagged array. Will
   // require a bit of rework -- but hopefully not too much!
-  var GroupByIterator = CachingIterator.inherit(function(parent, keyFn) {
+  var GroupBySequence = CachingSequence.inherit(function(parent, keyFn) {
     this.each = function(action) {
       var grouped = {};
       parent.each(function(e) {
@@ -418,8 +418,8 @@
     };
   });
 
-  // TODO: This should return an object too (like GroupByIterator).
-  var CountByIterator = CachingIterator.inherit(function(parent, keyFn) {
+  // TODO: This should return an object too (like GroupBySequence).
+  var CountBySequence = CachingSequence.inherit(function(parent, keyFn) {
     this.each = function(action) {
       var grouped = {};
       parent.each(function(e) {
@@ -436,7 +436,7 @@
     };
   });
 
-  var UniqIterator = CachingIterator.inherit(function(parent) {
+  var UniqSequence = CachingSequence.inherit(function(parent) {
     this.each = function(action) {
       var set = {};
       parent.each(function(e) {
@@ -447,7 +447,7 @@
     };
   });
 
-  var WithoutIterator = CachingIterator.inherit(function(parent, values) {
+  var WithoutSequence = CachingSequence.inherit(function(parent, values) {
     this.each = function(action) {
       var set = new Set(values);
       parent.each(function(e) {
@@ -458,7 +458,7 @@
     };
   });
 
-  var UnionIterator = CachingIterator.inherit(function(parent, arrays) {
+  var UnionSequence = CachingSequence.inherit(function(parent, arrays) {
     this.each = function(action) {
       var set = new Set();
       parent.each(function(e) {
@@ -476,7 +476,7 @@
     };
   });
 
-  var IntersectionIterator = CachingIterator.inherit(function(parent, arrays) {
+  var IntersectionSequence = CachingSequence.inherit(function(parent, arrays) {
     this.each = function(action) {
       var sets = Lazy(arrays)
         .map(function(values) { return new Set(values); })
@@ -493,7 +493,7 @@
     };
   });
 
-  var ZipIterator = CachingIterator.inherit(function(parent, arrays) {
+  var ZipSequence = CachingSequence.inherit(function(parent, arrays) {
     this.each = function(action) {
       var i = 0;
       parent.each(function(e) {
@@ -509,7 +509,7 @@
     };
   });
 
-  var ShuffleIterator = CachingIterator.inherit(function(parent) {
+  var ShuffleSequence = CachingSequence.inherit(function(parent) {
     this.each = function(action) {
       var shuffled = parent.toArray();
       for (var i = shuffled.length - 1; i > 0; --i) {
@@ -522,7 +522,7 @@
     };
   });
 
-  var FlattenIterator = CachingIterator.inherit(function(parent) {
+  var FlattenSequence = CachingSequence.inherit(function(parent) {
     this.each = function(action) {
       parent.each(function(e) {
         if (e instanceof Array) {
@@ -534,7 +534,7 @@
     };
   });
 
-  var Generator = Iterator.inherit(function(generatorFn) {
+  var Generator = Sequence.inherit(function(generatorFn) {
     this.get = generatorFn;
 
     this.length = function() {
@@ -552,14 +552,14 @@
   });
 
   exports.Lazy = function(source) {
-    if (source instanceof Iterator) {
+    if (source instanceof Sequence) {
       return source;
     }
-    return new Iterator(null, source);
+    return new Sequence(null, source);
   };
 
-  exports.Lazy.generate = function(iteratorFn) {
-    return new Generator(iteratorFn);
+  exports.Lazy.generate = function(SequenceFn) {
+    return new Generator(SequenceFn);
   };
 
   exports.Lazy.range = function() {
