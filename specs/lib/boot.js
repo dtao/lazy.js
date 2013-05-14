@@ -77,6 +77,13 @@
     return {
       plotOptions: {
         series: { animation: false }
+      },
+
+      xAxis: {
+        labels: {
+          align: "right",
+          rotation: -45
+        }
       }
     };
   };
