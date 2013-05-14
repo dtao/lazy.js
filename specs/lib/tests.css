@@ -118,13 +118,13 @@ table tr:first-child {
 }
 
 table tr.success td:last-child {
-  background: url(success.png) no-repeat right;
-  background-size: contain;
+  background: url(success.png) no-repeat top right;
+  background-size: 24px 24px;
 }
 
 table tr.failure td:last-child {
-  background: url(failure.png) no-repeat right;
-  background-size: contain;
+  background: url(failure.png) no-repeat top right;
+  background-size: 24px 24px;
 }
 
 table tr:nth-child(n+2):hover {
@@ -137,4 +137,14 @@ table td.positive {
 
 table td.negative {
   color: red;
+}
+
+.failure-information {
+  padding: 20px;
+  background-color: #fee;
+  font-family: monospace;
+}
+
+table tr:hover .failure-information {
+  background-color: #def;
 }

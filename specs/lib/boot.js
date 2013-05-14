@@ -3,7 +3,7 @@
   var RUN_PERFORMANCE_TESTS = true;
 
   var benchmarkSuite = new Benchmark.Suite();
-  Benchmark.options.maxTime = 1;
+  Benchmark.options.maxTime = 0.1;
 
   var jasmineEnv = jasmine.getEnv();
   jasmineEnv.updateInterval = 1000;
@@ -89,7 +89,7 @@
   };
 
   window.compareToUnderscore = function(description, options) {
-    var arrays = Lazy(options.arrays || options.arraySizes || [10, 100, 1000]).map(function(size) {
+    var arrays = Lazy(options.arrays || [10, 100, 1000]).map(function(size) {
       return (typeof size === "number") ? getOrCreateArray(size) : size;
     });
 

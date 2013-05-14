@@ -332,7 +332,6 @@ describe("Lazy", function() {
         expect(resorted).toEqual(people);
       });
 
-      // TODO: Write code that verifies not all collections are the same.
       var differences = 0;
       shuffledCollections.drop(1).each(function(collection) {
         for (var i = 0; i < collection.length; ++i) {
@@ -732,9 +731,9 @@ describe("Lazy", function() {
       underscore: function(arr) { return _.chain(arr).map(inc).filter(isEven).value(); }
     });
 
-    compareToUnderscore("map -> map -> map", {
-      lazy: function(arr) { return Lazy(arr).map(inc).map(square).map(dec).toArray(); },
-      underscore: function(arr) { return _.chain(arr).map(inc).map(square).map(dec).value(); }
+    compareToUnderscore("map -> take", {
+      lazy: function(arr) { return Lazy(arr).map(inc).take(5).toArray(); },
+      underscore: function(arr) { return _.chain(arr).map(inc).take(5).value(); }
     });
 
     compareToUnderscore("filter -> take", {
@@ -742,9 +741,28 @@ describe("Lazy", function() {
       underscore: function(arr) { return _.chain(arr).filter(isEven).first(5).value(); }
     });
 
-    compareToUnderscore("filter -> drop -> take", {
-      lazy: function(arr) { return Lazy(arr).filter(isEven).drop(100).take(5).toArray(); },
-      underscore: function(arr) { return _.chain(arr).filter(isEven).rest(100).first(5).value(); }
+    compareToUnderscore("flatten -> take", {
+      lazy: function(arr) { return Lazy(arr).flatten().take(5).toArray(); },
+      underscore: function(arr) { return _.chain(arr).flatten().first(5).value(); },
+      arrays: [jaggedArray]
+    });
+
+    compareToUnderscore("uniq -> take", {
+      lazy: function(arr) { return Lazy(arr).uniq().take(5).toArray(); },
+      underscore: function(arr) { return _.chain(arr).uniq().first(5).value(); },
+      arrays: [lotsOfDupes]
+    });
+
+    compareToUnderscore("shuffle -> take", {
+      lazy: function(arr) { return Lazy(arr).shuffle().take(5).toArray(); },
+      underscore: function(arr) { return _.chain(arr).shuffle().first(5).value(); },
+      shouldMatch: false
+    });
+
+    compareToUnderscore("zip -> take", {
+      lazy: function(arr) { return Lazy(arr).zip(fiftyTo150).take(5).toArray(); },
+      underscore: function(arr) { return _.chain(arr).zip(fiftyTo150).first(5).value(); },
+      arrays: [zeroTo100]
     });
 
     compareToUnderscore("map -> any", {
