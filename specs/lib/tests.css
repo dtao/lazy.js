@@ -46,11 +46,28 @@ nav ul li:hover a {
   color: #789;
 }
 
-#benchmark-results-chart {
+nav.subnav ul li {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+nav.subnav ul li.selected {
+  border-bottom: 2px solid #555;
+}
+
+nav.subnav ul li a {
+  color: #678;
+}
+
+nav.subnav ul li:hover a {
+  color: #89a;
+}
+
+.column-chart {
   position: relative;
 }
 
-.loading #benchmark-results-chart:after {
+.loading .column-chart:after {
   content: "";
   position: absolute;
   top: 0;
@@ -114,16 +131,10 @@ table tr:nth-child(n+2):hover {
   background-color: #def;
 }
 
-table span.positive,
-table span.negative {
-  display: inline-block;
-  margin-left: 8px;
-}
-
-table span.positive {
+table td.positive {
   color: green;
 }
 
-table span.negative {
+table td.negative {
   color: red;
 }

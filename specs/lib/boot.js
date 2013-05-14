@@ -8,54 +8,73 @@
   var jasmineEnv = jasmine.getEnv();
   jasmineEnv.updateInterval = 1000;
 
-  var specReporter = new SpecReporter(benchmarkSuite, RUN_PERFORMANCE_TESTS);
+  var specReporter = new SpecReporter();
 
   jasmineEnv.addReporter(specReporter);
 
-  var barChart;
-  var benchmarkResults = [];
+  var arrays = {};
+  var benchmarkResults = {};
 
-  function percentDifference(x, y) {
-    return (x - y) / y * 100;
+  function getOrCreateArray(size) {
+    if (!arrays[size]) {
+      arrays[size] = Lazy.range(size).toArray();
+    }
+
+    return arrays[size];
   }
 
   function finishedLoading() {
-    $("#benchmark-results").removeClass("loading");
+    $(".benchmark-results-section").removeClass("loading");
   }
 
   function addBenchmarkResult(result) {
-    benchmarkResults.push(result);
-    addBenchmarkResultToTable(result);
+    var count = parseInt(result.lazy.name.match(/(\d+) elements/)[1], 10);
+    if (count !== 10 && count !== 100 && count !== 1000) {
+      return;
+    }
+
+    benchmarkResults[count] = benchmarkResults[count] || [];
+    benchmarkResults[count].push(result);
+    addBenchmarkResultToTable(count, result);
+    return count;
   }
 
-  function addBenchmarkResultToTable(result) {
-    var table = $("#benchmark-results-table").removeClass("empty");
+  function addBenchmarkResultToTable(count, result) {
+    var table = $("#benchmark-results-table-" + count).removeClass("empty");
     var row   = $("<tr>").addClass("benchmark-result").appendTo(table);
-    var diff  = percentDifference(result.lazy.hz, result.underscore.hz);
-    var style = diff > 0 ? "positive" : "negative";
-    $("<td>").text(result.lazy.name).appendTo(row);
-    $("<td>").text(result.lazy.hz.toFixed(3)).appendTo(row);
+    var style = result.lazy.hz > result.underscore.hz ? "positive" : "negative";
 
-    var lastCell = $("<td>").text(result.underscore.hz.toFixed(3)).appendTo(row);
-    $("<span>").text("(" + diff.toFixed(2) + "%)").addClass(style).appendTo(lastCell);
+    $("<td>").text(result.lazy.name).appendTo(row);
+    $("<td>").text(result.underscore.hz.toFixed(2)).appendTo(row);
+    $("<td>").text(result.lazy.hz.toFixed(2)).addClass(style).appendTo(row);
   }
 
-  function updateChart() {
-    barChart = barChart || document.getElementById("benchmark-results-chart");
-    // $(barChart).height(100 + (benchmarkResults.length * 50));
-    HighTables.renderChart(barChart);
+  function updateChart(count) {
+    if (!count) {
+      return;
+    }
+    var chart = document.getElementById("benchmark-results-chart-" + count);
+    HighTables.renderChart(chart);
+  }
+
+  function updateCharts() {
+    updateChart(10);
+    updateChart(100);
+    updateChart(1000);
   }
 
   function sortResults() {
     $("tr.benchmark-result").remove();
 
-    Lazy(benchmarkResults)
-      .sortBy(function(r) { return percentDifference(r.lazy.hz, r.underscore.hz); })
-      .each(function(result) {
-        addBenchmarkResultToTable(result);
-      });
+    for (var key in benchmarkResults) {
+      Lazy(benchmarkResults[key])
+        .sortBy(function(r) { return r.lazy.hz; })
+        .each(function(result) {
+          addBenchmarkResultToTable(key, result);
+        });
+    }
 
-    updateChart();
+    updateCharts();
     finishedLoading();
   }
 
@@ -67,15 +86,23 @@
     };
   };
 
-  window.compareToUnderscore = function(description, specs, shouldMatch) {
-    if (shouldMatch !== false) {
+  window.compareToUnderscore = function(description, options) {
+    var arrays = Lazy(options.arrays || options.arraySizes || [10, 100, 1000]).map(function(size) {
+      return (typeof size === "number") ? getOrCreateArray(size) : size;
+    });
+
+    var smallArray = arrays.first();
+
+    if (options.shouldMatch !== false) {
       it("returns the same result as underscore for '" + description + "'", function() {
-        expect(specs.lazy()).toEqual(specs.underscore());
+        expect(options.lazy(smallArray)).toEqual(options.underscore(smallArray));
       });
     }
 
-    benchmarkSuite.add(description, specs.lazy);
-    benchmarkSuite.add(description, specs.underscore);
+    arrays.each(function(array) {
+      benchmarkSuite.add(description + " (" + array.length + " elements)", function() { options.lazy(array); });
+      benchmarkSuite.add(description + " (" + array.length + " elements)", function() { options.underscore(array); });
+    });
   };
 
   window.onload = function() {
@@ -83,19 +110,21 @@
 
     $("nav ul li a").on("click", function() {
       var link   = $(this);
+      var nav    = link.closest("nav");
       var target = link.attr("href");
 
       // Show the section
-      $("section").hide();
+      $(nav.attr("data-sections")).hide();
       $(target).show();
 
       // Highlight the tab
-      $("li.selected").removeClass("selected");
+      $("li.selected", nav).removeClass("selected");
       link.closest("li").addClass("selected");
 
       // Refresh the chart, if necessary
-      if (barChart && $("#benchmark-results").is(":visible")) {
-        HighTables.renderChart(barChart);
+      var columnChart = $(".column-chart:visible");
+      if (columnChart.length > 0) {
+        HighTables.renderChart(columnChart[0]);
       }
 
       return false;
@@ -105,11 +134,10 @@
     benchmarkSuite.on("cycle", function(e) {
       currentResultSet.push(e.target);
       if (currentResultSet.length === 2) {
-        addBenchmarkResult({
+        updateChart(addBenchmarkResult({
           lazy: currentResultSet[0],
           underscore: currentResultSet[1]
-        });
-        updateChart();
+        }));
         currentResultSet = [];
       }
     });
