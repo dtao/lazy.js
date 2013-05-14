@@ -7,15 +7,7 @@ The primary differentiator that distinguishes lazy.js from underscore.js is **la
 
 ![lazy.js versus underscore](http://dtao.github.io/lazy.js/lib/LazyVsUnderscore.png)
 
-Let's look at some code.
-
-```javascript
-// We'll be using this array in the examples that follow.
-var array = [];
-for (var i = 1; i <= 1000; ++i) {
-  array.push(i);
-}
-```
+Now let's look at a little bit of code. (For the following snippets, let's say `array` contains the integers from 1 to 1000.)
 
 Lazy evaluation
 ---------------
@@ -29,11 +21,12 @@ function isEven(x) { return x % 2 === 0; }
  * - map(square): an extra 1000-element array
  * - map(inc): another 1000-element array
  * - filter(isEven): another 500-element array
+ * - take(5): all that just for 5 elements!
  */
 _.chain(array).map(square).map(inc).filter(isEven).take(5).value();
 
 /* With lazy.js, only ONE array is actually created. In fact, only ten elements in the source array
- * are ever iterated, because that's all it takes to get five results.
+ * are ever iterated, because that's all it takes to get the first five results.
  */
 Lazy(array).map(square).map(inc).filter(isEven).take(5).toArray();
 ```
@@ -70,8 +63,7 @@ powersOfTwo
 Available functions
 -------------------
 
-It shouldn't take long for lazy.js to reach functional parity with underscore.js. Currently the
-following functions are available:
+Currently the following functions are available:
 
 - `map`
 - `pluck`
