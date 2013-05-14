@@ -83,6 +83,21 @@ describe("Lazy", function() {
     });
   });
 
+  describe("toObject", function() {
+    it("converts an array of pairs into an object", function() {
+      var pairs = Lazy(people).map(function(p) { return [p.getName(), p]; });
+
+      expect(pairs.toObject()).toEqual({
+        "David": david,
+        "Mary": mary,
+        "Lauren": lauren,
+        "Adam": adam,
+        "Daniel": daniel,
+        "Happy": happy
+      });
+    });
+  });
+
   describe("map", function() {
     ensureLaziness(function() { Lazy(people).map(Person.getName); });
 

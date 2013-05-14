@@ -51,6 +51,15 @@
     return array;
   };
 
+  Iterator.prototype.toObject = function() {
+    var object = {};
+    this.each(function(e) {
+      object[e[0]] = e[1];
+    });
+
+    return object;
+  };
+
   Iterator.prototype.map = function(mapFn) {
     return new MapIterator(this, mapFn);
   };
