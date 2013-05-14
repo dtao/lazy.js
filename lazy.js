@@ -164,7 +164,7 @@
   };
 
   Iterator.prototype.compact = function() {
-    return new CompactIterator(this);
+    return this.filter(function(e) { return !!e; });
   };
 
   Iterator.prototype.without =
@@ -487,8 +487,8 @@
             group.push(arrays[j][i]);
           }
         }
-        action(group);
         ++i;
+        return action(group);
       });
     };
   });
@@ -496,10 +496,13 @@
   var ShuffleIterator = CachingIterator.inherit(function(parent) {
     this.each = function(action) {
       var shuffled = parent.toArray();
-      for (var i = shuffled.length - 1; i >= 0; --i) {
+      for (var i = shuffled.length - 1; i > 0; --i) {
         swap(shuffled, i, Math.floor(Math.random() * i) + 1);
+        if (action(shuffled[i]) === false) {
+          return;
+        }
       }
-      forEach(shuffled, action);
+      action(shuffled[0]);
     };
   });
 
@@ -507,19 +510,9 @@
     this.each = function(action) {
       parent.each(function(e) {
         if (e instanceof Array) {
-          recursiveForEach(e, action);
+          return recursiveForEach(e, action);
         } else {
-          action(e);
-        }
-      });
-    };
-  });
-
-  var CompactIterator = CachingIterator.inherit(function(parent) {
-    this.each = function(action) {
-      parent.each(function(e) {
-        if (e) {
-          action(e);
+          return action(e);
         }
       });
     };
@@ -603,9 +596,13 @@
   function recursiveForEach(array, fn) {
     for (var i = 0; i < array.length; ++i) {
       if (array[i] instanceof Array) {
-        recursiveForEach(array[i], fn);
+        if (recursiveForEach(array[i], fn) === false) {
+          return false;
+        }
       } else {
-        fn(array[i]);
+        if (fn(array[i]) === false) {
+          return false;
+        }
       }
     }
   }

@@ -29,6 +29,19 @@ var SpecReporter = function() {
     return row.attr("data-tt-id");
   }
 
+  function addFailureInformation(row, results) {
+    var message = Lazy(results.items_)
+      .reject(function(i) { return i.passed(); })
+      .map(function(i) { return i.message; })
+      .toArray()
+      .join("\n");
+
+    $("<div>")
+      .text(message)
+      .addClass("failure-information")
+      .appendTo(row.find("td:first-child"));
+  }
+
   this.reportSpecStarting = function(spec) {
     var table    = $("#test-results-table");
     var suiteRow = getOrCreateRowForSuite(spec.suite);
@@ -45,8 +58,12 @@ var SpecReporter = function() {
 
   this.reportSpecResults = function(spec) {
     var row   = rowsBySpecId[spec.id];
-    var style = spec.results().passed() ? "success" : "failure";
-    row.addClass(style);
+    if (spec.results().passed()) {
+      row.addClass("success");
+    } else {
+      row.addClass("failure");
+      addFailureInformation(row, spec.results());
+    }
   };
 
   this.reportSuiteResults = function(suite) {
@@ -58,5 +75,10 @@ var SpecReporter = function() {
   this.reportRunnerResults = function(runner) {
     $("#test-results-table").treetable({ expandable: true });
     $("#test-results-table").treetable("expandAll");
+
+    $(".failure-information").each(function() {
+      var indenter = $(this).closest("td").find("span.indenter");
+      $(this).css("margin-left", parseInt(indenter.css("padding-left"), 10) + 20);
+    });
   };
 };

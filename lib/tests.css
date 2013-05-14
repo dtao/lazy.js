@@ -2,29 +2,23 @@
 
 body {
   font-family: "Open Sans", sans-serif;
-  padding: 0;
+  width: 960px;
+  margin: auto;
 }
 
 header {
   height: 60px;
-  margin: 0;
   background-color: #fff;
   border-bottom: 10px solid #eee;
   color: #eee;
 }
 
 header h1 {
-  display: inline-block;
-  margin: 0;
+  margin: 0 auto;
   padding: 0;
   font-family: "Happy Monkey", cursive;
   font-size: 60px;
   line-height: 60px;
-}
-
-header h1:hover {
-  color: #ddd;
-  cursor: default;
 }
 
 a.github-ribbon {
@@ -123,12 +117,12 @@ table th,
 table td {
   padding: 0.5ex 0.5em;
   text-align: left;
-  width: 25%;
+  width: 20%;
 }
 
 table th:first-child,
 table td:first-child {
-  width: 50%;
+  width: 40%;
 }
 
 table th:nth-child(n+2),
@@ -142,12 +136,12 @@ table tr:first-child {
 
 table tr.success td:last-child {
   background: url(success.png) no-repeat right;
-  background-size: contain;
+  background-size: 24px 24px;
 }
 
 table tr.failure td:last-child {
   background: url(failure.png) no-repeat right;
-  background-size: contain;
+  background-size: 24px 24px;
 }
 
 table tr:nth-child(n+2):hover {
@@ -160,4 +154,17 @@ table td.positive {
 
 table td.negative {
   color: red;
+}
+
+.failure-information {
+  margin-top: 10px;
+  padding: 20px;
+  background-color: #fee;
+  border-left: 3px solid #b88;
+  color: red;
+  font-family: monospace;
+}
+
+table tr:hover .failure-information {
+  border-left: 3px solid red;
 }
