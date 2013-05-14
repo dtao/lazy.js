@@ -164,7 +164,7 @@
   };
 
   Iterator.prototype.compact = function() {
-    return new CompactIterator(this);
+    return this.filter(function(e) { return !!e; });
   };
 
   Iterator.prototype.without =
@@ -513,16 +513,6 @@
           return recursiveForEach(e, action);
         } else {
           return action(e);
-        }
-      });
-    };
-  });
-
-  var CompactIterator = CachingIterator.inherit(function(parent) {
-    this.each = function(action) {
-      parent.each(function(e) {
-        if (e) {
-          action(e);
         }
       });
     };
