@@ -120,12 +120,12 @@ table tr:first-child {
 }
 
 table tr.success td:last-child {
-  background: url(success.png) no-repeat top right;
+  background: url(success.png) no-repeat right;
   background-size: 24px 24px;
 }
 
 table tr.failure td:last-child {
-  background: url(failure.png) no-repeat top right;
+  background: url(failure.png) no-repeat right;
   background-size: 24px 24px;
 }
 
