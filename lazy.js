@@ -1,4 +1,4 @@
-(function(global) {
+(function(exports) {
   var Iterator = function(parent, source) {
     this.parent = parent;
     this.source = source;
@@ -537,18 +537,18 @@
     };
   });
 
-  global.Lazy = function(source) {
+  exports.Lazy = function(source) {
     if (source instanceof Iterator) {
       return source;
     }
     return new Iterator(null, source);
   };
 
-  global.Lazy.generate = function(iteratorFn) {
+  exports.Lazy.generate = function(iteratorFn) {
     return new Generator(iteratorFn);
   };
 
-  global.Lazy.range = function() {
+  exports.Lazy.range = function() {
     var start = arguments.length > 1 ? arguments[0] : 0,
         stop  = arguments.length > 1 ? arguments[1] : arguments[0],
         step  = arguments.length > 2 ? arguments[2] : 1;
@@ -617,4 +617,4 @@
     return new Array(depth).join("  ");
   }
 
-})(window);
+})(typeof exports === "undefined" ? window : exports);
