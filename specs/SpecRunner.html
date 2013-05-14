@@ -4,16 +4,18 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>Lazy.js Specs</title>
 
-  <link rel="stylesheet" type="text/css" href="lib/jasmine.css">
+  <link rel="stylesheet" type="text/css" href="lib/jquery.treetable.css">
   <link rel="stylesheet" type="text/css" href="lib/tests.css">
 
   <script type="text/javascript" src="lib/jasmine.js"></script>
-  <script type="text/javascript" src="lib/jasmine-html.js"></script>
   <script type="text/javascript" src="lib/benchmark.js"></script>
   <script type="text/javascript" src="lib/underscore.js"></script>
   <script type="text/javascript" src="lib/jquery.js"></script>
   <script type="text/javascript" src="lib/highcharts.js"></script>
   <script type="text/javascript" src="lib/hightables.js"></script>
+  <script type="text/javascript" src="lib/jquery.treetable.js"></script>
+  <script type="text/javascript" src="lib/markdown-js.js"></script>
+  <script type="text/javascript" src="support/spec_reporter.js"></script>
   <script type="text/javascript" src="lib/boot.js"></script>
 
   <!-- include source files here... -->
@@ -30,13 +32,19 @@
     <h1>lazy.js</h1>
   </header>
 
-  <div id="benchmark-results" class="loading">
-    <div id="benchmark-results-chart" class="bar-chart"
+  <nav>
+    <ul>
+      <li class="selected"><a href="#benchmark-results">Benchmark Results</a></li>
+      <li><a href="#test-results">Spec Results</a></li>
+    </ul>
+  </nav>
+
+  <section id="benchmark-results" class="loading">
+    <div id="benchmark-results-chart" class="column-chart"
       data-title="Ops/second - lazy.js versus underscore.js"
       data-source="#benchmark-results-table"
       data-transpose="true"
-      data-options="benchmarkChartOptions"
-      style="height: 0;">
+      data-options="benchmarkChartOptions">
     </div>
 
     <table id="benchmark-results-table" class="empty">
@@ -46,7 +54,16 @@
         <th>Underscore.js</th>
       </tr>
     </table>
-  </div>
+  </section>
+
+  <section id="test-results" style="display: none;">
+    <table id="test-results-table" class="empty">
+      <tr>
+        <th>Test</th>
+        <th>Success</th>
+      </tr>
+    </table>
+  </section>
 </body>
 
 </html>
