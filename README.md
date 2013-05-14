@@ -94,6 +94,7 @@ Currently the following functions are available:
 - `every` (aka `all`)
 - `some` (aka `any`)
 - `indexOf`
+- `lastIndexOf`
 - `contains`
 - `min`
 - `max`

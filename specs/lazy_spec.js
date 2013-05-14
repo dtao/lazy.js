@@ -521,6 +521,21 @@ describe("Lazy", function() {
     });
   });
 
+  describe("lastIndexOf", function() {
+    it("returns the last index of the specified element in the collection", function() {
+      var numbers = [0, 1, 2, 3, 2, 1, 0];
+      expect(Lazy(numbers).lastIndexOf(1)).toEqual(5);
+    });
+
+    it("traverses the collection from the tail end", function() {
+      var names = Lazy(people).map(Person.getName);
+      expect(Lazy(names).lastIndexOf("Daniel")).toEqual(4);
+
+      // should only have touched Happy and Daniel
+      expect(Person.objectsTouched).toEqual(2);
+    });
+  });
+
   describe("contains", function() {
     it("returns true if the collection contains the specified element", function() {
       expect(Lazy(people).contains(adam)).toBe(true);
