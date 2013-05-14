@@ -2,21 +2,44 @@
 
 body {
   font-family: "Open Sans", sans-serif;
+  padding: 0;
 }
 
 header {
   height: 60px;
+  margin: 0;
   background-color: #fff;
   border-bottom: 10px solid #eee;
   color: #eee;
 }
 
 header h1 {
-  margin: 0 auto;
+  display: inline-block;
+  margin: 0;
   padding: 0;
   font-family: "Happy Monkey", cursive;
   font-size: 60px;
   line-height: 60px;
+}
+
+header h1:hover {
+  color: #ddd;
+  cursor: default;
+}
+
+a.github-ribbon {
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: 0;
+  height: 149px;
+  width: 149px;
+  background: url(https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png);
+}
+
+a.github-ribbon:hover {
+  background: url(https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png);
 }
 
 nav ul {
