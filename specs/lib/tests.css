@@ -2,6 +2,8 @@
 
 body {
   font-family: "Open Sans", sans-serif;
+  width: 960px;
+  margin: auto;
 }
 
 header {
