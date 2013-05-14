@@ -233,6 +233,22 @@
     return index;
   };
 
+  Iterator.prototype.sortedIndex = function(value) {
+    var lower = 0;
+    var upper = this.length();
+    var i;
+
+    while (lower < upper) {
+      i = (lower + upper) >>> 1;
+      if (this.get(i) < value) {
+        lower = i + 1;
+      } else {
+        upper = i;
+      }
+    }
+    return lower;
+  };
+
   Iterator.prototype.contains = function(value) {
     return this.indexOf(value) !== -1;
   };

@@ -734,6 +734,18 @@ describe("Lazy", function() {
       arrays: [zeroTo100]
     });
 
+    compareToUnderscore("map -> indexOf", {
+      lazy: function(arr) { return Lazy(arr).map(inc).indexOf(arr[arr.length / 2]); },
+      underscore: function(arr) { return _.chain(arr).map(inc).indexOf(arr[arr.length / 2]).value(); },
+      lodash: function(arr) { return lodash(arr).map(inc).indexOf(arr[arr.length / 2]); }
+    });
+
+    compareToUnderscore("map -> sortedIndex", {
+      lazy: function(arr) { return Lazy(arr).map(inc).sortedIndex(arr[arr.length / 2]); },
+      underscore: function(arr) { return _.chain(arr).map(inc).sortedIndex(arr[arr.length / 2]).value(); },
+      lodash: function(arr) { return lodash(arr).map(inc).sortedIndex(arr[arr.length / 2]); }
+    });
+
     compareToUnderscore("map -> filter", {
       lazy: function(arr) { return Lazy(arr).map(inc).filter(isEven).toArray(); },
       underscore: function(arr) { return _.chain(arr).map(inc).filter(isEven).value(); },
