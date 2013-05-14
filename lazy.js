@@ -535,8 +535,6 @@
   });
 
   var Generator = Iterator.inherit(function(generatorFn) {
-    Iterator.call(this);
-
     this.get = generatorFn;
 
     this.length = function() {
