@@ -140,11 +140,14 @@ table td.negative {
 }
 
 .failure-information {
+  margin-top: 10px;
   padding: 20px;
   background-color: #fee;
+  border-left: 3px solid #b88;
+  color: red;
   font-family: monospace;
 }
 
 table tr:hover .failure-information {
-  background-color: #def;
+  border-left: 3px solid red;
 }

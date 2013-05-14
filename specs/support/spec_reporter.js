@@ -31,6 +31,7 @@ var SpecReporter = function() {
 
   function addFailureInformation(row, results) {
     var message = Lazy(results.items_)
+      .reject(function(i) { return i.passed(); })
       .map(function(i) { return i.message; })
       .toArray()
       .join("\n");

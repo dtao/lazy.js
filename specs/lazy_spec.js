@@ -741,6 +741,16 @@ describe("Lazy", function() {
       underscore: function(arr) { return _.chain(arr).filter(isEven).first(5).value(); }
     });
 
+    compareToUnderscore("map -> drop -> take", {
+      lazy: function(arr) { return Lazy(arr).map(inc).drop(5).take(5).toArray(); },
+      underscore: function(arr) { return _.chain(arr).map(inc).rest(5).take(5).value(); }
+    });
+
+    compareToUnderscore("filter -> drop -> take", {
+      lazy: function(arr) { return Lazy(arr).filter(isEven).drop(5).take(5).toArray(); },
+      underscore: function(arr) { return _.chain(arr).filter(isEven).rest(5).first(5).value(); }
+    });
+
     compareToUnderscore("flatten -> take", {
       lazy: function(arr) { return Lazy(arr).flatten().take(5).toArray(); },
       underscore: function(arr) { return _.chain(arr).flatten().first(5).value(); },
