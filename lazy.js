@@ -51,6 +51,15 @@
     return array;
   };
 
+  Iterator.prototype.toObject = function() {
+    var object = {};
+    this.each(function(e) {
+      object[e[0]] = e[1];
+    });
+
+    return object;
+  };
+
   Iterator.prototype.map = function(mapFn) {
     return new MapIterator(this, mapFn);
   };
@@ -216,6 +225,14 @@
     return foundIndex;
   };
 
+  Iterator.prototype.lastIndexOf = function(value) {
+    var index = this.reverse().indexOf(value);
+    if (index !== -1) {
+      index = this.length() - index - 1;
+    }
+    return index;
+  };
+
   Iterator.prototype.contains = function(value) {
     return this.indexOf(value) !== -1;
   };
@@ -330,7 +347,9 @@
     this.each = function(action) {
       var length = parent.length();
       for (var i = length - 1; i >= 0; --i) {
-        action(parent.get(i));
+        if (action(parent.get(i)) === false) {
+          break;
+        }
       }
     };
   });

@@ -83,6 +83,21 @@ describe("Lazy", function() {
     });
   });
 
+  describe("toObject", function() {
+    it("converts an array of pairs into an object", function() {
+      var pairs = Lazy(people).map(function(p) { return [p.getName(), p]; });
+
+      expect(pairs.toObject()).toEqual({
+        "David": david,
+        "Mary": mary,
+        "Lauren": lauren,
+        "Adam": adam,
+        "Daniel": daniel,
+        "Happy": happy
+      });
+    });
+  });
+
   describe("map", function() {
     ensureLaziness(function() { Lazy(people).map(Person.getName); });
 
@@ -506,6 +521,21 @@ describe("Lazy", function() {
     });
   });
 
+  describe("lastIndexOf", function() {
+    it("returns the last index of the specified element in the collection", function() {
+      var numbers = [0, 1, 2, 3, 2, 1, 0];
+      expect(Lazy(numbers).lastIndexOf(1)).toEqual(5);
+    });
+
+    it("traverses the collection from the tail end", function() {
+      var names = Lazy(people).map(Person.getName);
+      expect(Lazy(names).lastIndexOf("Daniel")).toEqual(4);
+
+      // should only have touched Happy and Daniel
+      expect(Person.objectsTouched).toEqual(2);
+    });
+  });
+
   describe("contains", function() {
     it("returns true if the collection contains the specified element", function() {
       expect(Lazy(people).contains(adam)).toBe(true);
@@ -612,12 +642,12 @@ describe("Lazy", function() {
     function square(x) { return x * x; }
     function isEven(x) { return x % 2 === 0; }
 
-    var arr = Lazy.range(1000).toArray();
-    var nextArr = Lazy.range(1000, 2000).toArray();
-    var between = Lazy.range(500, 1500).toArray();
+    var arr = Lazy.range(100).toArray();
+    var nextArr = Lazy.range(100, 200).toArray();
+    var between = Lazy.range(50, 150).toArray();
 
     var lotsOfDupes = Lazy.generate(function() { return Math.floor(Math.random() * 10) + 1; })
-      .take(1000)
+      .take(100)
       .toArray();
 
     var jaggedArray = [
