@@ -369,7 +369,7 @@
     this.each = function(action) {
       var i = 0;
       parent.each(function(e) {
-        if (i++ < count) { return; }
+        if (i++ < count) { return false; }
         return action(e);
       });
     };
