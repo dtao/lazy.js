@@ -386,9 +386,9 @@
   });
   
   FilteredSequence.prototype.each = function(fn) {
-    var self = this;
-    self.parent.each(function(e) {
-      if (self.filterFn(e)) {
+    var filterFn = this.filterFn;
+    this.parent.each(function(e) {
+      if (filterFn(e)) {
         return fn(e);
       }
     });
