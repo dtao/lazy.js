@@ -3,7 +3,7 @@
   var RUN_PERFORMANCE_TESTS = true;
 
   var benchmarkSuite = new Benchmark.Suite();
-  Benchmark.options.maxTime = 0.1;
+  Benchmark.options.maxTime = 1;
 
   var jasmineEnv = jasmine.getEnv();
   jasmineEnv.updateInterval = 1000;
