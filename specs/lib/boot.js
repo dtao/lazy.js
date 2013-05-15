@@ -24,6 +24,15 @@
     return arrays[size];
   }
 
+  function addCommas(number) {
+    var parts = number.toString().split(".");
+    var pattern = /(\d+)(\d{3})/;
+    while (pattern.test(parts[0])) {
+        parts[0] = parts[0].replace(pattern, '$1,$2');
+    }
+    return parts.join(".");
+  }
+
   function finishedLoading() {
     $(".benchmark-results-section").removeClass("loading");
   }
@@ -42,9 +51,9 @@
                 result.lazy.hz > result.lodash.hz ? "positive" : "negative";
 
     $("<td>").text(result.lazy.name).appendTo(row);
-    $("<td>").text(result.underscore.hz.toFixed(2)).appendTo(row);
-    $("<td>").text(result.lodash.hz.toFixed(2)).appendTo(row);
-    $("<td>").text(result.lazy.hz.toFixed(2)).addClass(style).appendTo(row);
+    $("<td>").text(addCommas(result.underscore.hz.toFixed(2))).appendTo(row);
+    $("<td>").text(addCommas(result.lodash.hz.toFixed(2))).appendTo(row);
+    $("<td>").text(addCommas(result.lazy.hz.toFixed(2))).addClass(style).appendTo(row);
   }
 
   function updateChart(count) {
