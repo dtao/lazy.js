@@ -494,12 +494,22 @@ describe("Lazy", function() {
       var firstGirl = Lazy(people).filter(Person.isFemale).first();
       expect(firstGirl).toEqual(mary);
     });
+
+    it("returns the first N elements in the collection", function() {
+      var firstTwo = Lazy(people).first(2).toArray();
+      expect(firstTwo).toEqual([david, mary]);
+    });
   });
 
   describe("last", function() {
     it("returns the last element in the collection", function() {
       var lastBoy = Lazy(people).filter(Person.isMale).last();
       expect(lastBoy).toEqual(daniel);
+    });
+
+    it("returns the last N elements in the collection", function() {
+      var lastTwo = Lazy(people).last(2).toArray();
+      expect(lastTwo).toEqual([daniel, happy]);
     });
 
     it("iterates from the tail if possible", function() {
@@ -785,6 +795,18 @@ describe("Lazy", function() {
       lazy: function(arr) { return Lazy(arr).filter(isEven).take(5); },
       underscore: function(arr) { return _.chain(arr).filter(isEven).first(5).value(); },
       lodash: function(arr) { return lodash(arr).filter(isEven).first(5).value(); }
+    });
+
+    compareToUnderscore("map -> map -> filter", {
+      lazy: function(arr) { return Lazy(arr).map(inc).map(square).filter(isEven); },
+      underscore: function(arr) { return _.chain(arr).map(inc).map(square).filter(isEven).value(); },
+      lodash: function(arr) { return lodash(arr).map(inc).map(square).filter(isEven).value(); }
+    });
+
+    compareToUnderscore("filter -> drop -> take", {
+      lazy: function(arr) { return Lazy(arr).filter(isEven).drop(5).take(5); },
+      underscore: function(arr) { return _.chain(arr).filter(isEven).rest(5).first(5).value(); },
+      lodash: function(arr) { return lodash(arr).filter(isEven).rest(5).first(5).value(); }
     });
 
     compareToUnderscore("map -> drop -> take", {

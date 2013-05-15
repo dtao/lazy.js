@@ -55,6 +55,7 @@
     });
   };
 
+  Sequence.prototype.select =
   Sequence.prototype.filter = function(filterFn) {
     if (this.indexed) {
       return new IndexedFilteredSequence(this, filterFn);
@@ -111,9 +112,9 @@
 
   Sequence.prototype.last = function(count) {
     if (typeof count === "undefined") {
-      return getLast(this);
+      return this.reverse().first();
     }
-    return this.reverse().first();
+    return this.reverse().take(count).reverse();
   };
 
   Sequence.prototype.findWhere = function(properties) {
@@ -775,18 +776,6 @@
     sequence.each(function(e) {
       result = e;
       return false;
-    });
-    return result;
-  }
-
-  function getLast(sequence) {
-    if (sequence.indexed) {
-      return sequence.get(sequence.length() - 1);
-    }
-
-    var result;
-    sequence.each(function(e) {
-      result = e;
     });
     return result;
   }
