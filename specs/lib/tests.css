@@ -1,4 +1,4 @@
-@import url(http://fonts.googleapis.com/css?family=Open+Sans|Happy+Monkey);
+@import url(http://fonts.googleapis.com/css?family=Chewy|Open+Sans:400,300);
 
 body {
   font-family: "Open Sans", sans-serif;
@@ -10,13 +10,12 @@ header {
   height: 60px;
   background-color: #fff;
   border-bottom: 10px solid #eee;
-  color: #eee;
 }
 
 header h1 {
   margin: 0 auto;
   padding: 0;
-  font-family: "Happy Monkey", cursive;
+  font-family: "Chewy", cursive;
   font-size: 60px;
   line-height: 60px;
 }
@@ -34,6 +33,10 @@ a.github-ribbon {
 
 a.github-ribbon:hover {
   background: url(https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png);
+}
+
+h1, h2 {
+  color: #444;
 }
 
 nav ul {
@@ -78,6 +81,16 @@ nav.subnav ul li a {
 
 nav.subnav ul li:hover a {
   color: #89a;
+}
+
+section h1 {
+  font-size: 40px;
+  font-weight: 300;
+}
+
+section h2 {
+  font-size: 32px;
+  font-weight: 300;
 }
 
 figure {
