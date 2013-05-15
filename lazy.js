@@ -551,7 +551,7 @@
   UniqueSequence.prototype.each = function(fn) {
     var set = {};
     this.parent.each(function(e) {
-      if (e in set) { return; }
+      if (set[e]) { return; }
       set[e] = true;
       return fn(e);
     });
