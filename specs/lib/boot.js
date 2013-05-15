@@ -3,19 +3,18 @@
   var RUN_PERFORMANCE_TESTS = true;
 
   var benchmarkSuite = new Benchmark.Suite();
-  Benchmark.options.maxTime = 0.1;
-
-  window.lodash = _.noConflict();
+  Benchmark.options.maxTime = 1;
 
   var jasmineEnv = jasmine.getEnv();
   jasmineEnv.updateInterval = 1000;
 
   var specReporter = new SpecReporter();
-
   jasmineEnv.addReporter(specReporter);
 
   var arrays = {};
   var benchmarkResults = {};
+
+  window.lodash = _.noConflict();
 
   function getOrCreateArray(size) {
     if (!arrays[size]) {
@@ -23,6 +22,15 @@
     }
 
     return arrays[size];
+  }
+
+  function addCommas(number) {
+    var parts = number.toString().split(".");
+    var pattern = /(\d+)(\d{3})/;
+    while (pattern.test(parts[0])) {
+        parts[0] = parts[0].replace(pattern, '$1,$2');
+    }
+    return parts.join(".");
   }
 
   function finishedLoading() {
@@ -43,9 +51,9 @@
                 result.lazy.hz > result.lodash.hz ? "positive" : "negative";
 
     $("<td>").text(result.lazy.name).appendTo(row);
-    $("<td>").text(result.underscore.hz.toFixed(2)).appendTo(row);
-    $("<td>").text(result.lodash.hz.toFixed(2)).appendTo(row);
-    $("<td>").text(result.lazy.hz.toFixed(2)).addClass(style).appendTo(row);
+    $("<td>").text(addCommas(result.underscore.hz.toFixed(2))).appendTo(row);
+    $("<td>").text(addCommas(result.lodash.hz.toFixed(2))).appendTo(row);
+    $("<td>").text(addCommas(result.lazy.hz.toFixed(2))).addClass(style).appendTo(row);
   }
 
   function updateChart(count) {
@@ -72,26 +80,45 @@
   };
 
   window.compareToUnderscore = function(description, options) {
-    var arrays = Lazy(options.arrays || [10, 100, 1000]).map(function(size) {
-      return (typeof size === "number") ? getOrCreateArray(size) : size;
-    });
+    var arrays = options.arrays ?
+      Lazy(options.arrays) :
+      Lazy([10, 100, 1000]).map(function(size) { return getOrCreateArray(size) });
 
     var smallArray = arrays.first();
+    var matcher    = options.valueOnly ? "toEqual" : "toMatchSequentially";
 
     if (options.shouldMatch !== false) {
       it("returns the same result as underscore for '" + description + "'", function() {
-        expect(options.lazy(smallArray)).toEqual(options.underscore(smallArray));
+        expect(options.lazy(smallArray))[matcher](options.underscore(smallArray));
       });
 
       it("returns the same result as lodash for '" + description + "'", function() {
-        expect(options.lazy(smallArray)).toEqual(options.lodash(smallArray));
+        expect(options.lazy(smallArray))[matcher](options.lodash(smallArray));
       });
     }
 
     arrays.each(function(array) {
-      benchmarkSuite.add(description, function() { options.lazy(array); });
-      benchmarkSuite.add(description, function() { options.underscore(array); });
-      benchmarkSuite.add(description, function() { options.lodash(array); });
+      if (options.valueOnly) {
+        benchmarkSuite.add(description, function() { options.lazy(array); });
+        benchmarkSuite.add(description, function() { options.underscore(array); });
+        benchmarkSuite.add(description, function() { options.lodash(array); });
+
+      } else {
+        benchmarkSuite.add(description, function() {
+          var result = options.lazy(array);
+          result.each(function(e) {});
+        });
+
+        benchmarkSuite.add(description, function() {
+          var result = options.underscore(array);
+          for (var i = 0; i < result.length; ++i) {}
+        });
+
+        benchmarkSuite.add(description, function() {
+          var result = options.lodash(array);
+          for (var i = 0; i < result.length; ++i) {}
+        });
+      }
 
       // Essentially, tag these for later reference.
       benchmarkSuite[benchmarkSuite.length - 1].elementCount = array.length;

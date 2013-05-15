@@ -20,7 +20,7 @@
   <script type="text/javascript" src="specs/lib/boot.js"></script>
 
   <!-- include source files here... -->
-  <script type="text/javascript" src="lazy.js"></script>
+  <script type="text/javascript" src="lazy.min.js"></script>
 
   <!-- include spec files here... -->
   <script type="text/javascript" src="specs/support/person.js"></script>
@@ -49,19 +49,19 @@
 
     <p>The primary differentiator that distinguishes lazy.js from underscore.js is <strong>lazy evaluation</strong>, which directly translates to superior performance in many cases, especially when dealing with large collections.</p>
 
-    <p>For example, the following chart illustrates the performance of lazy.js versus underscore.js for several common operations using arrays with 10 elements each on Chrome:</p>
+    <p>For example, the following chart illustrates the performance of lazy.js versus underscore.js and <a href="http://lodash.com/">Lo-Dash</a> for several common operations using arrays with 10 elements each on Chrome:</p>
 
     <figure>
-      <img src="http://dtao.github.io/lazy.js/specs/lib/LazyVsUnderscore10Elements.png" alt="lazy.js versus underscore" />
+      <img src="http://dtao.github.io/lazy.js/specs/lib/LazyVsLodash10Elements.png" alt="lazy.js versus underscore.js/Lo-Dash" />
     </figure>
 
     <p>You can see that the performance difference becomes much more significant for arrays with 100 elements:</p>
 
     <figure>
-      <img src="http://dtao.github.io/lazy.js/specs/lib/LazyVsUnderscore100Elements.png" alt="lazy.js versus underscore" />
+      <img src="http://dtao.github.io/lazy.js/specs/lib/LazyVsLodash100Elements.png" alt="lazy.js versus underscore.js/Lo-Dash" />
     </figure>
 
-    <p>This difference <a href="http://dtao.github.io/lazy.js/specs/lib/LazyVsUnderscore1000Elements.png">gets crazier and crazier</a> as you increase the sizes of the collections involved.</p>
+    <p>This difference <a href="http://dtao.github.io/lazy.js/specs/lib/LazyVsLodash1000Elements.png">gets crazier and crazier</a> as you increase the sizes of the collections involved.</p>
 
     <p>Now let's look at a little bit of code. (For the following snippets, let's say <code>array</code> contains the integers from 1 to 1000.)</p>
 
@@ -147,6 +147,7 @@
       <li><code>some</code> (aka <code>any</code>)</li>
       <li><code>indexOf</code></li>
       <li><code>lastIndexOf</code></li>
+      <li><code>sortedIndex</code></li>
       <li><code>contains</code></li>
       <li><code>min</code></li>
       <li><code>max</code></li>
