@@ -603,9 +603,9 @@
   });
 
   WithoutSequence.prototype.each = function(fn) {
-    var set = new Set(this.values);
+    var set = createSet(this.values);
     this.parent.each(function(e) {
-      if (!set.contains(e)) {
+      if (!set[e]) {
         return fn(e);
       }
     });
@@ -617,19 +617,36 @@
   });
 
   UnionSequence.prototype.each = function(fn) {
-    var set = new Set();
+    var set = {},
+        done = false;
+
     this.parent.each(function(e) {
-      if (!set.contains(e)) {
-        set.add(e);
-        fn(e);
+      if (!set[e]) {
+        set[e] = true;
+        if (fn(e) === false) {
+          done = true;
+          return false;
+        }
       }
     });
-    Lazy(this.arrays).flatten().each(function(e) {
-      if (!set.contains(e)) {
-        set.add(e);
-        fn(e);
-      }
-    });
+
+    if (!done) {
+      Lazy(this.arrays).each(function(array) {
+        if (done) {
+          return false;
+        }
+
+        Lazy(array).each(function(e) {
+          if (!set[e]) {
+            set[e] = true;
+            if (fn(e) === false) {
+              done = true;
+              return false;
+            }
+          }
+        })
+      });
+    }
   };
 
   var IntersectionSequence = CachingSequence.inherit(function(parent, arrays) {
@@ -639,12 +656,12 @@
 
   IntersectionSequence.prototype.each = function(fn) {
     var sets = Lazy(this.arrays)
-      .map(function(values) { return new Set(values); })
+      .map(function(values) { return createSet(values); })
       .toArray();
 
     this.parent.each(function(e) {
       for (var i = 0; i < sets.length; ++i) {
-        if (!sets[i].contains(e)) {
+        if (!sets[i][e]) {
           return;
         }
       }
@@ -716,19 +733,12 @@
 
   /*** Useful utility methods ***/
 
-  var Set = function(values) {
-    var object = {};
+  function createSet(values) {
+    var set = {};
     Lazy(values || []).flatten().each(function(e) {
-      object[e] = true;
+      set[e] = true;
     });
-
-    this.add = function(value) {
-      object[value] = true;
-    };
-
-    this.contains = function(value) {
-      return object[value];
-    };
+    return set;
   };
 
   function compare(x, y, fn) {
