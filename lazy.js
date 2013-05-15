@@ -493,17 +493,19 @@
   };
 
   var ShuffledSequence = CachingSequence.inherit(function(parent) {
-    this.each = function(action) {
-      var shuffled = parent.toArray();
-      for (var i = shuffled.length - 1; i > 0; --i) {
-        swap(shuffled, i, Math.floor(Math.random() * i) + 1);
-        if (action(shuffled[i]) === false) {
-          return;
-        }
-      }
-      action(shuffled[0]);
-    };
+    this.parent = parent;
   });
+
+  ShuffledSequence.prototype.each = function(fn) {
+    var shuffled = this.parent.toArray();
+    for (var i = shuffled.length - 1; i > 0; --i) {
+      swap(shuffled, i, Math.floor(Math.random() * i) + 1);
+      if (fn(shuffled[i]) === false) {
+        return;
+      }
+    }
+    fn(shuffled[0]);
+  };
 
   // TODO: This should really return an object, not an jagged array. Will
   // require a bit of rework -- but hopefully not too much!
@@ -543,106 +545,124 @@
   });
 
   var UniqueSequence = CachingSequence.inherit(function(parent) {
-    this.each = function(action) {
-      var set = {};
-      parent.each(function(e) {
-        if (e in set) { return; }
-        set[e] = true;
-        return action(e);
-      });
-    };
+    this.parent = parent;
   });
+
+  UniqueSequence.prototype.each = function(fn) {
+    var set = {};
+    this.parent.each(function(e) {
+      if (e in set) { return; }
+      set[e] = true;
+      return fn(e);
+    });
+  };
 
   var FlattenedSequence = CachingSequence.inherit(function(parent) {
-    this.each = function(action) {
-      parent.each(function(e) {
-        if (e instanceof Array) {
-          return recursiveForEach(e, action);
-        } else {
-          return action(e);
-        }
-      });
-    };
+    this.parent = parent;
   });
+
+  FlattenedSequence.prototype.each = function(fn) {
+    this.parent.each(function(e) {
+      if (e instanceof Array) {
+        return recursiveForEach(e, fn);
+      } else {
+        return fn(e);
+      }
+    });
+  };
 
   var WithoutSequence = CachingSequence.inherit(function(parent, values) {
-    this.each = function(action) {
-      var set = new Set(values);
-      parent.each(function(e) {
-        if (!set.contains(e)) {
-          return action(e);
-        }
-      });
-    };
+    this.parent = parent;
+    this.values = values;
   });
+
+  WithoutSequence.prototype.each = function(fn) {
+    var set = new Set(this.values);
+    this.parent.each(function(e) {
+      if (!set.contains(e)) {
+        return fn(e);
+      }
+    });
+  };
 
   var UnionSequence = CachingSequence.inherit(function(parent, arrays) {
-    this.each = function(action) {
-      var set = new Set();
-      parent.each(function(e) {
-        if (!set.contains(e)) {
-          set.add(e);
-          action(e);
-        }
-      });
-      Lazy(arrays).flatten().each(function(e) {
-        if (!set.contains(e)) {
-          set.add(e);
-          action(e);
-        }
-      });
-    };
+    this.parent = parent;
+    this.arrays = arrays;
   });
+
+  UnionSequence.prototype.each = function(fn) {
+    var set = new Set();
+    this.parent.each(function(e) {
+      if (!set.contains(e)) {
+        set.add(e);
+        fn(e);
+      }
+    });
+    Lazy(this.arrays).flatten().each(function(e) {
+      if (!set.contains(e)) {
+        set.add(e);
+        fn(e);
+      }
+    });
+  };
 
   var IntersectionSequence = CachingSequence.inherit(function(parent, arrays) {
-    this.each = function(action) {
-      var sets = Lazy(arrays)
-        .map(function(values) { return new Set(values); })
-        .toArray();
-
-      parent.each(function(e) {
-        for (var i = 0; i < sets.length; ++i) {
-          if (!sets[i].contains(e)) {
-            return;
-          }
-        }
-        action(e);
-      });
-    };
+    this.parent = parent;
+    this.arrays = arrays;
   });
+
+  IntersectionSequence.prototype.each = function(fn) {
+    var sets = Lazy(this.arrays)
+      .map(function(values) { return new Set(values); })
+      .toArray();
+
+    this.parent.each(function(e) {
+      for (var i = 0; i < sets.length; ++i) {
+        if (!sets[i].contains(e)) {
+          return;
+        }
+      }
+      return fn(e);
+    });
+  };
 
   var ZippedSequence = CachingSequence.inherit(function(parent, arrays) {
-    this.each = function(action) {
-      var i = 0;
-      parent.each(function(e) {
-        var group = [e];
-        for (var j = 0; j < arrays.length; ++j) {
-          if (arrays[j].length > i) {
-            group.push(arrays[j][i]);
-          }
-        }
-        ++i;
-        return action(group);
-      });
-    };
+    this.parent = parent;
+    this.arrays = arrays;
   });
+
+  ZippedSequence.prototype.each = function(fn) {
+    var arrays = this.arrays,
+        i = 0;
+    this.parent.each(function(e) {
+      var group = [e];
+      for (var j = 0; j < arrays.length; ++j) {
+        if (arrays[j].length > i) {
+          group.push(arrays[j][i]);
+        }
+      }
+      ++i;
+      return fn(group);
+    });
+  };
 
   var GeneratedSequence = Sequence.inherit(function(generatorFn) {
     this.get = generatorFn;
-
-    this.length = function() {
-      throw "Cannot get the length of a generated sequence.";
-    };
-
-    this.each = function(action) {
-      var i = 0;
-      while (true) {
-        if (action(generatorFn(i++)) === false) {
-          break;
-        }
-      }
-    };
   });
+
+  GeneratedSequence.prototype.length = function() {
+    throw "Cannot get the length of a generated sequence.";
+  };
+
+  GeneratedSequence.prototype.each = function(fn) {
+    var generatorFn = this.get,
+        i = 0;
+    while (true) {
+      if (fn(generatorFn(i++)) === false) {
+        break;
+      }
+    }
+  };
 
   exports.Lazy = function(source) {
     if (source instanceof Lazy.Sequence) {
