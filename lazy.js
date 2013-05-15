@@ -56,7 +56,11 @@
   };
 
   Sequence.prototype.filter = function(filterFn) {
-    return new FilteredSequence(this, filterFn);
+    if (this.indexed) {
+      return new IndexedFilteredSequence(this, filterFn);
+    } else {
+      return new FilteredSequence(this, filterFn);
+    }
   };
 
   Sequence.prototype.reject = function(rejectFn) {
@@ -308,9 +312,7 @@
     return this.source.slice(0);
   };
 
-  var IndexedSequence = Sequence.inherit(function(parent) {
-    this.parent = parent;
-  });
+  var IndexedSequence = Sequence.inherit(function() {});
 
   IndexedSequence.inherit = function(ctor) {
     ctor.prototype = new IndexedSequence();
@@ -337,9 +339,7 @@
     }
   };
 
-  var CachingSequence = Sequence.inherit(function(parent) {
-    this.parent = parent;
-  });
+  var CachingSequence = Sequence.inherit(function() {});
 
   CachingSequence.inherit = function(ctor) {
     ctor.prototype = new CachingSequence();
@@ -368,10 +368,10 @@
     this.mapFn  = mapFn;
   });
 
-  MappedSequence.prototype.each = function(action) {
-    var self = this;
-    self.parent.each(function(e) {
-      return action(self.mapFn(e));
+  MappedSequence.prototype.each = function(fn) {
+    var mapFn = this.mapFn;
+    this.parent.each(function(e) {
+      return fn(mapFn(e));
     });
   };
 
@@ -396,6 +396,26 @@
         return fn(e);
       }
     });
+  };
+
+  var IndexedFilteredSequence = CachingSequence.inherit(function(parent, filterFn) {
+    this.parent   = parent;
+    this.filterFn = filterFn;
+  });
+
+  IndexedFilteredSequence.prototype.each = function(fn) {
+    var parent = this.parent,
+        filterFn = this.filterFn,
+        length = this.parent.length(),
+        i = -1,
+        e;
+
+    while (++i < length) {
+      e = parent.get(i);
+      if (filterFn(e) && fn(e) === false) {
+        break;
+      }
+    }
   };
 
   var ReversedSequence = CachingSequence.inherit(function(parent) {
@@ -513,7 +533,7 @@
   // TODO: This should really return an object, not an jagged array. Will
   // require a bit of rework -- but hopefully not too much!
   var GroupedSequence = CachingSequence.inherit(function(parent, keyFn) {
-    this.each = function(action) {
+    this.each = function(fn) {
       var grouped = {};
       parent.each(function(e) {
         var key = keyFn(e);
@@ -524,14 +544,16 @@
         }
       });
       for (var key in grouped) {
-        action([key, grouped[key]]);
+        if (fn([key, grouped[key]]) === false) {
+          break;
+        }
       }
     };
   });
 
   // TODO: This should return an object too (like GroupBySequence).
   var CountedSequence = CachingSequence.inherit(function(parent, keyFn) {
-    this.each = function(action) {
+    this.each = function(fn) {
       var grouped = {};
       parent.each(function(e) {
         var key = keyFn(e);
@@ -542,7 +564,7 @@
         }
       });
       for (var key in grouped) {
-        action([key, grouped[key]]);
+        fn([key, grouped[key]]);
       }
     };
   });
