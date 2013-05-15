@@ -2,12 +2,6 @@
   var Sequence = function(parent, source) {
     this.parent = parent;
     this.source = source;
-    this.depth  = parent ? parent.depth + 1 : 0;
-
-    // We'll count how many arrays we create from the root.
-    if (!this.parent) {
-      this.arraysCreated = 0;
-    }
   };
 
   Sequence.prototype.get = function(i) {
@@ -34,8 +28,12 @@
     forEach(this.source, fn);
   };
 
+  Sequence.prototype.depth = function() {
+    return this.parent ? this.parent.depth() + 1 : 0;
+  };
+
   Sequence.prototype.log = function(msg) {
-    console.log(indent(this.depth) + msg);
+    console.log(indent(this.depth()) + msg);
   };
 
   Sequence.prototype.toArray = function() {
@@ -43,10 +41,6 @@
     this.each(function(e) {
       array.push(e);
     });
-
-    // Temporarily keeping track of how many arrays get created,
-    // for testing purposes.
-    this.root().arraysCreated += 1;
 
     return array;
   };
@@ -570,6 +564,8 @@
       .take(Math.floor((stop - start) / step));
   };
 
+  exports.Lazy.Sequence = Sequence;
+
   /*** Useful utility methods ***/
 
   var Set = function(values) {
@@ -600,7 +596,8 @@
   }
 
   function forEach(array, fn) {
-    for (var i = 0; i < array.length; ++i) {
+    var i = -1;
+    while (++i < array.length) {
       if (fn(array[i]) === false) {
         break;
       }
@@ -608,7 +605,8 @@
   }
 
   function recursiveForEach(array, fn) {
-    for (var i = 0; i < array.length; ++i) {
+    var i = -1;
+    while (++i < array.length) {
       if (array[i] instanceof Array) {
         if (recursiveForEach(array[i], fn) === false) {
           return false;

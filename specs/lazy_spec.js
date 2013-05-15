@@ -5,7 +5,15 @@ describe("Lazy", function() {
       lauren,
       adam,
       daniel,
-      happy;
+      happy,
+      originalToArray = Lazy.Sequence.prototype.toArray,
+      arraysCreated;
+
+  Lazy.Sequence.prototype.toArray = function() {
+    var result = originalToArray.apply(this);
+    arraysCreated += 1;
+    return result;
+  };
 
   beforeEach(function() {
     people = [
@@ -29,6 +37,8 @@ describe("Lazy", function() {
         return success && expected.length === i;
       }
     });
+
+    arraysCreated = 0;
   });
 
   function ensureLaziness(action) {
@@ -209,7 +219,7 @@ describe("Lazy", function() {
     it("does not create an array to index into the collection", function() {
       var reversed = Lazy(people).reverse();
       var lastPerson = reversed.get(0);
-      expect(reversed.arrayCount()).toEqual(0);
+      expect(arraysCreated).toEqual(0);
     });
   });
 
@@ -641,7 +651,7 @@ describe("Lazy", function() {
 
         ages.toArray();
 
-        expect(ages.arrayCount()).toEqual(1);
+        expect(arraysCreated).toEqual(1);
       });
     });
   });
