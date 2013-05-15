@@ -5,17 +5,16 @@
   var benchmarkSuite = new Benchmark.Suite();
   Benchmark.options.maxTime = 0.1;
 
-  window.lodash = _.noConflict();
-
   var jasmineEnv = jasmine.getEnv();
   jasmineEnv.updateInterval = 1000;
 
   var specReporter = new SpecReporter();
-
   jasmineEnv.addReporter(specReporter);
 
   var arrays = {};
   var benchmarkResults = {};
+
+  window.lodash = _.noConflict();
 
   function getOrCreateArray(size) {
     if (!arrays[size]) {
@@ -72,26 +71,45 @@
   };
 
   window.compareToUnderscore = function(description, options) {
-    var arrays = Lazy(options.arrays || [10, 100, 1000]).map(function(size) {
-      return (typeof size === "number") ? getOrCreateArray(size) : size;
-    });
+    var arrays = options.arrays ?
+      Lazy(options.arrays) :
+      Lazy([10, 100, 1000]).map(function(size) { return getOrCreateArray(size) });
 
     var smallArray = arrays.first();
+    var matcher    = options.valueOnly ? "toEqual" : "toMatchSequentially";
 
     if (options.shouldMatch !== false) {
       it("returns the same result as underscore for '" + description + "'", function() {
-        expect(options.lazy(smallArray)).toEqual(options.underscore(smallArray));
+        expect(options.lazy(smallArray))[matcher](options.underscore(smallArray));
       });
 
       it("returns the same result as lodash for '" + description + "'", function() {
-        expect(options.lazy(smallArray)).toEqual(options.lodash(smallArray));
+        expect(options.lazy(smallArray))[matcher](options.lodash(smallArray));
       });
     }
 
     arrays.each(function(array) {
-      benchmarkSuite.add(description, function() { options.lazy(array); });
-      benchmarkSuite.add(description, function() { options.underscore(array); });
-      benchmarkSuite.add(description, function() { options.lodash(array); });
+      if (options.valueOnly) {
+        benchmarkSuite.add(description, function() { options.lazy(array); });
+        benchmarkSuite.add(description, function() { options.underscore(array); });
+        benchmarkSuite.add(description, function() { options.lodash(array); });
+
+      } else {
+        benchmarkSuite.add(description, function() {
+          var result = options.lazy(array);
+          result.each(function(e) {});
+        });
+
+        benchmarkSuite.add(description, function() {
+          var result = options.underscore(array);
+          for (var i = 0; i < result.length; ++i) {}
+        });
+
+        benchmarkSuite.add(description, function() {
+          var result = options.lodash(array);
+          for (var i = 0; i < result.length; ++i) {}
+        });
+      }
 
       // Essentially, tag these for later reference.
       benchmarkSuite[benchmarkSuite.length - 1].elementCount = array.length;

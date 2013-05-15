@@ -18,6 +18,17 @@ describe("Lazy", function() {
     ];
 
     Person.reset(people);
+
+    this.addMatchers({
+      toMatchSequentially: function(expected) {
+        var success = true,
+            i = 0;
+        this.actual.each(function(e) {
+          expect(e).toEqual(expected[i++]);
+        });
+        return success && expected.length === i;
+      }
+    });
   });
 
   function ensureLaziness(action) {
@@ -681,54 +692,54 @@ describe("Lazy", function() {
     ];
 
     compareToUnderscore("map", {
-      lazy: function(arr) { return Lazy(arr).map(square).toArray(); },
+      lazy: function(arr) { return Lazy(arr).map(square); },
       underscore: function(arr) { return _(arr).map(square); },
       lodash: function(arr) { return lodash.map(arr, square); }
     });
 
     compareToUnderscore("filter", {
-      lazy: function(arr) { return Lazy(arr).filter(isEven).toArray(); },
+      lazy: function(arr) { return Lazy(arr).filter(isEven); },
       underscore: function(arr) { return _(arr).filter(isEven); },
       lodash: function(arr) { return lodash.filter(arr, isEven); }
     });
 
     compareToUnderscore("flatten", {
-      lazy: function(arr) { return Lazy(arr).flatten().toArray(); },
+      lazy: function(arr) { return Lazy(arr).flatten(); },
       underscore: function(arr) { return _(arr).flatten(); },
       lodash: function(arr) { return lodash.flatten(arr); },
       arrays: [jaggedArray]
     });
 
     compareToUnderscore("uniq", {
-      lazy: function(arr) { return Lazy(arr).uniq().toArray(); },
+      lazy: function(arr) { return Lazy(arr).uniq(); },
       underscore: function(arr) { return _(arr).uniq(); },
       lodash: function(arr) { return lodash.uniq(arr); },
       arrays: [lotsOfDupes]
     });
 
     compareToUnderscore("union", {
-      lazy: function(arr) { return Lazy(arr).union(fiftyTo150).toArray(); },
+      lazy: function(arr) { return Lazy(arr).union(fiftyTo150); },
       underscore: function(arr) { return _.union(arr, fiftyTo150); },
       lodash: function(arr) { return lodash.union(arr, fiftyTo150); },
       arrays: [zeroTo100]
     });
 
     compareToUnderscore("intersection", {
-      lazy: function(arr) { return Lazy(arr).intersection(fiftyTo150).toArray(); },
+      lazy: function(arr) { return Lazy(arr).intersection(fiftyTo150); },
       underscore: function(arr) { return _.intersection(arr, fiftyTo150); },
       lodash: function(arr) { return lodash.intersection(arr, fiftyTo150); },
       arrays: [zeroTo100]
     });
 
     compareToUnderscore("shuffle", {
-      lazy: function(arr) { return Lazy(arr).shuffle().toArray(); },
+      lazy: function(arr) { return Lazy(arr).shuffle(); },
       underscore: function(arr) { return _(arr).shuffle(); },
       lodash: function(arr) { return lodash.shuffle(arr); },
       shouldMatch: false
     });
 
     compareToUnderscore("zip", {
-      lazy: function(arr) { return Lazy(arr).zip(fiftyTo150).toArray(); },
+      lazy: function(arr) { return Lazy(arr).zip(fiftyTo150); },
       underscore: function(arr) { return _(arr).zip(fiftyTo150); },
       lodash: function(arr) { return lodash.zip(arr, fiftyTo150); },
       arrays: [zeroTo100]
@@ -737,68 +748,70 @@ describe("Lazy", function() {
     compareToUnderscore("map -> indexOf", {
       lazy: function(arr) { return Lazy(arr).map(inc).indexOf(arr[arr.length / 2]); },
       underscore: function(arr) { return _.chain(arr).map(inc).indexOf(arr[arr.length / 2]).value(); },
-      lodash: function(arr) { return lodash(arr).map(inc).indexOf(arr[arr.length / 2]); }
+      lodash: function(arr) { return lodash(arr).map(inc).indexOf(arr[arr.length / 2]); },
+      valueOnly: true
     });
 
     compareToUnderscore("map -> sortedIndex", {
       lazy: function(arr) { return Lazy(arr).map(inc).sortedIndex(arr[arr.length / 2]); },
       underscore: function(arr) { return _.chain(arr).map(inc).sortedIndex(arr[arr.length / 2]).value(); },
-      lodash: function(arr) { return lodash(arr).map(inc).sortedIndex(arr[arr.length / 2]); }
+      lodash: function(arr) { return lodash(arr).map(inc).sortedIndex(arr[arr.length / 2]); },
+      valueOnly: true
     });
 
     compareToUnderscore("map -> filter", {
-      lazy: function(arr) { return Lazy(arr).map(inc).filter(isEven).toArray(); },
+      lazy: function(arr) { return Lazy(arr).map(inc).filter(isEven); },
       underscore: function(arr) { return _.chain(arr).map(inc).filter(isEven).value(); },
       lodash: function(arr) { return lodash(arr).map(inc).filter(isEven).value(); }
     });
 
     compareToUnderscore("map -> take", {
-      lazy: function(arr) { return Lazy(arr).map(inc).take(5).toArray(); },
+      lazy: function(arr) { return Lazy(arr).map(inc).take(5); },
       underscore: function(arr) { return _.chain(arr).map(inc).take(5).value(); },
       lodash: function(arr) { return lodash(arr).map(inc).take(5).value(); }
     });
 
     compareToUnderscore("filter -> take", {
-      lazy: function(arr) { return Lazy(arr).filter(isEven).take(5).toArray(); },
+      lazy: function(arr) { return Lazy(arr).filter(isEven).take(5); },
       underscore: function(arr) { return _.chain(arr).filter(isEven).first(5).value(); },
       lodash: function(arr) { return lodash(arr).filter(isEven).first(5).value(); }
     });
 
     compareToUnderscore("map -> drop -> take", {
-      lazy: function(arr) { return Lazy(arr).map(inc).drop(5).take(5).toArray(); },
+      lazy: function(arr) { return Lazy(arr).map(inc).drop(5).take(5); },
       underscore: function(arr) { return _.chain(arr).map(inc).rest(5).take(5).value(); },
       lodash: function(arr) { return lodash(arr).map(inc).rest(5).take(5).value(); }
     });
 
     compareToUnderscore("filter -> drop -> take", {
-      lazy: function(arr) { return Lazy(arr).filter(isEven).drop(5).take(5).toArray(); },
+      lazy: function(arr) { return Lazy(arr).filter(isEven).drop(5).take(5); },
       underscore: function(arr) { return _.chain(arr).filter(isEven).rest(5).first(5).value(); },
       lodash: function(arr) { return lodash(arr).filter(isEven).rest(5).first(5).value(); }
     });
 
     compareToUnderscore("flatten -> take", {
-      lazy: function(arr) { return Lazy(arr).flatten().take(5).toArray(); },
+      lazy: function(arr) { return Lazy(arr).flatten().take(5); },
       underscore: function(arr) { return _.chain(arr).flatten().first(5).value(); },
       lodash: function(arr) { return lodash(arr).flatten().first(5).value(); },
       arrays: [jaggedArray]
     });
 
     compareToUnderscore("uniq -> take", {
-      lazy: function(arr) { return Lazy(arr).uniq().take(5).toArray(); },
+      lazy: function(arr) { return Lazy(arr).uniq().take(5); },
       underscore: function(arr) { return _.chain(arr).uniq().first(5).value(); },
       lodash: function(arr) { return lodash(arr).uniq().first(5).value(); },
       arrays: [lotsOfDupes]
     });
 
     compareToUnderscore("shuffle -> take", {
-      lazy: function(arr) { return Lazy(arr).shuffle().take(5).toArray(); },
+      lazy: function(arr) { return Lazy(arr).shuffle().take(5); },
       underscore: function(arr) { return _.chain(arr).shuffle().first(5).value(); },
       lodash: function(arr) { return lodash(arr).shuffle().first(5).value(); },
       shouldMatch: false
     });
 
     compareToUnderscore("zip -> take", {
-      lazy: function(arr) { return Lazy(arr).zip(fiftyTo150).take(5).toArray(); },
+      lazy: function(arr) { return Lazy(arr).zip(fiftyTo150).take(5); },
       underscore: function(arr) { return _.chain(arr).zip(fiftyTo150).first(5).value(); },
       lodash: function(arr) { return lodash(arr).zip(fiftyTo150).first(5).value(); },
       arrays: [zeroTo100]
@@ -807,13 +820,15 @@ describe("Lazy", function() {
     compareToUnderscore("map -> any", {
       lazy: function(arr) { return Lazy(arr).map(inc).any(isEven); },
       underscore: function(arr) { return _.chain(arr).map(inc).any(isEven).value(); },
-      lodash: function(arr) { return lodash(arr).map(inc).any(isEven); }
+      lodash: function(arr) { return lodash(arr).map(inc).any(isEven); },
+      valueOnly: true
     });
 
     compareToUnderscore("map -> all", {
       lazy: function(arr) { return Lazy(arr).map(inc).all(isEven); },
       underscore: function(arr) { return _.chain(arr).map(inc).every(isEven).value(); },
-      lodash: function(arr) { return lodash(arr).map(inc).every(isEven); }
+      lodash: function(arr) { return lodash(arr).map(inc).every(isEven); },
+      valueOnly: true
     });
   });
 });
