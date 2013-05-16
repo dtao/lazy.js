@@ -9,6 +9,7 @@ namespace :compile do
   task :lib do
     files = %w(
       sequence
+      sequence_iterator
       indexed_sequence
       caching_sequence
       mapped_sequence
@@ -28,6 +29,7 @@ namespace :compile do
       intersection_sequence
       zipped_sequence
       generated_sequence
+      async_sequence
       init
     )
     
