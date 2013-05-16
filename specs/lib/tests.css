@@ -18,11 +18,17 @@ header {
 }
 
 header h1 {
+  display: inline-block;
   margin: 0 auto;
   padding: 0;
   font-family: "Chewy", cursive;
   font-size: 60px;
   line-height: 60px;
+  cursor: default;
+}
+
+header h1:hover {
+  color: #000;
 }
 
 a.github-ribbon {
