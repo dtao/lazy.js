@@ -739,7 +739,7 @@ describe("Lazy", function() {
       lazy: function(arr) { return Lazy(arr).uniq(); },
       underscore: function(arr) { return _(arr).uniq(); },
       lodash: function(arr) { return lodash.uniq(arr); },
-      inputs: [[dupes(0, 5, 10)], [dupes(0, 10, 100)], [dupes(0, 20, 1000)]]
+      inputs: [[dupes(0, 5, 10)], [dupes(0, 10, 100)]]
     });
 
     compareToUnderscore("union", {
@@ -771,9 +771,10 @@ describe("Lazy", function() {
     });
 
     compareToUnderscore("map -> indexOf", {
-      lazy: function(arr) { return Lazy(arr).map(inc).indexOf(arr[arr.length / 2]); },
-      underscore: function(arr) { return _.chain(arr).map(inc).indexOf(arr[arr.length / 2]); },
-      lodash: function(arr) { return lodash(arr).map(inc).indexOf(arr[arr.length / 2]); },
+      lazy: function(arr, value) { return Lazy(arr).map(inc).indexOf(value); },
+      underscore: function(arr, value) { return _.chain(arr).map(inc).indexOf(value); },
+      lodash: function(arr, value) { return lodash(arr).map(inc).indexOf(value); },
+      inputs: [[arr(0, 10), 4], [arr(0, 100), 35]],
       valueOnly: true
     });
 
@@ -781,6 +782,7 @@ describe("Lazy", function() {
       lazy: function(arr) { return Lazy(arr).map(inc).sortedIndex(arr[arr.length / 2]); },
       underscore: function(arr) { return _.chain(arr).map(inc).sortedIndex(arr[arr.length / 2]); },
       lodash: function(arr) { return lodash(arr).map(inc).sortedIndex(arr[arr.length / 2]); },
+      inputs: [[arr(0, 10), 4], [arr(0, 100), 35]],
       valueOnly: true
     });
 
@@ -837,7 +839,7 @@ describe("Lazy", function() {
       lazy: function(arr) { return Lazy(arr).uniq().take(5); },
       underscore: function(arr) { return _.chain(arr).uniq().first(5); },
       lodash: function(arr) { return lodash(arr).uniq().first(5); },
-      inputs: [[dupes(0, 5, 10)], [dupes(0, 10, 100)], [dupes(0, 20, 1000)]]
+      inputs: [[dupes(0, 5, 10)], [dupes(0, 10, 100)]]
     });
 
     compareToUnderscore("union -> take", {

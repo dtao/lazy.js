@@ -82,7 +82,7 @@
   window.compareToUnderscore = function(description, options) {
     var inputs = options.inputs ?
       Lazy(options.inputs) :
-      Lazy([10, 100, 1000]).map(function(size) { return [getOrCreateArray(size)] });
+      Lazy([10, 100]).map(function(size) { return [getOrCreateArray(size)] });
 
     var smallInput = inputs.first();
     var matcher    = options.valueOnly ? "toEqual" : "toMatchSequentially";
