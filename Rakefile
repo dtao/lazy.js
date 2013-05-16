@@ -1,4 +1,4 @@
-require "github-markup"
+require "maruku"
 require "nokogiri"
 require "pygments"
 
