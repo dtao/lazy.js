@@ -89,6 +89,10 @@
     }
   };
 
+  Sequence.prototype.concat = function() {
+    return new ConcatenatedSequence(this, Array.prototype.slice.call(arguments, 0));
+  };
+
   Sequence.prototype.first =
   Sequence.prototype.head =
   Sequence.prototype.take = function(count) {
@@ -286,6 +290,17 @@
     });
   };
 
+  Sequence.prototype.join = function(delimiter) {
+    var str = "";
+    this.each(function(e) {
+      if (str.length > 0) {
+        str += delimiter;
+      }
+      str += e;
+    });
+    return str;
+  };
+
   var ArrayWrapper = Sequence.inherit(function(source) {
     this.source = source;
   });
@@ -441,6 +456,26 @@
     return this.parent.get(this.length() - i - 1);
   };
 
+  var ConcatenatedSequence = Sequence.inherit(function(parent, arrays) {
+    this.parent = parent;
+    this.arrays = arrays;
+  });
+
+  ConcatenatedSequence.prototype.each = function(fn) {
+    var done = false;
+
+    this.parent.each(function(e) {
+      if (fn(e) === false) {
+        done = true;
+        return false;
+      }
+    });
+
+    if (!done) {
+      Lazy(this.arrays).flatten().each(fn);
+    }
+  };
+
   var TakeSequence = CachingSequence.inherit(function(parent, count) {
     this.parent = parent;
     this.count  = count;
@@ -577,9 +612,10 @@
   UniqueSequence.prototype.each = function(fn) {
     var set = {};
     this.parent.each(function(e) {
-      if (set[e]) { return; }
-      set[e] = true;
-      return fn(e);
+      if (!set[e]) {
+        set[e] = true;
+        return fn(e);
+      }
     });
   };
 
