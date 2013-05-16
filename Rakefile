@@ -1,6 +1,6 @@
-require "maruku"
 require "nokogiri"
 require "pygments"
+require "redcarpet"
 
 PATH_TO_CLOSURE_COMPILER = "[path to compiler.jar goes here]"
 
@@ -50,25 +50,23 @@ namespace :compile do
   task :readme do
     markdown = File.read("README.md")
 
-    # Translate to HTML w/ Maruku.
-    raw_html = Maruku.new(markdown).to_html
+    # Translate to HTML w/ Redcarpet.
+    renderer = Redcarpet::Markdown.new(Redcarpet::Render::HTML, :fenced_code_blocks => true)
+    raw_html = renderer.render(markdown)
 
     # Parse HTML using Nokogiri.
-    fragment = Nokogiri::HTML::fragment(html)
+    fragment = Nokogiri::HTML::fragment(raw_html)
 
     # Do syntax highlighting w/ Pygments.
     fragment.css("code").each do |node|
-      node = node.parent
-      language = node["lang"]
+      language = node["class"]
       if language
         highlighted_html = Pygments.highlight(node.content, :lexer => language)
         replacement = Nokogiri::HTML::fragment(highlighted_html)
-        node.replace(replacement)
+        node.parent.replace(replacement)
       end
     end
 
-    File.open("index.html", "w") do |f|
-      f.write(fragment.inner_html)
-    end
+    puts fragment.inner_html
   end
 end
