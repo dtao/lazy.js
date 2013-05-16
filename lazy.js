@@ -55,8 +55,13 @@
     });
   };
 
+  Sequence.prototype.select =
   Sequence.prototype.filter = function(filterFn) {
-    return new FilteredSequence(this, filterFn);
+    if (this.indexed) {
+      return new IndexedFilteredSequence(this, filterFn);
+    } else {
+      return new FilteredSequence(this, filterFn);
+    }
   };
 
   Sequence.prototype.reject = function(rejectFn) {
@@ -84,6 +89,10 @@
     }
   };
 
+  Sequence.prototype.concat = function() {
+    return new ConcatenatedSequence(this, Array.prototype.slice.call(arguments, 0));
+  };
+
   Sequence.prototype.first =
   Sequence.prototype.head =
   Sequence.prototype.take = function(count) {
@@ -107,9 +116,9 @@
 
   Sequence.prototype.last = function(count) {
     if (typeof count === "undefined") {
-      return getLast(this);
+      return this.reverse().first();
     }
-    return this.reverse().first();
+    return this.reverse().take(count).reverse();
   };
 
   Sequence.prototype.findWhere = function(properties) {
@@ -281,6 +290,17 @@
     });
   };
 
+  Sequence.prototype.join = function(delimiter) {
+    var str = "";
+    this.each(function(e) {
+      if (str.length > 0) {
+        str += delimiter;
+      }
+      str += e;
+    });
+    return str;
+  };
+
   var ArrayWrapper = Sequence.inherit(function(source) {
     this.source = source;
   });
@@ -308,9 +328,7 @@
     return this.source.slice(0);
   };
 
-  var IndexedSequence = Sequence.inherit(function(parent) {
-    this.parent = parent;
-  });
+  var IndexedSequence = Sequence.inherit(function() {});
 
   IndexedSequence.inherit = function(ctor) {
     ctor.prototype = new IndexedSequence();
@@ -337,9 +355,7 @@
     }
   };
 
-  var CachingSequence = Sequence.inherit(function(parent) {
-    this.parent = parent;
-  });
+  var CachingSequence = Sequence.inherit(function() {});
 
   CachingSequence.inherit = function(ctor) {
     ctor.prototype = new CachingSequence();
@@ -368,10 +384,10 @@
     this.mapFn  = mapFn;
   });
 
-  MappedSequence.prototype.each = function(action) {
-    var self = this;
-    self.parent.each(function(e) {
-      return action(self.mapFn(e));
+  MappedSequence.prototype.each = function(fn) {
+    var mapFn = this.mapFn;
+    this.parent.each(function(e) {
+      return fn(mapFn(e));
     });
   };
 
@@ -398,6 +414,26 @@
     });
   };
 
+  var IndexedFilteredSequence = CachingSequence.inherit(function(parent, filterFn) {
+    this.parent   = parent;
+    this.filterFn = filterFn;
+  });
+
+  IndexedFilteredSequence.prototype.each = function(fn) {
+    var parent = this.parent,
+        filterFn = this.filterFn,
+        length = this.parent.length(),
+        i = -1,
+        e;
+
+    while (++i < length) {
+      e = parent.get(i);
+      if (filterFn(e) && fn(e) === false) {
+        break;
+      }
+    }
+  };
+
   var ReversedSequence = CachingSequence.inherit(function(parent) {
     this.parent = parent;
   });
@@ -418,6 +454,26 @@
 
   IndexedReversedSequence.prototype.get = function(i) {
     return this.parent.get(this.length() - i - 1);
+  };
+
+  var ConcatenatedSequence = Sequence.inherit(function(parent, arrays) {
+    this.parent = parent;
+    this.arrays = arrays;
+  });
+
+  ConcatenatedSequence.prototype.each = function(fn) {
+    var done = false;
+
+    this.parent.each(function(e) {
+      if (fn(e) === false) {
+        done = true;
+        return false;
+      }
+    });
+
+    if (!done) {
+      Lazy(this.arrays).flatten().each(fn);
+    }
   };
 
   var TakeSequence = CachingSequence.inherit(function(parent, count) {
@@ -513,7 +569,7 @@
   // TODO: This should really return an object, not an jagged array. Will
   // require a bit of rework -- but hopefully not too much!
   var GroupedSequence = CachingSequence.inherit(function(parent, keyFn) {
-    this.each = function(action) {
+    this.each = function(fn) {
       var grouped = {};
       parent.each(function(e) {
         var key = keyFn(e);
@@ -524,14 +580,16 @@
         }
       });
       for (var key in grouped) {
-        action([key, grouped[key]]);
+        if (fn([key, grouped[key]]) === false) {
+          break;
+        }
       }
     };
   });
 
   // TODO: This should return an object too (like GroupBySequence).
   var CountedSequence = CachingSequence.inherit(function(parent, keyFn) {
-    this.each = function(action) {
+    this.each = function(fn) {
       var grouped = {};
       parent.each(function(e) {
         var key = keyFn(e);
@@ -542,7 +600,7 @@
         }
       });
       for (var key in grouped) {
-        action([key, grouped[key]]);
+        fn([key, grouped[key]]);
       }
     };
   });
@@ -554,9 +612,10 @@
   UniqueSequence.prototype.each = function(fn) {
     var set = {};
     this.parent.each(function(e) {
-      if (set[e]) { return; }
-      set[e] = true;
-      return fn(e);
+      if (!set[e]) {
+        set[e] = true;
+        return fn(e);
+      }
     });
   };
 
@@ -580,9 +639,9 @@
   });
 
   WithoutSequence.prototype.each = function(fn) {
-    var set = new Set(this.values);
+    var set = createSet(this.values);
     this.parent.each(function(e) {
-      if (!set.contains(e)) {
+      if (!set[e]) {
         return fn(e);
       }
     });
@@ -594,19 +653,36 @@
   });
 
   UnionSequence.prototype.each = function(fn) {
-    var set = new Set();
+    var set = {},
+        done = false;
+
     this.parent.each(function(e) {
-      if (!set.contains(e)) {
-        set.add(e);
-        fn(e);
+      if (!set[e]) {
+        set[e] = true;
+        if (fn(e) === false) {
+          done = true;
+          return false;
+        }
       }
     });
-    Lazy(this.arrays).flatten().each(function(e) {
-      if (!set.contains(e)) {
-        set.add(e);
-        fn(e);
-      }
-    });
+
+    if (!done) {
+      Lazy(this.arrays).each(function(array) {
+        if (done) {
+          return false;
+        }
+
+        Lazy(array).each(function(e) {
+          if (!set[e]) {
+            set[e] = true;
+            if (fn(e) === false) {
+              done = true;
+              return false;
+            }
+          }
+        })
+      });
+    }
   };
 
   var IntersectionSequence = CachingSequence.inherit(function(parent, arrays) {
@@ -616,12 +692,12 @@
 
   IntersectionSequence.prototype.each = function(fn) {
     var sets = Lazy(this.arrays)
-      .map(function(values) { return new Set(values); })
+      .map(function(values) { return createSet(values); })
       .toArray();
 
     this.parent.each(function(e) {
       for (var i = 0; i < sets.length; ++i) {
-        if (!sets[i].contains(e)) {
+        if (!sets[i][e]) {
           return;
         }
       }
@@ -693,19 +769,12 @@
 
   /*** Useful utility methods ***/
 
-  var Set = function(values) {
-    var object = {};
+  function createSet(values) {
+    var set = {};
     Lazy(values || []).flatten().each(function(e) {
-      object[e] = true;
+      set[e] = true;
     });
-
-    this.add = function(value) {
-      object[value] = true;
-    };
-
-    this.contains = function(value) {
-      return object[value];
-    };
+    return set;
   };
 
   function compare(x, y, fn) {
@@ -753,18 +822,6 @@
     sequence.each(function(e) {
       result = e;
       return false;
-    });
-    return result;
-  }
-
-  function getLast(sequence) {
-    if (sequence.indexed) {
-      return sequence.get(sequence.length() - 1);
-    }
-
-    var result;
-    sequence.each(function(e) {
-      result = e;
     });
     return result;
   }

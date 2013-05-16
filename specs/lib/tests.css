@@ -1,24 +1,34 @@
-@import url(http://fonts.googleapis.com/css?family=Open+Sans|Happy+Monkey);
+@import url(http://fonts.googleapis.com/css?family=Chewy|Open+Sans:400,300);
 
 body {
   font-family: "Open Sans", sans-serif;
-  width: 960px;
-  margin: auto;
+}
+
+@media all and (min-width: 960px) {
+  body {
+    width: 960px;
+    margin: auto;
+  }
 }
 
 header {
   height: 60px;
   background-color: #fff;
   border-bottom: 10px solid #eee;
-  color: #eee;
 }
 
 header h1 {
+  display: inline-block;
   margin: 0 auto;
   padding: 0;
-  font-family: "Happy Monkey", cursive;
+  font-family: "Chewy", cursive;
   font-size: 60px;
   line-height: 60px;
+  cursor: default;
+}
+
+header h1:hover {
+  color: #000;
 }
 
 a.github-ribbon {
@@ -27,13 +37,17 @@ a.github-ribbon {
   top: 0;
   right: 0;
   border: 0;
-  height: 149px;
-  width: 149px;
+  height: 148px;
+  width: 148px;
   background: url(https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png);
 }
 
 a.github-ribbon:hover {
   background: url(https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png);
+}
+
+h1, h2 {
+  color: #444;
 }
 
 nav ul {
@@ -78,6 +92,16 @@ nav.subnav ul li a {
 
 nav.subnav ul li:hover a {
   color: #89a;
+}
+
+section h1 {
+  font-size: 40px;
+  font-weight: 300;
+}
+
+section h2 {
+  font-size: 32px;
+  font-weight: 300;
 }
 
 figure {

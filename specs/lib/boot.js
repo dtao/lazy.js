@@ -80,50 +80,60 @@
   };
 
   window.compareToUnderscore = function(description, options) {
-    var arrays = options.arrays ?
-      Lazy(options.arrays) :
-      Lazy([10, 100, 1000]).map(function(size) { return getOrCreateArray(size) });
+    var inputs = options.inputs ?
+      Lazy(options.inputs) :
+      Lazy([10, 100]).map(function(size) { return [getOrCreateArray(size)] });
 
-    var smallArray = arrays.first();
+    var smallInput = inputs.first();
     var matcher    = options.valueOnly ? "toEqual" : "toMatchSequentially";
 
     if (options.shouldMatch !== false) {
-      it("returns the same result as underscore for '" + description + "'", function() {
-        expect(options.lazy(smallArray))[matcher](options.underscore(smallArray));
+      it("returns the same result as underscore.js for '" + description + "'", function() {
+        var lazyResult = options.lazy.apply(this, smallInput);
+        var underscoreResult = options.underscore.apply(this, smallInput);
+        if (typeof underscoreResult.value === "function") {
+          underscoreResult = underscoreResult.value();
+        }
+        expect(lazyResult)[matcher](underscoreResult);
       });
 
-      it("returns the same result as lodash for '" + description + "'", function() {
-        expect(options.lazy(smallArray))[matcher](options.lodash(smallArray));
+      it("returns the same result as Lo-Dash for '" + description + "'", function() {
+        var lazyResult = options.lazy.apply(this, smallInput);
+        var lodashResult = options.lodash.apply(this, smallInput);
+        if (typeof lodashResult.value === "function") {
+          lodashResult = lodashResult.value();
+        }
+        expect(lazyResult)[matcher](lodashResult);
       });
     }
 
-    arrays.each(function(array) {
+    inputs.each(function(input) {
       if (options.valueOnly) {
-        benchmarkSuite.add(description, function() { options.lazy(array); });
-        benchmarkSuite.add(description, function() { options.underscore(array); });
-        benchmarkSuite.add(description, function() { options.lodash(array); });
+        benchmarkSuite.add(description, function() { options.lazy.apply(this, input); });
+        benchmarkSuite.add(description, function() { options.underscore.apply(this, input); });
+        benchmarkSuite.add(description, function() { options.lodash.apply(this, input); });
 
       } else {
         benchmarkSuite.add(description, function() {
-          var result = options.lazy(array);
+          var result = options.lazy.apply(this, input);
           result.each(function(e) {});
         });
 
         benchmarkSuite.add(description, function() {
-          var result = options.underscore(array);
-          for (var i = 0; i < result.length; ++i) {}
+          var result = options.underscore.apply(this, input);
+          _.each(result, function(e) {});
         });
 
         benchmarkSuite.add(description, function() {
-          var result = options.lodash(array);
-          for (var i = 0; i < result.length; ++i) {}
+          var result = options.lodash.apply(this, input);
+          lodash.each(result, function(e) {});
         });
       }
 
       // Essentially, tag these for later reference.
-      benchmarkSuite[benchmarkSuite.length - 1].elementCount = array.length;
-      benchmarkSuite[benchmarkSuite.length - 2].elementCount = array.length;
-      benchmarkSuite[benchmarkSuite.length - 3].elementCount = array.length;
+      benchmarkSuite[benchmarkSuite.length - 1].elementCount = input[0].length;
+      benchmarkSuite[benchmarkSuite.length - 2].elementCount = input[0].length;
+      benchmarkSuite[benchmarkSuite.length - 3].elementCount = input[0].length;
     });
   };
 
