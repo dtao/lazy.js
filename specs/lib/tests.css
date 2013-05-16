@@ -1,4 +1,4 @@
-@import url(http://fonts.googleapis.com/css?family=Chewy|Open+Sans:400,300);
+@import url(http://fonts.googleapis.com/css?family=Chewy|Open+Sans:400,300|Source+Code+Pro);
 
 body {
   font-family: "Open Sans", sans-serif;
@@ -124,13 +124,31 @@ figure {
   filter: alpha(opacity=50);
 }
 
+.benchmark-results-table tr th:first-child,
+.benchmark-results-table tr td:first-child {
+  padding-left: 24px;
+}
+
+.benchmark-results-table tr th:last-child,
+.benchmark-results-table tr td:last-child {
+  padding-right: 24px;
+}
+
+.benchmark-result.selected td:first-child {
+  background: url(check.png) no-repeat 4px center;
+}
+
+pre, code {
+  font-family: "Source Code Pro", monospace;
+}
+
+pre {
+  font-size: 12px;
+}
+
 table {
   border-collapse: collapse;
   width: 100%;
-}
-
-table.empty tr {
-  display: none;
 }
 
 table tr.expanded .indenter a {

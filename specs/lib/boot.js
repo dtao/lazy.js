@@ -1,8 +1,4 @@
 (function() {
-  // Set this to false to give your poor CPU some rest if/while doing TDD.
-  var RUN_PERFORMANCE_TESTS = true;
-
-  var benchmarkSuite = new Benchmark.Suite();
   Benchmark.options.maxTime = 1;
 
   var jasmineEnv = jasmine.getEnv();
@@ -12,6 +8,7 @@
   jasmineEnv.addReporter(specReporter);
 
   var arrays = {};
+  var benchmarks = {};
   var benchmarkResults = {};
 
   window.lodash = _.noConflict();
@@ -22,6 +19,19 @@
     }
 
     return arrays[size];
+  }
+
+  function createBenchmarkSuite() {
+    var suite = new Benchmark.Suite();
+
+    $(".benchmark-result.selected").each(function() {
+      var benchmarkId = $(this).attr("data-benchmark-id");
+      Lazy(benchmarks[benchmarkId]).each(function(benchmark) {
+        suite.add(benchmark);
+      });
+    });
+
+    return suite;
   }
 
   function addCommas(number) {
@@ -37,31 +47,34 @@
     $(".benchmark-results-section").removeClass("loading");
   }
 
-  function addBenchmarkResult(result) {
-    var elementCount = result.lazy.elementCount;
-    benchmarkResults[elementCount] = benchmarkResults[elementCount] || [];
-    benchmarkResults[elementCount].push(result);
-    addBenchmarkResultToTable(elementCount, result);
+  function addBenchmarkToTable(benchmark, elementCount) {
+    var table = $("#benchmark-results-table-" + elementCount);
+    var row   = $("<tr>")
+      .addClass("benchmark-result")
+      .attr("id", "benchmark-result-" + benchmark.id)
+      .attr("data-benchmark-id", benchmark.id)
+      .appendTo(table);
+
+    $("<td>").text(benchmark.name).appendTo(row);
+    $("<td>").addClass("underscore-result").appendTo(row);
+    $("<td>").addClass("lodash-result").appendTo(row);
+    $("<td>").addClass("lazy-result").appendTo(row);
   }
 
-  function addBenchmarkResultToTable(count, result) {
-    var table = $("#benchmark-results-table-" + count).removeClass("empty");
-    var row   = $("<tr>").addClass("benchmark-result").appendTo(table);
+  function addBenchmarkResultToTable(result) {
+    var row   = $("#benchmark-result-" + result.lazy.id);
     var style = result.lazy.hz > result.underscore.hz &&
                 result.lazy.hz > result.lodash.hz ? "positive" : "negative";
 
-    $("<td>").text(result.lazy.name).appendTo(row);
-    $("<td>").text(addCommas(result.underscore.hz.toFixed(2))).appendTo(row);
-    $("<td>").text(addCommas(result.lodash.hz.toFixed(2))).appendTo(row);
-    $("<td>").text(addCommas(result.lazy.hz.toFixed(2))).addClass(style).appendTo(row);
+    $(".underscore-result", row).text(addCommas(result.underscore.hz.toFixed(2)));
+    $(".lodash-result", row).text(addCommas(result.lodash.hz.toFixed(2)));
+    $(".lazy-result", row).text(addCommas(result.lazy.hz.toFixed(2))).addClass(style);
   }
 
-  function updateChart(count) {
-    if (!count) {
-      return;
-    }
-    var chart = document.getElementById("benchmark-results-chart-" + count);
-    HighTables.renderChart(chart);
+  function updateCharts() {
+    $(".column-chart").each(function() {
+      HighTables.renderChart(this);
+    });
   }
 
   window.benchmarkChartOptions = function() {
@@ -108,32 +121,37 @@
     }
 
     inputs.each(function(input) {
+      var lazyBm, underscoreBm, lodashBm;
+
       if (options.valueOnly) {
-        benchmarkSuite.add(description, function() { options.lazy.apply(this, input); });
-        benchmarkSuite.add(description, function() { options.underscore.apply(this, input); });
-        benchmarkSuite.add(description, function() { options.lodash.apply(this, input); });
+        lazyBm = new Benchmark(description, function() { options.lazy.apply(this, input); });
+        underscoreBm = new Benchmark(description, function() { options.underscore.apply(this, input); });
+        lodashBm = new Benchmark(description, function() { options.lodash.apply(this, input); });
 
       } else {
-        benchmarkSuite.add(description, function() {
+        lazyBm = new Benchmark(description, function() {
           var result = options.lazy.apply(this, input);
           result.each(function(e) {});
         });
 
-        benchmarkSuite.add(description, function() {
+        underscoreBm = new Benchmark(description, function() {
           var result = options.underscore.apply(this, input);
           _.each(result, function(e) {});
         });
 
-        benchmarkSuite.add(description, function() {
+        lodashBm = new Benchmark(description, function() {
           var result = options.lodash.apply(this, input);
           lodash.each(result, function(e) {});
         });
       }
 
-      // Essentially, tag these for later reference.
-      benchmarkSuite[benchmarkSuite.length - 1].elementCount = input[0].length;
-      benchmarkSuite[benchmarkSuite.length - 2].elementCount = input[0].length;
-      benchmarkSuite[benchmarkSuite.length - 3].elementCount = input[0].length;
+      benchmarks[lazyBm.id] = [lazyBm, underscoreBm, lodashBm];
+
+      // Add a row to the appropriate table for this benchmark
+      // once the document's loaded.
+      $(document).ready(function() {
+        addBenchmarkToTable(lazyBm, input[0].length);
+      });
     });
   };
 
@@ -162,28 +180,36 @@
       return false;
     });
 
-    var currentResultSet = [];
-    benchmarkSuite.on("cycle", function(e) {
-      currentResultSet.push(e.target);
-      if (currentResultSet.length === 3) {
-        addBenchmarkResult({
-          lazy: currentResultSet[0],
-          underscore: currentResultSet[1],
-          lodash: currentResultSet[2]
-        });
-        updateChart(e.target.elementCount);
-        currentResultSet = [];
-      }
+    $(".benchmark-result").on("click", function() {
+      $(this).toggleClass("selected");
     });
 
-    benchmarkSuite.on("complete", function() {
-      finishedLoading();
-    });
+    $(".start-benchmarking").on("click", function() {
+      $(".benchmark-results-section").addClass("loading");
 
-    if (RUN_PERFORMANCE_TESTS) {
+      var benchmarkSuite = createBenchmarkSuite();
+
+      var currentResultSet = [];
+      benchmarkSuite.on("cycle", function(e) {
+        currentResultSet.push(e.target);
+        if (currentResultSet.length === 3) {
+          addBenchmarkResultToTable({
+            lazy: currentResultSet[0],
+            underscore: currentResultSet[1],
+            lodash: currentResultSet[2]
+          });
+          updateCharts();
+          currentResultSet = [];
+        }
+      });
+
+      benchmarkSuite.on("complete", function() {
+        finishedLoading();
+      });
+
       benchmarkSuite.run({ async: true });
-    } else {
-      finishedLoading();
-    }
+    });
+
+    updateCharts();
   };
 })();
