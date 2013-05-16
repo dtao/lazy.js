@@ -224,6 +224,34 @@ describe("Lazy", function() {
     });
   });
 
+  describe("concat", function() {
+    var taos,
+        nickses,
+        bill,
+        anne,
+        clifford,
+        louise;
+
+    beforeEach(function() {
+      taos = [
+        bill = new Person("Bill", 93, "M"),
+        anne = new Person("Anne", 90, "F")
+      ];
+
+      nickses = [
+        clifford = new Person("Clifford", Infinity, "M"),
+        louise = new Person("Louise", Infinity, "F")
+      ];
+    });
+
+    ensureLaziness(function() { Lazy(people).concat(taos, nickses); });
+
+    it("returns the specified elements after the end of the collection", function() {
+      var family = Lazy(people).concat(taos, nickses).toArray();
+      expect(family).toEqual([david, mary, lauren, adam, daniel, happy, bill, anne, clifford, louise]);
+    });
+  });
+
   describe("take", function() {
     ensureLaziness(function() { Lazy(people).take(2); });
 

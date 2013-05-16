@@ -14,6 +14,7 @@ namespace :compile do
       mapped_sequence
       filtered_sequence
       reversed_sequence
+      concatenated_sequence
       take_sequence
       drop_sequence
       sorted_sequence
