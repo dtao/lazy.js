@@ -48,7 +48,7 @@
   }
 
   function addBenchmarkToTable(benchmark, elementCount) {
-    var table = $("#benchmark-results-table-" + elementCount).removeClass("empty");
+    var table = $("#benchmark-results-table-" + elementCount);
     var row   = $("<tr>")
       .addClass("benchmark-result")
       .attr("id", "benchmark-result-" + benchmark.id)

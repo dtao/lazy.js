@@ -124,12 +124,18 @@ figure {
   filter: alpha(opacity=50);
 }
 
-.benchmark-result td:first-child {
-  padding-left: 20px;
+.benchmark-results-table tr th:first-child,
+.benchmark-results-table tr td:first-child {
+  padding-left: 24px;
+}
+
+.benchmark-results-table tr th:last-child,
+.benchmark-results-table tr td:last-child {
+  padding-right: 24px;
 }
 
 .benchmark-result.selected td:first-child {
-  background: url(check.png) no-repeat left;
+  background: url(check.png) no-repeat 4px center;
 }
 
 pre, code {
@@ -143,10 +149,6 @@ pre {
 table {
   border-collapse: collapse;
   width: 100%;
-}
-
-table.empty tr {
-  display: none;
 }
 
 table tr.expanded .indenter a {
