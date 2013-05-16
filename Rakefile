@@ -4,10 +4,24 @@ require "redcarpet"
 
 PATH_TO_CLOSURE_COMPILER = "[path to compiler.jar goes here]"
 
+def compile_file(output, source_files)
+  javascripts = source_files.map do |f|
+    File.read(File.join("lib", "#{f}.js"))
+  end
+
+  File.open(output, "w") do |f|
+    f.write("(function(exports) {\n\n")
+    f.write(javascripts.join("\n").gsub(/^(?!$)/, "  "))
+    f.write("\n}(typeof exports !== 'undefined' ? exports : window));")
+  end
+
+  `java -jar #{PATH_TO_CLOSURE_COMPILER} #{output} > #{output.chomp('.js')}.min.js`
+end
+
 namespace :compile do
   desc "Compile lazy.js"
   task :lib do
-    files = %w(
+    compile_file("lazy.js", %w[
       sequence
       sequence_iterator
       indexed_sequence
@@ -31,19 +45,12 @@ namespace :compile do
       generated_sequence
       async_sequence
       init
-    )
-    
-    javascripts = files.map do |f|
-      File.read(File.join("lib", "#{f}.js"))
-    end
+    ])
 
-    File.open("lazy.js", "w") do |f|
-      f.write("(function(exports) {\n\n")
-      f.write(javascripts.join("\n").gsub(/^(?!$)/, "  "))
-      f.write("\n}(typeof exports !== 'undefined' ? exports : window));")
-    end
-
-    `java -jar #{PATH_TO_CLOSURE_COMPILER} lazy.js > lazy.min.js`
+    compile_file("lazy.dom.js", %w[
+      event_sequence
+      init_dom
+    ])
   end
 
   # This doesn't actually work so well right now. Need to spend some time
