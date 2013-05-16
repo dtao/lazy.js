@@ -840,6 +840,27 @@ describe("Lazy", function() {
       inputs: [[dupes(0, 5, 10)], [dupes(0, 10, 100)], [dupes(0, 20, 1000)]]
     });
 
+    compareToUnderscore("union -> take", {
+      lazy: function(arr, other) { return Lazy(arr).union(other).take(5); },
+      underscore: function(arr, other) { return _.chain(arr).union(other).first(5); },
+      lodash: function(arr, other) { return lodash(arr).union(other).first(5); },
+      inputs: [[arr(0, 10), arr(5, 15)], [arr(0, 100), arr(50, 150)]]
+    });
+
+    compareToUnderscore("intersection -> take", {
+      lazy: function(arr, other) { return Lazy(arr).intersection(other).take(5); },
+      underscore: function(arr, other) { return _.chain(arr).intersection(other).first(5); },
+      lodash: function(arr, other) { return lodash(arr).intersection(other).first(5); },
+      inputs: [[arr(0, 10), arr(5, 15)], [arr(0, 100), arr(50, 150)]]
+    });
+
+    compareToUnderscore("without -> take", {
+      lazy: function(arr, other) { return Lazy(arr).without(other).take(5); },
+      underscore: function(arr, other) { return _.chain(arr).difference(other).first(5); },
+      lodash: function(arr, other) { return lodash(arr).difference(other).first(5); },
+      inputs: [[arr(0, 10), arr(3, 7)], [arr(0, 100), arr(25, 75)]]
+    });
+
     compareToUnderscore("shuffle -> take", {
       lazy: function(arr) { return Lazy(arr).shuffle().take(5); },
       underscore: function(arr) { return _.chain(arr).shuffle().first(5); },
