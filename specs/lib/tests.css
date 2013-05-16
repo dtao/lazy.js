@@ -2,8 +2,13 @@
 
 body {
   font-family: "Open Sans", sans-serif;
-  width: 960px;
-  margin: auto;
+}
+
+@media all and (min-width: 960px) {
+  body {
+    width: 960px;
+    margin: auto;
+  }
 }
 
 header {
@@ -26,8 +31,8 @@ a.github-ribbon {
   top: 0;
   right: 0;
   border: 0;
-  height: 149px;
-  width: 149px;
+  height: 148px;
+  width: 148px;
   background: url(https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png);
 }
 
