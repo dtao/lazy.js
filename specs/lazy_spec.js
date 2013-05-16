@@ -85,9 +85,9 @@ describe("Lazy", function() {
       expect(naturalNumbers.get(9)).toEqual(10);
     });
 
-    it("throws an exception if you try to get its length", function() {
+    it("has an undefined length", function() {
       var naturalNumbers = Lazy.generate(function(i) { return i + 1; });
-      expect(function() { naturalNumbers.length(); }).toThrow();
+      expect(naturalNumbers.length()).toBeUndefined();
     });
   });
 
