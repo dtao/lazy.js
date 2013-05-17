@@ -1,9 +1,3 @@
-require "closure-compiler"
-require "mustache"
-require "nokogiri"
-require "pygments"
-require "redcarpet"
-
 def compile_file(output, source_files)
   javascripts = source_files.map do |f|
     File.read(File.join("lib", "#{f}.js"))
@@ -24,6 +18,8 @@ end
 namespace :compile do
   desc "Compile lazy.js"
   task :lib do
+    require "closure-compiler"
+
     compile_file("lazy.js", %w[
       sequence
       sequence_iterator
@@ -56,10 +52,13 @@ namespace :compile do
     ])
   end
 
-  # This doesn't actually work so well right now. Need to spend some time
-  # fixing this task.
   desc "Compile README.md to HTML"
-  task :readme do
+  task :docs do
+    require "mustache"
+    require "nokogiri"
+    require "pygments"
+    require "redcarpet"
+
     markdown = File.read("README.md")
 
     # Translate to HTML w/ Redcarpet.
