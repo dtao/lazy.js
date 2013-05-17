@@ -73,6 +73,7 @@
 
   function finishedLoading() {
     $(".benchmark-results-section").removeClass("loading");
+    $(".start-benchmarking").prop("disabled", false);
   }
 
   function addBenchmarkToTable(benchmark, elementCount) {
@@ -220,11 +221,16 @@
       $(this).closest("section").find(".benchmark-result").removeClass("selected");
     });
 
+    $(".clear-selected").on("click", function() {
+      $(this).closest("section").find(".benchmark-result td:nth-child(n+2)").empty();
+    });
+
     $(".benchmark-result").on("click", function() {
       $(this).toggleClass("selected");
     });
 
     $(".start-benchmarking").on("click", function() {
+      $(".start-benchmarking").prop("disabled", true);
       $(".benchmark-results-section").addClass("loading");
 
       var benchmarkSuite = createBenchmarkSuite();
