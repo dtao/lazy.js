@@ -198,6 +198,12 @@ figure {
   padding-right: 24px;
 }
 
+.benchmark-result.running {
+  background-color: #ff8;
+  opacity: 0.50;
+  filter: alpha(opacity=50);
+}
+
 .benchmark-result.selected td:first-child {
   background: url(check.png) no-repeat 4px center;
 }

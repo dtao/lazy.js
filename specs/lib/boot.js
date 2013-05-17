@@ -79,6 +79,7 @@
   function finishedLoading() {
     $(".benchmark-results-section").removeClass("loading");
     $(".start-benchmarking").prop("disabled", false);
+    $(".benchmark-result").removeClass("running");
   }
 
   function createBenchmarks(description, input, options) {
@@ -138,6 +139,14 @@
     $(".underscore-result", row).text(addCommas(result.underscore.hz.toFixed(2)));
     $(".lodash-result", row).text(addCommas(result.lodash.hz.toFixed(2)));
     $(".lazy-result", row).text(addCommas(result.lazy.hz.toFixed(2))).addClass(style);
+  }
+
+  function markBenchmarkRunning(benchmarkSetId) {
+    $("#benchmark-result-" + benchmarkSetId).addClass("running");
+  }
+
+  function markBenchmarkCompleted(benchmarkSetId) {
+    $("#benchmark-result-" + benchmarkSetId).removeClass("running");
   }
 
   function updateCharts() {
@@ -266,16 +275,22 @@
 
       var currentResultSet = [];
       benchmarkSuite.on("cycle", function(e) {
+        var benchmarkSetId = e.target.benchmarkSetId;
+
         currentResultSet.push(e.target);
         if (currentResultSet.length === 3) {
           addBenchmarkResultToTable({
-            benchmarkSetId: currentResultSet[0].benchmarkSetId,
+            benchmarkSetId: benchmarkSetId,
             lazy: currentResultSet[0],
             underscore: currentResultSet[1],
             lodash: currentResultSet[2]
           });
+          markBenchmarkCompleted(benchmarkSetId);
           updateCharts();
           currentResultSet = [];
+
+        } else {
+          markBenchmarkRunning(benchmarkSetId);
         }
       });
 
