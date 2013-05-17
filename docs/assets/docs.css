@@ -1,4 +1,6 @@
-@import url(http://fonts.googleapis.com/css?family=Chewy|Open+Sans:400,300|Source+Code+Pro);
+@import url(jquery.treetable.css);
+@import url(pygments.css);
+@import url(http://fonts.googleapis.com/css?family=Chewy|Open+Sans:400,300|Source+Code+Pro:700,400);
 
 body {
   font-family: "Open Sans", sans-serif;
@@ -208,6 +210,15 @@ figure {
   background: url(check.png) no-repeat 4px center;
 }
 
+.benchmark-result.running td:first-child {
+  background: url(running.gif) no-repeat 4px center;
+}
+
+.benchmark-result td.not-applicable {
+  color: #888;
+  font-size: 90%;
+}
+
 pre, code {
   font-family: "Source Code Pro", monospace;
 }
@@ -237,12 +248,21 @@ table th,
 table td {
   padding: 0.5ex 0.5em;
   text-align: left;
-  width: 20%;
 }
 
-table th:first-child,
-table td:first-child {
-  width: 40%;
+.benchmark-results-table th,
+.benchmark-results-table td {
+  width: 12.5%;
+}
+
+.benchmark-results-table th:first-child,
+.benchmark-results-table td:first-child {
+  width: 25%;
+}
+
+#test-results-table th:first-child,
+#test-results-table td:first-child {
+  width: 80%;
 }
 
 table th:nth-child(n+2),

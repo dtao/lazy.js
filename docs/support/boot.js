@@ -1,4 +1,5 @@
 (function() {
+  Benchmark.options.delay   = 0;
   Benchmark.options.maxTime = 1;
 
   var jasmineEnv = jasmine.getEnv();
@@ -67,15 +68,6 @@
     return suite;
   }
 
-  function addCommas(number) {
-    var parts = number.toString().split(".");
-    var pattern = /(\d+)(\d{3})/;
-    while (pattern.test(parts[0])) {
-        parts[0] = parts[0].replace(pattern, '$1,$2');
-    }
-    return parts.join(".");
-  }
-
   function finishedLoading() {
     $(".benchmark-results-section").removeClass("loading");
     $(".start-benchmarking").prop("disabled", false);
@@ -84,22 +76,67 @@
 
   function createBenchmarks(description, input, options) {
     var toArrayBenchmarks = [
+      // Lazy.js
       options.valueOnly ?
         new Benchmark(description, function() { options.lazy.apply(this, input); }) :
         new Benchmark(description, function() { options.lazy.apply(this, input).toArray(); }),
+
+      // Underscore
       new Benchmark(description, function() { options.underscore.apply(this, input); }),
-      new Benchmark(description, function() { options.lodash.apply(this, input); })
+
+      // Lo-Dash
+      new Benchmark(description, function() { options.lodash.apply(this, input); }),
+
+      // Linq.js
+      options.valueOnly ?
+        new Benchmark(description, function() { options.linq.apply(this, input); }) :
+        new Benchmark(description, function() { options.linq.apply(this, input).ToArray(); }),
+
+      // JSLINQ
+      new Benchmark(description, function() { options.jslinq.apply(this, input).ToArray(); }),
+
+      // From.js
+      options.valueOnly ?
+        new Benchmark(description, function() { options.from.apply(this, input); }) :
+        new Benchmark(description, function() { options.from.apply(this, input).toArray(); })
     ];
 
     var eachBenchmarks = options.valueOnly ? toArrayBenchmarks : [
+      // Lazy.js
       new Benchmark(description, function() {
         options.lazy.apply(this, input).each(function(e) {});
       }),
+
+      // Underscore
       new Benchmark(description, function() {
         _.each(options.underscore.apply(this, input), function(e) {});
       }),
+
+      // Lo-Dash
       new Benchmark(description, function() {
         lodash.each(options.lodash.apply(this, input), function(e) {});
+      }),
+
+      // Linq.js
+      new Benchmark(description, function() {
+        options.linq.apply(this, input).ForEach(function(e) {});
+      }),
+
+      // JSLINQ
+      new Benchmark(description, function() {
+        // JSLINQ doesn't expose a ForEach method like Linq.js; so I'll just
+        // iterate over the resulting array in the fastest way I can think of.
+        var result = options.jslinq.apply(this, input).items,
+            i = -1, e;
+
+        // Need to actually access the result for a relatively apples-to-apples
+        // comparison.
+        while (++i < result.length) { e = result[i]; }
+      }),
+
+      // From.js
+      new Benchmark(description, function() {
+        options.from.apply(this, input).each(function(e) {});
       })
     ];
 
@@ -128,21 +165,55 @@
     $("<td>").text(description).appendTo(row);
     $("<td>").addClass("underscore-result").appendTo(row);
     $("<td>").addClass("lodash-result").appendTo(row);
+    $("<td>").addClass("linqjs-result").appendTo(row);
+    $("<td>").addClass("jslinq-result").appendTo(row);
+    $("<td>").addClass("fromjs-result").appendTo(row);
     $("<td>").addClass("lazy-result").appendTo(row);
+  }
+
+  function addResultToCell(result, cell, additionalStyles) {
+    if (result === 0.0) {
+      cell.addClass("not-applicable");
+      cell.text("N/A");
+      return;
+    }
+
+    var parts = result.toFixed(2).split(".");
+    var pattern = /(\d+)(\d{3})/;
+    while (pattern.test(parts[0])) {
+        parts[0] = parts[0].replace(pattern, '$1,$2');
+    }
+    cell.text(parts.join("."));
+
+    if (additionalStyles) {
+      cell.addClass(additionalStyles);
+    }
   }
 
   function addBenchmarkResultToTable(result) {
     var row   = $("#benchmark-result-" + result.benchmarkSetId);
     var style = result.lazy.hz > result.underscore.hz &&
-                result.lazy.hz > result.lodash.hz ? "positive" : "negative";
+                result.lazy.hz > result.lodash.hz &&
+                result.lazy.hz > result.linq.hz &&
+                result.lazy.hz > result.jslinq.hz &&
+                result.lazy.hz > result.from.hz ? "positive" : "negative";
 
-    $(".underscore-result", row).text(addCommas(result.underscore.hz.toFixed(2)));
-    $(".lodash-result", row).text(addCommas(result.lodash.hz.toFixed(2)));
-    $(".lazy-result", row).text(addCommas(result.lazy.hz.toFixed(2))).addClass(style);
+    addResultToCell(result.underscore.hz, $(".underscore-result", row));
+    addResultToCell(result.lodash.hz, $(".lodash-result", row));
+    addResultToCell(result.linq.hz, $(".linqjs-result", row));
+    addResultToCell(result.jslinq.hz, $(".jslinq-result", row));
+    addResultToCell(result.from.hz, $(".fromjs-result", row));
+    addResultToCell(result.lazy.hz, $(".lazy-result", row, style));
+  }
+
+  function clearRow(row) {
+    $("td:nth-child(n+2)", row).empty();
+    $(".lazy-result", row).removeClass("positive").removeClass("negative");
   }
 
   function markBenchmarkRunning(benchmarkSetId) {
-    $("#benchmark-result-" + benchmarkSetId).addClass("running");
+    var row = $("#benchmark-result-" + benchmarkSetId).addClass("running");
+    clearRow(row);
   }
 
   function markBenchmarkCompleted(benchmarkSetId) {
@@ -174,12 +245,13 @@
     return $(row).find("td.lazy-result").is(":not(:empty)");
   };
 
-  window.compareToUnderscore = function(description, options) {
+  window.compareAlternatives = function(description, options) {
     var inputs = options.inputs ?
       Lazy(options.inputs) :
       Lazy([10, 100]).map(function(size) { return [getOrCreateArray(size)] });
 
     var smallInput = inputs.first();
+    var exceptions = Lazy(options.doesNotMatch || []);
 
     if (options.shouldMatch !== false) {
       it("returns the same result as underscore.js for '" + description + "'", function() {
@@ -205,6 +277,48 @@
         }
         expect(lazyResult).toEqual(lodashResult);
       });
+
+      if (options.linq && !exceptions.contains("linq")) {
+        it("returns the same result as linq.js for '" + description + "'", function() {
+          var lazyResult = options.lazy.apply(this, smallInput);
+          var linqResult = options.linq.apply(this, smallInput);
+          if (typeof lazyResult.toArray === "function") {
+            lazyResult = lazyResult.toArray();
+          }
+          if (typeof linqResult.ToArray === "function") {
+            linqResult = linqResult.ToArray();
+          }
+          expect(lazyResult).toEqual(linqResult);
+        });
+      }
+
+      if (options.jslinq && !exceptions.contains("jslinq")) {
+        it("returns the same result as JSLINQ for '" + description + "'", function() {
+          var lazyResult = options.lazy.apply(this, smallInput);
+          var jslinqResult = options.jslinq.apply(this, smallInput);
+          if (typeof lazyResult.toArray === "function") {
+            lazyResult = lazyResult.toArray();
+          }
+          if (typeof jslinqResult.ToArray === "function") {
+            jslinqResult = jslinqResult.ToArray();
+          }
+          expect(lazyResult).toEqual(jslinqResult);
+        });
+      }
+
+      if (options.from && !exceptions.contains("from")) {
+        it("returns the same result as from.js for '" + description + "'", function() {
+          var lazyResult = options.lazy.apply(this, smallInput);
+          var fromResult = options.from.apply(this, smallInput);
+          if (typeof lazyResult.toArray === "function") {
+            lazyResult = lazyResult.toArray();
+          }
+          if (typeof fromResult.toArray === "function") {
+            fromResult = fromResult.toArray();
+          }
+          expect(lazyResult).toEqual(fromResult);
+        });
+      }
     }
 
     inputs.each(function(input) {
@@ -265,7 +379,9 @@
     });
 
     $(".clear-selected").on("click", function() {
-      $(this).closest("section").find(".benchmark-result td:nth-child(n+2)").empty();
+      $(this).closest("section").find(".benchmark-result").each(function() {
+        clearRow($(this));
+      });
     });
 
     $(".benchmark-result").on("click", function() {
@@ -283,12 +399,15 @@
         var benchmarkSetId = e.target.benchmarkSetId;
 
         currentResultSet.push(e.target);
-        if (currentResultSet.length === 3) {
+        if (currentResultSet.length === 6) {
           addBenchmarkResultToTable({
             benchmarkSetId: benchmarkSetId,
             lazy: currentResultSet[0],
             underscore: currentResultSet[1],
-            lodash: currentResultSet[2]
+            lodash: currentResultSet[2],
+            linq: currentResultSet[3],
+            jslinq: currentResultSet[4],
+            from: currentResultSet[5]
           });
           markBenchmarkCompleted(benchmarkSetId);
           updateCharts();
@@ -304,6 +423,10 @@
       });
 
       benchmarkSuite.run({ async: true });
+
+      // Need to return false to prevent the enclosing form from being submitted
+      // on Firefox.
+      return false;
     });
 
     initializeDomExample();
