@@ -61,37 +61,37 @@
 
 <h2>Introduction</h2>
 
-<p>We'll start with an containing the integers from 0 to 999. Incidentally, generating such an array using Lazy.js is quite trivial:</p>
+<p>We'll start with an array containing 1000 integers. Incidentally, generating such an array using Lazy.js is quite trivial:</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">array</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">).</span><span class="nx">toArray</span><span class="p">();</span>
 </pre></div>
 
-<p>Note the <code>toArray</code> call; without it, what you'll get from <code>Lazy.range</code> won't be an actual array but rather a <em>sequence</em> which you can iterate over using <code>each</code>. But that will make more sense in a moment.</p>
+<p>Note the <code>toArray</code> call; without it, what you'll get from <code>Lazy.range</code> won't be an actual <em>array</em> but rather a <em>sequence</em> which you can iterate over using <code>each</code>. But we'll get to that in a moment.</p>
 
-<p>Now let's say we want to take the <em>squares</em> of each of these numbers, increment them, and then check which results are even. We'll use these helper functions:</p>
+<p>Now let's say we want to take the <em>squares</em> of each of these numbers, increment them, and then take the first five even results. We'll use these helper functions, to keep the code concise:</p>
 
 <div class="highlight"><pre><span class="kd">function</span> <span class="nx">square</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">*</span> <span class="nx">x</span><span class="p">;</span> <span class="p">}</span>
 <span class="kd">function</span> <span class="nx">inc</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="p">}</span>
 <span class="kd">function</span> <span class="nx">isEven</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">0</span><span class="p">;</span> <span class="p">}</span>
 </pre></div>
 
-<p>Yes, this is admittedly a very arbitrary goal. (Later I'll get around to thinking of a more realistic scenario.) Anyway, here's one way you might accomplish it using Underscore:</p>
+<p>Yes, this is admittedly a very arbitrary goal. (Later I'll get around to thinking of a more realistic scenario.) Anyway, here's one way you might accomplish it using Underscore and its convenient <code>chain</code> method:</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">chain</span><span class="p">(</span><span class="nx">array</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="nx">square</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="nx">inc</span><span class="p">).</span><span class="nx">filter</span><span class="p">(</span><span class="nx">isEven</span><span class="p">).</span><span class="nx">take</span><span class="p">(</span><span class="mi">5</span><span class="p">).</span><span class="nx">value</span><span class="p">();</span>
 </pre></div>
 
-<p>This query creates lots of extra arrays:</p>
+<p>This query does a lot of stuff:</p>
 
 <ul>
 <li>
-<code>map(square)</code>: an extra 1000-element array</li>
+<code>map(square)</code>: iterates over the array and creates a new 1000-element array</li>
 <li>
-<code>map(inc)</code>: another 1000-element array</li>
+<code>map(inc)</code>: iterates over the new array, creating <em>another</em> new 1000-element array</li>
 <li>
-<code>filter(isEven)</code>: another 500-element array</li>
+<code>filter(isEven)</code>: iterates over <em>that</em> array, creating yet <em>another</em> new (500-element) array</li>
 <li>
 <code>take(5)</code>: all that just for 5 elements!</li>
-</ul><p>So if performance and/or efficiency were a concern for you, you would probably <em>not</em> do things this way using Underscore. Instead, you'd likely go the procedural route:</p>
+</ul><p>So if performance and/or efficiency were a concern for you, you would probably <em>not</em> do things that way using Underscore. Instead, you'd likely go the procedural route:</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">results</span> <span class="o">=</span> <span class="p">[];</span>
 <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">array</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="o">++</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
@@ -109,7 +109,7 @@
 
 <p>Well, yeah. The main problem is that this is one-off code, which isn't reusable and took a bit of time to write. If only we could somehow leverage the expressive power of Underscore but still get the performance of the hand-written procedural solution...</p>
 
-<p>That's where Lazy.js comes in! Here's how we'd write the above query using Lazy.js:</p>
+<hr><p>That's where Lazy.js comes in! Here's how we'd write the above query using Lazy.js:</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">array</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="nx">square</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="nx">inc</span><span class="p">).</span><span class="nx">filter</span><span class="p">(</span><span class="nx">isEven</span><span class="p">).</span><span class="nx">take</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
 </pre></div>
@@ -129,7 +129,7 @@
 <p>Want an example? Sure thing! Let's say we want 300 unique random numbers between 1 and 1000.</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">uniqueRandsFrom1To1000</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">generate</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">();</span> <span class="p">})</span>
-  <span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">(</span><span class="nx">e</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="p">})</span>
+  <span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nx">e</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="p">})</span>
   <span class="p">.</span><span class="nx">uniq</span><span class="p">()</span>
   <span class="p">.</span><span class="nx">take</span><span class="p">(</span><span class="mi">300</span><span class="p">);</span>
 
@@ -145,7 +145,7 @@
   <span class="k">return</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
     <span class="kd">var</span> <span class="nx">prev</span> <span class="o">=</span> <span class="nx">x</span><span class="p">;</span>
     <span class="nx">x</span> <span class="o">=</span> <span class="nx">y</span><span class="p">;</span>
-    <span class="nx">y</span> <span class="o">=</span> <span class="nx">prev</span> <span class="o">+</span> <span class="nx">y</span><span class="p">;</span>
+    <span class="nx">y</span> <span class="o">+=</span> <span class="nx">prev</span><span class="p">;</span>
     <span class="k">return</span> <span class="nx">prev</span><span class="p">;</span>
   <span class="p">};</span>
 <span class="p">}());</span>
@@ -161,7 +161,7 @@
 
 <h2>Asynchronous iteration</h2>
 
-<p>You've probably seen code snippets before that show how to iterate over an array asynchronously in JavaScript. But have you seen such an example packed full of map-y, filter-y goodness like this?</p>
+<p>You've probably <a href="https://gist.github.com/dtao/2351944">seen code snippets before</a> that show how to iterate over an array asynchronously in JavaScript. But have you seen an example packed full of map-y, filter-y goodness like this?</p>
 
 <div class="highlight"><pre><span class="c1">// The second argument defines a 100-millisecond interval between each element.</span>
 <span class="kd">var</span> <span class="nx">asyncSequence</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">async</span><span class="p">(</span><span class="nx">array</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
@@ -169,6 +169,7 @@
   <span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">isEven</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">take</span><span class="p">(</span><span class="mi">20</span><span class="p">);</span>
 
+<span class="c1">// This function returns immediately and begins iterating over the sequence asynchronously.</span>
 <span class="nx">asyncSequence</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
   <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getMilliseconds</span><span class="p">()</span> <span class="o">+</span> <span class="s2">": "</span> <span class="o">+</span> <span class="nx">e</span><span class="p">);</span>
 <span class="p">});</span>
@@ -180,9 +181,9 @@
 
 <p>With indefinite sequences, we saw that unlike Underscore and Lo-Dash, Lazy.js doesn't actually need an in-memory collection to iterate over. And asynchronous sequences demonstrate that it also doesn't need to do all its iteration at once.</p>
 
-<p>Now here's a really cool combination of these two features: with <em>lazy.dom.js</em> (a separate file to include in browser-based environments), you can apply all of the power of Lazy.js to <strong>handling DOM events</strong>. In other words, you can think of DOM events as a <em>sequence</em>—just like any other—and apply the usual <code>map</code>, <code>filter</code>, etc. functions on that sequence.</p>
+<p>Now here's a really cool combination of these two features: with a small extension to Lazy.js (<strong>lazy.dom.js</strong>, a separate file to include in browser-based environments), you can apply all of the power of Lazy.js to <strong>handling DOM events</strong>. In other words, Lazy.js lets you think of DOM events as a <em>sequence</em>—just like any other—and apply the usual <code>map</code>, <code>filter</code>, etc. functions on that sequence.</p>
 
-<p>Here's an example. Let's say we want to handle all <code>mousemove</code> events on a given DOM element, and show their coordinates in another DOM element.</p>
+<p>Here's an example. Let's say we want to handle all <code>mousemove</code> events on a given DOM element, and show their coordinates in one of two other DOM elements depending on location.</p>
 
 <div class="highlight"><pre><span class="c1">// First we define our "sequence" of events.</span>
 <span class="kd">var</span> <span class="nx">mouseEvents</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">events</span><span class="p">(</span><span class="nx">sourceElement</span><span class="p">,</span> <span class="s2">"mousemove"</span><span class="p">);</span>

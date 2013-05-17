@@ -16,15 +16,15 @@ Intrigued? Great! Now let's look at how Lazy.js actually works.
 Introduction
 ------------
 
-We'll start with an containing the integers from 0 to 999. Incidentally, generating such an array using Lazy.js is quite trivial:
+We'll start with an array containing 1000 integers. Incidentally, generating such an array using Lazy.js is quite trivial:
 
 ```javascript
 var array = Lazy.range(1000).toArray();
 ```
 
-Note the `toArray` call; without it, what you'll get from `Lazy.range` won't be an actual array but rather a *sequence* which you can iterate over using `each`. But that will make more sense in a moment.
+Note the `toArray` call; without it, what you'll get from `Lazy.range` won't be an actual *array* but rather a *sequence* which you can iterate over using `each`. But we'll get to that in a moment.
 
-Now let's say we want to take the *squares* of each of these numbers, increment them, and then check which results are even. We'll use these helper functions:
+Now let's say we want to take the *squares* of each of these numbers, increment them, and then take the first five even results. We'll use these helper functions, to keep the code concise:
 
 ```javascript
 function square(x) { return x * x; }
@@ -32,20 +32,20 @@ function inc(x) { return x + 1; }
 function isEven(x) { return x % 2 === 0; }
 ```
 
-Yes, this is admittedly a very arbitrary goal. (Later I'll get around to thinking of a more realistic scenario.) Anyway, here's one way you might accomplish it using Underscore:
+Yes, this is admittedly a very arbitrary goal. (Later I'll get around to thinking of a more realistic scenario.) Anyway, here's one way you might accomplish it using Underscore and its convenient `chain` method:
 
 ```javascript
 var result = _.chain(array).map(square).map(inc).filter(isEven).take(5).value();
 ```
 
-This query creates lots of extra arrays:
+This query does a lot of stuff:
 
-- `map(square)`: an extra 1000-element array
-- `map(inc)`: another 1000-element array
-- `filter(isEven)`: another 500-element array
+- `map(square)`: iterates over the array and creates a new 1000-element array
+- `map(inc)`: iterates over the new array, creating *another* new 1000-element array
+- `filter(isEven)`: iterates over *that* array, creating yet *another* new (500-element) array
 - `take(5)`: all that just for 5 elements!
 
-So if performance and/or efficiency were a concern for you, you would probably *not* do things this way using Underscore. Instead, you'd likely go the procedural route:
+So if performance and/or efficiency were a concern for you, you would probably *not* do things that way using Underscore. Instead, you'd likely go the procedural route:
 
 ```javascript
 var results = [];
@@ -63,6 +63,8 @@ for (var i = 0; i < array.length; ++i) {
 There&mdash;now we we haven't created have any extraneous arrays, and we did all of the work in one iteration. Any problems?
 
 Well, yeah. The main problem is that this is one-off code, which isn't reusable and took a bit of time to write. If only we could somehow leverage the expressive power of Underscore but still get the performance of the hand-written procedural solution...
+
+***
 
 That's where Lazy.js comes in! Here's how we'd write the above query using Lazy.js:
 
@@ -87,7 +89,7 @@ Want an example? Sure thing! Let's say we want 300 unique random numbers between
 
 ```javascript
 var uniqueRandsFrom1To1000 = Lazy.generate(function() { return Math.random(); })
-  .map(function(e) { return (e * 1000) + 1; })
+  .map(function(e) { return Math.floor(e * 1000) + 1; })
   .uniq()
   .take(300);
 
@@ -104,7 +106,7 @@ var fibonacci = Lazy.generate(function() {
   return function() {
     var prev = x;
     x = y;
-    y = prev + y;
+    y += prev;
     return prev;
   };
 }());
@@ -121,7 +123,7 @@ OK, what else can we do with Lazy.js?
 Asynchronous iteration
 ----------------------
 
-You've probably seen code snippets before that show how to iterate over an array asynchronously in JavaScript. But have you seen such an example packed full of map-y, filter-y goodness like this?
+You've probably [seen code snippets before](https://gist.github.com/dtao/2351944) that show how to iterate over an array asynchronously in JavaScript. But have you seen an example packed full of map-y, filter-y goodness like this?
 
 ```javascript
 // The second argument defines a 100-millisecond interval between each element.
@@ -130,6 +132,7 @@ var asyncSequence = Lazy.async(array, 100)
   .filter(isEven)
   .take(20);
 
+// This function returns immediately and begins iterating over the sequence asynchronously.
 asyncSequence.each(function(e) {
   console.log(new Date().getMilliseconds() + ": " + e);
 });
@@ -142,9 +145,9 @@ Event sequences
 
 With indefinite sequences, we saw that unlike Underscore and Lo-Dash, Lazy.js doesn't actually need an in-memory collection to iterate over. And asynchronous sequences demonstrate that it also doesn't need to do all its iteration at once.
 
-Now here's a really cool combination of these two features: with *lazy.dom.js* (a separate file to include in browser-based environments), you can apply all of the power of Lazy.js to **handling DOM events**. In other words, you can think of DOM events as a *sequence*&mdash;just like any other&mdash;and apply the usual `map`, `filter`, etc. functions on that sequence.
+Now here's a really cool combination of these two features: with a small extension to Lazy.js (**lazy.dom.js**, a separate file to include in browser-based environments), you can apply all of the power of Lazy.js to **handling DOM events**. In other words, Lazy.js lets you think of DOM events as a *sequence*&mdash;just like any other&mdash;and apply the usual `map`, `filter`, etc. functions on that sequence.
 
-Here's an example. Let's say we want to handle all `mousemove` events on a given DOM element, and show their coordinates in another DOM element.
+Here's an example. Let's say we want to handle all `mousemove` events on a given DOM element, and show their coordinates in one of two other DOM elements depending on location.
 
 ```javascript
 // First we define our "sequence" of events.
