@@ -12,6 +12,7 @@
   <script type="text/javascript" src="specs/lib/benchmark.js"></script>
   <script type="text/javascript" src="specs/lib/underscore.js"></script>
   <script type="text/javascript" src="specs/lib/lodash.js"></script>
+  <script type="text/javascript" src="specs/lib/linq.js"></script>
   <script type="text/javascript" src="specs/lib/jquery.js"></script>
   <script type="text/javascript" src="specs/lib/highcharts.js"></script>
   <script type="text/javascript" src="specs/lib/hightables.js"></script>
@@ -20,8 +21,8 @@
   <script type="text/javascript" src="specs/lib/boot.js"></script>
 
   <!-- include source files here... -->
-  <script type="text/javascript" src="lazy.min.js"></script>
-  <script type="text/javascript" src="lazy.dom.min.js"></script>
+  <script type="text/javascript" src="lazy.js"></script>
+  <script type="text/javascript" src="lazy.dom.js"></script>
 
   <!-- include spec files here... -->
   <script type="text/javascript" src="specs/support/person.js"></script>
@@ -296,7 +297,7 @@
       <label><input id="test-to-array" type="radio" checked="checked"><code>toArray</code></input></label> or
       <label><input id="test-each" type="radio"><code>each</code></input></label>, and
       <button class="start-benchmarking">start benchmarking</button>
-      to compare Lazy.js, Underscore, and Lo-Dash.
+      to compare Lazy.js, Underscore, Lo-Dash, and Linq.js.
     </form>
 
     <section id="benchmark-results-10"
@@ -322,6 +323,7 @@
           <th>Test</th>
           <th>Underscore.js</th>
           <th>Lo-Dash</th>
+          <th>Linq.js</th>
           <th>Lazy.js</th>
         </tr>
       </table>
@@ -350,6 +352,7 @@
           <th>Test</th>
           <th>Underscore.js</th>
           <th>Lo-Dash</th>
+          <th>Linq.js</th>
           <th>Lazy.js</th>
         </tr>
       </table>

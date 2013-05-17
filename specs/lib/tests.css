@@ -242,7 +242,7 @@ table td {
 
 table th:first-child,
 table td:first-child {
-  width: 40%;
+  width: 20%;
 }
 
 table th:nth-child(n+2),

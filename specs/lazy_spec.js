@@ -747,19 +747,22 @@ describe("Lazy", function() {
     compareToUnderscore("map", {
       lazy: function(arr) { return Lazy(arr).map(square); },
       underscore: function(arr) { return _(arr).map(square); },
-      lodash: function(arr) { return lodash.map(arr, square); }
+      lodash: function(arr) { return lodash.map(arr, square); },
+      linq: function(arr) { return Enumerable.From(arr).Select(square); }
     });
 
     compareToUnderscore("filter", {
       lazy: function(arr) { return Lazy(arr).filter(isEven); },
       underscore: function(arr) { return _(arr).filter(isEven); },
-      lodash: function(arr) { return lodash.filter(arr, isEven); }
+      lodash: function(arr) { return lodash.filter(arr, isEven); },
+      linq: function(arr) { return Enumerable.From(arr).Where(isEven); }
     });
 
     compareToUnderscore("flatten", {
       lazy: function(arr) { return Lazy(arr).flatten(); },
       underscore: function(arr) { return _(arr).flatten(); },
       lodash: function(arr) { return lodash.flatten(arr); },
+      linq: function(arr) { return Enumerable.From(arr).Flatten(); },
       inputs: [[jaggedArray]]
     });
 
@@ -767,6 +770,7 @@ describe("Lazy", function() {
       lazy: function(arr) { return Lazy(arr).uniq(); },
       underscore: function(arr) { return _(arr).uniq(); },
       lodash: function(arr) { return lodash.uniq(arr); },
+      linq: function(arr) { return Enumerable.From(arr).Distinct(); },
       inputs: [[dupes(0, 5, 10)], [dupes(0, 10, 100)]]
     });
 
@@ -774,6 +778,7 @@ describe("Lazy", function() {
       lazy: function(arr, other) { return Lazy(arr).union(other); },
       underscore: function(arr, other) { return _.union(arr, other); },
       lodash: function(arr, other) { return lodash.union(arr, other); },
+      linq: function(arr, other) { return Enumerable.From(arr).Union(other); },
       inputs: [[arr(0, 10), arr(5, 15)], [arr(0, 100), arr(50, 150)]]
     });
 
@@ -781,6 +786,7 @@ describe("Lazy", function() {
       lazy: function(arr, other) { return Lazy(arr).intersection(other); },
       underscore: function(arr, other) { return _.intersection(arr, other); },
       lodash: function(arr, other) { return lodash.intersection(arr, other); },
+      linq: function(arr, other) { return Enumerable.From(arr).Intersect(other); },
       inputs: [[arr(0, 10), arr(5, 15)], [arr(0, 100), arr(50, 150)]]
     });
 
@@ -788,6 +794,7 @@ describe("Lazy", function() {
       lazy: function(arr) { return Lazy(arr).shuffle(); },
       underscore: function(arr) { return _(arr).shuffle(); },
       lodash: function(arr) { return lodash.shuffle(arr); },
+      linq: function(arr) { return Enumerable.From(arr).Shuffle(); },
       shouldMatch: false
     });
 
@@ -802,6 +809,7 @@ describe("Lazy", function() {
       lazy: function(arr, value) { return Lazy(arr).map(inc).indexOf(value); },
       underscore: function(arr, value) { return _.chain(arr).map(inc).indexOf(value); },
       lodash: function(arr, value) { return lodash(arr).map(inc).indexOf(value); },
+      linq: function(arr, value) { return Enumerable.From(arr).Select(inc).IndexOf(value); },
       inputs: [[arr(0, 10), 4], [arr(0, 100), 35]],
       valueOnly: true
     });
@@ -817,49 +825,50 @@ describe("Lazy", function() {
     compareToUnderscore("map -> filter", {
       lazy: function(arr) { return Lazy(arr).map(inc).filter(isEven); },
       underscore: function(arr) { return _.chain(arr).map(inc).filter(isEven); },
-      lodash: function(arr) { return lodash(arr).map(inc).filter(isEven); }
+      lodash: function(arr) { return lodash(arr).map(inc).filter(isEven); },
+      linq: function(arr) { return Enumerable.From(arr).Select(inc).Where(isEven); }
     });
 
     compareToUnderscore("map -> take", {
       lazy: function(arr) { return Lazy(arr).map(inc).take(5); },
       underscore: function(arr) { return _.chain(arr).map(inc).take(5); },
-      lodash: function(arr) { return lodash(arr).map(inc).take(5); }
+      lodash: function(arr) { return lodash(arr).map(inc).take(5); },
+      linq: function(arr) { return Enumerable.From(arr).Select(inc).Take(5); }
     });
 
     compareToUnderscore("filter -> take", {
       lazy: function(arr) { return Lazy(arr).filter(isEven).take(5); },
       underscore: function(arr) { return _.chain(arr).filter(isEven).first(5); },
-      lodash: function(arr) { return lodash(arr).filter(isEven).first(5); }
+      lodash: function(arr) { return lodash(arr).filter(isEven).first(5); },
+      linq: function(arr) { return Enumerable.From(arr).Where(isEven).Take(5); }
     });
 
     compareToUnderscore("map -> filter -> take", {
       lazy: function(arr) { return Lazy(arr).map(inc).filter(isEven).take(5); },
       underscore: function(arr) { return _.chain(arr).map(inc).filter(isEven).take(5); },
-      lodash: function(arr) { return lodash(arr).map(inc).filter(isEven).take(5); }
+      lodash: function(arr) { return lodash(arr).map(inc).filter(isEven).take(5); },
+      linq: function(arr) { return Enumerable.From(arr).Select(inc).Where(isEven).Take(5); }
     });
 
     compareToUnderscore("filter -> drop -> take", {
       lazy: function(arr) { return Lazy(arr).filter(isEven).drop(5).take(5); },
       underscore: function(arr) { return _.chain(arr).filter(isEven).rest(5).first(5); },
-      lodash: function(arr) { return lodash(arr).filter(isEven).rest(5).first(5); }
+      lodash: function(arr) { return lodash(arr).filter(isEven).rest(5).first(5); },
+      linq: function(arr) { return Enumerable.From(arr).Where(isEven).Skip(5).Take(5); }
     });
 
     compareToUnderscore("map -> drop -> take", {
       lazy: function(arr) { return Lazy(arr).map(inc).drop(5).take(5); },
       underscore: function(arr) { return _.chain(arr).map(inc).rest(5).take(5); },
-      lodash: function(arr) { return lodash(arr).map(inc).rest(5).take(5); }
-    });
-
-    compareToUnderscore("filter -> drop -> take", {
-      lazy: function(arr) { return Lazy(arr).filter(isEven).drop(5).take(5); },
-      underscore: function(arr) { return _.chain(arr).filter(isEven).rest(5).first(5); },
-      lodash: function(arr) { return lodash(arr).filter(isEven).rest(5).first(5); }
+      lodash: function(arr) { return lodash(arr).map(inc).rest(5).take(5); },
+      linq: function(arr) { return Enumerable.From(arr).Select(inc).Skip(5).Take(5); }
     });
 
     compareToUnderscore("flatten -> take", {
       lazy: function(arr) { return Lazy(arr).flatten().take(5); },
       underscore: function(arr) { return _.chain(arr).flatten().first(5); },
       lodash: function(arr) { return lodash(arr).flatten().first(5); },
+      linq: function(arr) { return Enumerable.From(arr).Flatten().Take(5); },
       inputs: [[jaggedArray]]
     });
 
@@ -867,6 +876,7 @@ describe("Lazy", function() {
       lazy: function(arr) { return Lazy(arr).uniq().take(5); },
       underscore: function(arr) { return _.chain(arr).uniq().first(5); },
       lodash: function(arr) { return lodash(arr).uniq().first(5); },
+      linq: function(arr) { return Enumerable.From(arr).Distinct().Take(5); },
       inputs: [[dupes(0, 5, 10)], [dupes(0, 10, 100)]]
     });
 
@@ -874,6 +884,7 @@ describe("Lazy", function() {
       lazy: function(arr, other) { return Lazy(arr).union(other).take(5); },
       underscore: function(arr, other) { return _.chain(arr).union(other).first(5); },
       lodash: function(arr, other) { return lodash(arr).union(other).first(5); },
+      linq: function(arr, other) { return Enumerable.From(arr).Union(other).Take(5); },
       inputs: [[arr(0, 10), arr(5, 15)], [arr(0, 100), arr(50, 150)]]
     });
 
@@ -881,6 +892,7 @@ describe("Lazy", function() {
       lazy: function(arr, other) { return Lazy(arr).intersection(other).take(5); },
       underscore: function(arr, other) { return _.chain(arr).intersection(other).first(5); },
       lodash: function(arr, other) { return lodash(arr).intersection(other).first(5); },
+      linq: function(arr, other) { return Enumerable.From(arr).Intersect(other).Take(5); },
       inputs: [[arr(0, 10), arr(5, 15)], [arr(0, 100), arr(50, 150)]]
     });
 
@@ -895,6 +907,7 @@ describe("Lazy", function() {
       lazy: function(arr) { return Lazy(arr).shuffle().take(5); },
       underscore: function(arr) { return _.chain(arr).shuffle().first(5); },
       lodash: function(arr) { return lodash(arr).shuffle().first(5); },
+      linq: function(arr) { return Enumerable.From(arr).Shuffle().Take(5); },
       shouldMatch: false
     });
 
@@ -909,6 +922,7 @@ describe("Lazy", function() {
       lazy: function(arr) { return Lazy(arr).map(inc).any(isEven); },
       underscore: function(arr) { return _.chain(arr).map(inc).any(isEven); },
       lodash: function(arr) { return lodash(arr).map(inc).any(isEven); },
+      linq: function(arr) { return Enumerable.From(arr).Select(inc).Any(isEven); },
       valueOnly: true
     });
 
@@ -916,6 +930,7 @@ describe("Lazy", function() {
       lazy: function(arr) { return Lazy(arr).map(inc).all(isEven); },
       underscore: function(arr) { return _.chain(arr).map(inc).every(isEven); },
       lodash: function(arr) { return lodash(arr).map(inc).every(isEven); },
+      linq: function(arr) { return Enumerable.From(arr).Select(inc).All(isEven); },
       valueOnly: true
     });
   });

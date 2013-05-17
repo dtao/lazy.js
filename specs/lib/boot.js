@@ -88,7 +88,8 @@
         new Benchmark(description, function() { options.lazy.apply(this, input); }) :
         new Benchmark(description, function() { options.lazy.apply(this, input).toArray(); }),
       new Benchmark(description, function() { options.underscore.apply(this, input); }),
-      new Benchmark(description, function() { options.lodash.apply(this, input); })
+      new Benchmark(description, function() { options.lodash.apply(this, input); }),
+      new Benchmark(description, function() { options.linq.apply(this, input); })
     ];
 
     var eachBenchmarks = options.valueOnly ? toArrayBenchmarks : [
@@ -100,6 +101,9 @@
       }),
       new Benchmark(description, function() {
         lodash.each(options.lodash.apply(this, input), function(e) {});
+      }),
+      new Benchmark(description, function() {
+        options.linq.apply(this, input).ForEach(function(e) {});
       })
     ];
 
@@ -128,6 +132,7 @@
     $("<td>").text(description).appendTo(row);
     $("<td>").addClass("underscore-result").appendTo(row);
     $("<td>").addClass("lodash-result").appendTo(row);
+    $("<td>").addClass("linq-result").appendTo(row);
     $("<td>").addClass("lazy-result").appendTo(row);
   }
 
@@ -138,6 +143,7 @@
 
     $(".underscore-result", row).text(addCommas(result.underscore.hz.toFixed(2)));
     $(".lodash-result", row).text(addCommas(result.lodash.hz.toFixed(2)));
+    $(".linq-result", row).text(addCommas(result.linq.hz.toFixed(2))).addClass(style);
     $(".lazy-result", row).text(addCommas(result.lazy.hz.toFixed(2))).addClass(style);
   }
 
@@ -205,6 +211,20 @@
         }
         expect(lazyResult).toEqual(lodashResult);
       });
+
+      if (options.linq) {
+        it("returns the same result as linq.js for '" + description + "'", function() {
+          var lazyResult = options.lazy.apply(this, smallInput);
+          var linqResult = options.linq.apply(this, smallInput);
+          if (typeof lazyResult.toArray === "function") {
+            lazyResult = lazyResult.toArray();
+          }
+          if (typeof linqResult.ToArray === "function") {
+            linqResult = linqResult.ToArray();
+          }
+          expect(lazyResult).toEqual(linqResult);
+        });
+      }
     }
 
     inputs.each(function(input) {
@@ -283,12 +303,13 @@
         var benchmarkSetId = e.target.benchmarkSetId;
 
         currentResultSet.push(e.target);
-        if (currentResultSet.length === 3) {
+        if (currentResultSet.length === 4) {
           addBenchmarkResultToTable({
             benchmarkSetId: benchmarkSetId,
             lazy: currentResultSet[0],
             underscore: currentResultSet[1],
-            lodash: currentResultSet[2]
+            lodash: currentResultSet[2],
+            linq: currentResultSet[3]
           });
           markBenchmarkCompleted(benchmarkSetId);
           updateCharts();
