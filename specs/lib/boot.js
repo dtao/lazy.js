@@ -120,6 +120,10 @@
     };
   };
 
+  window.benchmarkChartRowFilter = function(row) {
+    return $(row).find("td.lazy-result").is(":not(:empty)");
+  };
+
   window.compareToUnderscore = function(description, options) {
     var inputs = options.inputs ?
       Lazy(options.inputs) :
