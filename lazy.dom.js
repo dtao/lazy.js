@@ -15,7 +15,7 @@
       }
     };
 
-    this.element.addEventListender(this.eventName, listener);
+    this.element.addEventListener(this.eventName, listener);
   };
 
   exports.Lazy.events = function(element, eventName) {
