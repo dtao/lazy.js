@@ -251,6 +251,7 @@
       Lazy([10, 100]).map(function(size) { return [getOrCreateArray(size)] });
 
     var smallInput = inputs.first();
+    var exceptions = Lazy(options.doesNotMatch || []);
 
     if (options.shouldMatch !== false) {
       it("returns the same result as underscore.js for '" + description + "'", function() {
@@ -277,7 +278,7 @@
         expect(lazyResult).toEqual(lodashResult);
       });
 
-      if (options.linq) {
+      if (options.linq && !exceptions.contains("linq")) {
         it("returns the same result as linq.js for '" + description + "'", function() {
           var lazyResult = options.lazy.apply(this, smallInput);
           var linqResult = options.linq.apply(this, smallInput);
@@ -291,7 +292,7 @@
         });
       }
 
-      if (options.jslinq) {
+      if (options.jslinq && !exceptions.contains("jslinq")) {
         it("returns the same result as JSLINQ for '" + description + "'", function() {
           var lazyResult = options.lazy.apply(this, smallInput);
           var jslinqResult = options.jslinq.apply(this, smallInput);
@@ -305,7 +306,7 @@
         });
       }
 
-      if (options.from) {
+      if (options.from && !exceptions.contains("from")) {
         it("returns the same result as from.js for '" + description + "'", function() {
           var lazyResult = options.lazy.apply(this, smallInput);
           var fromResult = options.from.apply(this, smallInput);

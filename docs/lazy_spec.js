@@ -695,7 +695,7 @@ describe("Lazy", function() {
     });
   });
 
-  describe("compared to underscore", function() {
+  describe("compared to Underscore, Lo-Dash, etc.", function() {
     function inc(x) { return x + 1; }
     function dec(x) { return x - 1; }
     function square(x) { return x * x; }
@@ -751,7 +751,11 @@ describe("Lazy", function() {
       lodash: function(arr) { return lodash.map(arr, square); },
       linq: function(arr) { return Enumerable.From(arr).Select(square); },
       jslinq: function(arr) { return JSLINQ(arr).Select(square); },
-      from: function(arr) { return from(arr).select(square); }
+      from: function(arr) { return from(arr).select(square); },
+
+      // JSLINQ skips falsy values (e.g., conflates Select and Where --
+      // not sure why they thought that was a good idea).
+      doesNotMatch: ["jslinq"]
     });
 
     compareAlternatives("filter", {
@@ -854,7 +858,7 @@ describe("Lazy", function() {
       underscore: function(arr) { return _.chain(arr).filter(isEven).first(5); },
       lodash: function(arr) { return lodash(arr).filter(isEven).first(5); },
       linq: function(arr) { return Enumerable.From(arr).Where(isEven).Take(5); },
-      from: function(arr) { return from(arr).where(inc).take(5); }
+      from: function(arr) { return from(arr).where(isEven).take(5); }
     });
 
     compareAlternatives("map -> filter -> take", {
