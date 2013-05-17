@@ -21,6 +21,7 @@
 
   <!-- include source files here... -->
   <script type="text/javascript" src="lazy.min.js"></script>
+  <script type="text/javascript" src="lazy.dom.min.js"></script>
 
   <!-- include spec files here... -->
   <script type="text/javascript" src="specs/support/person.js"></script>
@@ -37,6 +38,7 @@
   <nav data-sections=".top-level-section">
     <ul>
       <li class="selected"><a href="#docs">Docs</a></li>
+      <li><a href="#dom-example">DOM Example</a></li>
       <li><a href="#benchmark-results">Benchmark Results</a></li>
       <li><a href="#test-results">Spec Results</a></li>
     </ul>
@@ -44,6 +46,20 @@
 
   <section id="docs" class="top-level-section">
     {{{readme}}}
+  </section>
+
+  <section id="dom-example" class="top-level-section" style="display: none;">
+    <div id="dom-event-source">
+      <p>
+        Move the mouse over this element.<br />
+        (See the documentation for an explanation of this section.)
+      </p>
+    </div>
+
+    <div id="dom-event-output">
+      <div class="left"><p></p></div>
+      <div class="right"><p></p></div>
+    </div>
   </section>
 
   <section id="benchmark-results" class="top-level-section" style="display: none;">
