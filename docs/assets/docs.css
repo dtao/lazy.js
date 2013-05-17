@@ -214,6 +214,11 @@ figure {
   background: url(running.gif) no-repeat 4px center;
 }
 
+.benchmark-result td.not-applicable {
+  color: #888;
+  font-size: 90%;
+}
+
 pre, code {
   font-family: "Source Code Pro", monospace;
 }

@@ -68,15 +68,6 @@
     return suite;
   }
 
-  function addCommas(number) {
-    var parts = number.toString().split(".");
-    var pattern = /(\d+)(\d{3})/;
-    while (pattern.test(parts[0])) {
-        parts[0] = parts[0].replace(pattern, '$1,$2');
-    }
-    return parts.join(".");
-  }
-
   function finishedLoading() {
     $(".benchmark-results-section").removeClass("loading");
     $(".start-benchmarking").prop("disabled", false);
@@ -180,26 +171,39 @@
     $("<td>").addClass("lazy-result").appendTo(row);
   }
 
+  function addResultToCell(result, cell, additionalStyles) {
+    if (result === 0.0) {
+      cell.addClass("not-applicable");
+      cell.text("N/A");
+      return;
+    }
+
+    var parts = result.toFixed(2).split(".");
+    var pattern = /(\d+)(\d{3})/;
+    while (pattern.test(parts[0])) {
+        parts[0] = parts[0].replace(pattern, '$1,$2');
+    }
+    cell.text(parts.join("."));
+
+    if (additionalStyles) {
+      cell.addClass(additionalStyles);
+    }
+  }
+
   function addBenchmarkResultToTable(result) {
     var row   = $("#benchmark-result-" + result.benchmarkSetId);
     var style = result.lazy.hz > result.underscore.hz &&
                 result.lazy.hz > result.lodash.hz &&
-                (!result.linq || result.lazy.hz > result.linq.hz) &&
-                (!result.jslinq || result.lazy.hz > result.jslinq.hz) &&
-                (!result.from || result.lazy.hz > result.from.hz) ? "positive" : "negative";
+                result.lazy.hz > result.linq.hz &&
+                result.lazy.hz > result.jslinq.hz &&
+                result.lazy.hz > result.from.hz ? "positive" : "negative";
 
-    $(".underscore-result", row).text(addCommas(result.underscore.hz.toFixed(2)));
-    $(".lodash-result", row).text(addCommas(result.lodash.hz.toFixed(2)));
-    if (result.linq) {
-      $(".linqjs-result", row).text(addCommas(result.linq.hz.toFixed(2)));
-    }
-    if (result.jslinq) {
-      $(".jslinq-result", row).text(addCommas(result.jslinq.hz.toFixed(2)));
-    }
-    if (result.from) {
-      $(".fromjs-result", row).text(addCommas(result.from.hz.toFixed(2)));
-    }
-    $(".lazy-result", row).text(addCommas(result.lazy.hz.toFixed(2))).addClass(style);
+    addResultToCell(result.underscore.hz, $(".underscore-result", row));
+    addResultToCell(result.lodash.hz, $(".lodash-result", row));
+    addResultToCell(result.linq.hz, $(".linqjs-result", row));
+    addResultToCell(result.jslinq.hz, $(".jslinq-result", row));
+    addResultToCell(result.from.hz, $(".fromjs-result", row));
+    addResultToCell(result.lazy.hz, $(".lazy-result", row, style));
   }
 
   function clearRow(row) {
