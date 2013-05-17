@@ -11,6 +11,8 @@
   <script type="text/javascript" src="docs/lib/underscore.js"></script>
   <script type="text/javascript" src="docs/lib/lodash.js"></script>
   <script type="text/javascript" src="docs/lib/linq.js"></script>
+  <script type="text/javascript" src="docs/lib/jslinq.js"></script>
+  <script type="text/javascript" src="docs/lib/from.js"></script>
   <script type="text/javascript" src="docs/lib/jquery.js"></script>
   <script type="text/javascript" src="docs/lib/highcharts.js"></script>
   <script type="text/javascript" src="docs/lib/hightables.js"></script>
@@ -84,7 +86,10 @@
       <label><input id="test-to-array" type="radio" checked="checked"><code>toArray</code></input></label> or
       <label><input id="test-each" type="radio"><code>each</code></input></label>, and
       <button class="start-benchmarking">start benchmarking</button>
-      to compare Lazy.js, Underscore, Lo-Dash, and Linq.js.
+      to compare Lazy.js, Underscore, Lo-Dash,
+      <a href="http://linqjs.codeplex.com/">Linq.js</a>,
+      <a href="http://jslinq.codeplex.com/">JSLINQ</a>, and
+      <a href="https://github.com/suckgamoni/fromjs/">From.js</a>.
     </form>
 
     <section id="benchmark-results-10"
@@ -108,9 +113,11 @@
       <table id="benchmark-results-table-10" class="benchmark-results-table">
         <tr>
           <th>Test</th>
-          <th>Underscore.js</th>
+          <th>Underscore</th>
           <th>Lo-Dash</th>
           <th>Linq.js</th>
+          <th>JSLINQ</th>
+          <th>From.js</th>
           <th>Lazy.js</th>
         </tr>
       </table>
@@ -132,14 +139,17 @@
         Select:
         <button class="select-all">All</button>
         <button class="select-none">None</button>
+        <button class="clear-selected">Clear</button>
       </p>
 
       <table id="benchmark-results-table-100" class="benchmark-results-table">
         <tr>
           <th>Test</th>
-          <th>Underscore.js</th>
+          <th>Underscore</th>
           <th>Lo-Dash</th>
           <th>Linq.js</th>
+          <th>JSLINQ</th>
+          <th>From.js</th>
           <th>Lazy.js</th>
         </tr>
       </table>

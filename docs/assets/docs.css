@@ -243,12 +243,21 @@ table th,
 table td {
   padding: 0.5ex 0.5em;
   text-align: left;
-  width: 20%;
 }
 
-table th:first-child,
-table td:first-child {
-  width: 20%;
+.benchmark-results-table th,
+.benchmark-results-table td {
+  width: 12.5%;
+}
+
+.benchmark-results-table th:first-child,
+.benchmark-results-table td:first-child {
+  width: 25%;
+}
+
+#test-results-table th:first-child,
+#test-results-table td:first-child {
+  width: 80%;
 }
 
 table th:nth-child(n+2),
