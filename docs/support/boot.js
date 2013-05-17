@@ -203,7 +203,7 @@
     addResultToCell(result.linq.hz, $(".linqjs-result", row));
     addResultToCell(result.jslinq.hz, $(".jslinq-result", row));
     addResultToCell(result.from.hz, $(".fromjs-result", row));
-    addResultToCell(result.lazy.hz, $(".lazy-result", row, style));
+    addResultToCell(result.lazy.hz, $(".lazy-result", row), style);
   }
 
   function clearRow(row) {
