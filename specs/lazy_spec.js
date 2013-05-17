@@ -85,9 +85,9 @@ describe("Lazy", function() {
       expect(naturalNumbers.get(9)).toEqual(10);
     });
 
-    it("throws an exception if you try to get its length", function() {
+    it("has an undefined length", function() {
       var naturalNumbers = Lazy.generate(function(i) { return i + 1; });
-      expect(function() { naturalNumbers.length(); }).toThrow();
+      expect(naturalNumbers.length()).toBeUndefined();
     });
   });
 
@@ -832,10 +832,10 @@ describe("Lazy", function() {
       lodash: function(arr) { return lodash(arr).filter(isEven).first(5); }
     });
 
-    compareToUnderscore("map -> map -> filter", {
-      lazy: function(arr) { return Lazy(arr).map(inc).map(square).filter(isEven); },
-      underscore: function(arr) { return _.chain(arr).map(inc).map(square).filter(isEven); },
-      lodash: function(arr) { return lodash(arr).map(inc).map(square).filter(isEven); }
+    compareToUnderscore("map -> filter -> take", {
+      lazy: function(arr) { return Lazy(arr).map(inc).filter(isEven).take(5); },
+      underscore: function(arr) { return _.chain(arr).map(inc).filter(isEven).take(5); },
+      lodash: function(arr) { return lodash(arr).map(inc).filter(isEven).take(5); }
     });
 
     compareToUnderscore("filter -> drop -> take", {

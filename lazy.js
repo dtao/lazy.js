@@ -301,6 +301,28 @@
     return str;
   };
 
+  Sequence.prototype.getIterator = function() {
+    return new SequenceIterator(this);
+  };
+
+  var SequenceIterator = function(sequence) {
+    this.sequence = sequence;
+    this.index = -1;
+  };
+
+  SequenceIterator.prototype.current = function() {
+    return this.sequence.get(this.index);
+  };
+
+  SequenceIterator.prototype.moveNext = function() {
+    if (this.index >= this.sequence.length() - 1) {
+      return false;
+    }
+
+    ++this.index;
+    return true;
+  };
+
   var ArrayWrapper = Sequence.inherit(function(source) {
     this.source = source;
   });
@@ -725,21 +747,41 @@
     });
   };
 
-  var GeneratedSequence = Sequence.inherit(function(generatorFn) {
+  var GeneratedSequence = Sequence.inherit(function(generatorFn, length) {
     this.get = generatorFn;
+    this.fixedLength = length;
   });
 
   GeneratedSequence.prototype.length = function() {
-    throw "Cannot get the length of a generated sequence.";
+    return this.fixedLength;
   };
 
   GeneratedSequence.prototype.each = function(fn) {
     var generatorFn = this.get,
+        length = this.fixedLength,
         i = 0;
-    while (true) {
+    while (typeof length === "undefined" || i < length) {
       if (fn(generatorFn(i++)) === false) {
         break;
       }
+    }
+  };
+
+  var AsyncSequence = Sequence.inherit(function(parent, interval) {
+    this.parent = parent;
+    this.interval = interval || 0;
+  });
+
+  AsyncSequence.prototype.each = function(fn) {
+    var iterator = this.parent.getIterator(),
+        interval = this.interval;
+
+    if (iterator.moveNext()) {
+      setTimeout(function iterate() {
+        if (fn(iterator.current()) !== false && iterator.moveNext()) {
+          setTimeout(iterate, interval);
+        }
+      }, interval);
     }
   };
 
@@ -748,6 +790,10 @@
       return source;
     }
     return new ArrayWrapper(source);
+  };
+
+  exports.Lazy.async = function(source, interval) {
+    return new AsyncSequence(new ArrayWrapper(source), interval);
   };
 
   exports.Lazy.generate = function(SequenceFn) {
