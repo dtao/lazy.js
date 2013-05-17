@@ -1,4 +1,6 @@
-@import url(http://fonts.googleapis.com/css?family=Chewy|Open+Sans:400,300|Source+Code+Pro);
+@import url(jquery.treetable.css);
+@import url(pygments.css);
+@import url(http://fonts.googleapis.com/css?family=Chewy|Open+Sans:400,300|Source+Code+Pro:700,400);
 
 body {
   font-family: "Open Sans", sans-serif;
@@ -206,6 +208,10 @@ figure {
 
 .benchmark-result.selected td:first-child {
   background: url(check.png) no-repeat 4px center;
+}
+
+.benchmark-result.running td:first-child {
+  background: url(running.gif) no-repeat 4px center;
 }
 
 pre, code {

@@ -1,4 +1,5 @@
 (function() {
+  Benchmark.options.delay   = 0;
   Benchmark.options.maxTime = 1;
 
   var jasmineEnv = jasmine.getEnv();
@@ -84,24 +85,40 @@
 
   function createBenchmarks(description, input, options) {
     var toArrayBenchmarks = [
+      // Lazy.js
       options.valueOnly ?
         new Benchmark(description, function() { options.lazy.apply(this, input); }) :
         new Benchmark(description, function() { options.lazy.apply(this, input).toArray(); }),
+
+      // Underscore
       new Benchmark(description, function() { options.underscore.apply(this, input); }),
+
+      // Lo-Dash
       new Benchmark(description, function() { options.lodash.apply(this, input); }),
-      new Benchmark(description, function() { options.linq.apply(this, input); })
+
+      // Linq.js
+      options.valueOnly ?
+        new Benchmark(description, function() { options.linq.apply(this, input); }) :
+        new Benchmark(description, function() { options.linq.apply(this, input).ToArray(); })
     ];
 
     var eachBenchmarks = options.valueOnly ? toArrayBenchmarks : [
+      // Lazy.js
       new Benchmark(description, function() {
         options.lazy.apply(this, input).each(function(e) {});
       }),
+
+      // Underscore
       new Benchmark(description, function() {
         _.each(options.underscore.apply(this, input), function(e) {});
       }),
+
+      // Lo-Dash
       new Benchmark(description, function() {
         lodash.each(options.lodash.apply(this, input), function(e) {});
       }),
+
+      // Linq.js
       new Benchmark(description, function() {
         options.linq.apply(this, input).ForEach(function(e) {});
       })
@@ -139,11 +156,12 @@
   function addBenchmarkResultToTable(result) {
     var row   = $("#benchmark-result-" + result.benchmarkSetId);
     var style = result.lazy.hz > result.underscore.hz &&
-                result.lazy.hz > result.lodash.hz ? "positive" : "negative";
+                result.lazy.hz > result.lodash.hz &&
+                (!result.linq || result.lazy.hz > result.linq.hz) ? "positive" : "negative";
 
     $(".underscore-result", row).text(addCommas(result.underscore.hz.toFixed(2)));
     $(".lodash-result", row).text(addCommas(result.lodash.hz.toFixed(2)));
-    $(".linq-result", row).text(addCommas(result.linq.hz.toFixed(2))).addClass(style);
+    $(".linq-result", row).text(addCommas(result.linq.hz.toFixed(2)));
     $(".lazy-result", row).text(addCommas(result.lazy.hz.toFixed(2))).addClass(style);
   }
 
