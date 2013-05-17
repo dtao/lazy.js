@@ -176,6 +176,9 @@
       it("returns the same result as underscore.js for '" + description + "'", function() {
         var lazyResult = options.lazy.apply(this, smallInput);
         var underscoreResult = options.underscore.apply(this, smallInput);
+        if (typeof lazyResult.toArray === "function") {
+          lazyResult = lazyResult.toArray();
+        }
         if (typeof underscoreResult.value === "function") {
           underscoreResult = underscoreResult.value();
         }
@@ -185,6 +188,9 @@
       it("returns the same result as Lo-Dash for '" + description + "'", function() {
         var lazyResult = options.lazy.apply(this, smallInput);
         var lodashResult = options.lodash.apply(this, smallInput);
+        if (typeof lazyResult.toArray === "function") {
+          lazyResult = lazyResult.toArray();
+        }
         if (typeof lodashResult.value === "function") {
           lodashResult = lodashResult.value();
         }
