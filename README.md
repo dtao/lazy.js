@@ -5,11 +5,11 @@ Like Underscore, but lazier
 
 The following chart illustrates the performance of Lazy.js versus Underscore and Lo-Dash for several common operations using arrays with 10 elements each on Chrome:
 
-![Lazy.js versus Underscore/Lo-Dash](http://dtao.github.io/lazy.js/specs/lib/LazyVsLodash10Elements.png)
+![Lazy.js versus Underscore/Lo-Dash](http://i.imgur.com/9vP6sVG.png)
 
 You can see that the performance difference becomes much more significant for methods that don't require iterating an entire collection (e.g., `indexOf`, `take`) as the arrays get larger:
 
-![Lazy.js versus Underscore/Lo-Dash](http://dtao.github.io/lazy.js/specs/lib/LazyVsLodash100Elements.png)
+![Lazy.js versus Underscore/Lo-Dash](http://i.imgur.com/oGPlPug.png)
 
 Intrigued? Great! Now let's look at how Lazy.js actually works.
 
