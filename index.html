@@ -45,29 +45,25 @@
   <section id="docs" class="top-level-section">
     <h1>Like underscore.js, but lazier</h1>
 
-    <p>If <a href="http://underscorejs.org/">underscore.js</a> is "the tie to go along with <a href="http://jquery.com/">jQuery</a>'s tux," then <strong>lazy.js</strong> is your friend with the brilliant advice: "Don't put the tie on now; just stuff it in your pocket and put it on when we get there."</p>
+<p>If <a href="http://underscorejs.org/">underscore.js</a> is "the tie to go along with <a href="http://jquery.com/">jQuery</a>'s tux," then <strong>lazy.js</strong> is your friend with the brilliant advice: "Don't put the tie on now; just stuff it in your pocket and put it on when we get there."</p>
 
-    <p>The primary differentiator that distinguishes lazy.js from underscore.js is <strong>lazy evaluation</strong>, which directly translates to superior performance in many cases, especially when dealing with large collections.</p>
+<p>The primary differentiator that distinguishes lazy.js from underscore.js is <strong>lazy evaluation</strong>, which directly translates to superior performance in many cases, especially when dealing with large collections.</p>
 
-    <p>For example, the following chart illustrates the performance of lazy.js versus underscore.js and <a href="http://lodash.com/">Lo-Dash</a> for several common operations using arrays with 10 elements each on Chrome:</p>
+<p>For example, the following chart illustrates the performance of lazy.js versus underscore.js and <a href="http://lodash.com/">Lo-Dash</a> for several common operations using arrays with 10 elements each on Chrome:</p>
 
-    <figure>
-      <img src="http://dtao.github.io/lazy.js/specs/lib/LazyVsLodash10Elements.png" alt="lazy.js versus underscore.js/Lo-Dash" />
-    </figure>
+<p><img src="http://dtao.github.io/lazy.js/specs/lib/LazyVsLodash10Elements.png" alt="lazy.js versus underscore.js/Lo-Dash"></p>
 
-    <p>You can see that the performance difference becomes much more significant for arrays with 100 elements:</p>
+<p>You can see that the performance difference becomes much more significant for arrays with 100 elements:</p>
 
-    <figure>
-      <img src="http://dtao.github.io/lazy.js/specs/lib/LazyVsLodash100Elements.png" alt="lazy.js versus underscore.js/Lo-Dash" />
-    </figure>
+<p><img src="http://dtao.github.io/lazy.js/specs/lib/LazyVsLodash100Elements.png" alt="lazy.js versus underscore.js/Lo-Dash"></p>
 
-    <p>This difference <a href="http://dtao.github.io/lazy.js/specs/lib/LazyVsLodash1000Elements.png">gets crazier and crazier</a> as you increase the sizes of the collections involved.</p>
+<p>This difference <a href="http://dtao.github.io/lazy.js/specs/lib/LazyVsLodash1000Elements.png">gets crazier and crazier</a> as you increase the sizes of the collections involved.</p>
 
-    <p>Now let's look at a little bit of code. (For the following snippets, let's say <code>array</code> contains the integers from 1 to 1000.)</p>
+<p>Now let's look at a little bit of code. (For the following snippets, let's say <code>array</code> contains the integers from 1 to 1000.)</p>
 
-    <h2>Lazy evaluation</h2>
+<h2>Lazy evaluation</h2>
 
-    <div class="highlight"><pre><span class="kd">function</span> <span class="nx">square</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">*</span> <span class="nx">x</span><span class="p">;</span> <span class="p">}</span>
+<div class="highlight"><pre><span class="kd">function</span> <span class="nx">square</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">*</span> <span class="nx">x</span><span class="p">;</span> <span class="p">}</span>
 <span class="kd">function</span> <span class="nx">inc</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="p">}</span>
 <span class="kd">function</span> <span class="nx">isEven</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">0</span><span class="p">;</span> <span class="p">}</span>
 
@@ -85,9 +81,9 @@
 <span class="nx">Lazy</span><span class="p">(</span><span class="nx">array</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="nx">square</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="nx">inc</span><span class="p">).</span><span class="nx">filter</span><span class="p">(</span><span class="nx">isEven</span><span class="p">).</span><span class="nx">take</span><span class="p">(</span><span class="mi">5</span><span class="p">).</span><span class="nx">toArray</span><span class="p">();</span>
 </pre></div>
 
-    <h2>Arbitrary sequence generation</h2>
+<h2>Arbitrary sequence generation</h2>
 
-    <div class="highlight"><pre><span class="cm">/* Unlike underscore.js, lazy.js also provides the ability to generate arbitrary sequences which can</span>
+<div class="highlight"><pre><span class="cm">/* Unlike underscore.js, lazy.js also provides the ability to generate arbitrary sequences which can</span>
 <span class="cm"> * be treated just like arrays for the purpose of mapping, filtering, etc.</span>
 <span class="cm"> */</span>
 <span class="kd">var</span> <span class="nx">powersOfTwo</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">generate</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nx">i</span><span class="p">);</span> <span class="p">});</span>
@@ -112,49 +108,52 @@
   <span class="p">});</span>
 </pre></div>
 
-    <h2>Available functions</h2>
+<h2>Available functions</h2>
 
-    <p>Currently the following functions are available:</p>
+<p>Currently the following functions are available:</p>
 
-    <ul>
-      <li><code>map</code></li>
-      <li><code>pluck</code></li>
-      <li><code>reduce</code> (aka <code>inject</code> or <code>foldl</code>)</li>
-      <li><code>reduceRight</code> (aka <code>foldr</code>)</li>
-      <li><code>filter</code></li>
-      <li><code>reject</code></li>
-      <li><code>where</code></li>
-      <li><code>invoke</code></li>
-      <li><code>find</code></li>
-      <li><code>findWhere</code></li>
-      <li><code>first</code> (aka <code>head</code> or <code>take</code>)</li>
-      <li><code>rest</code> (aka <code>tail</code> or <code>drop</code>)</li>
-      <li><code>initial</code></li>
-      <li><code>last</code></li>
-      <li><code>sortBy</code></li>
-      <li><code>groupBy</code></li>
-      <li><code>countBy</code></li>
-      <li><code>uniq</code></li>
-      <li><code>zip</code></li>
-      <li><code>without</code></li>
-      <li><code>difference</code></li>
-      <li><code>union</code></li>
-      <li><code>intersection</code></li>
-      <li><code>flatten</code></li>
-      <li><code>compact</code></li>
-      <li><code>shuffle</code></li>
-      <li><code>every</code> (aka <code>all</code>)</li>
-      <li><code>some</code> (aka <code>any</code>)</li>
-      <li><code>indexOf</code></li>
-      <li><code>lastIndexOf</code></li>
-      <li><code>sortedIndex</code></li>
-      <li><code>contains</code></li>
-      <li><code>min</code></li>
-      <li><code>max</code></li>
-    </ul>
-
-
-    <p>This library is experimental and still a work in progress.</p>
+<ul>
+<li><code>map</code></li>
+<li><code>pluck</code></li>
+<li>
+<code>reduce</code> (aka <code>inject</code> or <code>foldl</code>)</li>
+<li>
+<code>reduceRight</code> (aka <code>foldr</code>)</li>
+<li><code>filter</code></li>
+<li><code>reject</code></li>
+<li><code>where</code></li>
+<li><code>invoke</code></li>
+<li><code>find</code></li>
+<li><code>findWhere</code></li>
+<li>
+<code>first</code> (aka <code>head</code> or <code>take</code>)</li>
+<li>
+<code>rest</code> (aka <code>tail</code> or <code>drop</code>)</li>
+<li><code>initial</code></li>
+<li><code>last</code></li>
+<li><code>sortBy</code></li>
+<li><code>groupBy</code></li>
+<li><code>countBy</code></li>
+<li><code>uniq</code></li>
+<li><code>zip</code></li>
+<li><code>without</code></li>
+<li><code>difference</code></li>
+<li><code>union</code></li>
+<li><code>intersection</code></li>
+<li><code>flatten</code></li>
+<li><code>compact</code></li>
+<li><code>shuffle</code></li>
+<li>
+<code>every</code> (aka <code>all</code>)</li>
+<li>
+<code>some</code> (aka <code>any</code>)</li>
+<li><code>indexOf</code></li>
+<li><code>lastIndexOf</code></li>
+<li><code>sortedIndex</code></li>
+<li><code>contains</code></li>
+<li><code>min</code></li>
+<li><code>max</code></li>
+</ul><p>This library is experimental and still a work in progress.</p>
   </section>
 
   <section id="benchmark-results" class="top-level-section" style="display: none;">

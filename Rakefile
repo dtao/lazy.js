@@ -1,3 +1,4 @@
+require "mustache"
 require "nokogiri"
 require "pygments"
 require "redcarpet"
@@ -76,6 +77,13 @@ namespace :compile do
       end
     end
 
-    puts fragment.inner_html
+    # Inject README into Mustache template.
+    template = File.read("index.html.mustache")
+    final_html = Mustache.render(template, :readme => fragment.inner_html)
+
+    # Finally, write the rendered result to index.html.
+    File.open("index.html", "w") do |f|
+      f.write(final_html)
+    end
   end
 end
