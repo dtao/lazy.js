@@ -180,6 +180,14 @@
       return false;
     });
 
+    $(".select-all").on("click", function() {
+      $(this).closest("section").find(".benchmark-result").addClass("selected");
+    });
+
+    $(".select-none").on("click", function() {
+      $(this).closest("section").find(".benchmark-result").removeClass("selected");
+    });
+
     $(".benchmark-result").on("click", function() {
       $(this).toggleClass("selected");
     });
