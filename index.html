@@ -45,7 +45,17 @@
   </nav>
 
   <section id="docs" class="top-level-section">
-    <h1>Like Underscore, but lazier</h1>
+    <nav class="subnav">
+      <ul>
+        <li><a href="#introduction">Introduction</a></li>
+        <li><a href="#indefinite-sequence-generation">Indefinite sequence generation</a></li>
+        <li><a href="#asynchronous-iteration">Asynchronous iteration</a></li>
+        <li><a href="#event-sequences">Event sequences</a></li>
+        <li><a href="#available-functions">Available functions</a></li>
+      </ul>
+    </nav>
+
+    <h1 id="like-underscore,-but-lazier">Like Underscore, but lazier</h1>
 
 <p><strong>Lazy.js</strong> it a utility library for JavaScript, similar to <a href="http://underscorejs.org/">Underscore</a> and <a href="http://lodash.com/">Lo-Dash</a> but with one important difference: <strong>lazy evaluation</strong> (also known as deferred execution). This can translate to superior performance in many cases, <em>especially</em> when dealing with large arrays and/or "chaining" together multiple methods. For simple cases (<code>map</code>, <code>filter</code>, etc.) on small arrays, Lazy's performance should be similar to underscore or Lo-Dash.</p>
 
@@ -59,7 +69,7 @@
 
 <p>Intrigued? Great! Now let's look at how Lazy.js actually works.</p>
 
-<h2>Introduction</h2>
+<h2 id="introduction">Introduction</h2>
 
 <p>We'll start with an array containing 1000 integers. Incidentally, generating such an array using Lazy.js is quite trivial:</p>
 
@@ -122,7 +132,7 @@
 
 <p>So, cool. Is that all? I think not!</p>
 
-<h2>Indefinite sequence generation</h2>
+<h2 id="indefinite-sequence-generation">Indefinite sequence generation</h2>
 
 <p>The sequence-based paradigm of Lazy.js lets you do some pretty cool things that simply aren't possible with Underscore's array-based approach. One of these is the generation of <strong>indefinite sequences</strong>, which can go on forever, yet still support all of Lazy's built-in mapping and filtering capablities.</p>
 
@@ -159,7 +169,7 @@
 
 <p>OK, what else can we do with Lazy.js?</p>
 
-<h2>Asynchronous iteration</h2>
+<h2 id="asynchronous-iteration">Asynchronous iteration</h2>
 
 <p>You've probably <a href="https://gist.github.com/dtao/2351944">seen code snippets before</a> that show how to iterate over an array asynchronously in JavaScript. But have you seen an example packed full of map-y, filter-y goodness like this?</p>
 
@@ -177,7 +187,7 @@
 
 <p>All right... what else?</p>
 
-<h2>Event sequences</h2>
+<h2 id="event-sequences">Event sequences</h2>
 
 <p>With indefinite sequences, we saw that unlike Underscore and Lo-Dash, Lazy.js doesn't actually need an in-memory collection to iterate over. And asynchronous sequences demonstrate that it also doesn't need to do all its iteration at once.</p>
 
@@ -210,7 +220,7 @@
 
 <p>Anything else? Nope—that's it for now!</p>
 
-<h2>Available functions</h2>
+<h2 id="available-functions">Available functions</h2>
 
 <p>Currently the following functions are available (meaning you can call them on any sequence, such as what you get back from <code>Lazy(array)</code>, <code>Lazy.generate</code>, <code>Lazy.range</code>, or <code>Lazy.async(array)</code>).</p>
 
@@ -286,7 +296,7 @@
       <label><input id="test-to-array" type="radio" checked="checked"><code>toArray</code></input></label> or
       <label><input id="test-each" type="radio"><code>each</code></input></label>, and
       <button class="start-benchmarking">start benchmarking</button>
-      to compare lazy.js, underscore.js, and Lo-Dash.
+      to compare Lazy.js, Underscore, and Lo-Dash.
     </form>
 
     <section id="benchmark-results-10"

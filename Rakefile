@@ -69,6 +69,12 @@ namespace :compile do
     # Parse HTML using Nokogiri.
     fragment = Nokogiri::HTML::fragment(raw_html)
 
+    # Add IDs to section headings.
+    fragment.css("h1,h2").each do |node|
+      title = node.content
+      node["id"] = title.downcase.gsub(/\s+/, "-")
+    end
+
     # Do syntax highlighting w/ Pygments.
     fragment.css("code").each do |node|
       language = node["class"]

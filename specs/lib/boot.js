@@ -222,17 +222,22 @@
     jasmineEnv.execute();
 
     $("nav ul li a").on("click", function() {
-      var link   = $(this);
-      var nav    = link.closest("nav");
-      var target = link.attr("href");
-
-      // Show the section
-      $(nav.attr("data-sections")).hide();
-      $(target).show();
+      var link     = $(this);
+      var nav      = link.closest("nav");
+      var target   = link.attr("href");
+      var sections = nav.attr("data-sections");
 
       // Highlight the tab
       $("li.selected", nav).removeClass("selected");
       link.closest("li").addClass("selected");
+
+      if (!sections) {
+        return;
+      }
+
+      // Show the section
+      $(sections).hide();
+      $(target).show();
 
       // Refresh the chart, if necessary
       var columnChart = $(".column-chart:visible");
