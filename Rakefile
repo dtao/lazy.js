@@ -1,9 +1,8 @@
+require "closure-compiler"
 require "mustache"
 require "nokogiri"
 require "pygments"
 require "redcarpet"
-
-PATH_TO_CLOSURE_COMPILER = "[path to compiler.jar goes here]"
 
 def compile_file(output, source_files)
   javascripts = source_files.map do |f|
@@ -16,7 +15,10 @@ def compile_file(output, source_files)
     f.write("\n}(typeof exports !== 'undefined' ? exports : window));")
   end
 
-  `java -jar #{PATH_TO_CLOSURE_COMPILER} #{output} > #{output.chomp('.js')}.min.js`
+  compiled = Closure::Compiler.new.compile(File.read(output))
+  File.open("#{output.chomp('.js')}.min.js", "w") do |f|
+    f.write(compiled)
+  end
 end
 
 namespace :compile do
