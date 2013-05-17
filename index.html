@@ -105,7 +105,7 @@
 <span class="p">}</span>
 </pre></div>
 
-<p>There&#8212;now we we haven't created have any extraneous arrays, and we did all of the work in one iteration. Any problems?</p>
+<p>There—now we we haven't created have any extraneous arrays, and we did all of the work in one iteration. Any problems?</p>
 
 <p>Well, yeah. The main problem is that this is one-off code, which isn't reusable and took a bit of time to write. If only we could somehow leverage the expressive power of Underscore but still get the performance of the hand-written procedural solution...</p>
 
@@ -181,7 +181,7 @@
 
 <p>With indefinite sequences, we saw that unlike Underscore and Lo-Dash, Lazy.js doesn't actually need an in-memory collection to iterate over. And asynchronous sequences demonstrate that it also doesn't need to do all its iteration at once.</p>
 
-<p>Now here's a really cool combination of these two features: with a small extension to Lazy.js (<strong>lazy.dom.js</strong>, a separate file to include in browser-based environments), you can apply all of the power of Lazy.js to <strong>handling DOM events</strong>. In other words, Lazy.js lets you think of DOM events as a <em>sequence</em>&#8212;just like any other&#8212;and apply the usual <code>map</code>, <code>filter</code>, etc. functions on that sequence.</p>
+<p>Now here's a really cool combination of these two features: with a small extension to Lazy.js (<strong>lazy.dom.js</strong>, a separate file to include in browser-based environments), you can apply all of the power of Lazy.js to <strong>handling DOM events</strong>. In other words, Lazy.js lets you think of DOM events as a <em>sequence</em>—just like any other—and apply the usual <code>map</code>, <code>filter</code>, etc. functions on that sequence.</p>
 
 <p>Here's an example. Let's say we want to handle all <code>mousemove</code> events on a given DOM element, and show their coordinates in one of two other DOM elements depending on location.</p>
 
@@ -208,7 +208,7 @@
   <span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">pos</span><span class="p">)</span> <span class="p">{</span> <span class="nx">displayCoordinates</span><span class="p">(</span><span class="nx">rightElement</span><span class="p">,</span> <span class="nx">pos</span><span class="p">);</span> <span class="p">});</span>
 </pre></div>
 
-<p>Anything else? Nope&#8212;that's it for now!</p>
+<p>Anything else? Nope—that's it for now!</p>
 
 <h2>Available functions</h2>
 
@@ -281,11 +281,13 @@
       </ul>
     </nav>
 
-    <p>
-      Select the tests you want to run below and
+    <form>
+      Select the tests you want to run below, choose either
+      <label><input id="test-to-array" type="radio" checked="checked"><code>toArray</code></input></label> or
+      <label><input id="test-each" type="radio"><code>each</code></input></label>, and
       <button class="start-benchmarking">start benchmarking</button>
       to compare lazy.js, underscore.js, and Lo-Dash.
-    </p>
+    </form>
 
     <section id="benchmark-results-10"
       class="benchmark-results-section">

@@ -8,7 +8,8 @@
   jasmineEnv.addReporter(specReporter);
 
   var arrays = {};
-  var benchmarks = {};
+  var benchmarksForToArray = {};
+  var benchmarksForEach = {};
   var benchmarkResults = {};
 
   window.lodash = _.noConflict();
@@ -54,7 +55,11 @@
 
     $(".benchmark-result.selected").each(function() {
       var benchmarkId = $(this).attr("data-benchmark-id");
-      Lazy(benchmarks[benchmarkId]).each(function(benchmark) {
+      var benchmarksToRun = $("#test-to-array").is(":checked") ?
+        benchmarksForToArray[benchmarkId] :
+        benchmarksForEach[benchmarkId];
+
+      Lazy(benchmarksToRun).each(function(benchmark) {
         suite.add(benchmark);
       });
     });
@@ -76,22 +81,57 @@
     $(".start-benchmarking").prop("disabled", false);
   }
 
-  function addBenchmarkToTable(benchmark, elementCount) {
+  function createBenchmarks(description, input, options) {
+    var toArrayBenchmarks = [
+      options.valueOnly ?
+        new Benchmark(description, function() { options.lazy.apply(this, input); }) :
+        new Benchmark(description, function() { options.lazy.apply(this, input).toArray(); }),
+      new Benchmark(description, function() { options.underscore.apply(this, input); }),
+      new Benchmark(description, function() { options.lodash.apply(this, input); })
+    ];
+
+    var eachBenchmarks = options.valueOnly ? toArrayBenchmarks : [
+      new Benchmark(description, function() {
+        options.lazy.apply(this, input).each(function(e) {});
+      }),
+      new Benchmark(description, function() {
+        _.each(options.underscore.apply(this, input), function(e) {});
+      }),
+      new Benchmark(description, function() {
+        lodash.each(options.lodash.apply(this, input), function(e) {});
+      })
+    ];
+
+    // We'll use the same benchmark to ID all of these as that's how we
+    // reference a set of benchmarks from the table.
+    var benchmarkSetId = toArrayBenchmarks[0].id;
+    benchmarksForToArray[benchmarkSetId] = toArrayBenchmarks;
+    benchmarksForEach[benchmarkSetId] = eachBenchmarks;
+
+    // Mark each benchmark with this ID.
+    Lazy(toArrayBenchmarks).concat(eachBenchmarks).each(function(bm) {
+      bm.benchmarkSetId = benchmarkSetId;
+    });
+
+    return benchmarkSetId;
+  }
+
+  function addBenchmarkToTable(description, benchmarkId, elementCount) {
     var table = $("#benchmark-results-table-" + elementCount);
     var row   = $("<tr>")
       .addClass("benchmark-result")
-      .attr("id", "benchmark-result-" + benchmark.id)
-      .attr("data-benchmark-id", benchmark.id)
+      .attr("id", "benchmark-result-" + benchmarkId)
+      .attr("data-benchmark-id", benchmarkId)
       .appendTo(table);
 
-    $("<td>").text(benchmark.name).appendTo(row);
+    $("<td>").text(description).appendTo(row);
     $("<td>").addClass("underscore-result").appendTo(row);
     $("<td>").addClass("lodash-result").appendTo(row);
     $("<td>").addClass("lazy-result").appendTo(row);
   }
 
   function addBenchmarkResultToTable(result) {
-    var row   = $("#benchmark-result-" + result.lazy.id);
+    var row   = $("#benchmark-result-" + result.benchmarkSetId);
     var style = result.lazy.hz > result.underscore.hz &&
                 result.lazy.hz > result.lodash.hz ? "positive" : "negative";
 
@@ -153,16 +193,12 @@
     }
 
     inputs.each(function(input) {
-      var lazyBm     = new Benchmark(description, function() { options.lazy.apply(this, input); }),
-        underscoreBm = new Benchmark(description, function() { options.underscore.apply(this, input); }),
-        lodashBm     = new Benchmark(description, function() { options.lodash.apply(this, input); });
-
-      benchmarks[lazyBm.id] = [lazyBm, underscoreBm, lodashBm];
+      var benchmarkSetId = createBenchmarks(description, input, options);
 
       // Add a row to the appropriate table for this benchmark
       // once the document's loaded.
       $(document).ready(function() {
-        addBenchmarkToTable(lazyBm, input[0].length);
+        addBenchmarkToTable(description, benchmarkSetId, input[0].length);
       });
     });
   };
@@ -192,6 +228,14 @@
       return false;
     });
 
+    $("#test-to-array").on("change", function() {
+      $("#test-each").prop("checked", false);
+    });
+
+    $("#test-each").on("change", function() {
+      $("#test-to-array").prop("checked", false);
+    });
+
     $(".select-all").on("click", function() {
       $(this).closest("section").find(".benchmark-result").addClass("selected");
     });
@@ -219,6 +263,7 @@
         currentResultSet.push(e.target);
         if (currentResultSet.length === 3) {
           addBenchmarkResultToTable({
+            benchmarkSetId: currentResultSet[0].benchmarkSetId,
             lazy: currentResultSet[0],
             underscore: currentResultSet[1],
             lodash: currentResultSet[2]

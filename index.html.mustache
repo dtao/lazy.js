@@ -70,11 +70,13 @@
       </ul>
     </nav>
 
-    <p>
-      Select the tests you want to run below and
+    <form>
+      Select the tests you want to run below, choose either
+      <label><input id="test-to-array" type="radio" checked="checked"><code>toArray</code></input></label> or
+      <label><input id="test-each" type="radio"><code>each</code></input></label>, and
       <button class="start-benchmarking">start benchmarking</button>
-      to compare lazy.js, underscore.js, and Lo-Dash.
-    </p>
+      to compare Lazy.js, Underscore, and Lo-Dash.
+    </form>
 
     <section id="benchmark-results-10"
       class="benchmark-results-section">
