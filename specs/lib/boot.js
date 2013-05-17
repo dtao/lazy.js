@@ -131,7 +131,6 @@
       Lazy([10, 100]).map(function(size) { return [getOrCreateArray(size)] });
 
     var smallInput = inputs.first();
-    var matcher    = options.valueOnly ? "toEqual" : "toMatchSequentially";
 
     if (options.shouldMatch !== false) {
       it("returns the same result as underscore.js for '" + description + "'", function() {
@@ -140,7 +139,7 @@
         if (typeof underscoreResult.value === "function") {
           underscoreResult = underscoreResult.value();
         }
-        expect(lazyResult)[matcher](underscoreResult);
+        expect(lazyResult).toEqual(underscoreResult);
       });
 
       it("returns the same result as Lo-Dash for '" + description + "'", function() {
@@ -149,34 +148,14 @@
         if (typeof lodashResult.value === "function") {
           lodashResult = lodashResult.value();
         }
-        expect(lazyResult)[matcher](lodashResult);
+        expect(lazyResult).toEqual(lodashResult);
       });
     }
 
     inputs.each(function(input) {
-      var lazyBm, underscoreBm, lodashBm;
-
-      if (options.valueOnly) {
-        lazyBm = new Benchmark(description, function() { options.lazy.apply(this, input); });
-        underscoreBm = new Benchmark(description, function() { options.underscore.apply(this, input); });
-        lodashBm = new Benchmark(description, function() { options.lodash.apply(this, input); });
-
-      } else {
-        lazyBm = new Benchmark(description, function() {
-          var result = options.lazy.apply(this, input);
-          result.each(function(e) {});
-        });
-
-        underscoreBm = new Benchmark(description, function() {
-          var result = options.underscore.apply(this, input);
-          _.each(result, function(e) {});
-        });
-
-        lodashBm = new Benchmark(description, function() {
-          var result = options.lodash.apply(this, input);
-          lodash.each(result, function(e) {});
-        });
-      }
+      var lazyBm     = new Benchmark(description, function() { options.lazy.apply(this, input); }),
+        underscoreBm = new Benchmark(description, function() { options.underscore.apply(this, input); }),
+        lodashBm     = new Benchmark(description, function() { options.lodash.apply(this, input); });
 
       benchmarks[lazyBm.id] = [lazyBm, underscoreBm, lodashBm];
 
