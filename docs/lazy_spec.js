@@ -316,6 +316,16 @@ describe("Lazy", function() {
       var children = Lazy(people).drop(2).toArray();
       expect(children).toEqual([lauren, adam, daniel, happy]);
     });
+
+    it("if no number is provided, skips the first element", function() {
+      var allButDavid = Lazy(people).drop().toArray();
+      expect(allButDavid).toEqual([mary, lauren, adam, daniel, happy]);
+    });
+
+    it("includes the entire collection with a count of 0", function() {
+      var everybody = Lazy(people).drop(0).toArray();
+      expect(everybody).toEqual(people);
+    });
   });
 
   describe("sortBy", function() {
