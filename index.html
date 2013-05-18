@@ -219,7 +219,25 @@
   <span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">pos</span><span class="p">)</span> <span class="p">{</span> <span class="nx">displayCoordinates</span><span class="p">(</span><span class="nx">rightElement</span><span class="p">,</span> <span class="nx">pos</span><span class="p">);</span> <span class="p">});</span>
 </pre></div>
 
-<p>Anything else? Nope—that's it for now!</p>
+<p>Anything else? Of course!</p>
+
+<h2 id="string-processing">String processing</h2>
+
+<p>Now here's something you may not have even thought of: <code>String.split</code>. In JavaScript, this returns an <em>array</em> of substrings. If you think about it, this often means doing more work than necessary; but it's the quickest way (from a developer's standpoint) to get the job done.</p>
+
+<p>For example, suppose you wanted the first five lines of a block of text. You could always do this with Underscore:</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">firstFiveLines</span> <span class="o">=</span> <span class="nx">_</span><span class="p">(</span><span class="nx">text</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">"\n"</span><span class="p">)).</span><span class="nx">take</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+</pre></div>
+
+<p>But of course, this actually splits <em>the entire string</em> into every single line.</p>
+
+<p>In lower-level languages—e.g. Java, C#— we have the notion of <em>streams</em>. A stream is not necessarily all read into memory. We can get something like that with Lazy.js by calling <code>Lazy.split</code>:</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">firstFiveLines</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="nx">text</span><span class="p">).</span><span class="nx">take</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+</pre></div>
+
+<p>This way we can read the first five lines of an arbitrarily large string (without pre-populating a huge array) and map/reduce on it just as with any other sequence.</p>
 
 <h2 id="available-functions">Available functions</h2>
 

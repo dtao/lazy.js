@@ -173,7 +173,28 @@ coordinates
   .each(function(pos) { displayCoordinates(rightElement, pos); });
 ```
 
-Anything else? Nope&mdash;that's it for now!
+Anything else? Of course!
+
+String processing
+-----------------
+
+Now here's something you may not have even thought of: `String.split`. In JavaScript, this returns an *array* of substrings. If you think about it, this often means doing more work than necessary; but it's the quickest way (from a developer's standpoint) to get the job done.
+
+For example, suppose you wanted the first five lines of a block of text. You could always do this with Underscore:
+
+```javascript
+var firstFiveLines = _(text.split("\n")).take(5);
+```
+
+But of course, this actually splits *the entire string* into every single line.
+
+In lower-level languages&mdash;e.g. Java, C#&mdash; we have the notion of *streams*. A stream is not necessarily all read into memory. We can get something like that with Lazy.js by calling `Lazy.split`:
+
+```javascript
+var firstFiveLines = Lazy.split(text).take(5);
+```
+
+This way we can read the first five lines of an arbitrarily large string (without pre-populating a huge array) and map/reduce on it just as with any other sequence.
 
 Available functions
 -------------------
