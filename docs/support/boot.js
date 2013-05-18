@@ -385,6 +385,9 @@
       $(this).closest("section").find(".benchmark-result").each(function() {
         clearRow($(this));
       });
+	$(".clear-all").on("click", function() {
+      $(this).closest("section").find(".benchmark-result").removeClass("link") ;
+
     });
 
     $(".benchmark-result").on("click", function() {
