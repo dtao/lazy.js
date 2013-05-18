@@ -56,7 +56,7 @@
       </ul>
     </nav>
 
-    <h1 id="like-underscore,-but-lazier">Like Underscore, but lazier</h1>
+    <h1 id="like-underscore-but-lazier">Like Underscore, but lazier</h1>
 
 <p><strong>Lazy.js</strong> it a utility library for JavaScript, similar to <a href="http://underscorejs.org/">Underscore</a> and <a href="http://lodash.com/">Lo-Dash</a> but with one important difference: <strong>lazy evaluation</strong> (also known as deferred execution). This can translate to superior performance in many cases, <em>especially</em> when dealing with large arrays and/or "chaining" together multiple methods. For simple cases (<code>map</code>, <code>filter</code>, etc.) on small arrays, Lazy's performance should be similar to Underscore or Lo-Dash.</p>
 
@@ -289,6 +289,7 @@
       <ul>
         <li class="selected"><a href="#benchmark-results-10">10 elements</a></li>
         <li><a href="#benchmark-results-100">100 elements</a></li>
+        <li><a href="#benchmark-results-other">Other</a></li>
       </ul>
     </nav>
 
@@ -354,6 +355,38 @@
       </p>
 
       <table id="benchmark-results-table-100" class="benchmark-results-table">
+        <tr>
+          <th>Test</th>
+          <th>Underscore</th>
+          <th>Lo-Dash</th>
+          <th>Linq.js</th>
+          <th>JSLINQ</th>
+          <th>From.js</th>
+          <th>Lazy.js</th>
+        </tr>
+      </table>
+    </section>
+
+    <section id="benchmark-results-other"
+      class="benchmark-results-section"
+      style="display: none;">
+
+      <div id="benchmark-results-chart-other" class="column-chart"
+        data-title="Ops/second - other"
+        data-source="#benchmark-results-table-other"
+        data-transpose="true"
+        data-row-filter="benchmarkChartRowFilter"
+        data-options="benchmarkChartOptions">
+      </div>
+
+      <p>
+        Select:
+        <button class="select-all">All</button>
+        <button class="select-none">None</button>
+        <button class="clear-selected">Clear</button>
+      </p>
+
+      <table id="benchmark-results-table-other" class="benchmark-results-table">
         <tr>
           <th>Test</th>
           <th>Underscore</th>

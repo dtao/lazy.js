@@ -785,6 +785,54 @@
     }
   };
 
+  var SplitStringSequence = Sequence.inherit(function(source, pattern) {
+    this.source = source;
+    this.pattern = pattern;
+  });
+
+  SplitStringSequence.prototype.each = function(fn) {
+    if (this.pattern instanceof RegExp) {
+      eachForRegExp(this.source, this.pattern, fn);
+    } else {
+      eachForString(this.source, this.pattern, fn);
+    }
+  };
+
+  function eachForRegExp(str, pattern, fn) {
+    var match,
+        index = 0;
+
+    // clone the RegExp
+    pattern = eval("" + pattern + (!pattern.global ? "g" : ""));
+
+    while (match = pattern.exec(str)) {
+      if (fn(str.substring(index, match.index)) === false) {
+        return;
+      }
+      index = match.index + match[0].length;
+    }
+    if (index < str.length) {
+      fn(str.substring(index));
+    }
+  }
+
+  function eachForString(str, delimiter, fn) {
+    var leftIndex = 0,
+        rightIndex = str.indexOf(delimiter);
+
+    while (rightIndex !== -1) {
+      if (fn(str.substring(leftIndex, rightIndex)) === false) {
+        return;
+      }
+      leftIndex = rightIndex + delimiter.length;
+      rightIndex = str.indexOf(delimiter, leftIndex);
+    }
+
+    if (leftIndex < str.length) {
+      fn(str.substring(leftIndex));
+    }
+  }
+
   exports.Lazy = function(source) {
     if (source instanceof Lazy.Sequence) {
       return source;
@@ -794,6 +842,10 @@
 
   exports.Lazy.async = function(source, interval) {
     return new AsyncSequence(new ArrayWrapper(source), interval);
+  };
+
+  exports.Lazy.split = function(string, delimiter) {
+    return new SplitStringSequence(string, delimiter);
   };
 
   exports.Lazy.generate = function(SequenceFn) {

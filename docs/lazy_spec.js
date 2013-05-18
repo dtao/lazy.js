@@ -105,6 +105,15 @@ describe("Lazy", function() {
     });
   });
 
+  describe("split", function() {
+    var values = Lazy.range(10).join(", ");
+
+    it("returns a sequence that will iterate over 'split' portions of a string", function() {
+      var result = Lazy.split(values, ", ").toArray();
+      expect(result).toEqual(values.split(", "));
+    });
+  });
+
   describe("toObject", function() {
     it("converts an array of pairs into an object", function() {
       var pairs = Lazy(people).map(function(p) { return [p.getName(), p]; });
@@ -960,6 +969,24 @@ describe("Lazy", function() {
       jslinq: function(arr) { return JSLINQ(arr).Select(inc).All(isEven); },
       from: function(arr) { return from(arr).select(inc).all(isEven); },
       valueOnly: true
+    });
+
+    compareAlternatives("map -> join", {
+      lazy: function(arr) { return Lazy(arr).map(inc).join(", "); },
+      underscore: function(arr) { return _(arr).map(inc).join(", "); },
+      valueOnly: true
+    });
+
+    compareAlternatives("split(string) -> take", {
+      lazy: function(str, delimiter) { return Lazy.split(str, delimiter).take(5); },
+      underscore: function(str, delimiter) { return _(str.split(delimiter)).take(5); },
+      inputs: [[Lazy.range(100).join(", "), ", "]]
+    });
+
+    compareAlternatives("split(regex) -> take", {
+      lazy: function(str, delimiter) { return Lazy.split(str, delimiter).take(5); },
+      underscore: function(str, delimiter) { return _(str.split(delimiter)).take(5); },
+      inputs: [[Lazy.range(100).join(", "), /,\s*/]]
     });
   });
 });

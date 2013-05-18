@@ -154,8 +154,8 @@
     return benchmarkSetId;
   }
 
-  function addBenchmarkToTable(description, benchmarkId, elementCount) {
-    var table = $("#benchmark-results-table-" + elementCount);
+  function addBenchmarkToTable(description, benchmarkId, category) {
+    var table = $("#benchmark-results-table-" + category);
     var row   = $("<tr>")
       .addClass("benchmark-result")
       .attr("id", "benchmark-result-" + benchmarkId)
@@ -266,17 +266,19 @@
         expect(lazyResult).toEqual(underscoreResult);
       });
 
-      it("returns the same result as Lo-Dash for '" + description + "'", function() {
-        var lazyResult = options.lazy.apply(this, smallInput);
-        var lodashResult = options.lodash.apply(this, smallInput);
-        if (typeof lazyResult.toArray === "function") {
-          lazyResult = lazyResult.toArray();
-        }
-        if (typeof lodashResult.value === "function") {
-          lodashResult = lodashResult.value();
-        }
-        expect(lazyResult).toEqual(lodashResult);
-      });
+      if (options.lodash && !exceptions.contains("lodash")) {
+        it("returns the same result as Lo-Dash for '" + description + "'", function() {
+          var lazyResult = options.lazy.apply(this, smallInput);
+          var lodashResult = options.lodash.apply(this, smallInput);
+          if (typeof lazyResult.toArray === "function") {
+            lazyResult = lazyResult.toArray();
+          }
+          if (typeof lodashResult.value === "function") {
+            lodashResult = lodashResult.value();
+          }
+          expect(lazyResult).toEqual(lodashResult);
+        });
+      }
 
       if (options.linq && !exceptions.contains("linq")) {
         it("returns the same result as linq.js for '" + description + "'", function() {
@@ -327,7 +329,8 @@
       // Add a row to the appropriate table for this benchmark
       // once the document's loaded.
       $(document).ready(function() {
-        addBenchmarkToTable(description, benchmarkSetId, input[0].length);
+        var category = input[0] instanceof Array ? input[0].length : "other";
+        addBenchmarkToTable(description, benchmarkSetId, category);
       });
     });
   };
