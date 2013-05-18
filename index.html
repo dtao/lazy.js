@@ -234,7 +234,7 @@
 
 <p>In lower-level languages—e.g. Java, C#— we have the notion of <em>streams</em>. A stream is not necessarily all read into memory. We can get something like that with Lazy.js by calling <code>Lazy.split</code>:</p>
 
-<div class="highlight"><pre><span class="kd">var</span> <span class="nx">firstFiveLines</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="nx">text</span><span class="p">).</span><span class="nx">take</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">firstFiveLines</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="nx">text</span><span class="p">,</span> <span class="s2">"\n"</span><span class="p">).</span><span class="nx">take</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
 </pre></div>
 
 <p>This way we can read the first five lines of an arbitrarily large string (without pre-populating a huge array) and map/reduce on it just as with any other sequence.</p>

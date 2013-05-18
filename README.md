@@ -191,7 +191,7 @@ But of course, this actually splits *the entire string* into every single line.
 In lower-level languages&mdash;e.g. Java, C#&mdash; we have the notion of *streams*. A stream is not necessarily all read into memory. We can get something like that with Lazy.js by calling `Lazy.split`:
 
 ```javascript
-var firstFiveLines = Lazy.split(text).take(5);
+var firstFiveLines = Lazy.split(text, "\n").take(5);
 ```
 
 This way we can read the first five lines of an arbitrarily large string (without pre-populating a huge array) and map/reduce on it just as with any other sequence.
