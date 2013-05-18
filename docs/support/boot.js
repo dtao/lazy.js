@@ -437,6 +437,14 @@
       return false;
     });
 
+    $(".show-all-specs").on("click", function() {
+      $("#test-results-table tr").show();
+    });
+
+    $(".show-failing-specs").on("click", function() {
+      $("#test-results-table tr.success").hide();
+    });
+
     initializeDomExample();
     updateCharts();
   };
