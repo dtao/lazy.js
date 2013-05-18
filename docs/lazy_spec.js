@@ -971,6 +971,9 @@ describe("Lazy", function() {
       valueOnly: true
     });
 
+    // These aren't really comparisons to Underscore or Lo-Dash; rather, they're
+    // comparisons to the native Array.join and String.split methods. But
+    // designating them as such at the UI level will require some refactoring.
     compareAlternatives("map -> join", {
       lazy: function(arr) { return Lazy(arr).map(inc).join(", "); },
       underscore: function(arr) { return _(arr).map(inc).join(", "); },
