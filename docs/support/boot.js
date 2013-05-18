@@ -397,6 +397,11 @@
 
       var benchmarkSuite = createBenchmarkSuite();
 
+      // No benchmarks selected
+      if (benchmarkSuite.length === 0) {
+        finishedLoading();
+      }
+
       var currentResultSet = [];
       benchmarkSuite.on("cycle", function(e) {
         var benchmarkSetId = e.target.benchmarkSetId;
