@@ -549,7 +549,7 @@
 
   var DropSequence = CachingSequence.inherit(function(parent, count) {
     this.parent = parent;
-    this.count  = count;
+    this.count  = typeof count === "number" ? count : 1;
   });
 
   DropSequence.prototype.each = function(fn) {
@@ -563,7 +563,7 @@
 
   var IndexedDropSequence = IndexedSequence.inherit(function(parent, count) {
     this.parent = parent;
-    this.count  = count;
+    this.count  = typeof count === "number" ? count : 1;
   });
 
   IndexedDropSequence.prototype.get = function(i) {
@@ -808,6 +808,44 @@
     }
   };
 
+  var StringWrapper = function(source) {
+    this.source = source;
+  };
+
+  StringWrapper.prototype.match = function(pattern) {
+    return new StringMatchSequence(this.source, pattern);
+  };
+
+  StringWrapper.prototype.split = function(delimiter) {
+    return new SplitStringSequence(this.source, delimiter);
+  };
+
+  var StringMatchSequence = Sequence.inherit(function(source, pattern) {
+    this.source = source;
+    this.pattern = pattern;
+  });
+
+  StringMatchSequence.prototype.each = function(fn) {
+    var source = this.source,
+        pattern = this.pattern,
+        match,
+        index = 0;
+
+    if (pattern.source === "" || pattern.source === "(?:)") {
+      eachChar(str, fn);
+      return;
+    }
+
+    // clone the RegExp
+    pattern = eval("" + pattern + (!pattern.global ? "g" : ""));
+
+    while (match = pattern.exec(source)) {
+      if (fn(match[0]) === false) {
+        return;
+      }
+    }
+  };
+
   var SplitStringSequence = Sequence.inherit(function(source, pattern) {
     this.source = source;
     this.pattern = pattern;
@@ -876,16 +914,14 @@
   exports.Lazy = function(source) {
     if (source instanceof Lazy.Sequence) {
       return source;
+    } else if (typeof source === "string") {
+      return new StringWrapper(source);
     }
     return new ArrayWrapper(source);
   };
 
   exports.Lazy.async = function(source, interval) {
     return new AsyncSequence(new ArrayWrapper(source), interval);
-  };
-
-  exports.Lazy.split = function(string, delimiter) {
-    return new SplitStringSequence(string, delimiter);
   };
 
   exports.Lazy.generate = function(SequenceFn) {
