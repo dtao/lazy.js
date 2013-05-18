@@ -467,6 +467,11 @@ describe("Lazy", function() {
       expect(results.slice(0, 2)).toEqual([1, "1"]);
       expect(typeof results[2].toString).toBe("function");
     });
+
+    it("does not override methods on Set, screwing up everything", function() {
+      var results = Lazy(["__proto__", "constructor", "add", "contains"]).uniq().toArray();
+      expect(results).toEqual(["__proto__", "constructor", "add", "contains"]);
+    });
   });
 
   describe("zip", function() {
