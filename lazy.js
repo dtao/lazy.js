@@ -804,6 +804,11 @@
     var match,
         index = 0;
 
+    if (pattern.source === "" || pattern.source === "(?:)") {
+      eachChar(str, fn);
+      return;
+    }
+
     // clone the RegExp
     pattern = eval("" + pattern + (!pattern.global ? "g" : ""));
 

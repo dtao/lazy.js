@@ -118,12 +118,22 @@ describe("Lazy", function() {
       expect(result).toEqual(values.split(/,\s*/));
     });
 
+    it("respects the specified flags on the regular expression", function() {
+      var result = Lazy.split("a and b AND c", /\s*and\s*/i).toArray();
+      expect(result).toEqual(["a", "b", "c"]);
+    });
+
+    it("works the same with or without the global flag on a regular expression", function() {
+      var result = Lazy.split("a and b AND c", /\s*and\s*/gi).toArray();
+      expect(result).toEqual(["a", "b", "c"]);
+    });
+
     it("splits the string by character if an empty string is passed", function() {
       var result = Lazy.split("foo", "").toArray();
       expect(result).toEqual(["f", "o", "o"]);
     });
 
-    xit("works for empty regular expressions as well as empty strings", function() {
+    it("works for empty regular expressions as well as empty strings", function() {
       var result = Lazy.split("foo", /(?:)/).toArray();
       expect(result).toEqual(["f", "o", "o"]);
     });
