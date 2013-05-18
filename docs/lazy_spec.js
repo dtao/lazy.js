@@ -112,6 +112,21 @@ describe("Lazy", function() {
       var result = Lazy.split(values, ", ").toArray();
       expect(result).toEqual(values.split(", "));
     });
+
+    it("works for regular expressions as well as strings", function() {
+      var result = Lazy.split(values, /,\s*/).toArray();
+      expect(result).toEqual(values.split(/,\s*/));
+    });
+
+    it("splits the string by character if an empty string is passed", function() {
+      var result = Lazy.split("foo", "").toArray();
+      expect(result).toEqual(["f", "o", "o"]);
+    });
+
+    xit("works for empty regular expressions as well as empty strings", function() {
+      var result = Lazy.split("foo", /(?:)/).toArray();
+      expect(result).toEqual(["f", "o", "o"]);
+    });
   });
 
   describe("toObject", function() {

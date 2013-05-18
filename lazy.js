@@ -793,6 +793,8 @@
   SplitStringSequence.prototype.each = function(fn) {
     if (this.pattern instanceof RegExp) {
       eachForRegExp(this.source, this.pattern, fn);
+    } else if (this.pattern === "") {
+      eachChar(this.source, fn);
     } else {
       eachForString(this.source, this.pattern, fn);
     }
@@ -813,6 +815,16 @@
     }
     if (index < str.length) {
       fn(str.substring(index));
+    }
+  }
+
+  function eachChar(str, fn) {
+    var length = str.length,
+        i = -1;
+    while (++i < length) {
+      if (fn(str.charAt(i)) === false) {
+        break;
+      }
     }
   }
 
