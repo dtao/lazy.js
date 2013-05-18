@@ -109,33 +109,42 @@ describe("Lazy", function() {
     var values = Lazy.range(10).join(", ");
 
     it("returns a sequence that will iterate over 'split' portions of a string", function() {
-      var result = Lazy.split(values, ", ").toArray();
+      var result = Lazy(values).split(", ").toArray();
       expect(result).toEqual(values.split(", "));
     });
 
     it("works for regular expressions as well as strings", function() {
-      var result = Lazy.split(values, /,\s*/).toArray();
+      var result = Lazy(values).split(/,\s*/).toArray();
       expect(result).toEqual(values.split(/,\s*/));
     });
 
     it("respects the specified flags on the regular expression", function() {
-      var result = Lazy.split("a and b AND c", /\s*and\s*/i).toArray();
+      var result = Lazy("a and b AND c").split(/\s*and\s*/i).toArray();
       expect(result).toEqual(["a", "b", "c"]);
     });
 
     it("works the same with or without the global flag on a regular expression", function() {
-      var result = Lazy.split("a and b AND c", /\s*and\s*/gi).toArray();
+      var result = Lazy("a and b AND c").split(/\s*and\s*/gi).toArray();
       expect(result).toEqual(["a", "b", "c"]);
     });
 
     it("splits the string by character if an empty string is passed", function() {
-      var result = Lazy.split("foo", "").toArray();
+      var result = Lazy("foo").split("").toArray();
       expect(result).toEqual(["f", "o", "o"]);
     });
 
     it("works for empty regular expressions as well as empty strings", function() {
-      var result = Lazy.split("foo", /(?:)/).toArray();
+      var result = Lazy("foo").split(/(?:)/).toArray();
       expect(result).toEqual(["f", "o", "o"]);
+    });
+  });
+
+  describe("match", function() {
+    var source = "foo 123 bar 456 baz";
+
+    it("returns a sequence that will iterate every match in the string", function() {
+      var result = Lazy(source).match(/\d+/).toArray();
+      expect(result).toEqual(source.match(/\d+/g));
     });
   });
 
@@ -1021,8 +1030,9 @@ describe("Lazy", function() {
     });
 
     // These aren't really comparisons to Underscore or Lo-Dash; rather, they're
-    // comparisons to the native Array.join and String.split methods. But
-    // designating them as such at the UI level will require some refactoring.
+    // comparisons to the native Array.join, String.split, and String.match
+    // methods. But designating them as such at the UI level will require some
+    // refactoring. For now, I think it's fine to put them here.
     compareAlternatives("map -> join", {
       lazy: function(arr) { return Lazy(arr).map(inc).join(", "); },
       underscore: function(arr) { return _(arr).map(inc).join(", "); },
@@ -1030,15 +1040,21 @@ describe("Lazy", function() {
     });
 
     compareAlternatives("split(string) -> take", {
-      lazy: function(str, delimiter) { return Lazy.split(str, delimiter).take(5); },
+      lazy: function(str, delimiter) { return Lazy(str).split(delimiter).take(5); },
       underscore: function(str, delimiter) { return _(str.split(delimiter)).take(5); },
       inputs: [[Lazy.range(100).join(", "), ", "]]
     });
 
     compareAlternatives("split(regex) -> take", {
-      lazy: function(str, delimiter) { return Lazy.split(str, delimiter).take(5); },
+      lazy: function(str, delimiter) { return Lazy(str).split(delimiter).take(5); },
       underscore: function(str, delimiter) { return _(str.split(delimiter)).take(5); },
       inputs: [[Lazy.range(100).join(", "), /,\s*/]]
+    });
+
+    compareAlternatives("match(regex) -> take", {
+      lazy: function(str, pattern) { return Lazy(str).match(pattern).take(5); },
+      underscore: function(str, pattern) { return _(str.match(pattern)).take(5); },
+      inputs: [[Lazy.range(100).join(" "), /\d+/g]]
     });
   });
 });

@@ -178,23 +178,31 @@ Anything else? Of course!
 String processing
 -----------------
 
-Now here's something you may not have even thought of: `String.split`. In JavaScript, this returns an *array* of substrings. If you think about it, this often means doing more work than necessary; but it's the quickest way (from a developer's standpoint) to get the job done.
+Now here's something you may not have even thought of: `String.match` and `String.split`. In JavaScript, each of these methods returns an *array* of substrings. If you think about it, this often means doing more work than necessary; but it's the quickest way (from a developer's standpoint) to get the job done.
 
-For example, suppose you wanted the first five lines of a block of text. You could always do this with Underscore:
+For example, suppose you wanted the first five lines of a block of text. You could always do this:
 
 ```javascript
-var firstFiveLines = _(text.split("\n")).take(5);
+var firstFiveLines = text.split("\n").slice(0, 5);
 ```
 
-But of course, this actually splits *the entire string* into every single line.
+But of course, this actually splits *the entire string* into every single line. If the string is very large, this is quite wasteful.
 
-In lower-level languages&mdash;e.g. Java, C#&mdash; we have the notion of *streams*. A stream is not necessarily all read into memory. We can get something like that with Lazy.js by calling `Lazy.split`:
+In lower-level languages&mdash;e.g. Java, C#&mdash; we have the notion of *streams*. A stream is not necessarily all read into memory. We can get something like that with Lazy.js by wrapping the string with `Lazy` and calling `split`:
 
 ```javascript
-var firstFiveLines = Lazy.split(text, "\n").take(5);
+var firstFiveLines = Lazy(text).split("\n").take(5);
 ```
 
 This way we can read the first five lines of an arbitrarily large string (without pre-populating a huge array) and map/reduce on it just as with any other sequence.
+
+Similarly with `String.match`: let's say we wanted to find the first 5 alphanumeric matches in a string. With Lazy.js, it's easy!
+
+```javascript
+var firstFiveWords = Lazy(text).match(/[a-z0-9]/i).take(5);
+```
+
+Piece of cake.
 
 Available functions
 -------------------

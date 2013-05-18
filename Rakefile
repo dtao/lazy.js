@@ -44,6 +44,8 @@ namespace :compile do
       zipped_sequence
       generated_sequence
       async_sequence
+      string_wrapper
+      string_match_sequence
       split_string_sequence
       init
     ])
