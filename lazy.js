@@ -323,6 +323,30 @@
     return true;
   };
 
+  var Set = function() {
+    this.table = {};
+  };
+
+  Set.prototype.add = function(value) {
+    var table = this.table,
+        typeKey = typeof value,
+        valueKey = "@" + value;
+
+    if (!table[typeKey]) {
+      table[typeKey] = {};
+      return table[typeKey][valueKey] = true;
+    }
+    if (table[typeKey][valueKey]) {
+      return false;
+    }
+    return table[typeKey][valueKey] = true;
+  };
+
+  Set.prototype.contains = function(value) {
+    var valuesForType = this.table[typeof value];
+    return valuesForType && valuesForType["@" + value];
+  };
+
   var ArrayWrapper = Sequence.inherit(function(source) {
     this.source = source;
   });
@@ -525,7 +549,7 @@
 
   var DropSequence = CachingSequence.inherit(function(parent, count) {
     this.parent = parent;
-    this.count  = count;
+    this.count  = typeof count === "number" ? count : 1;
   });
 
   DropSequence.prototype.each = function(fn) {
@@ -539,7 +563,7 @@
 
   var IndexedDropSequence = IndexedSequence.inherit(function(parent, count) {
     this.parent = parent;
-    this.count  = count;
+    this.count  = typeof count === "number" ? count : 1;
   });
 
   IndexedDropSequence.prototype.get = function(i) {
@@ -632,10 +656,9 @@
   });
 
   UniqueSequence.prototype.each = function(fn) {
-    var set = {};
+    var set = new Set();
     this.parent.each(function(e) {
-      if (!set[e]) {
-        set[e] = true;
+      if (set.add(e)) {
         return fn(e);
       }
     });
@@ -663,7 +686,7 @@
   WithoutSequence.prototype.each = function(fn) {
     var set = createSet(this.values);
     this.parent.each(function(e) {
-      if (!set[e]) {
+      if (!set.contains(e)) {
         return fn(e);
       }
     });
@@ -719,7 +742,7 @@
 
     this.parent.each(function(e) {
       for (var i = 0; i < sets.length; ++i) {
-        if (!sets[i][e]) {
+        if (!sets[i].contains(e)) {
           return;
         }
       }
@@ -785,9 +808,114 @@
     }
   };
 
+  var StringWrapper = function(source) {
+    this.source = source;
+  };
+
+  StringWrapper.prototype.match = function(pattern) {
+    return new StringMatchSequence(this.source, pattern);
+  };
+
+  StringWrapper.prototype.split = function(delimiter) {
+    return new SplitStringSequence(this.source, delimiter);
+  };
+
+  var StringMatchSequence = Sequence.inherit(function(source, pattern) {
+    this.source = source;
+    this.pattern = pattern;
+  });
+
+  StringMatchSequence.prototype.each = function(fn) {
+    var source = this.source,
+        pattern = this.pattern,
+        match,
+        index = 0;
+
+    if (pattern.source === "" || pattern.source === "(?:)") {
+      eachChar(str, fn);
+      return;
+    }
+
+    // clone the RegExp
+    pattern = eval("" + pattern + (!pattern.global ? "g" : ""));
+
+    while (match = pattern.exec(source)) {
+      if (fn(match[0]) === false) {
+        return;
+      }
+    }
+  };
+
+  var SplitStringSequence = Sequence.inherit(function(source, pattern) {
+    this.source = source;
+    this.pattern = pattern;
+  });
+
+  SplitStringSequence.prototype.each = function(fn) {
+    if (this.pattern instanceof RegExp) {
+      eachForRegExp(this.source, this.pattern, fn);
+    } else if (this.pattern === "") {
+      eachChar(this.source, fn);
+    } else {
+      eachForString(this.source, this.pattern, fn);
+    }
+  };
+
+  function eachForRegExp(str, pattern, fn) {
+    var match,
+        index = 0;
+
+    if (pattern.source === "" || pattern.source === "(?:)") {
+      eachChar(str, fn);
+      return;
+    }
+
+    // clone the RegExp
+    pattern = eval("" + pattern + (!pattern.global ? "g" : ""));
+
+    while (match = pattern.exec(str)) {
+      if (fn(str.substring(index, match.index)) === false) {
+        return;
+      }
+      index = match.index + match[0].length;
+    }
+    if (index < str.length) {
+      fn(str.substring(index));
+    }
+  }
+
+  function eachChar(str, fn) {
+    var length = str.length,
+        i = -1;
+    while (++i < length) {
+      if (fn(str.charAt(i)) === false) {
+        break;
+      }
+    }
+  }
+
+  function eachForString(str, delimiter, fn) {
+    var leftIndex = 0,
+        rightIndex = str.indexOf(delimiter);
+
+    while (rightIndex !== -1) {
+      if (fn(str.substring(leftIndex, rightIndex)) === false) {
+        return;
+      }
+      leftIndex = rightIndex + delimiter.length;
+      rightIndex = str.indexOf(delimiter, leftIndex);
+    }
+
+    if (leftIndex < str.length) {
+      fn(str.substring(leftIndex));
+    }
+  }
+
   exports.Lazy = function(source) {
     if (source instanceof Lazy.Sequence) {
       return source;
+    } else if (typeof source === "string") {
+      return new StringWrapper(source);
     }
     return new ArrayWrapper(source);
   };
@@ -816,9 +944,9 @@
   /*** Useful utility methods ***/
 
   function createSet(values) {
-    var set = {};
+    var set = new Set();
     Lazy(values || []).flatten().each(function(e) {
-      set[e] = true;
+      set.add(e);
     });
     return set;
   };

@@ -105,6 +105,49 @@ describe("Lazy", function() {
     });
   });
 
+  describe("split", function() {
+    var values = Lazy.range(10).join(", ");
+
+    it("returns a sequence that will iterate over 'split' portions of a string", function() {
+      var result = Lazy(values).split(", ").toArray();
+      expect(result).toEqual(values.split(", "));
+    });
+
+    it("works for regular expressions as well as strings", function() {
+      var result = Lazy(values).split(/,\s*/).toArray();
+      expect(result).toEqual(values.split(/,\s*/));
+    });
+
+    it("respects the specified flags on the regular expression", function() {
+      var result = Lazy("a and b AND c").split(/\s*and\s*/i).toArray();
+      expect(result).toEqual(["a", "b", "c"]);
+    });
+
+    it("works the same with or without the global flag on a regular expression", function() {
+      var result = Lazy("a and b AND c").split(/\s*and\s*/gi).toArray();
+      expect(result).toEqual(["a", "b", "c"]);
+    });
+
+    it("splits the string by character if an empty string is passed", function() {
+      var result = Lazy("foo").split("").toArray();
+      expect(result).toEqual(["f", "o", "o"]);
+    });
+
+    it("works for empty regular expressions as well as empty strings", function() {
+      var result = Lazy("foo").split(/(?:)/).toArray();
+      expect(result).toEqual(["f", "o", "o"]);
+    });
+  });
+
+  describe("match", function() {
+    var source = "foo 123 bar 456 baz";
+
+    it("returns a sequence that will iterate every match in the string", function() {
+      var result = Lazy(source).match(/\d+/).toArray();
+      expect(result).toEqual(source.match(/\d+/g));
+    });
+  });
+
   describe("toObject", function() {
     it("converts an array of pairs into an object", function() {
       var pairs = Lazy(people).map(function(p) { return [p.getName(), p]; });
@@ -282,6 +325,16 @@ describe("Lazy", function() {
       var children = Lazy(people).drop(2).toArray();
       expect(children).toEqual([lauren, adam, daniel, happy]);
     });
+
+    it("if no number is provided, skips the first element", function() {
+      var allButDavid = Lazy(people).drop().toArray();
+      expect(allButDavid).toEqual([mary, lauren, adam, daniel, happy]);
+    });
+
+    it("includes the entire collection with a count of 0", function() {
+      var everybody = Lazy(people).drop(0).toArray();
+      expect(everybody).toEqual(people);
+    });
   });
 
   describe("sortBy", function() {
@@ -423,6 +476,20 @@ describe("Lazy", function() {
     it("only returns 1 of each unique value", function() {
       var genders = Lazy(people).map(Person.getGender).uniq().toArray();
       expect(genders).toEqual(["M", "F"]);
+    });
+
+    it("does not mistakenly combine distinct values w/ identical string representations", function() {
+      var results = Lazy([1, 1, "1", "1", { toString: function() { return "1"; } }]).uniq().toArray();
+
+      // Not really sure how to test equality of an object w/ a function, so...
+      expect(results.length).toEqual(3);
+      expect(results.slice(0, 2)).toEqual([1, "1"]);
+      expect(typeof results[2].toString).toBe("function");
+    });
+
+    it("does not override methods on Set, screwing up everything", function() {
+      var results = Lazy(["__proto__", "constructor", "add", "contains"]).uniq().toArray();
+      expect(results).toEqual(["__proto__", "constructor", "add", "contains"]);
     });
   });
 
@@ -960,6 +1027,34 @@ describe("Lazy", function() {
       jslinq: function(arr) { return JSLINQ(arr).Select(inc).All(isEven); },
       from: function(arr) { return from(arr).select(inc).all(isEven); },
       valueOnly: true
+    });
+
+    // These aren't really comparisons to Underscore or Lo-Dash; rather, they're
+    // comparisons to the native Array.join, String.split, and String.match
+    // methods. But designating them as such at the UI level will require some
+    // refactoring. For now, I think it's fine to put them here.
+    compareAlternatives("map -> join", {
+      lazy: function(arr) { return Lazy(arr).map(inc).join(", "); },
+      underscore: function(arr) { return _(arr).map(inc).join(", "); },
+      valueOnly: true
+    });
+
+    compareAlternatives("split(string) -> take", {
+      lazy: function(str, delimiter) { return Lazy(str).split(delimiter).take(5); },
+      underscore: function(str, delimiter) { return _(str.split(delimiter)).take(5); },
+      inputs: [[Lazy.range(100).join(", "), ", "]]
+    });
+
+    compareAlternatives("split(regex) -> take", {
+      lazy: function(str, delimiter) { return Lazy(str).split(delimiter).take(5); },
+      underscore: function(str, delimiter) { return _(str.split(delimiter)).take(5); },
+      inputs: [[Lazy.range(100).join(", "), /,\s*/]]
+    });
+
+    compareAlternatives("match(regex) -> take", {
+      lazy: function(str, pattern) { return Lazy(str).match(pattern).take(5); },
+      underscore: function(str, pattern) { return _(str.match(pattern)).take(5); },
+      inputs: [[Lazy.range(100).join(" "), /\d+/g]]
     });
   });
 });
