@@ -23,6 +23,7 @@ namespace :compile do
     compile_file("lazy.js", %w[
       sequence
       sequence_iterator
+      set
       indexed_sequence
       caching_sequence
       mapped_sequence

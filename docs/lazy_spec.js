@@ -458,6 +458,15 @@ describe("Lazy", function() {
       var genders = Lazy(people).map(Person.getGender).uniq().toArray();
       expect(genders).toEqual(["M", "F"]);
     });
+
+    it("does not mistakenly combine distinct values w/ identical string representations", function() {
+      var results = Lazy([1, 1, "1", "1", { toString: function() { return "1"; } }]).uniq().toArray();
+
+      // Not really sure how to test equality of an object w/ a function, so...
+      expect(results.length).toEqual(3);
+      expect(results.slice(0, 2)).toEqual([1, "1"]);
+      expect(typeof results[2].toString).toBe("function");
+    });
   });
 
   describe("zip", function() {

@@ -323,6 +323,29 @@
     return true;
   };
 
+  var Set = function() {
+    this.table = {};
+  };
+
+  Set.prototype.add = function(value) {
+    var table = this.table,
+        typeKey = typeof value;
+
+    if (!table[typeKey]) {
+      table[typeKey] = {};
+      return table[typeKey][value] = true;
+    }
+    if (table[typeKey][value]) {
+      return false;
+    }
+    return table[typeKey][value] = true;
+  };
+
+  Set.prototype.contains = function(value) {
+    var valuesForType = this.table[typeof value];
+    return valuesForType && valuesForType[value];
+  };
+
   var ArrayWrapper = Sequence.inherit(function(source) {
     this.source = source;
   });
@@ -632,10 +655,9 @@
   });
 
   UniqueSequence.prototype.each = function(fn) {
-    var set = {};
+    var set = new Set();
     this.parent.each(function(e) {
-      if (!set[e]) {
-        set[e] = true;
+      if (set.add(e)) {
         return fn(e);
       }
     });
@@ -663,7 +685,7 @@
   WithoutSequence.prototype.each = function(fn) {
     var set = createSet(this.values);
     this.parent.each(function(e) {
-      if (!set[e]) {
+      if (!set.contains(e)) {
         return fn(e);
       }
     });
@@ -719,7 +741,7 @@
 
     this.parent.each(function(e) {
       for (var i = 0; i < sets.length; ++i) {
-        if (!sets[i][e]) {
+        if (!sets[i].contains(e)) {
           return;
         }
       }
@@ -885,9 +907,9 @@
   /*** Useful utility methods ***/
 
   function createSet(values) {
-    var set = {};
+    var set = new Set();
     Lazy(values || []).flatten().each(function(e) {
-      set[e] = true;
+      set.add(e);
     });
     return set;
   };
