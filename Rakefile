@@ -72,7 +72,7 @@ namespace :compile do
     # Add IDs to section headings.
     fragment.css("h1,h2").each do |node|
       title = node.content
-      node["id"] = title.downcase.gsub(/\s+/, "-")
+      node["id"] = title.downcase.gsub(/\s+/, "-").gsub(/[^\w\-]/, "")
     end
 
     # Do syntax highlighting w/ Pygments.
