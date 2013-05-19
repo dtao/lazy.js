@@ -378,7 +378,7 @@
       $("#why-to-array-vs-each").addClass("showing");
 
       // Hide the info panel once the user clicks anywhere else.
-      $("body").one("click", function() {
+      $(document).one("click", function() {
         $("#why-to-array-vs-each").removeClass("showing");
       });
 
