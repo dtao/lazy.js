@@ -127,8 +127,8 @@ OK, what else?
 You've probably [seen code snippets before](https://gist.github.com/dtao/2351944) that show how to iterate over an array asynchronously in JavaScript. But have you seen an example packed full of map-y, filter-y goodness like this?
 
 ```javascript
-// The second argument defines a 100-millisecond interval between each element.
-var asyncSequence = Lazy.async(array, 100)
+var asyncSequence = Lazy(array)
+  .async(100) // specifies a 100-millisecond interval between each element
   .map(inc)
   .filter(isEven)
   .take(20);
@@ -206,7 +206,7 @@ Piece of cake.
 Available functions
 -------------------
 
-Currently the following functions are available (meaning you can call them on any sequence, such as what you get back from `Lazy(array)`, `Lazy.generate`, `Lazy.range`, or `Lazy.async(array)`).
+Currently the following functions are available (meaning you can call them on any `Lazy.Sequence` object, such as what you get back from `Lazy(array)`, `Lazy.generate`, `Lazy(string).split`, &c.):
 
 - `map`
 - `pluck`
