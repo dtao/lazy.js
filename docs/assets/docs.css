@@ -174,6 +174,38 @@ figure {
   margin-top: -25px;
 }
 
+a.why-to-array-vs-each {
+  color: #888;
+  font-size: 75%;
+  text-decoration: none;
+}
+
+a.why-to-array-vs-each:hover {
+  color: #567;
+}
+
+#why-to-array-vs-each {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: -300px;
+  width: 276px;
+  padding: 12px;
+  background-color: #000;
+  color: #fff;
+  opacity: 0.8;
+  filter: alpha(opacity=80);
+  overflow: auto;
+  z-index: 1;
+
+  transition: all 0.25s;
+}
+
+#why-to-array-vs-each.showing {
+  right: 0;
+  transition: all 0.25s;
+}
+
 .column-chart {
   position: relative;
 }

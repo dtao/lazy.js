@@ -85,14 +85,33 @@
 
     <form>
       Select the tests you want to run below, choose either
-      <label><input id="test-to-array" type="radio" checked="checked"><code>toArray</code></input></label> or
-      <label><input id="test-each" type="radio"><code>each</code></input></label>, and
+      <label><input id="test-each" type="radio" checked="checked"><code>each</code></input></label> or
+      <label><input id="test-to-array" type="radio"><code>toArray</code></input></label>
+      <a class="why-to-array-vs-each" href="javascript:void(0);">(why?)</a>, and
       <button class="start-benchmarking">start benchmarking</button>
       to compare Lazy.js, Underscore, Lo-Dash,
       <a href="http://linqjs.codeplex.com/">Linq.js</a>,
       <a href="http://jslinq.codeplex.com/">JSLINQ</a>, and
       <a href="https://github.com/suckgamoni/fromjs/">From.js</a>.
     </form>
+
+    <div id="why-to-array-vs-each">
+      <p>
+        Comparing the performance of Lazy.js to other libraries like Underscore and Lo-Dash is
+        unfortunately not black and white. On the one hand, calling <code>toArray</code> on the
+        result of a Lazy sequence will give you an actual JavaScript array, which you might need if,
+        e.g., you're passing the result to a function from an external library. However, in most
+        cases when you use methods like <code>map</code> or <code>filter</code>, you are probably
+        just going to do something while iterating over the result. In this case, you don't need an
+        array at all; calling <code>each</code> on a <code>Lazy.Sequence</code> will be functionally
+        indistinguishable from calling <code>_.each</code> on an array.
+      </p>
+      <p>
+        Generally speaking, Lazy.js performs best (and "wins" more performance races) when you
+        <em>don't</em> have to call <code>toArray</code>. However, when chaining methods together
+        it's often still the fastest solution regardless.
+      </p>
+    </div>
 
     <section id="benchmark-results-10"
       class="benchmark-results-section">

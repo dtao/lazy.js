@@ -373,6 +373,20 @@
       $("#test-to-array").prop("checked", false);
     });
 
+    $("a.why-to-array-vs-each").on("click", function() {
+      // Show the info panel.
+      $("#why-to-array-vs-each").addClass("showing");
+
+      // Hide the info panel once the user clicks anywhere else.
+      $("body").one("click", function() {
+        $("#why-to-array-vs-each").removeClass("showing");
+      });
+
+      // Prevent this click from propagating to the document node, which would
+      // immediately dismiss the panel via the handler above.
+      return false;
+    });
+
     $(".select-all").on("click", function() {
       $(this).closest("section").find(".benchmark-result").addClass("selected");
     });
