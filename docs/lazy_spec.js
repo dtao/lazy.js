@@ -89,6 +89,11 @@ describe("Lazy", function() {
       var naturalNumbers = Lazy.generate(function(i) { return i + 1; });
       expect(naturalNumbers.length()).toBeUndefined();
     });
+
+    it("does let you specify a length if you want", function() {
+      var oneThroughFive = Lazy.generate(function(i) { return i + 1; }, 5).toArray();
+      expect(oneThroughFive).toEqual([1, 2, 3, 4, 5]);
+    });
   });
 
   describe("range", function() {
