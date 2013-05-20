@@ -138,6 +138,53 @@ describe("Lazy", function() {
     it("cannot be called on an already-asynchronous sequence", function() {
       expect(function() { Lazy(people).async().async(); }).toThrow();
     });
+
+    describe("when interval is undefined", function() {
+      if (typeof process !== "undefined" && typeof process.nextTick === "function") {
+        it("in Node.js, uses process.nextTick", function() {
+          var personCount = 0;
+          runs(function() {
+            spyOn(process, "nextTick").andCallThrough();
+            Lazy(people).async().each(function() { ++personCount; });
+          });
+          waitsFor(function() {
+            return personCount === people.length;
+          });
+          runs(function() {
+            expect(process.nextTick).toHaveBeenCalled();
+            expect(process.nextTick.callCount).toBe(6);
+          });
+        });
+
+      } else {
+        var originalSetImmediate = window.setImmediate;
+
+        beforeEach(function() {
+          window.setImmediate = window.setImmediate || function(fn) {
+            window.setTimeout(fn, 0);
+          };
+        });
+
+        afterEach(function() {
+          window.setImmediate = originalSetImmediate;
+        });
+
+        it("in a browser environment, uses window.setImmediate (if available)", function() {
+          var personCount = 0;
+          runs(function() {
+            spyOn(window, "setImmediate").andCallThrough();
+            Lazy(people).async().each(function() { ++personCount; });
+          });
+          waitsFor(function() {
+            return personCount === people.length;
+          });
+          runs(function() {
+            expect(window.setImmediate).toHaveBeenCalled();
+            expect(window.setImmediate.callCount).toBe(6);
+          });
+        });
+      }
+    });
   });
 
   describe("split", function() {
