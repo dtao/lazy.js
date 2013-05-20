@@ -76,6 +76,12 @@ namespace :compile do
     # Parse HTML using Nokogiri.
     fragment = Nokogiri::HTML::fragment(raw_html)
 
+    # Find the Travis build status icon and add GitHub and Twitter buttons.
+    travis_image = fragment.css("a[href='https://travis-ci.org/dtao/lazy.js']").first
+    travis_image.parent["class"] = "sharing"
+    share_fragment = Nokogiri::HTML::fragment(File.read(File.join("docs", "share.html")))
+    travis_image.add_next_sibling(share_fragment)
+
     # Add IDs to section headings.
     fragment.css("h1,h2").each do |node|
       title = node.content
