@@ -49,6 +49,7 @@ namespace :compile do
       string_match_sequence
       split_string_sequence
       split_with_regexp_iterator
+      split_with_string_iterator
       char_iterator
       init
     ])
