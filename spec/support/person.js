@@ -83,10 +83,6 @@
 
   Person.reset();
 
-  if (typeof module !== "undefined") {
-    module.exports = Person;
-  } else {
-    context.Person = Person;
-  }
+  context.Person = Person;
 
 }(typeof global !== "undefined" ? global : window));
