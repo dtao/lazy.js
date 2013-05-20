@@ -305,6 +305,10 @@
     return new SequenceIterator(this);
   };
 
+  Sequence.prototype.async = function(interval) {
+    return new AsyncSequence(this, interval);
+  };
+
   var SequenceIterator = function(sequence) {
     this.sequence = sequence;
     this.index = -1;
@@ -791,6 +795,10 @@
   };
 
   var AsyncSequence = Sequence.inherit(function(parent, interval) {
+    if (parent instanceof AsyncSequence) {
+      throw "Sequence is already asynchronous!";
+    }
+
     this.parent = parent;
     this.interval = interval || 0;
   });
@@ -828,8 +836,7 @@
   StringMatchSequence.prototype.each = function(fn) {
     var source = this.source,
         pattern = this.pattern,
-        match,
-        index = 0;
+        match;
 
     if (pattern.source === "" || pattern.source === "(?:)") {
       eachChar(str, fn);
@@ -846,73 +853,133 @@
     }
   };
 
+  StringMatchSequence.prototype.getIterator = function() {
+    var source = this.source,
+        pattern = this.pattern,
+        match;
+
+    if (pattern.source === "" || pattern.source === "(?:)") {
+      return new CharIterator(source);
+    }
+
+    // clone the RegExp
+    pattern = eval("" + pattern + (!pattern.global ? "g" : ""));
+
+    return {
+      current: function() {
+        return match;
+      },
+
+      moveNext: function() {
+        return !!(match = pattern.exec(source));
+      }
+    };
+  };
+
   var SplitStringSequence = Sequence.inherit(function(source, pattern) {
     this.source = source;
     this.pattern = pattern;
   });
 
   SplitStringSequence.prototype.each = function(fn) {
-    if (this.pattern instanceof RegExp) {
-      eachForRegExp(this.source, this.pattern, fn);
-    } else if (this.pattern === "") {
-      eachChar(this.source, fn);
-    } else {
-      eachForString(this.source, this.pattern, fn);
-    }
-  };
-
-  function eachForRegExp(str, pattern, fn) {
-    var match,
-        index = 0;
-
-    if (pattern.source === "" || pattern.source === "(?:)") {
-      eachChar(str, fn);
-      return;
-    }
-
-    // clone the RegExp
-    pattern = eval("" + pattern + (!pattern.global ? "g" : ""));
-
-    while (match = pattern.exec(str)) {
-      if (fn(str.substring(index, match.index)) === false) {
-        return;
-      }
-      index = match.index + match[0].length;
-    }
-    if (index < str.length) {
-      fn(str.substring(index));
-    }
-  }
-
-  function eachChar(str, fn) {
-    var length = str.length,
-        i = -1;
-    while (++i < length) {
-      if (fn(str.charAt(i)) === false) {
+    var iterator = this.getIterator();
+    while (iterator.moveNext()) {
+      if (fn(iterator.current()) === false) {
         break;
       }
     }
-  }
+  };
 
-  function eachForString(str, delimiter, fn) {
-    var leftIndex = 0,
-        rightIndex = str.indexOf(delimiter);
-
-    while (rightIndex !== -1) {
-      if (fn(str.substring(leftIndex, rightIndex)) === false) {
-        return;
+  SplitStringSequence.prototype.getIterator = function() {
+    if (this.pattern instanceof RegExp) {
+      if (this.pattern.source === "" || this.pattern.source === "(?:)") {
+        return new CharIterator(this.source);
+      } else {
+        return new SplitWithRegExpIterator(this.source, this.pattern);
       }
-      leftIndex = rightIndex + delimiter.length;
-      rightIndex = str.indexOf(delimiter, leftIndex);
+    } else if (this.pattern === "") {
+      return new CharIterator(this.source);
+    } else {
+      return new SplitWithStringIterator(this.source, this.pattern);
+    }
+  };
+
+  var SplitWithRegExpIterator = function(source, pattern) {
+    this.source = source;
+
+    // clone the RegExp
+    this.pattern = eval("" + pattern + (!pattern.global ? "g" : ""));
+  };
+
+  SplitWithRegExpIterator.prototype.current = function() {
+    return this.source.substring(this.start, this.end);
+  };
+
+  SplitWithRegExpIterator.prototype.moveNext = function() {
+    if (!this.pattern) {
+      return false;
     }
 
-    if (leftIndex < str.length) {
-      fn(str.substring(leftIndex));
+    var match = this.pattern.exec(this.source);
+
+    if (match) {
+      this.start = this.nextStart ? this.nextStart : 0;
+      this.end = match.index;
+      this.nextStart = match.index + match[0].length;
+      return true;
+
+    } else if (this.pattern) {
+      this.start = this.nextStart;
+      this.end = undefined;
+      this.nextStart = undefined;
+      this.pattern = undefined;
+      return true;
     }
+
+    return false;
+  };
+
+  var SplitWithStringIterator = function(source, delimiter) {
+    this.source = source;
+    this.delimiter = delimiter;
   }
+
+  SplitWithStringIterator.prototype.current = function() {
+    return this.source.substring(this.leftIndex, this.rightIndex);
+  };
+
+  SplitWithStringIterator.prototype.moveNext = function() {
+    if (!this.finished) {
+      this.leftIndex = typeof this.leftIndex !== "undefined" ?
+        this.rightIndex + this.delimiter.length :
+        0;
+      this.rightIndex = this.source.indexOf(this.delimiter, this.leftIndex);
+    }
+
+    if (this.rightIndex === -1) {
+      this.finished = true;
+      this.rightIndex = undefined;
+      return true;
+    }
+
+    return !this.finished;
+  };
+
+  var CharIterator = function(source) {
+    this.source = source;
+    this.index = -1;
+  };
+
+  CharIterator.prototype.current = function() {
+    return this.source.charAt(this.index);
+  };
+
+  CharIterator.prototype.moveNext = function() {
+    return (++this.index < this.source.length);
+  };
 
   exports.Lazy = function(source) {
-    if (source instanceof Lazy.Sequence) {
+    if (source instanceof Sequence) {
       return source;
     } else if (typeof source === "string") {
       return new StringWrapper(source);
@@ -924,8 +991,8 @@
     return new AsyncSequence(new ArrayWrapper(source), interval);
   };
 
-  exports.Lazy.generate = function(SequenceFn) {
-    return new GeneratedSequence(SequenceFn);
+  exports.Lazy.generate = function(sequenceFn, length) {
+    return new GeneratedSequence(sequenceFn, length);
   };
 
   exports.Lazy.range = function() {

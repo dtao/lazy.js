@@ -48,7 +48,7 @@ a.github-ribbon:hover {
   background: url(https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png);
 }
 
-h1, h2 {
+h1, h2, h3 {
   color: #444;
 }
 
@@ -96,14 +96,22 @@ nav.subnav ul li:hover a {
   color: #89a;
 }
 
+section h1,
+section h2,
+section h3 {
+  font-weight: 300;
+}
+
 section h1 {
   font-size: 40px;
-  font-weight: 300;
 }
 
 section h2 {
   font-size: 32px;
-  font-weight: 300;
+}
+
+section h3 {
+  font-size: 24px;
 }
 
 figure {
@@ -172,6 +180,42 @@ figure {
   right: 0;
   line-height: 50px;
   margin-top: -25px;
+}
+
+a.why-to-array-vs-each {
+  color: #888;
+  font-size: 75%;
+  text-decoration: none;
+}
+
+a.why-to-array-vs-each:hover {
+  color: #567;
+}
+
+#why-to-array-vs-each {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: -300px;
+  width: 276px;
+  padding: 12px;
+  background-color: #000;
+  color: #fff;
+  opacity: 0.8;
+  filter: alpha(opacity=80);
+  overflow: auto;
+  z-index: 1;
+
+  transition: all 0.25s;
+}
+
+#why-to-array-vs-each.showing {
+  right: 0;
+  transition: all 0.25s;
+}
+
+#why-to-array-vs-each code {
+  color: #48f;
 }
 
 .column-chart {

@@ -45,7 +45,7 @@ describe("Lazy", function() {
   function ensureLaziness(action) {
     it("doesn't eagerly iterate the collection", function() {
       action();
-      expect(Person.accesses).toEqual(0);
+      expect(Person.accesses).toBe(0);
     });
   }
 
@@ -88,6 +88,11 @@ describe("Lazy", function() {
     it("has an undefined length", function() {
       var naturalNumbers = Lazy.generate(function(i) { return i + 1; });
       expect(naturalNumbers.length()).toBeUndefined();
+    });
+
+    it("does let you specify a length if you want", function() {
+      var oneThroughFive = Lazy.generate(function(i) { return i + 1; }, 5).toArray();
+      expect(oneThroughFive).toEqual([1, 2, 3, 4, 5]);
     });
   });
 
@@ -136,6 +141,32 @@ describe("Lazy", function() {
     it("works for empty regular expressions as well as empty strings", function() {
       var result = Lazy("foo").split(/(?:)/).toArray();
       expect(result).toEqual(["f", "o", "o"]);
+    });
+  });
+
+  describe("async", function() {
+    it("creates a sequence that can be iterated over asynchronously", function() {
+      var names = [];
+
+      runs(function() {
+        Lazy(people).async().map(Person.getName).each(function(name) {
+          names.push(name);
+        });
+
+        expect(names.length).toBe(0);
+      });
+
+      waitsFor(function() {
+        return names.length === people.length;
+      });
+
+      runs(function() {
+        expect(names).toEqual(["David", "Mary", "Lauren", "Adam", "Daniel", "Happy"]);
+      });
+    });
+
+    it("cannot be called on an already-asynchronous sequence", function() {
+      expect(function() { Lazy(people).async().async(); }).toThrow();
     });
   });
 
@@ -263,7 +294,7 @@ describe("Lazy", function() {
     it("does not create an array to index into the collection", function() {
       var reversed = Lazy(people).reverse();
       var lastPerson = reversed.get(0);
-      expect(arraysCreated).toEqual(0);
+      expect(arraysCreated).toBe(0);
     });
   });
 

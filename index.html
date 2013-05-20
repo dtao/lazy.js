@@ -49,10 +49,7 @@
     <nav class="subnav">
       <ul>
         <li><a href="#introduction">Introduction</a></li>
-        <li><a href="#indefinite-sequence-generation">Indefinite sequence generation</a></li>
-        <li><a href="#asynchronous-iteration">Asynchronous iteration</a></li>
-        <li><a href="#event-sequences">Event sequences</a></li>
-        <li><a href="#string-processing">String processing</a></li>
+        <li><a href="#features">Features</a></li>
         <li><a href="#available-functions">Available functions</a></li>
       </ul>
     </nav>
@@ -69,7 +66,7 @@
 
 <p><img src="http://i.imgur.com/oGPlPug.png" alt="Lazy.js versus Underscore/Lo-Dash"></p>
 
-<p>Intrigued? Great! Now let's look at how Lazy.js actually works.</p>
+<p>Intrigued? Great! Now let's look at what you can do with Lazy.js.</p>
 
 <h2 id="introduction">Introduction</h2>
 
@@ -78,7 +75,7 @@
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">array</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">).</span><span class="nx">toArray</span><span class="p">();</span>
 </pre></div>
 
-<p>Note the <code>toArray</code> call; without it, what you'll get from <code>Lazy.range</code> won't be an actual <em>array</em> but rather a <em>sequence</em> which you can iterate over using <code>each</code>. But we'll get to that in a moment.</p>
+<p>Note the <code>toArray</code> call; without it, what you'll get from <code>Lazy.range</code> won't be an actual <em>array</em> but rather a <code>Lazy.Sequence</code> object, which you can iterate over using <code>each</code>. But we'll get to that in a moment.</p>
 
 <p>Now let's say we want to take the <em>squares</em> of each of these numbers, increment them, and then take the first five even results. We'll use these helper functions, to keep the code concise:</p>
 
@@ -128,13 +125,15 @@
 
 <p>Looks almost identical, right? That's the idea: Lazy.js aims to be completely familiar to experienced JavaScript devs. Every method from Underscore should have the same name and identical behavior in Lazy.js, except that instead of returning a fully-populated array on every call, it creates a <em>sequence</em> object with an <code>each</code> method.</p>
 
-<p>What's important here is that <strong>no iteration takes place until you call <code>each</code></strong>. Which means that, unlike the Underscore example above, the equivalent Lazy.js query creates no extra arrays. Essentially it combines all necessary operations into a sequence that behaves quite a bit like the procedural code we wrote a moment ago.</p>
+<p>What's important here is that <strong>no iteration takes place until you call <code>each</code></strong>, and <strong>no intermediate arrays are created</strong>. Essentially Lazy.js combines all query operations into a sequence that behaves quite a bit like the procedural code we wrote a moment ago.</p>
 
 <p>Of course, <em>unlike</em> the procedural approach, Lazy.js lets you keep your code clean and functional, and focus on buliding an application instead of optimizing array traversals.</p>
 
-<p>So, cool. Is that all? I think not!</p>
+<h2 id="features">Features</h2>
 
-<h2 id="indefinite-sequence-generation">Indefinite sequence generation</h2>
+<p>OK, cool. What else can Lazy.js do?</p>
+
+<h3>Indefinite sequence generation</h3>
 
 <p>The sequence-based paradigm of Lazy.js lets you do some pretty cool things that simply aren't possible with Underscore's array-based approach. One of these is the generation of <strong>indefinite sequences</strong>, which can go on forever, yet still support all of Lazy's built-in mapping and filtering capablities.</p>
 
@@ -169,14 +168,14 @@
 <span class="kd">var</span> <span class="nx">firstTenFibsPlusOne</span> <span class="o">=</span> <span class="nx">fibonacci</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">inc</span><span class="p">).</span><span class="nx">take</span><span class="p">(</span><span class="mi">10</span><span class="p">).</span><span class="nx">toArray</span><span class="p">();</span>
 </pre></div>
 
-<p>OK, what else can we do with Lazy.js?</p>
+<p>OK, what else?</p>
 
-<h2 id="asynchronous-iteration">Asynchronous iteration</h2>
+<h3>Asynchronous iteration</h3>
 
 <p>You've probably <a href="https://gist.github.com/dtao/2351944">seen code snippets before</a> that show how to iterate over an array asynchronously in JavaScript. But have you seen an example packed full of map-y, filter-y goodness like this?</p>
 
-<div class="highlight"><pre><span class="c1">// The second argument defines a 100-millisecond interval between each element.</span>
-<span class="kd">var</span> <span class="nx">asyncSequence</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">async</span><span class="p">(</span><span class="nx">array</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">asyncSequence</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">array</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">async</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span> <span class="c1">// specifies a 100-millisecond interval between each element</span>
   <span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">inc</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">isEven</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">take</span><span class="p">(</span><span class="mi">20</span><span class="p">);</span>
@@ -189,7 +188,7 @@
 
 <p>All right... what else?</p>
 
-<h2 id="event-sequences">Event sequences</h2>
+<h3>Event sequences</h3>
 
 <p>With indefinite sequences, we saw that unlike Underscore and Lo-Dash, Lazy.js doesn't actually need an in-memory collection to iterate over. And asynchronous sequences demonstrate that it also doesn't need to do all its iteration at once.</p>
 
@@ -222,7 +221,7 @@
 
 <p>Anything else? Of course!</p>
 
-<h2 id="string-processing">String processing</h2>
+<h3>String processing</h3>
 
 <p>Now here's something you may not have even thought of: <code>String.match</code> and <code>String.split</code>. In JavaScript, each of these methods returns an <em>array</em> of substrings. If you think about it, this often means doing more work than necessary; but it's the quickest way (from a developer's standpoint) to get the job done.</p>
 
@@ -249,7 +248,7 @@
 
 <h2 id="available-functions">Available functions</h2>
 
-<p>Currently the following functions are available (meaning you can call them on any sequence, such as what you get back from <code>Lazy(array)</code>, <code>Lazy.generate</code>, <code>Lazy.range</code>, or <code>Lazy.async(array)</code>).</p>
+<p>Currently the following functions are available (meaning you can call them on any <code>Lazy.Sequence</code> object, such as what you get back from <code>Lazy(array)</code>, <code>Lazy.generate</code>, <code>Lazy(string).split</code>, &amp;c.):</p>
 
 <ul>
 <li><code>map</code></li>
@@ -321,14 +320,33 @@
 
     <form>
       Select the tests you want to run below, choose either
-      <label><input id="test-to-array" type="radio" checked="checked"><code>toArray</code></input></label> or
-      <label><input id="test-each" type="radio"><code>each</code></input></label>, and
+      <label><input id="test-each" type="radio" checked="checked"><code>each</code></input></label> or
+      <label><input id="test-to-array" type="radio"><code>toArray</code></input></label>
+      <a class="why-to-array-vs-each" href="javascript:void(0);">(why?)</a>, and
       <button class="start-benchmarking">start benchmarking</button>
       to compare Lazy.js, Underscore, Lo-Dash,
       <a href="http://linqjs.codeplex.com/">Linq.js</a>,
       <a href="http://jslinq.codeplex.com/">JSLINQ</a>, and
       <a href="https://github.com/suckgamoni/fromjs/">From.js</a>.
     </form>
+
+    <div id="why-to-array-vs-each">
+      <p>
+        Comparing the performance of Lazy.js to other libraries like Underscore and Lo-Dash is
+        unfortunately not black and white. On the one hand, calling <code>toArray</code> on the
+        result of a Lazy sequence will give you an actual JavaScript array, which you might need if,
+        e.g., you're passing the result to a function from an external library. However, in most
+        cases when you use methods like <code>map</code> or <code>filter</code>, you are probably
+        just going to do something while iterating over the result. In this case, you don't need an
+        array at all; calling <code>each</code> on a <code>Lazy.Sequence</code> will be functionally
+        indistinguishable from calling <code>_.each</code> on an array.
+      </p>
+      <p>
+        Generally speaking, Lazy.js performs best (and "wins" more performance races) when you
+        <em>don't</em> have to call <code>toArray</code>. However, when chaining methods together
+        it's often still the fastest solution regardless.
+      </p>
+    </div>
 
     <section id="benchmark-results-10"
       class="benchmark-results-section">
