@@ -5,4 +5,4 @@ node_js:
   - "0.8"
   - "0.6"
 before_script:
-  - "sudo npm install jasmine-node -g"
+  - "npm install jasmine-node -g"
