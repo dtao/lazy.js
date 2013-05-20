@@ -1,4 +1,4 @@
-(function(exports) {
+(function(context) {
 
   var Sequence = function(parent) {
     this.parent = parent;
@@ -978,7 +978,7 @@
     return (++this.index < this.source.length);
   };
 
-  exports.Lazy = function(source) {
+  var Lazy = function(source) {
     if (source instanceof Sequence) {
       return source;
     } else if (typeof source === "string") {
@@ -987,15 +987,15 @@
     return new ArrayWrapper(source);
   };
 
-  exports.Lazy.async = function(source, interval) {
+  Lazy.async = function(source, interval) {
     return new AsyncSequence(new ArrayWrapper(source), interval);
   };
 
-  exports.Lazy.generate = function(sequenceFn, length) {
+  Lazy.generate = function(sequenceFn, length) {
     return new GeneratedSequence(sequenceFn, length);
   };
 
-  exports.Lazy.range = function() {
+  Lazy.range = function() {
     var start = arguments.length > 1 ? arguments[0] : 0,
         stop  = arguments.length > 1 ? arguments[1] : arguments[0],
         step  = arguments.length > 2 ? arguments[2] : 1;
@@ -1003,10 +1003,10 @@
       .take(Math.floor((stop - start) / step));
   };
 
-  exports.Lazy.Sequence = Sequence;
-  exports.Lazy.IndexedSequence = IndexedSequence;
-  exports.Lazy.CachingSequence = CachingSequence;
-  exports.Lazy.GeneratedSequence = GeneratedSequence;
+  Lazy.Sequence = Sequence;
+  Lazy.IndexedSequence = IndexedSequence;
+  Lazy.CachingSequence = CachingSequence;
+  Lazy.GeneratedSequence = GeneratedSequence;
 
   /*** Useful utility methods ***/
 
@@ -1077,4 +1077,15 @@
     return new Array(depth).join("  ");
   }
 
-}(typeof exports !== 'undefined' ? exports : window));
+  /*** Exposing Lazy to the world ***/
+
+  // For Node.js
+  if (typeof module !== "undefined") {
+    module.exports = Lazy;
+
+  // For browsers
+  } else {
+    context.Lazy = Lazy;
+  }
+
+}(typeof global !== 'undefined' ? global : window));

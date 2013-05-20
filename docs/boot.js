@@ -1,5 +1,4 @@
 (function() {
-  Benchmark.options.delay   = 0;
   Benchmark.options.maxTime = 1;
 
   var jasmineEnv = jasmine.getEnv();

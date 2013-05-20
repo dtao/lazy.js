@@ -1,0 +1,33 @@
+{
+  "name": "lazyjs",
+  "description": "Like Underscore, but lazier",
+  "version": "0.0.1",
+  "homepage": "http://dtao.github.io/lazy.js/",
+  "author": {
+    "name": "Dan Tao",
+    "email": "daniel.tao@gmail.com",
+    "url": "http://philosopherdeveloper.com"
+  },
+  "main": "lazy",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dtao/lazy.js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dtao/lazy.js/issues"
+  },
+  "keywords": [
+    "lazy",
+    "functional",
+    "performance",
+    "speed",
+    "util"
+  ],
+  "devDependecies": {
+    "jasmine-node": "1.7.x"
+  },
+  "scripts": {
+    "test": "jasmine-node spec/node_spec.js"
+  }
+}

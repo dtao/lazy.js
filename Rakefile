@@ -4,9 +4,9 @@ def compile_file(output, source_files)
   end
 
   File.open(output, "w") do |f|
-    f.write("(function(exports) {\n\n")
+    f.write("(function(context) {\n\n")
     f.write(javascripts.join("\n").gsub(/^(?!$)/, "  "))
-    f.write("\n}(typeof exports !== 'undefined' ? exports : window));")
+    f.write("\n}(typeof global !== 'undefined' ? global : window));")
   end
 
   compiled = Closure::Compiler.new.compile(File.read(output))
