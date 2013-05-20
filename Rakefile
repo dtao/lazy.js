@@ -24,8 +24,8 @@ namespace :compile do
       sequence
       sequence_iterator
       set
-      array_wrapper
       indexed_sequence
+      array_wrapper
       caching_sequence
       mapped_sequence
       filtered_sequence
