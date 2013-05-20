@@ -27,18 +27,6 @@ describe("Lazy", function() {
 
     Person.reset(people);
 
-    this.addMatchers({
-      toMatchSequentially: function(expected) {
-        var success = true,
-            i = 0;
-
-        this.actual.each(function(e) {
-          expect(e).toEqual(expected[i++]);
-        });
-        return success && expected.length === i;
-      }
-    });
-
     arraysCreated = 0;
   });
 
@@ -53,6 +41,12 @@ describe("Lazy", function() {
     it(description, function() {
       var results = [];
 
+      // This can be a function, in case what we want to expect is not defined at the time
+      // createAsyncTest is called.
+      var expected = typeof options.expected === "function" ?
+        options.expected() :
+        options.expected;
+
       runs(function() {
         options.getSequence().each(function(e) { results.push(e); });
 
@@ -61,12 +55,16 @@ describe("Lazy", function() {
       });
 
       waitsFor(function() {
-        return results.length === options.expected.length;
+        return results.length === expected.length;
       });
 
       runs(function() {
-        expect(results).toEqual(options.expected);
+        expect(results).toEqual(expected);
       });
+
+      if (options.additionalExpectations) {
+        runs(options.additionalExpectations);
+      }
     });
   }
 
@@ -131,6 +129,17 @@ describe("Lazy", function() {
     });
   });
 
+  describe("async", function() {
+    createAsyncTest("creates a sequence that can be iterated over asynchronously", {
+      getSequence: function() { return Lazy(people).async().map(Person.getName); },
+      expected: ["David", "Mary", "Lauren", "Adam", "Daniel", "Happy"]
+    });
+
+    it("cannot be called on an already-asynchronous sequence", function() {
+      expect(function() { Lazy(people).async().async(); }).toThrow();
+    });
+  });
+
   describe("split", function() {
     var values = Lazy.range(10).join(", ");
 
@@ -163,16 +172,20 @@ describe("Lazy", function() {
       var result = Lazy("foo").split(/(?:)/).toArray();
       expect(result).toEqual(["f", "o", "o"]);
     });
-  });
 
-  describe("async", function() {
-    createAsyncTest("creates a sequence that can be iterated over asynchronously", {
-      getSequence: function() { return Lazy(people).async().map(Person.getName); },
-      expected: ["David", "Mary", "Lauren", "Adam", "Daniel", "Happy"]
+    createAsyncTest("split(string) supports asynchronous iteration", {
+      getSequence: function() { return Lazy(values).split(", ").async(); },
+      expected: values.split(", ")
     });
 
-    it("cannot be called on an already-asynchronous sequence", function() {
-      expect(function() { Lazy(people).async().async(); }).toThrow();
+    createAsyncTest("split(regexp) supports asynchronous iteration", {
+      getSequence: function() { return Lazy(values).split(/,\s*/).async(); },
+      expected: values.split(/,\s*/)
+    });
+
+    createAsyncTest("split('') supports asynchronous iteration", {
+      getSequence: function() { return Lazy(values).split("").async(); },
+      expected: values.split("")
     });
   });
 
@@ -269,6 +282,17 @@ describe("Lazy", function() {
         .filter(function(p) { return p.getName() !== "David"; })
         .toArray();
       expect(sons).toEqual([adam, daniel]);
+    });
+
+    createAsyncTest("filter supports asynchronous iteration", {
+      getSequence: function() { return Lazy(people).filter(Person.isMale).async(); },
+      expected: function() { return [david, adam, daniel]; }
+    });
+
+    createAsyncTest("filter can exit early even when iterating asynchronously", {
+      getSequence: function() { return Lazy(people).filter(Person.isMale).async().take(1); },
+      expected: function() { return [david]; },
+      additionalExpectations: function() { expect(Person.accesses).toBe(1); }
     });
   });
 

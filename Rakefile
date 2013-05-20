@@ -29,6 +29,7 @@ namespace :compile do
       caching_sequence
       mapped_sequence
       filtered_sequence
+      filtering_iterator
       reversed_sequence
       concatenated_sequence
       take_sequence
