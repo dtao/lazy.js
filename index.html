@@ -17,16 +17,17 @@
   <script type="text/javascript" src="docs/lib/highcharts.js"></script>
   <script type="text/javascript" src="docs/lib/hightables.js"></script>
   <script type="text/javascript" src="docs/lib/jquery.treetable.js"></script>
-  <script type="text/javascript" src="docs/support/spec_reporter.js"></script>
-  <script type="text/javascript" src="docs/support/boot.js"></script>
+  <script type="text/javascript" src="docs/spec_reporter.js"></script>
+  <script type="text/javascript" src="docs/boot.js"></script>
 
   <!-- include source files here... -->
   <script type="text/javascript" src="lazy.js"></script>
   <script type="text/javascript" src="lazy.dom.js"></script>
 
   <!-- include spec files here... -->
-  <script type="text/javascript" src="docs/support/person.js"></script>
-  <script type="text/javascript" src="docs/lazy_spec.js"></script>
+  <script type="text/javascript" src="spec/support/person.js"></script>
+  <script type="text/javascript" src="spec/lazy_spec.js"></script>
+  <script type="text/javascript" src="docs/comparisons.js"></script>
 
 </head>
 
@@ -55,6 +56,14 @@
     </nav>
 
     <h1 id="like-underscore-but-lazier">Like Underscore, but lazier</h1>
+
+<p class="sharing"><a href="https://travis-ci.org/dtao/lazy.js"><img src="https://travis-ci.org/dtao/lazy.js.png?branch=master" alt="Build Status"></a><!-- fun social stuff to include on project homepage -->
+<iframe src="http://ghbtns.com/github-btn.html?user=dtao&amp;repo=lazy.js&amp;type=watch&amp;count=true" allowtransparency="true" frameborder="0" scrolling="0" height="20">
+</iframe>
+<iframe src="http://ghbtns.com/github-btn.html?user=dtao&amp;repo=lazy.js&amp;type=fork&amp;count=true" allowtransparency="true" frameborder="0" scrolling="0" height="20">
+</iframe>
+<a href="https://twitter.com/share" class="twitter-share-button" data-text="Lazy.js: Like Underscore, but lazier" data-via="dan_tao" data-hashtags="lazyjs">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
 
 <p><strong>Lazy.js</strong> it a utility library for JavaScript, similar to <a href="http://underscorejs.org/">Underscore</a> and <a href="http://lodash.com/">Lo-Dash</a> but with one important difference: <strong>lazy evaluation</strong> (also known as deferred execution). This can translate to superior performance in many cases, <em>especially</em> when dealing with large arrays and/or "chaining" together multiple methods. For simple cases (<code>map</code>, <code>filter</code>, etc.) on small arrays, Lazy's performance should be similar to Underscore or Lo-Dash.</p>
 
