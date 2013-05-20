@@ -49,6 +49,27 @@ describe("Lazy", function() {
     });
   }
 
+  function createAsyncTest(description, options) {
+    it(description, function() {
+      var results = [];
+
+      runs(function() {
+        options.getSequence().each(function(e) { results.push(e); });
+
+        // Should not yet be populated.
+        expect(results.length).toBe(0);
+      });
+
+      waitsFor(function() {
+        return results.length === options.expected.length;
+      });
+
+      runs(function() {
+        expect(results).toEqual(options.expected);
+      });
+    });
+  }
+
   it("wraps an array which can be easily unwrapped", function() {
     var result = Lazy(people);
     expect(result.toArray()).toEqual(people);
@@ -145,24 +166,9 @@ describe("Lazy", function() {
   });
 
   describe("async", function() {
-    it("creates a sequence that can be iterated over asynchronously", function() {
-      var names = [];
-
-      runs(function() {
-        Lazy(people).async().map(Person.getName).each(function(name) {
-          names.push(name);
-        });
-
-        expect(names.length).toBe(0);
-      });
-
-      waitsFor(function() {
-        return names.length === people.length;
-      });
-
-      runs(function() {
-        expect(names).toEqual(["David", "Mary", "Lauren", "Adam", "Daniel", "Happy"]);
-      });
+    createAsyncTest("creates a sequence that can be iterated over asynchronously", {
+      getSequence: function() { return Lazy(people).async().map(Person.getName); },
+      expected: ["David", "Mary", "Lauren", "Adam", "Daniel", "Happy"]
     });
 
     it("cannot be called on an already-asynchronous sequence", function() {
@@ -176,6 +182,11 @@ describe("Lazy", function() {
     it("returns a sequence that will iterate every match in the string", function() {
       var result = Lazy(source).match(/\d+/).toArray();
       expect(result).toEqual(source.match(/\d+/g));
+    });
+
+    createAsyncTest("match supports asynchronous iteration", {
+      getSequence: function() { return Lazy(source).match(/\d+/).async(); },
+      expected: ["123", "456"]
     });
   });
 
