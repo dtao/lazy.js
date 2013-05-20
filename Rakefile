@@ -48,6 +48,7 @@ namespace :compile do
       string_wrapper
       string_match_sequence
       split_string_sequence
+      char_iterator
       init
     ])
 
