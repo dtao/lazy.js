@@ -758,6 +758,17 @@ describe("Lazy", function() {
       }, []);
       expect(firstInitials).toEqual(["D", "M", "L", "A", "D", "H"]);
     });
+
+    it("if no memo is given, starts with the head and reduces over the tail", function() {
+      var familyAcronym = Lazy(people)
+        .map(Person.getName)
+        .map(function(name) { return name.charAt(0).toUpperCase(); })
+        .reduce(function(acronym, initial) {
+          acronym += initial;
+          return acronym;
+        });
+      expect(familyAcronym).toEqual("DMLADH");
+    });
   });
 
   describe("reduceRight", function() {
