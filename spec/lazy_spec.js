@@ -156,6 +156,22 @@ describe("Lazy", function() {
           });
         });
 
+      } else if (typeof process !== "undefined" && typeof process.nextTick === "function") {
+        it("in Node.js, uses process.nextTick if setImmediate is not available", function() {
+          var personCount = 0;
+          runs(function() {
+            spyOn(process, "nextTick").andCallThrough();
+            Lazy(people).async().each(function() { ++personCount; });
+          });
+          waitsFor(function() {
+            return personCount === people.length;
+          });
+          runs(function() {
+            expect(process.nextTick).toHaveBeenCalled();
+            expect(process.nextTick.callCount).toBe(6);
+          });
+        });
+
       } else {
         var originalSetImmediate = window.setImmediate;
 
