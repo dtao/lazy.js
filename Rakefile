@@ -25,7 +25,7 @@ namespace :compile do
 
     compile_file("lazy.js", %w[
       sequence
-      sequence_iterator
+      iterator
       set
       indexed_sequence
       array_wrapper
