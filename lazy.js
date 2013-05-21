@@ -11,7 +11,7 @@
   /**
    * Create a new constructor function for a type inheriting from Sequence.
    *
-   * @param {Function} The constructor function.
+   * @param {Function} ctor The constructor function.
    * @return {Function} A constructor for a new type inheriting from Sequence.
    */
   Sequence.inherit = function(ctor) {
@@ -179,11 +179,11 @@
    * Creates a new sequence with all of the elements of this one, plus those of
    * the given array(s).
    *
-   * @param {Array...} One or more arrays to use for additional items after this
-   *     sequence.
+   * @param {...Array} var_args One or more arrays to use for additional items
+   *     after this sequence.
    * @return {Sequence} The new sequence.
    */
-  Sequence.prototype.concat = function() {
+  Sequence.prototype.concat = function(var_args) {
     return new ConcatenatedSequence(this, Array.prototype.slice.call(arguments, 0));
   };
 
@@ -191,7 +191,7 @@
    * Creates a new sequence comprising the first N elements from this sequence, OR
    * (if N is undefined) simply returns the first element of this sequence.
    *
-   * @param {number} count The number of elements to take from this sequence. If
+   * @param {number=} count The number of elements to take from this sequence. If
    *     this value exceeds the length of the sequence, the resulting sequence
    *     will be essentially the same as this one.
    * @result {*} The new sequence (or the first element from this sequence if
@@ -211,7 +211,7 @@
    * Creates a new sequence comprising all but the last N elements of this
    * sequence.
    *
-   * @param {number} count The number of items to omit from the end of the
+   * @param {number=} count The number of items to omit from the end of the
    *     sequence (defaults to 1).
    * @return {Sequence} The new sequence.
    */
@@ -226,11 +226,11 @@
    * Creates a new sequence comprising the last N elements of this sequence, OR
    * (if N is undefined) simply returns the last element of this sequence.
    *
-   * @param {number} count The number of items to take from the end of the
+   * @param {number=} count The number of items to take from the end of the
    *     sequence.
    * @return {Sequence} The new sequence (or the last element from this sequence
    *     if no count was given).
-  */
+   */
   Sequence.prototype.last = function(count) {
     if (typeof count === "undefined") {
       return this.reverse().first();
@@ -255,7 +255,7 @@
    * Creates a new sequence comprising all but the first N elements of this
    * sequence.
    *
-   * @param {number} count The number of items to omit from the beginning of the
+   * @param {number=} count The number of items to omit from the beginning of the
    *     sequence (defaults to 1).
    * @return {Sequence} The new sequence.
    */
@@ -306,11 +306,11 @@
    * Creates a new sequence by combining the elements from this sequence with
    * corresponding elements from the specified array(s).
    *
-   * @param {Array...} One or more arrays of elements to combine with those of
+   * @param {...Array} var_args One or more arrays of elements to combine with
    *     those of this sequence.
    * @return {Sequence} The new sequence.
    */
-  Sequence.prototype.zip = function() {
+  Sequence.prototype.zip = function(var_args) {
     return new ZippedSequence(this, Array.prototype.slice.call(arguments, 0));
   };
 
@@ -362,11 +362,11 @@
    * Creates a new sequence with all the unique elements either in this sequence
    * or among the specified arguments.
    *
-   * @param {*} The values, or array(s) of values, to be additionally included
-   *     in the resulting sequence.
+   * @param {...*} var_args The values, or array(s) of values, to be additionally
+   *     included in the resulting sequence.
    * @return {Sequence} The new sequence.
    */
-  Sequence.prototype.union = function() {
+  Sequence.prototype.union = function(var_args) {
     return new UnionSequence(this, Array.prototype.slice.call(arguments, 0));
   };
 
@@ -374,11 +374,11 @@
    * Creates a new sequence with all the elements of this sequence that also
    * appear among the specified arguments.
    *
-   * @param {*} The values, or array(s) of values, in which elements from this
-   *     sequence must also be included to end up in the resulting sequence.
+   * @param {...*} var_args The values, or array(s) of values, in which elements
+   *     from this sequence must also be included to end up in the resulting sequence.
    * @return {Sequence} The new sequence.
    */
-  Sequence.prototype.intersection = function() {
+  Sequence.prototype.intersection = function(var_args) {
     return new IntersectionSequence(this, Array.prototype.slice.call(arguments, 0));
   };
 
@@ -408,7 +408,7 @@
    * predicate (or, if no predicate is specified, whether the sequence contains at
    * least one element).
    *
-   * @param {Function} predicate A function to call on (potentially) every element
+   * @param {Function=} predicate A function to call on (potentially) every element
    *     in this sequence.
    * @return {boolean} True if `predicate` returns true for at least one element
    *     in the sequence. False if `predicate` returns false for every element (or
@@ -625,7 +625,7 @@
    * @return {Iterator} An iterator object.
    */
   Sequence.prototype.getIterator = function() {
-    return new SequenceIterator(this);
+    return new Iterator(this);
   };
 
   /**
@@ -641,16 +641,32 @@
     return new AsyncSequence(this, interval);
   };
 
-  var SequenceIterator = function(sequence) {
+  /**
+   * The Iterator object provides an API for iterating over a sequence.
+   *
+   * @constructor
+   */
+  function Iterator(sequence) {
     this.sequence = sequence;
     this.index = -1;
-  };
+  }
 
-  SequenceIterator.prototype.current = function() {
+  /**
+   * Gets the current item this iterator is pointing to.
+   *
+   * @return {*} The current item.
+   */
+  Iterator.prototype.current = function() {
     return this.sequence.get(this.index);
   };
 
-  SequenceIterator.prototype.moveNext = function() {
+  /**
+   * Moves the iterator to the next item in a sequence, if possible.
+   *
+   * @return {boolean} True if the iterator is able to move to a new item, or else
+   *     false.
+   */
+  Iterator.prototype.moveNext = function() {
     if (this.index >= this.sequence.length() - 1) {
       return false;
     }
@@ -659,9 +675,12 @@
     return true;
   };
 
-  var Set = function() {
+  /**
+   * @constructor
+   */
+  function Set() {
     this.table = {};
-  };
+  }
 
   Set.prototype.add = function(value) {
     var table = this.table,
@@ -848,10 +867,13 @@
     }
   };
 
-  var FilteringIterator = function(sequence, filterFn) {
+  /**
+   * @constructor
+   */
+  function FilteringIterator(sequence, filterFn) {
     this.iterator = sequence.getIterator();
     this.filterFn = filterFn;
-  };
+  }
 
   FilteringIterator.prototype.current = function() {
     return this.value;
@@ -1222,9 +1244,12 @@
     };
   }
 
-  var StringWrapper = function(source) {
+  /**
+   * @constructor
+   */
+  function StringWrapper(source) {
     this.source = source;
-  };
+  }
 
   StringWrapper.prototype.match = function(pattern) {
     return new StringMatchSequence(this.source, pattern);
@@ -1252,12 +1277,15 @@
     return new StringMatchIterator(this.source, this.pattern);
   };
 
-  var StringMatchIterator = function(source, pattern) {
+  /**
+   * @constructor
+   */
+  function StringMatchIterator(source, pattern) {
     this.source = source;
 
     // clone the RegExp
     this.pattern = eval("" + pattern + (!pattern.global ? "g" : ""));
-  };
+  }
 
   StringMatchIterator.prototype.current = function() {
     return this.match[0];
@@ -1295,12 +1323,15 @@
     }
   };
 
-  var SplitWithRegExpIterator = function(source, pattern) {
+  /**
+   * @constructor
+   */
+  function SplitWithRegExpIterator(source, pattern) {
     this.source = source;
 
     // clone the RegExp
     this.pattern = eval("" + pattern + (!pattern.global ? "g" : ""));
-  };
+  }
 
   SplitWithRegExpIterator.prototype.current = function() {
     return this.source.substring(this.start, this.end);
@@ -1330,7 +1361,10 @@
     return false;
   };
 
-  var SplitWithStringIterator = function(source, delimiter) {
+  /**
+   * @constructor
+   */
+  function SplitWithStringIterator(source, delimiter) {
     this.source = source;
     this.delimiter = delimiter;
   }
@@ -1356,10 +1390,13 @@
     return !this.finished;
   };
 
-  var CharIterator = function(source) {
+  /**
+   * @constructor
+   */
+  function CharIterator(source) {
     this.source = source;
     this.index = -1;
-  };
+  }
 
   CharIterator.prototype.current = function() {
     return this.source.charAt(this.index);
