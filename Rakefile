@@ -48,6 +48,7 @@ namespace :compile do
       async_sequence
       string_wrapper
       string_match_sequence
+      string_match_iterator
       split_string_sequence
       split_with_regexp_iterator
       split_with_string_iterator
