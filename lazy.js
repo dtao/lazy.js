@@ -576,9 +576,6 @@
    */
   Sequence.prototype.min = function() {
     return this.reduce(function(least, value) {
-      if (typeof least === "undefined") {
-        return value;
-      }
       return value < least ? value : least;
     });
   };
@@ -592,9 +589,6 @@
    */
   Sequence.prototype.max = function() {
     return this.reduce(function(greatest, value) {
-      if (typeof greatest === "undefined") {
-        return value;
-      }
       return value > greatest ? value : greatest;
     });
   };
