@@ -9,10 +9,13 @@ def compile_file(output, source_files)
     f.write("\n}(typeof global !== 'undefined' ? global : window));")
   end
 
-  compiled = Closure::Compiler.new.compile(File.read(output))
-  File.open("#{output.chomp('.js')}.min.js", "w") do |f|
-    f.write(compiled)
-  end
+  compiler = Closure::Compiler.new({
+    :js_output_file => "#{output.chomp('.js')}.min.js",
+    :externs        => File.join("lib", "externs.js"),
+    :warning_level  => "VERBOSE"
+  })
+
+  puts compiler.compile_file(output)
 end
 
 namespace :compile do
