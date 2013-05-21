@@ -260,7 +260,7 @@ describe("Lazy", function() {
       expect(result).toEqual(source.match(/\d+/g));
     });
 
-    createAsyncTest("match supports asynchronous iteration", {
+    createAsyncTest("supports asynchronous iteration", {
       getSequence: function() { return Lazy(source).match(/\d+/).async(); },
       expected: ["123", "456"]
     });
@@ -347,12 +347,12 @@ describe("Lazy", function() {
       expect(sons).toEqual([adam, daniel]);
     });
 
-    createAsyncTest("filter supports asynchronous iteration", {
+    createAsyncTest("supports asynchronous iteration", {
       getSequence: function() { return Lazy(people).filter(Person.isMale).async(); },
       expected: function() { return [david, adam, daniel]; }
     });
 
-    createAsyncTest("filter can exit early even when iterating asynchronously", {
+    createAsyncTest("can exit early even when iterating asynchronously", {
       getSequence: function() { return Lazy(people).filter(Person.isMale).async().take(1); },
       expected: function() { return [david]; },
       additionalExpectations: function() { expect(Person.accesses).toBe(1); }
@@ -472,6 +472,11 @@ describe("Lazy", function() {
     it("sorts the result by the specified selector", function() {
       var peopleByName = Lazy(people).sortBy(Person.getName).toArray();
       expect(peopleByName).toEqual([adam, daniel, david, happy, lauren, mary]);
+    });
+
+    createAsyncTest("supports asynchronous iteration", {
+      getSequence: function() { return Lazy(people).sortBy(Person.getName).async(); },
+      expected: function() { return [adam, daniel, david, happy, lauren, mary]; }
     });
   });
 
