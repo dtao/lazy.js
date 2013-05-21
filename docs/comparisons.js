@@ -52,6 +52,8 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     lazy: function(arr) { return Lazy(arr).map(square); },
     underscore: function(arr) { return _(arr).map(square); },
     lodash: function(arr) { return lodash.map(arr, square); },
+    wu: function(arr) { return wu(arr).map(square); },
+    sugar: function(arr) { return arr.map(square); },
     linq: function(arr) { return Enumerable.From(arr).Select(square); },
     jslinq: function(arr) { return JSLINQ(arr).Select(square); },
     from: function(arr) { return from(arr).select(square); },
@@ -65,6 +67,8 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     lazy: function(arr) { return Lazy(arr).filter(isEven); },
     underscore: function(arr) { return _(arr).filter(isEven); },
     lodash: function(arr) { return lodash.filter(arr, isEven); },
+    wu: function(arr) { return wu(arr).filter(isEven); },
+    sugar: function(arr) { return arr.filter(isEven); },
     linq: function(arr) { return Enumerable.From(arr).Where(isEven); },
     jslinq: function(arr) { return JSLINQ(arr).Where(isEven); },
     from: function(arr) { return from(arr).where(isEven); }
@@ -143,6 +147,8 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     lazy: function(arr) { return Lazy(arr).map(inc).filter(isEven); },
     underscore: function(arr) { return _.chain(arr).map(inc).filter(isEven); },
     lodash: function(arr) { return lodash(arr).map(inc).filter(isEven); },
+    wu: function(arr) { return wu(arr).map(inc).filter(isEven); },
+    sugar: function(arr) { return arr.map(inc).filter(isEven); },
     linq: function(arr) { return Enumerable.From(arr).Select(inc).Where(isEven); },
     jslinq: function(arr) { return JSLINQ(arr).Select(inc).Where(isEven); },
     from: function(arr) { return from(arr).select(inc).where(isEven); }
@@ -168,6 +174,11 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     lazy: function(arr) { return Lazy(arr).map(inc).filter(isEven).take(5); },
     underscore: function(arr) { return _.chain(arr).map(inc).filter(isEven).take(5); },
     lodash: function(arr) { return lodash(arr).map(inc).filter(isEven).take(5); },
+    wu: function(arr) {
+      var i = -1;
+      return wu(arr).map(inc).filter(isEven).takeWhile(function() { return ++i < 5; });
+    },
+    sugar: function(arr) { return arr.map(inc).filter(isEven).first(5); },
     linq: function(arr) { return Enumerable.From(arr).Select(inc).Where(isEven).Take(5); },
     from: function(arr) { return from(arr).select(inc).where(isEven).take(5); }
   });

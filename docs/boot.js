@@ -86,6 +86,14 @@
       // Lo-Dash
       new Benchmark(description, function() { options.lodash.apply(this, input); }),
 
+      // Wu.js
+      options.valueOnly ?
+        new Benchmark(description, function() { options.wu.apply(this, input); }) :
+        new Benchmark(description, function() { options.wu.apply(this, input).toArray(); }),
+
+      // Sugar
+      new Benchmark(description, function() { options.sugar.apply(this, input); }),
+
       // Linq.js
       options.valueOnly ?
         new Benchmark(description, function() { options.linq.apply(this, input); }) :
@@ -114,6 +122,16 @@
       // Lo-Dash
       new Benchmark(description, function() {
         lodash.each(options.lodash.apply(this, input), function(e) {});
+      }),
+
+      // Wu.js
+      new Benchmark(description, function() {
+        options.wu.apply(this, input).each(function(e) {});
+      }),
+
+      // Sugar
+      new Benchmark(description, function() {
+        options.sugar.apply(this, input).forEach(function(e) {});
       }),
 
       // Linq.js
@@ -164,6 +182,8 @@
     $("<td>").text(description).appendTo(row);
     $("<td>").addClass("underscore-result").appendTo(row);
     $("<td>").addClass("lodash-result").appendTo(row);
+    $("<td>").addClass("wu-result").appendTo(row);
+    $("<td>").addClass("sugar-result").appendTo(row);
     $("<td>").addClass("linqjs-result").appendTo(row);
     $("<td>").addClass("jslinq-result").appendTo(row);
     $("<td>").addClass("fromjs-result").appendTo(row);
@@ -193,12 +213,15 @@
     var row   = $("#benchmark-result-" + result.benchmarkSetId);
     var style = result.lazy.hz > result.underscore.hz &&
                 result.lazy.hz > result.lodash.hz &&
+                result.lazy.hz > result.wu.hz &&
                 result.lazy.hz > result.linq.hz &&
                 result.lazy.hz > result.jslinq.hz &&
                 result.lazy.hz > result.from.hz ? "positive" : "negative";
 
     addResultToCell(result.underscore.hz, $(".underscore-result", row));
     addResultToCell(result.lodash.hz, $(".lodash-result", row));
+    addResultToCell(result.wu.hz, $(".wu-result", row));
+    addResultToCell(result.sugar.hz, $(".sugar-result", row));
     addResultToCell(result.linq.hz, $(".linqjs-result", row));
     addResultToCell(result.jslinq.hz, $(".jslinq-result", row));
     addResultToCell(result.from.hz, $(".fromjs-result", row));
@@ -276,6 +299,34 @@
             lodashResult = lodashResult.value();
           }
           expect(lazyResult).toEqual(lodashResult);
+        });
+      }
+
+      if (options.wu && !exceptions.contains("wu")) {
+        it("returns the same result as wu.js for '" + description + "'", function() {
+          var lazyResult = options.lazy.apply(this, smallInput);
+          var wuResult = options.wu.apply(this, smallInput);
+          if (typeof lazyResult.toArray === "function") {
+            lazyResult = lazyResult.toArray();
+          }
+          if (typeof wuResult.toArray === "function") {
+            wuResult = wuResult.toArray();
+          }
+          expect(lazyResult).toEqual(wuResult);
+        });
+      }
+
+      if (options.sugar && !exceptions.contains("sugar")) {
+        it("returns the same result as Sugar for '" + description + "'", function() {
+          var lazyResult = options.lazy.apply(this, smallInput);
+          var sugarResult = options.sugar.apply(this, smallInput);
+          if (typeof lazyResult.toArray === "function") {
+            lazyResult = lazyResult.toArray();
+          }
+          if (typeof sugarResult.toArray === "function") {
+            sugarResult = sugarResult.toArray();
+          }
+          expect(lazyResult).toEqual(sugarResult);
         });
       }
 
@@ -420,15 +471,17 @@
         var benchmarkSetId = e.target.benchmarkSetId;
 
         currentResultSet.push(e.target);
-        if (currentResultSet.length === 6) {
+        if (currentResultSet.length === 8) {
           addBenchmarkResultToTable({
             benchmarkSetId: benchmarkSetId,
             lazy: currentResultSet[0],
             underscore: currentResultSet[1],
             lodash: currentResultSet[2],
-            linq: currentResultSet[3],
-            jslinq: currentResultSet[4],
-            from: currentResultSet[5]
+            wu: currentResultSet[3],
+            sugar: currentResultSet[4],
+            linq: currentResultSet[5],
+            jslinq: currentResultSet[6],
+            from: currentResultSet[7]
           });
           markBenchmarkCompleted(benchmarkSetId);
           updateCharts();
