@@ -1,8 +1,6 @@
 (function(context) {
 
-  var Sequence = function(parent) {
-    this.parent = parent;
-  };
+  function Sequence() {}
 
   Sequence.inherit = function(ctor) {
     ctor.prototype = new Sequence();
@@ -35,12 +33,13 @@
     return object;
   };
 
-  Sequence.prototype.map = function(mapFn) {
-    if (this.indexed) {
-      return new IndexedMappedSequence(this, mapFn);
-    } else {
-      return new MappedSequence(this, mapFn);
-    }
+  Sequence.prototype.forEach = function(fn) {
+    this.each(fn);
+  };
+
+  Sequence.prototype.map =
+  Sequence.prototype.collect = function(mapFn) {
+    return new MappedSequence(this, mapFn);
   };
 
   Sequence.prototype.pluck = function(propertyName) {
@@ -55,13 +54,9 @@
     });
   };
 
-  Sequence.prototype.select =
-  Sequence.prototype.filter = function(filterFn) {
-    if (this.indexed) {
-      return new IndexedFilteredSequence(this, filterFn);
-    } else {
-      return new FilteredSequence(this, filterFn);
-    }
+  Sequence.prototype.filter =
+  Sequence.prototype.select = function(filterFn) {
+    return new FilteredSequence(this, filterFn);
   };
 
   Sequence.prototype.reject = function(rejectFn) {
@@ -82,11 +77,7 @@
   };
 
   Sequence.prototype.reverse = function() {
-    if (this.indexed) {
-      return new IndexedReversedSequence(this);
-    } else {
-      return new ReversedSequence(this);
-    }
+    return new ReversedSequence(this);
   };
 
   Sequence.prototype.concat = function() {
@@ -100,11 +91,7 @@
       return getFirst(this);
     }
 
-    if (this.indexed) {
-      return new IndexedTakeSequence(this, count);
-    } else {
-      return new TakeSequence(this, count);
-    }
+    return new TakeSequence(this, count);
   };
 
   Sequence.prototype.initial = function(count) {
@@ -128,11 +115,7 @@
   Sequence.prototype.rest =
   Sequence.prototype.tail =
   Sequence.prototype.drop = function(count) {
-    if (this.indexed) {
-      return new IndexedDropSequence(this, count);
-    } else {
-      return new DropSequence(this, count);
-    }
+    return new DropSequence(this, count);
   };
 
   Sequence.prototype.sortBy = function(sortFn) {
@@ -147,7 +130,8 @@
     return new CountedSequence(this, keyFn);
   };
 
-  Sequence.prototype.uniq = function() {
+  Sequence.prototype.uniq =
+  Sequence.prototype.unique = function() {
     return new UniqueSequence(this);
   };
 
@@ -351,11 +335,64 @@
     return valuesForType && valuesForType["@" + value];
   };
 
-  var ArrayWrapper = Sequence.inherit(function(source) {
+  var IndexedSequence = Sequence.inherit(function() {});
+
+  IndexedSequence.inherit = function(ctor) {
+    ctor.prototype = new IndexedSequence();
+    return ctor;
+  };
+
+  IndexedSequence.prototype.get = function(i) {
+    return this.parent.get(i);
+  };
+
+  IndexedSequence.prototype.length = function() {
+    return this.parent.length();
+  };
+
+  IndexedSequence.prototype.each = function(fn) {
+    var length = this.length(),
+        i = -1;
+    while (++i < length) {
+      if (fn(this.get(i)) === false) {
+        break;
+      }
+    }
+  };
+
+  IndexedSequence.prototype.map =
+  IndexedSequence.prototype.collect = function(mapFn) {
+    return new IndexedMappedSequence(this, mapFn);
+  };
+
+  IndexedSequence.prototype.filter =
+  IndexedSequence.prototype.select = function(filterFn) {
+    return new IndexedFilteredSequence(this, filterFn);
+  };
+
+  IndexedSequence.prototype.reverse = function() {
+    return new IndexedReversedSequence(this);
+  };
+
+  IndexedSequence.prototype.first =
+  IndexedSequence.prototype.head =
+  IndexedSequence.prototype.take = function(count) {
+    if (typeof count === "undefined") {
+      return this.get(0);
+    }
+
+    return new IndexedTakeSequence(this, count);
+  };
+
+  IndexedSequence.prototype.rest =
+  IndexedSequence.prototype.tail =
+  IndexedSequence.prototype.drop = function(count) {
+    return new IndexedDropSequence(this, count);
+  };
+
+  var ArrayWrapper = IndexedSequence.inherit(function(source) {
     this.source = source;
   });
-
-  ArrayWrapper.prototype.indexed = true;
 
   ArrayWrapper.prototype.get = function(i) {
     return this.source[i];
@@ -378,41 +415,12 @@
     return this.source.slice(0);
   };
 
-  var IndexedSequence = Sequence.inherit(function() {});
-
-  IndexedSequence.inherit = function(ctor) {
-    ctor.prototype = new IndexedSequence();
-    return ctor;
-  };
-
-  IndexedSequence.prototype.indexed = true;
-
-  IndexedSequence.prototype.get = function(i) {
-    return this.parent.get(i);
-  };
-
-  IndexedSequence.prototype.length = function() {
-    return this.parent.length();
-  };
-
-  IndexedSequence.prototype.each = function(fn) {
-    var length = this.length(),
-        i = -1;
-    while (++i < length) {
-      if (fn(this.get(i)) === false) {
-        break;
-      }
-    }
-  };
-
   var CachingSequence = Sequence.inherit(function() {});
 
   CachingSequence.inherit = function(ctor) {
     ctor.prototype = new CachingSequence();
     return ctor;
   };
-
-  CachingSequence.prototype.indexed = false;
 
   CachingSequence.prototype.cache = function() {
     if (!this.cached) {
@@ -455,6 +463,10 @@
     this.filterFn = filterFn;
   });
 
+  FilteredSequence.prototype.getIterator = function() {
+    return new FilteringIterator(this.parent, this.filterFn);
+  };
+
   FilteredSequence.prototype.each = function(fn) {
     var filterFn = this.filterFn;
     this.parent.each(function(e) {
@@ -469,6 +481,10 @@
     this.filterFn = filterFn;
   });
 
+  IndexedFilteredSequence.prototype.getIterator = function() {
+    return new FilteringIterator(this.parent, this.filterFn);
+  };
+
   IndexedFilteredSequence.prototype.each = function(fn) {
     var parent = this.parent,
         filterFn = this.filterFn,
@@ -482,6 +498,32 @@
         break;
       }
     }
+  };
+
+  var FilteringIterator = function(sequence, filterFn) {
+    this.iterator = sequence.getIterator();
+    this.filterFn = filterFn;
+  };
+
+  FilteringIterator.prototype.current = function() {
+    return this.value;
+  };
+
+  FilteringIterator.prototype.moveNext = function() {
+    var iterator = this.iterator,
+        filterFn = this.filterFn,
+        value;
+
+    while (iterator.moveNext()) {
+      value = iterator.current();
+      if (filterFn(value)) {
+        this.value = value;
+        return true;
+      }
+    }
+
+    this.value = undefined;
+    return false;
   };
 
   var ReversedSequence = CachingSequence.inherit(function(parent) {
@@ -800,21 +842,37 @@
     }
 
     this.parent = parent;
-    this.interval = interval || 0;
+    this.onNextCallback = getOnNextCallback(interval);
   });
 
   AsyncSequence.prototype.each = function(fn) {
     var iterator = this.parent.getIterator(),
-        interval = this.interval;
+        onNextCallback = this.onNextCallback;
 
     if (iterator.moveNext()) {
-      setTimeout(function iterate() {
+      onNextCallback(function iterate() {
         if (fn(iterator.current()) !== false && iterator.moveNext()) {
-          setTimeout(iterate, interval);
+          onNextCallback(iterate);
         }
-      }, interval);
+      });
     }
   };
+
+  function getOnNextCallback(interval) {
+    if (typeof interval === "undefined") {
+      if (typeof context.setImmediate === "function") {
+        return context.setImmediate;
+      }
+      if (typeof process !== "undefined" && typeof process.nextTick === "function") {
+        return process.nextTick;
+      }
+    }
+
+    interval = interval || 0;
+    return function(fn) {
+      setTimeout(fn, interval);
+    };
+  }
 
   var StringWrapper = function(source) {
     this.source = source;
@@ -867,7 +925,7 @@
 
     return {
       current: function() {
-        return match;
+        return match[0];
       },
 
       moveNext: function() {
@@ -1055,10 +1113,6 @@
   }
 
   function getFirst(sequence) {
-    if (sequence.indexed) {
-      return sequence.get(0);
-    }
-
     var result;
     sequence.each(function(e) {
       result = e;

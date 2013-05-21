@@ -140,19 +140,19 @@ describe("Lazy", function() {
     });
 
     describe("when interval is undefined", function() {
-      if (typeof process !== "undefined" && typeof process.nextTick === "function") {
-        it("in Node.js, uses process.nextTick", function() {
+      if (typeof global !== "undefined" && typeof global.setImmediate === "function") {
+        it("in Node.js, uses setImmediate if available", function() {
           var personCount = 0;
           runs(function() {
-            spyOn(process, "nextTick").andCallThrough();
+            spyOn(global, "setImmediate").andCallThrough();
             Lazy(people).async().each(function() { ++personCount; });
           });
           waitsFor(function() {
             return personCount === people.length;
           });
           runs(function() {
-            expect(process.nextTick).toHaveBeenCalled();
-            expect(process.nextTick.callCount).toBe(6);
+            expect(global.setImmediate).toHaveBeenCalled();
+            expect(global.setImmediate.callCount).toBe(6);
           });
         });
 
