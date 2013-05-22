@@ -371,11 +371,7 @@ describe("Lazy", function() {
     });
 
     it("passes an index along with each element", function() {
-      var indicesAfterFilter = Lazy(people)
-        .filter(Person.isMale)
-        .map(function(x, i) { return i; })
-        .toArray();
-      expect(indicesAfterFilter).toEqual([0, 1, 2]);
+      expect(Lazy(people).filter(Person.isMale)).toPassToEach(1, [0, 1, 2]);
     });
 
     createAsyncTest("supports asynchronous iteration", {
@@ -425,6 +421,10 @@ describe("Lazy", function() {
       var lastPerson = reversed.get(0);
       expect(arraysCreated).toBe(0);
     });
+
+    it("passes an index along with each element", function() {
+      expect(Lazy(people).reverse()).toPassToEach(1, [0, 1, 2, 3, 4, 5]);
+    });
   });
 
   describe("concat", function() {
@@ -453,6 +453,10 @@ describe("Lazy", function() {
       var family = Lazy(people).concat(taos, nickses).toArray();
       expect(family).toEqual([david, mary, lauren, adam, daniel, happy, bill, anne, clifford, louise]);
     });
+
+    it("passes an index along with each element", function() {
+      expect(Lazy(people).concat(taos, nickses)).toPassToEach(1, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    });
   });
 
   describe("take", function() {
@@ -461,6 +465,10 @@ describe("Lazy", function() {
     it("only selects the first N elements from the collection", function() {
       var firstTwo = Lazy(people).take(2).toArray();
       expect(firstTwo).toEqual([david, mary]);
+    });
+
+    it("passes an index along with each element", function() {
+      expect(Lazy(people).take(2)).toPassToEach(1, [0, 1]);
     });
   });
 
@@ -475,6 +483,10 @@ describe("Lazy", function() {
     it("if N is given, selects all but the last N elements from the collection", function() {
       var allButDanAndHappy = Lazy(people).initial(2).toArray();
       expect(allButDanAndHappy).toEqual([david, mary, lauren, adam]);
+    });
+
+    it("passes an index along with each element", function() {
+      expect(Lazy(people).initial(2)).toPassToEach(1, [0, 1, 2, 3]);
     });
   });
 
@@ -621,6 +633,11 @@ describe("Lazy", function() {
       var nested = [[david], [mary], [lauren, adam], [[daniel], happy]];
       var flattened = Lazy(nested).flatten().toArray();
       expect(flattened).toEqual([david, mary, lauren, adam, daniel, happy]);
+    });
+
+    it("passes an index along with each element", function() {
+      var nested = [[david], [mary], [lauren, adam], [[daniel], happy]];
+      expect(Lazy(nested).flatten()).toPassToEach(1, [0, 1, 2, 3, 4, 5]);
     });
   });
 
