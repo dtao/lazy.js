@@ -83,10 +83,11 @@
    *     elements onto a new sequence.
    * @return {Sequence} The new sequence.
    */
-  Sequence.prototype.map =
-  Sequence.prototype.collect = function(mapFn) {
+  Sequence.prototype.map = function(mapFn) {
     return new MappedSequence(this, mapFn);
   };
+
+  Sequence.prototype.collect = Sequence.prototype.map;
 
   /**
    * Creates a new sequence whose values are calculated by accessing the specified
@@ -124,10 +125,11 @@
    *     sequence, which returns true if the element should be included.
    * @return {Sequence} The new sequence.
    */
-  Sequence.prototype.filter =
   Sequence.prototype.select = function(filterFn) {
     return new FilteredSequence(this, filterFn);
   };
+
+  Sequence.prototype.filter = Sequence.prototype.select;
 
   /**
    * Creates a new sequence whose values exclude the elements of this sequence
@@ -197,15 +199,16 @@
    * @result {*} The new sequence (or the first element from this sequence if
    *     no count was given).
    */
-  Sequence.prototype.first =
-  Sequence.prototype.head =
-  Sequence.prototype.take = function(count) {
+  Sequence.prototype.first = function(count) {
     if (typeof count === "undefined") {
       return getFirst(this);
     }
 
     return new TakeSequence(this, count);
   };
+
+  Sequence.prototype.head =
+  Sequence.prototype.take = Sequence.prototype.first;
 
   /**
    * Creates a new sequence comprising all but the last N elements of this
@@ -259,11 +262,12 @@
    *     sequence (defaults to 1).
    * @return {Sequence} The new sequence.
    */
-  Sequence.prototype.rest =
-  Sequence.prototype.tail =
-  Sequence.prototype.drop = function(count) {
+  Sequence.prototype.rest = function(count) {
     return new DropSequence(this, count);
   };
+
+  Sequence.prototype.tail =
+  Sequence.prototype.drop = Sequence.prototype.rest;
 
   /**
    * Creates a new sequence with the same elements as this one, but ordered
@@ -297,10 +301,11 @@
    *
    * @return {Sequence} The new sequence.
    */
-  Sequence.prototype.uniq =
-  Sequence.prototype.unique = function() {
+  Sequence.prototype.uniq = function() {
     return new UniqueSequence(this);
   };
+
+  Sequence.prototype.unique = Sequence.prototype.uniq;
 
   /**
    * Creates a new sequence by combining the elements from this sequence with
@@ -349,14 +354,15 @@
    * Creates a new sequence with all the elements of this sequence that are not
    * also among the specified arguments.
    *
-   * @param {*} The values, or array(s) of values, to be excluded from the
+   * @param {...*} var_args The values, or array(s) of values, to be excluded from the
    *     resulting sequence.
    * @return {Sequence} The new sequence.
    */
-  Sequence.prototype.without =
-  Sequence.prototype.difference = function() {
+  Sequence.prototype.without = function(var_args) {
     return new WithoutSequence(this, Array.prototype.slice.call(arguments, 0));
   };
+
+  Sequence.prototype.difference = Sequence.prototype.without;
 
   /**
    * Creates a new sequence with all the unique elements either in this sequence
@@ -391,8 +397,7 @@
    *     sequence (or the sequence is empty). False if `predicate` returns false
    *     for at least one element.
    */
-  Sequence.prototype.every =
-  Sequence.prototype.all = function(predicate) {
+  Sequence.prototype.every = function(predicate) {
     var success = true;
     this.each(function(e) {
       if (!predicate(e)) {
@@ -402,6 +407,8 @@
     });
     return success;
   };
+
+  Sequence.prototype.all = Sequence.prototype.every;
 
   /**
    * Checks whether at least one element in this sequence satisfies a given
@@ -414,8 +421,7 @@
    *     in the sequence. False if `predicate` returns false for every element (or
    *     the sequence is empty).
    */
-  Sequence.prototype.some =
-  Sequence.prototype.any = function(predicate) {
+  Sequence.prototype.some = function(predicate) {
     if (!predicate) {
       predicate = function() { return true; };
     }
@@ -429,6 +435,8 @@
     });
     return success;
   };
+
+  Sequence.prototype.any = Sequence.prototype.some;
 
   /**
    * Checks whether the sequence has no elements.
@@ -495,7 +503,7 @@
 
     while (lower < upper) {
       i = (lower + upper) >>> 1;
-      if (this.get(i) < value) {
+      if (compare(this.get(i), value) === -1) {
         lower = i + 1;
       } else {
         upper = i;
@@ -522,12 +530,10 @@
    *     in the sequence. For every element, the function will be passed the total
    *     aggregated result thus far and the element itself, and should return a
    *     new aggregated result.
-   * @param {*} memo The starting value to use for the aggregated result.
+   * @param {*=} memo The starting value to use for the aggregated result.
    * @return {*} The result of the aggregation.
    */
-  Sequence.prototype.reduce =
-  Sequence.prototype.inject =
-  Sequence.prototype.foldl = function(aggregator, memo) {
+  Sequence.prototype.reduce = function(aggregator, memo) {
     if (arguments.length < 2) {
       return this.tail().reduce(aggregator, this.head());
     }
@@ -537,6 +543,9 @@
     });
     return memo; 
   };
+
+  Sequence.prototype.inject =
+  Sequence.prototype.foldl = Sequence.prototype.reduce;
 
   /**
    * Aggregates a sequence, from the tail, into a single value according to some
@@ -549,10 +558,11 @@
    * @param {*} memo The starting value to use for the aggregated result.
    * @return {*} The result of the aggregation.
    */
-  Sequence.prototype.reduceRight =
-  Sequence.prototype.foldr = function(aggregator, memo) {
+  Sequence.prototype.reduceRight = function(aggregator, memo) {
     return this.reverse().reduce(aggregator, memo);
   };
+
+  Sequence.prototype.foldr = Sequence.prototype.reduceRight;
 
   /**
    * Seaches for the first element in the sequence satisfying a given predicate.
@@ -562,10 +572,11 @@
    * @return {*} The first element in the sequence for which `predicate` returns
    *     true, or undefined if no such element is found.
    */
-  Sequence.prototype.find =
-  Sequence.prototype.detect = function(predicate) {
+  Sequence.prototype.find = function(predicate) {
     return this.filter(predicate).first();
   };
+
+  Sequence.prototype.detect = Sequence.prototype.find;
 
   /**
    * Gets the minimum value in the sequence.
@@ -674,12 +685,21 @@
   };
 
   /**
+   * A collection of unique elements.
+   *
    * @constructor
    */
   function Set() {
     this.table = {};
   }
 
+  /**
+   * Attempts to add a unique value to the set.
+   *
+   * @param {*} value The value to add.
+   * @return {boolean} True if the value was added to the set (meaning an equal
+   *     value was not already present), or else false.
+   */
   Set.prototype.add = function(value) {
     var table = this.table,
         typeKey = typeof value,
@@ -695,6 +715,12 @@
     return table[typeKey][valueKey] = true;
   };
 
+  /**
+   * Checks whether the set contains a value.
+   *
+   * @param {*} value The value to check for.
+   * @return {boolean} True if the set contains the value, or else false.
+   */
   Set.prototype.contains = function(value) {
     var valuesForType = this.table[typeof value];
     return valuesForType && valuesForType["@" + value];
@@ -1436,6 +1462,13 @@
 
   /*** Useful utility methods ***/
 
+  /**
+   * Creates a Set containing the specified values.
+   *
+   * @param {...*} values One or more values (or array(s) of values) used to
+   *     populate the set.
+   * @return {Set} A new set containing the values passed in.
+   */
   function createSet(values) {
     var set = new Set();
     Lazy(values || []).flatten().each(function(e) {
@@ -1444,6 +1477,15 @@
     return set;
   };
 
+  /**
+   * Compares two elements for sorting purposes.
+   *
+   * @param {*} x The left element to compare.
+   * @param {*} y The right element to compare.
+   * @param {Function=} fn An optional function to call on each element, to get
+   *     the values to compare.
+   * @return {number} 1 if x > y, -1 if x < y, or 0 if x and y are equal.
+   */
   function compare(x, y, fn) {
     if (typeof fn === "function") {
       return compare(fn(x), fn(y));
@@ -1454,15 +1496,6 @@
     }
 
     return x > y ? 1 : -1;
-  }
-
-  function forEach(array, fn) {
-    var i = -1;
-    while (++i < array.length) {
-      if (fn(array[i]) === false) {
-        break;
-      }
-    }
   }
 
   function recursiveForEach(array, fn) {
