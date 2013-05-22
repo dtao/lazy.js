@@ -701,6 +701,10 @@ describe("Lazy", function() {
       var results = Lazy(["__proto__", "constructor", "add", "contains"]).uniq().toArray();
       expect(results).toEqual(["__proto__", "constructor", "add", "contains"]);
     });
+
+    it("passes an index along with each element", function() {
+      expect(Lazy([10, 5, 5, 5, 8, 8]).uniq()).toPassToEach(1, [0, 1, 2]);
+    });
   });
 
   describe("zip", function() {
@@ -724,6 +728,10 @@ describe("Lazy", function() {
         ["Daniel", daniel],
         ["Happy", happy]
       ]);
+    });
+
+    it("passes an index along with each element", function() {
+      expect(Lazy(names).zip(people)).toPassToEach(1, [0, 1, 2, 3, 4, 5]);
     });
   });
 
