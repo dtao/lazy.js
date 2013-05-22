@@ -848,6 +848,10 @@
     return new MappedSequence(this, mapFn);
   };
 
+  ObjectWrapper.prototype.toArray = function() {
+    return this.map(function(v, k) { return [k, v]; }).toArray();
+  };
+
   var CachingSequence = Sequence.inherit(function() {});
 
   CachingSequence.inherit = function(ctor) {
