@@ -104,36 +104,46 @@
     if (window.COMPARE_ALL_LIBS) {
       eachBenchmarks = eachBenchmarks.concat([
         // Wu.js
-        new Benchmark(description, function() {
-          options.wu.apply(this, input).each(function(e) {});
-        }),
+        options.valueOnly ?
+          new Benchmark(description, function() { options.wu.apply(this, input); }) :
+          new Benchmark(description, function() {
+            options.wu.apply(this, input).each(function(e) {});
+          }),
 
         // Sugar
-        new Benchmark(description, function() {
-          options.sugar.apply(this, input).forEach(function(e) {});
-        }),
+        options.valueOnly ?
+          new Benchmark(description, function() { options.sugar.apply(this, input); }) :
+          new Benchmark(description, function() {
+            options.sugar.apply(this, input).forEach(function(e) {});
+          }),
 
         // Linq.js
-        new Benchmark(description, function() {
-          options.linq.apply(this, input).ForEach(function(e) {});
-        }),
+        options.valueOnly ?
+          new Benchmark(description, function() { options.linq.apply(this, input); }) :
+          new Benchmark(description, function() {
+            options.linq.apply(this, input).ForEach(function(e) {});
+          }),
 
         // JSLINQ
-        new Benchmark(description, function() {
-          // JSLINQ doesn't expose a ForEach method like Linq.js; so I'll just
-          // iterate over the resulting array in the fastest way I can think of.
-          var result = options.jslinq.apply(this, input).items,
-              i = -1, e;
+        options.valueOnly ?
+          new Benchmark(description, function() { options.jslinq.apply(this, input); }) :
+          new Benchmark(description, function() {
+            // JSLINQ doesn't expose a ForEach method like Linq.js; so I'll just
+            // iterate over the resulting array in the fastest way I can think of.
+            var result = options.jslinq.apply(this, input).items,
+                i = -1, e;
 
-          // Need to actually access the result for a relatively apples-to-apples
-          // comparison.
-          while (++i < result.length) { e = result[i]; }
-        }),
+            // Need to actually access the result for a relatively apples-to-apples
+            // comparison.
+            while (++i < result.length) { e = result[i]; }
+          }),
 
         // From.js
-        new Benchmark(description, function() {
-          options.from.apply(this, input).each(function(e) {});
-        })
+        options.valueOnly ?
+          new Benchmark(description, function() { options.from.apply(this, input); }) :
+          new Benchmark(description, function() {
+            options.from.apply(this, input).each(function(e) {});
+          })
       ]);
     }
 
