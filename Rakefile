@@ -58,11 +58,6 @@ namespace :compile do
       char_iterator
       init
     ])
-
-    compile_file("lazy.dom.js", %w[
-      event_sequence
-      init_dom
-    ])
   end
 
   desc "Compile README.md to HTML"

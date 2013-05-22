@@ -1,4 +1,4 @@
-(function(context) {
+(function(window) {
 
   var EventSequence = Lazy.Sequence.inherit(function(element, eventName) {
     this.element = element;
@@ -18,8 +18,8 @@
     this.element.addEventListener(this.eventName, listener);
   };
 
-  context.Lazy.events = function(element, eventName) {
+  window.Lazy.events = function(element, eventName) {
     return new EventSequence(element, eventName);
   };
 
-}(typeof global !== 'undefined' ? global : window));
+}(window));
