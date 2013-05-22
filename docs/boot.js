@@ -78,21 +78,27 @@
       ]);
     }
 
-    var eachBenchmarks = options.valueOnly ? toArrayBenchmarks : [
+    var eachBenchmarks = [
       // Lazy.js
-      new Benchmark(description, function() {
-        options.lazy.apply(this, input).each(function(e) {});
-      }),
+      options.valueOnly ?
+        new Benchmark(description, function() { options.lazy.apply(this, input); }) :
+        new Benchmark(description, function() {
+          options.lazy.apply(this, input).each(function(e) {});
+        }),
 
       // Underscore
-      new Benchmark(description, function() {
-        _.each(options.underscore.apply(this, input), function(e) {});
-      }),
+      options.valueOnly ?
+        new Benchmark(description, function() { options.underscore.apply(this, input); }) :
+        new Benchmark(description, function() {
+          _.each(options.underscore.apply(this, input), function(e) {});
+        }),
 
       // Lo-Dash
-      new Benchmark(description, function() {
-        lodash.each(options.lodash.apply(this, input), function(e) {});
-      })
+      options.valueOnly ?
+        new Benchmark(description, function() { options.lodash.apply(this, input); }) :
+        new Benchmark(description, function() {
+          lodash.each(options.lodash.apply(this, input), function(e) {});
+        })
     ];
 
     if (window.COMPARE_ALL_LIBS) {
