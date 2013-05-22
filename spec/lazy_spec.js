@@ -702,6 +702,16 @@ describe("Lazy", function() {
       expect(results).toEqual(["__proto__", "constructor", "add", "contains"]);
     });
 
+    it("correctly distinguishes between distinct objects with the same string representation", function() {
+      var objects, x, y;
+      objects = [
+        x = { toString: function() { return "foo"; } },
+        y = { toString: function() { return "foo"; } }
+      ];
+
+      expect(Lazy(objects).uniq().toArray()).toEqual([x, y]);
+    });
+
     it("passes an index along with each element", function() {
       expect(Lazy([10, 5, 5, 5, 8, 8]).uniq()).toPassToEach(1, [0, 1, 2]);
     });
