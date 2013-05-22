@@ -306,6 +306,11 @@ describe("Lazy", function() {
       var lastName = Lazy(people).map(Person.getName).get(people.length - 1);
       expect(Person.objectsTouched).toEqual(1);
     });
+
+    it("passes an index along with each element", function() {
+      var indices = Lazy(people).map(function(x, i) { return i; }).toArray();
+      expect(indices).toEqual([0, 1, 2, 3, 4, 5]);
+    });
   });
 
   describe("pluck", function() {
@@ -345,6 +350,14 @@ describe("Lazy", function() {
         .filter(function(p) { return p.getName() !== "David"; })
         .toArray();
       expect(sons).toEqual([adam, daniel]);
+    });
+
+    it("passes an index along with each element", function() {
+      var indicesAfterFilter = Lazy(people)
+        .filter(Person.isMale)
+        .map(function(x, i) { return i; })
+        .toArray();
+      expect(indicesAfterFilter).toEqual([0, 1, 2]);
     });
 
     createAsyncTest("supports asynchronous iteration", {
