@@ -1,46 +1,12 @@
 (function() {
   Benchmark.options.maxTime = 1;
 
-  var jasmineEnv = jasmine.getEnv();
-  jasmineEnv.updateInterval = 1000;
-
-  var specReporter = new SpecReporter();
-  jasmineEnv.addReporter(specReporter);
-
   var arrays = {};
   var benchmarksForToArray = {};
   var benchmarksForEach = {};
   var benchmarkResults = {};
 
   window.lodash = _.noConflict();
-
-  function displayCoordinates(element, pos) {
-    element.textContent = "(" + pos.join(", ") + ")";
-  }
-
-  function initializeDomExample() {
-    var sourceElement = document.getElementById("dom-event-source");
-    var leftElement   = document.querySelector("#dom-event-output .left p");
-    var rightElement  = document.querySelector("#dom-event-output .right p");
-
-    var mouseEvents = Lazy.events(sourceElement, "mousemove");
-
-    var coordinates = mouseEvents.map(function(e) {
-      var elementRect = sourceElement.getBoundingClientRect();
-      return [
-        Math.floor(e.clientX - elementRect.left),
-        Math.floor(e.clientY - elementRect.top)
-      ];
-    });
-
-    coordinates
-      .filter(function(pos) { return pos[0] < sourceElement.clientWidth / 2; })
-      .each(function(pos) { displayCoordinates(leftElement, pos); });
-
-    coordinates
-      .filter(function(pos) { return pos[0] > sourceElement.clientWidth / 2; })
-      .each(function(pos) { displayCoordinates(rightElement, pos); });
-  }
 
   function getOrCreateArray(size) {
     if (!arrays[size]) {
@@ -398,9 +364,7 @@
     });
   };
 
-  window.onload = function() {
-    jasmineEnv.execute();
-
+  window.addEventListener("load", function() {
     $("nav ul li a").on("click", function() {
       var link     = $(this);
       var nav      = link.closest("nav");
@@ -533,7 +497,6 @@
       $("#test-results-table tr.success").hide();
     });
 
-    initializeDomExample();
     updateCharts();
-  };
+  });
 })();

@@ -16,6 +16,16 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     return numbers.take(count).toArray();
   }
 
+  function wuTake(arr, count) {
+    var i = -1;
+    return wu(arr).takeWhile(function() { return ++i < count; });
+  }
+
+  function wuDrop(arr, count) {
+    var i = -1;
+    return wu(arr).dropWhile(function() { return ++i < count; });
+  }
+
   var jaggedArray = [
     [1, 2, 3],
     [
@@ -78,6 +88,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     lazy: function(arr) { return Lazy(arr).flatten(); },
     underscore: function(arr) { return _(arr).flatten(); },
     lodash: function(arr) { return lodash.flatten(arr); },
+    sugar: function(arr) { return arr.flatten(); },
     linq: function(arr) { return Enumerable.From(arr).Flatten(); },
     inputs: [[jaggedArray]]
   });
@@ -86,6 +97,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     lazy: function(arr) { return Lazy(arr).uniq(); },
     underscore: function(arr) { return _(arr).uniq(); },
     lodash: function(arr) { return lodash.uniq(arr); },
+    sugar: function(arr) { return arr.unique(); },
     linq: function(arr) { return Enumerable.From(arr).Distinct(); },
     jslinq: function(arr) { return JSLINQ(arr).Distinct(identity); },
     from: function(arr) { return from(arr).distinct(); },
@@ -96,6 +108,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     lazy: function(arr) { return Lazy(arr).uniq(); },
     underscore: function(arr) { return _(arr).uniq(); },
     lodash: function(arr) { return lodash.uniq(arr); },
+    sugar: function(arr) { return arr.unique(); },
     linq: function(arr) { return Enumerable.From(arr).Distinct(); },
     jslinq: function(arr) { return JSLINQ(arr).Distinct(identity); },
     from: function(arr) { return from(arr).distinct(); },
@@ -106,6 +119,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     lazy: function(arr, other) { return Lazy(arr).union(other); },
     underscore: function(arr, other) { return _.union(arr, other); },
     lodash: function(arr, other) { return lodash.union(arr, other); },
+    sugar: function(arr, other) { return arr.union(other); },
     linq: function(arr, other) { return Enumerable.From(arr).Union(other); },
     from: function(arr, other) { return from(arr).union(other); },
     inputs: [[arr(0, 10), arr(5, 15)], [arr(0, 100), arr(50, 150)]]
@@ -115,6 +129,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     lazy: function(arr, other) { return Lazy(arr).intersection(other); },
     underscore: function(arr, other) { return _.intersection(arr, other); },
     lodash: function(arr, other) { return lodash.intersection(arr, other); },
+    sugar: function(arr, other) { return arr.intersect(other); },
     linq: function(arr, other) { return Enumerable.From(arr).Intersect(other); },
     jslinq: function(arr, other) { return JSLINQ(arr).Intersect(other); },
     from: function(arr, other) { return from(arr).intersect(other); },
@@ -125,6 +140,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     lazy: function(arr) { return Lazy(arr).shuffle(); },
     underscore: function(arr) { return _(arr).shuffle(); },
     lodash: function(arr) { return lodash.shuffle(arr); },
+    sugar: function(arr) { return arr.randomize(); },
     linq: function(arr) { return Enumerable.From(arr).Shuffle(); },
     shouldMatch: false
   });
@@ -133,6 +149,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     lazy: function(arr, other) { return Lazy(arr).zip(other); },
     underscore: function(arr, other) { return _(arr).zip(other); },
     lodash: function(arr, other) { return lodash.zip(arr, other); },
+    sugar: function(arr, other) { return arr.zip(other); },
     inputs: [[arr(0, 10), arr(5, 15)], [arr(0, 100), arr(50, 150)]]
   });
 
@@ -140,6 +157,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     lazy: function(arr, value) { return Lazy(arr).map(inc).indexOf(value); },
     underscore: function(arr, value) { return _.chain(arr).map(inc).indexOf(value); },
     lodash: function(arr, value) { return lodash(arr).map(inc).indexOf(value); },
+    sugar: function(arr, value) { return arr.map(inc).indexOf(value); },
     linq: function(arr, value) { return Enumerable.From(arr).Select(inc).IndexOf(value); },
     inputs: [[arr(0, 10), 4], [arr(0, 100), 35]],
     valueOnly: true
@@ -168,6 +186,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     lazy: function(arr) { return Lazy(arr).map(inc).take(5); },
     underscore: function(arr) { return _.chain(arr).map(inc).take(5); },
     lodash: function(arr) { return lodash(arr).map(inc).take(5); },
+    sugar: function(arr) { return arr.map(inc).first(5); },
     linq: function(arr) { return Enumerable.From(arr).Select(inc).Take(5); },
     from: function(arr) { return from(arr).select(inc).take(5); }
   });
@@ -176,6 +195,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     lazy: function(arr) { return Lazy(arr).filter(isEven).take(5); },
     underscore: function(arr) { return _.chain(arr).filter(isEven).first(5); },
     lodash: function(arr) { return lodash(arr).filter(isEven).first(5); },
+    sugar: function(arr) { return arr.filter(isEven).first(5); },
     linq: function(arr) { return Enumerable.From(arr).Where(isEven).Take(5); },
     from: function(arr) { return from(arr).where(isEven).take(5); }
   });
@@ -184,10 +204,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     lazy: function(arr) { return Lazy(arr).map(inc).filter(isEven).take(5); },
     underscore: function(arr) { return _.chain(arr).map(inc).filter(isEven).take(5); },
     lodash: function(arr) { return lodash(arr).map(inc).filter(isEven).take(5); },
-    wu: function(arr) {
-      var i = -1;
-      return wu(arr).map(inc).filter(isEven).takeWhile(function() { return ++i < 5; });
-    },
+    wu: function(arr) { wuTake(wu(arr).map(inc).filter(isEven), 5); },
     sugar: function(arr) { return arr.map(inc).filter(isEven).first(5); },
     linq: function(arr) { return Enumerable.From(arr).Select(inc).Where(isEven).Take(5); },
     from: function(arr) { return from(arr).select(inc).where(isEven).take(5); }
@@ -197,6 +214,8 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     lazy: function(arr) { return Lazy(arr).map(inc).drop(5).take(5); },
     underscore: function(arr) { return _.chain(arr).map(inc).rest(5).take(5); },
     lodash: function(arr) { return lodash(arr).map(inc).rest(5).take(5); },
+    wu: function(arr) { return wuTake(wuDrop(wu(arr).map(inc), 5), 5); },
+    sugar: function(arr) { return arr.map(inc).last(arr.length - 5).first(5); },
     linq: function(arr) { return Enumerable.From(arr).Select(inc).Skip(5).Take(5); },
     from: function(arr) { return from(arr).select(inc).skip(5).take(5); }
   });
@@ -213,6 +232,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     lazy: function(arr) { return Lazy(arr).flatten().take(5); },
     underscore: function(arr) { return _.chain(arr).flatten().first(5); },
     lodash: function(arr) { return lodash(arr).flatten().first(5); },
+    sugar: function(arr) { return arr.flatten().first(5); },
     linq: function(arr) { return Enumerable.From(arr).Flatten().Take(5); },
     inputs: [[jaggedArray]]
   });
@@ -221,6 +241,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     lazy: function(arr) { return Lazy(arr).uniq().take(5); },
     underscore: function(arr) { return _.chain(arr).uniq().first(5); },
     lodash: function(arr) { return lodash(arr).uniq().first(5); },
+    sugar: function(arr) { return arr.unique().first(5); },
     linq: function(arr) { return Enumerable.From(arr).Distinct().Take(5); },
     from: function(arr) { return from(arr).distinct().take(5); },
     inputs: [[dupes(0, 5, 10)], [dupes(0, 10, 100)]]
@@ -230,6 +251,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     lazy: function(arr, other) { return Lazy(arr).union(other).take(5); },
     underscore: function(arr, other) { return _.chain(arr).union(other).first(5); },
     lodash: function(arr, other) { return lodash(arr).union(other).first(5); },
+    sugar: function(arr, other) { return arr.union(other).first(5); },
     linq: function(arr, other) { return Enumerable.From(arr).Union(other).Take(5); },
     from: function(arr, other) { return from(arr).union(other).take(5); },
     inputs: [[arr(0, 10), arr(5, 15)], [arr(0, 100), arr(50, 150)]]
@@ -239,6 +261,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     lazy: function(arr, other) { return Lazy(arr).intersection(other).take(5); },
     underscore: function(arr, other) { return _.chain(arr).intersection(other).first(5); },
     lodash: function(arr, other) { return lodash(arr).intersection(other).first(5); },
+    sugar: function(arr, other) { return arr.intersect(other).first(5); },
     linq: function(arr, other) { return Enumerable.From(arr).Intersect(other).Take(5); },
     from: function(arr, other) { return from(arr).intersect(other).take(5); },
     inputs: [[arr(0, 10), arr(5, 15)], [arr(0, 100), arr(50, 150)]]
@@ -248,6 +271,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     lazy: function(arr, other) { return Lazy(arr).without(other).take(5); },
     underscore: function(arr, other) { return _.chain(arr).difference(other).first(5); },
     lodash: function(arr, other) { return lodash(arr).difference(other).first(5); },
+    sugar: function(arr, other) { return arr.subtract(other).first(5); },
     inputs: [[arr(0, 10), arr(3, 7)], [arr(0, 100), arr(25, 75)]]
   });
 
@@ -255,6 +279,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     lazy: function(arr) { return Lazy(arr).shuffle().take(5); },
     underscore: function(arr) { return _.chain(arr).shuffle().first(5); },
     lodash: function(arr) { return lodash(arr).shuffle().first(5); },
+    sugar: function(arr) { return arr.randomize().first(5); },
     linq: function(arr) { return Enumerable.From(arr).Shuffle().Take(5); },
     shouldMatch: false
   });
@@ -263,6 +288,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     lazy: function(arr, other) { return Lazy(arr).zip(other).take(5); },
     underscore: function(arr, other) { return _.chain(arr).zip(other).first(5); },
     lodash: function(arr, other) { return lodash(arr).zip(other).first(5); },
+    sugar: function(arr, other) { return arr.zip(other).first(5); },
     inputs: [[arr(0, 10), arr(5, 15)], [arr(0, 100), arr(50, 150)]]
   });
 
@@ -270,6 +296,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     lazy: function(arr) { return Lazy(arr).map(inc).any(isEven); },
     underscore: function(arr) { return _.chain(arr).map(inc).any(isEven); },
     lodash: function(arr) { return lodash(arr).map(inc).any(isEven); },
+    sugar: function(arr) { return arr.map(inc).any(isEven); },
     linq: function(arr) { return Enumerable.From(arr).Select(inc).Any(isEven); },
     jslinq: function(arr) { return JSLINQ(arr).Select(inc).Any(isEven); },
     from: function(arr) { return from(arr).select(inc).any(isEven); },
@@ -280,6 +307,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     lazy: function(arr) { return Lazy(arr).map(inc).all(isEven); },
     underscore: function(arr) { return _.chain(arr).map(inc).every(isEven); },
     lodash: function(arr) { return lodash(arr).map(inc).every(isEven); },
+    sugar: function(arr) { return arr.map(inc).all(isEven); },
     linq: function(arr) { return Enumerable.From(arr).Select(inc).All(isEven); },
     jslinq: function(arr) { return JSLINQ(arr).Select(inc).All(isEven); },
     from: function(arr) { return from(arr).select(inc).all(isEven); },
