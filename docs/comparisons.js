@@ -82,7 +82,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     inputs: [[jaggedArray]]
   });
 
-  compareAlternatives("uniq", {
+  compareAlternatives("uniq (mostly duplicates)", {
     lazy: function(arr) { return Lazy(arr).uniq(); },
     underscore: function(arr) { return _(arr).uniq(); },
     lodash: function(arr) { return lodash.uniq(arr); },
@@ -90,6 +90,16 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     jslinq: function(arr) { return JSLINQ(arr).Distinct(identity); },
     from: function(arr) { return from(arr).distinct(); },
     inputs: [[dupes(0, 5, 10)], [dupes(0, 10, 100)]]
+  });
+
+  compareAlternatives("uniq (mostly uniques)", {
+    lazy: function(arr) { return Lazy(arr).uniq(); },
+    underscore: function(arr) { return _(arr).uniq(); },
+    lodash: function(arr) { return lodash.uniq(arr); },
+    linq: function(arr) { return Enumerable.From(arr).Distinct(); },
+    jslinq: function(arr) { return JSLINQ(arr).Distinct(identity); },
+    from: function(arr) { return from(arr).distinct(); },
+    inputs: [[dupes(0, 10, 10)], [dupes(0, 100, 100)]]
   });
 
   compareAlternatives("union", {
