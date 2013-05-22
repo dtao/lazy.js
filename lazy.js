@@ -707,17 +707,17 @@
    */
   Set.prototype.add = function(value) {
     var table = this.table,
-        typeKey = typeof value,
-        valueKey = "@" + value;
+        key = "@" + value;
 
-    if (!table[typeKey]) {
-      table[typeKey] = {};
-      return table[typeKey][valueKey] = true;
+    if (!table[key]) {
+      table[key] = [value];
+      return true;
     }
-    if (table[typeKey][valueKey]) {
+    if (contains(table[key], value)) {
       return false;
     }
-    return table[typeKey][valueKey] = true;
+    table[key].push(value);
+    return true;
   };
 
   /**
@@ -727,8 +727,9 @@
    * @return {boolean} True if the set contains the value, or else false.
    */
   Set.prototype.contains = function(value) {
-    var valuesForType = this.table[typeof value];
-    return valuesForType && valuesForType["@" + value];
+    var key = "@" + value,
+        valuesForKey = this.table[key];
+    return valuesForKey && contains(valuesForKey, value);
   };
 
   var IndexedSequence = Sequence.inherit(function() {});
@@ -1557,6 +1558,22 @@
       return false;
     });
     return result;
+  }
+
+  function contains(array, element) {
+    var i = -1;
+    while (++i < array.length) {
+      if (array[i] === element) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  if (typeof Array.prototype.indexOf === "function") {
+    contains = function(array, element) {
+      return array.indexOf(element) !== -1;
+    }
   }
 
   function swap(array, i, j) {
