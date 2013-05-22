@@ -13,6 +13,13 @@ body {
   }
 }
 
+body.full-comparisons {
+  width: 100%;
+  margin: 0;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
 header {
   height: 60px;
   margin-top: 12px;
@@ -30,7 +37,12 @@ header h1 {
   cursor: default;
 }
 
-header h1:hover {
+header h1 a {
+  color: #444;
+  text-decoration: none;
+}
+
+header h1 a:hover {
   color: #000;
 }
 
@@ -310,12 +322,22 @@ table td {
 
 .benchmark-results-table th,
 .benchmark-results-table td {
-  width: 12.5%;
+  width: 20%;
 }
 
 .benchmark-results-table th:first-child,
 .benchmark-results-table td:first-child {
-  width: 25%;
+  width: 40%;
+}
+
+.full-comparisons .benchmark-results-table th,
+.full-comparisons .benchmark-results-table td {
+  width: 10%;
+}
+
+.full-comparisons .benchmark-results-table th:first-child,
+.full-comparisons .benchmark-results-table td:first-child {
+  width: 20%;
 }
 
 #test-results-table th:first-child,

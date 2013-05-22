@@ -84,29 +84,33 @@
       new Benchmark(description, function() { options.underscore.apply(this, input); }),
 
       // Lo-Dash
-      new Benchmark(description, function() { options.lodash.apply(this, input); }),
-
-      // Wu.js
-      options.valueOnly ?
-        new Benchmark(description, function() { options.wu.apply(this, input); }) :
-        new Benchmark(description, function() { options.wu.apply(this, input).toArray(); }),
-
-      // Sugar
-      new Benchmark(description, function() { options.sugar.apply(this, input); }),
-
-      // Linq.js
-      options.valueOnly ?
-        new Benchmark(description, function() { options.linq.apply(this, input); }) :
-        new Benchmark(description, function() { options.linq.apply(this, input).ToArray(); }),
-
-      // JSLINQ
-      new Benchmark(description, function() { options.jslinq.apply(this, input).ToArray(); }),
-
-      // From.js
-      options.valueOnly ?
-        new Benchmark(description, function() { options.from.apply(this, input); }) :
-        new Benchmark(description, function() { options.from.apply(this, input).toArray(); })
+      new Benchmark(description, function() { options.lodash.apply(this, input); })
     ];
+
+    if (window.COMPARE_ALL_LIBS) {
+      toArrayBenchmarks = toArrayBenchmarks.concat([
+        // Wu.js
+        options.valueOnly ?
+          new Benchmark(description, function() { options.wu.apply(this, input); }) :
+          new Benchmark(description, function() { options.wu.apply(this, input).toArray(); }),
+
+        // Sugar
+        new Benchmark(description, function() { options.sugar.apply(this, input); }),
+
+        // Linq.js
+        options.valueOnly ?
+          new Benchmark(description, function() { options.linq.apply(this, input); }) :
+          new Benchmark(description, function() { options.linq.apply(this, input).ToArray(); }),
+
+        // JSLINQ
+        new Benchmark(description, function() { options.jslinq.apply(this, input).ToArray(); }),
+
+        // From.js
+        options.valueOnly ?
+          new Benchmark(description, function() { options.from.apply(this, input); }) :
+          new Benchmark(description, function() { options.from.apply(this, input).toArray(); })
+      ]);
+    }
 
     var eachBenchmarks = options.valueOnly ? toArrayBenchmarks : [
       // Lazy.js
@@ -122,40 +126,44 @@
       // Lo-Dash
       new Benchmark(description, function() {
         lodash.each(options.lodash.apply(this, input), function(e) {});
-      }),
-
-      // Wu.js
-      new Benchmark(description, function() {
-        options.wu.apply(this, input).each(function(e) {});
-      }),
-
-      // Sugar
-      new Benchmark(description, function() {
-        options.sugar.apply(this, input).forEach(function(e) {});
-      }),
-
-      // Linq.js
-      new Benchmark(description, function() {
-        options.linq.apply(this, input).ForEach(function(e) {});
-      }),
-
-      // JSLINQ
-      new Benchmark(description, function() {
-        // JSLINQ doesn't expose a ForEach method like Linq.js; so I'll just
-        // iterate over the resulting array in the fastest way I can think of.
-        var result = options.jslinq.apply(this, input).items,
-            i = -1, e;
-
-        // Need to actually access the result for a relatively apples-to-apples
-        // comparison.
-        while (++i < result.length) { e = result[i]; }
-      }),
-
-      // From.js
-      new Benchmark(description, function() {
-        options.from.apply(this, input).each(function(e) {});
       })
     ];
+
+    if (window.COMPARE_ALL_LIBS) {
+      eachBenchmarks = eachBenchmarks.concat([
+        // Wu.js
+        new Benchmark(description, function() {
+          options.wu.apply(this, input).each(function(e) {});
+        }),
+
+        // Sugar
+        new Benchmark(description, function() {
+          options.sugar.apply(this, input).forEach(function(e) {});
+        }),
+
+        // Linq.js
+        new Benchmark(description, function() {
+          options.linq.apply(this, input).ForEach(function(e) {});
+        }),
+
+        // JSLINQ
+        new Benchmark(description, function() {
+          // JSLINQ doesn't expose a ForEach method like Linq.js; so I'll just
+          // iterate over the resulting array in the fastest way I can think of.
+          var result = options.jslinq.apply(this, input).items,
+              i = -1, e;
+
+          // Need to actually access the result for a relatively apples-to-apples
+          // comparison.
+          while (++i < result.length) { e = result[i]; }
+        }),
+
+        // From.js
+        new Benchmark(description, function() {
+          options.from.apply(this, input).each(function(e) {});
+        })
+      ]);
+    }
 
     // We'll use the same benchmark to ID all of these as that's how we
     // reference a set of benchmarks from the table.
@@ -182,15 +190,19 @@
     $("<td>").text(description).appendTo(row);
     $("<td>").addClass("underscore-result").appendTo(row);
     $("<td>").addClass("lodash-result").appendTo(row);
-    $("<td>").addClass("wu-result").appendTo(row);
-    $("<td>").addClass("sugar-result").appendTo(row);
-    $("<td>").addClass("linqjs-result").appendTo(row);
-    $("<td>").addClass("jslinq-result").appendTo(row);
-    $("<td>").addClass("fromjs-result").appendTo(row);
+
+    if (window.COMPARE_ALL_LIBS) {
+      $("<td>").addClass("wu-result").appendTo(row);
+      $("<td>").addClass("sugar-result").appendTo(row);
+      $("<td>").addClass("linqjs-result").appendTo(row);
+      $("<td>").addClass("jslinq-result").appendTo(row);
+      $("<td>").addClass("fromjs-result").appendTo(row);
+    }
+
     $("<td>").addClass("lazy-result").appendTo(row);
   }
 
-  function addResultToCell(result, cell, additionalStyles) {
+  function addResultToCell(result, cell, fastestResult) {
     if (result === 0.0) {
       cell.addClass("not-applicable");
       cell.text("N/A");
@@ -204,28 +216,29 @@
     }
     cell.text(parts.join("."));
 
-    if (additionalStyles) {
-      cell.addClass(additionalStyles);
+    if (result === fastestResult) {
+      cell.addClass("positive");
     }
   }
 
   function addBenchmarkResultToTable(result) {
-    var row   = $("#benchmark-result-" + result.benchmarkSetId);
-    var style = result.lazy.hz > result.underscore.hz &&
-                result.lazy.hz > result.lodash.hz &&
-                result.lazy.hz > result.wu.hz &&
-                result.lazy.hz > result.linq.hz &&
-                result.lazy.hz > result.jslinq.hz &&
-                result.lazy.hz > result.from.hz ? "positive" : "negative";
+    var row = $("#benchmark-result-" + result.benchmarkSetId);
 
-    addResultToCell(result.underscore.hz, $(".underscore-result", row));
-    addResultToCell(result.lodash.hz, $(".lodash-result", row));
-    addResultToCell(result.wu.hz, $(".wu-result", row));
-    addResultToCell(result.sugar.hz, $(".sugar-result", row));
-    addResultToCell(result.linq.hz, $(".linqjs-result", row));
-    addResultToCell(result.jslinq.hz, $(".jslinq-result", row));
-    addResultToCell(result.from.hz, $(".fromjs-result", row));
-    addResultToCell(result.lazy.hz, $(".lazy-result", row), style);
+    var fastestResult = Lazy(result)
+      .filter(function(data, key) { return !!data.hz; })
+      .map(function(data, key) { return data.hz; })
+      .max();
+
+    addResultToCell(result.underscore.hz, $(".underscore-result", row), fastestResult);
+    addResultToCell(result.lodash.hz, $(".lodash-result", row), fastestResult);
+    if (window.COMPARE_ALL_LIBS) {
+      addResultToCell(result.wu.hz, $(".wu-result", row), fastestResult);
+      addResultToCell(result.sugar.hz, $(".sugar-result", row), fastestResult);
+      addResultToCell(result.linq.hz, $(".linqjs-result", row), fastestResult);
+      addResultToCell(result.jslinq.hz, $(".jslinq-result", row), fastestResult);
+      addResultToCell(result.from.hz, $(".fromjs-result", row), fastestResult);
+    }
+    addResultToCell(result.lazy.hz, $(".lazy-result", row), fastestResult);
   }
 
   function clearRow(row) {
@@ -302,7 +315,7 @@
         });
       }
 
-      if (options.wu && !exceptions.contains("wu")) {
+      if (options.wu && !exceptions.contains("wu") && window.COMPARE_ALL_LIBS) {
         it("returns the same result as wu.js for '" + description + "'", function() {
           var lazyResult = options.lazy.apply(this, smallInput);
           var wuResult = options.wu.apply(this, smallInput);
@@ -316,7 +329,7 @@
         });
       }
 
-      if (options.sugar && !exceptions.contains("sugar")) {
+      if (options.sugar && !exceptions.contains("sugar") && window.COMPARE_ALL_LIBS) {
         it("returns the same result as Sugar for '" + description + "'", function() {
           var lazyResult = options.lazy.apply(this, smallInput);
           var sugarResult = options.sugar.apply(this, smallInput);
@@ -330,7 +343,7 @@
         });
       }
 
-      if (options.linq && !exceptions.contains("linq")) {
+      if (options.linq && !exceptions.contains("linq") && window.COMPARE_ALL_LIBS) {
         it("returns the same result as linq.js for '" + description + "'", function() {
           var lazyResult = options.lazy.apply(this, smallInput);
           var linqResult = options.linq.apply(this, smallInput);
@@ -344,7 +357,7 @@
         });
       }
 
-      if (options.jslinq && !exceptions.contains("jslinq")) {
+      if (options.jslinq && !exceptions.contains("jslinq") && window.COMPARE_ALL_LIBS) {
         it("returns the same result as JSLINQ for '" + description + "'", function() {
           var lazyResult = options.lazy.apply(this, smallInput);
           var jslinqResult = options.jslinq.apply(this, smallInput);
@@ -358,7 +371,7 @@
         });
       }
 
-      if (options.from && !exceptions.contains("from")) {
+      if (options.from && !exceptions.contains("from") && window.COMPARE_ALL_LIBS) {
         it("returns the same result as from.js for '" + description + "'", function() {
           var lazyResult = options.lazy.apply(this, smallInput);
           var fromResult = options.from.apply(this, smallInput);
@@ -464,25 +477,34 @@
       // No benchmarks selected
       if (benchmarkSuite.length === 0) {
         finishedLoading();
+        return false;
       }
+
+      var resultsPerBenchmark = window.COMPARE_ALL_LIBS ? 8 : 3;
 
       var currentResultSet = [];
       benchmarkSuite.on("cycle", function(e) {
         var benchmarkSetId = e.target.benchmarkSetId;
+        var benchmarkResults;
 
         currentResultSet.push(e.target);
-        if (currentResultSet.length === 8) {
-          addBenchmarkResultToTable({
+        if (currentResultSet.length === resultsPerBenchmark) {
+          benchmarkResults = {
             benchmarkSetId: benchmarkSetId,
             lazy: currentResultSet[0],
             underscore: currentResultSet[1],
-            lodash: currentResultSet[2],
-            wu: currentResultSet[3],
-            sugar: currentResultSet[4],
-            linq: currentResultSet[5],
-            jslinq: currentResultSet[6],
-            from: currentResultSet[7]
-          });
+            lodash: currentResultSet[2]
+          };
+
+          if (window.COMPARE_ALL_LIBS) {
+            benchmarkResults.wu = currentResultSet[3];
+            benchmarkResults.sugar = currentResultSet[4];
+            benchmarkResults.linq = currentResultSet[5];
+            benchmarkResults.jslinq = currentResultSet[6];
+            benchmarkResults.from = currentResultSet[7];
+          }
+
+          addBenchmarkResultToTable(benchmarkResults);
           markBenchmarkCompleted(benchmarkSetId);
           updateCharts();
           currentResultSet = [];
