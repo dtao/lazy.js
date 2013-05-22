@@ -538,10 +538,10 @@
       return this.tail().reduce(aggregator, this.head());
     }
 
-    this.each(function(e) {
-      memo = aggregator(memo, e);
+    this.each(function(e, i) {
+      memo = aggregator(memo, e, i);
     });
-    return memo; 
+    return memo;
   };
 
   Sequence.prototype.inject =
@@ -559,7 +559,12 @@
    * @return {*} The result of the aggregation.
    */
   Sequence.prototype.reduceRight = function(aggregator, memo) {
-    return this.reverse().reduce(aggregator, memo);
+    // This bothers me... but frankly, calling reverse().reduce() is potentially
+    // going to eagerly evaluate the sequence anyway; so it's really not an issue.
+    var i = this.length() - 1;
+    return this.reverse().reduce(function(m, e) {
+      return aggregator(m, e, i--);
+    }, memo);
   };
 
   Sequence.prototype.foldr = Sequence.prototype.reduceRight;
@@ -745,7 +750,7 @@
     var length = this.length(),
         i = -1;
     while (++i < length) {
-      if (fn(this.get(i)) === false) {
+      if (fn(this.get(i), i) === false) {
         break;
       }
     }
@@ -796,7 +801,7 @@
   ArrayWrapper.prototype.each = function(fn) {
     var i = -1;
     while (++i < this.source.length) {
-      if (fn(this.source[i]) === false) {
+      if (fn(this.source[i], i) === false) {
         break;
       }
     }
@@ -835,8 +840,8 @@
 
   MappedSequence.prototype.each = function(fn) {
     var mapFn = this.mapFn;
-    this.parent.each(function(e) {
-      return fn(mapFn(e));
+    this.parent.each(function(e, i) {
+      return fn(mapFn(e, i), i);
     });
   };
 
@@ -846,7 +851,7 @@
   });
 
   IndexedMappedSequence.prototype.get = function(i) {
-    return this.mapFn(this.parent.get(i));
+    return this.mapFn(this.parent.get(i), i);
   };
 
   var FilteredSequence = CachingSequence.inherit(function(parent, filterFn) {
@@ -859,10 +864,11 @@
   };
 
   FilteredSequence.prototype.each = function(fn) {
-    var filterFn = this.filterFn;
-    this.parent.each(function(e) {
-      if (filterFn(e)) {
-        return fn(e);
+    var filterFn = this.filterFn,
+        j = 0;
+    this.parent.each(function(e, i) {
+      if (filterFn(e, i)) {
+        return fn(e, j++);
       }
     });
   };
@@ -881,11 +887,12 @@
         filterFn = this.filterFn,
         length = this.parent.length(),
         i = -1,
+        j = 0,
         e;
 
     while (++i < length) {
       e = parent.get(i);
-      if (filterFn(e) && fn(e) === false) {
+      if (filterFn(e, i) && fn(e, j++) === false) {
         break;
       }
     }
@@ -948,17 +955,22 @@
   });
 
   ConcatenatedSequence.prototype.each = function(fn) {
-    var done = false;
+    var done = false,
+        i = 0;
 
     this.parent.each(function(e) {
-      if (fn(e) === false) {
+      if (fn(e, i++) === false) {
         done = true;
         return false;
       }
     });
 
     if (!done) {
-      Lazy(this.arrays).flatten().each(fn);
+      Lazy(this.arrays).flatten().each(function(e) {
+        if (fn(e, i++) === false) {
+          return false;
+        }
+      });
     }
   };
 
@@ -1028,7 +1040,7 @@
     sorted.sort(function(x, y) { return compare(x, y, sortFn); });
 
     while (++i < sorted.length) {
-      if (fn(sorted[i]) === false) {
+      if (fn(sorted[i], i) === false) {
         break;
       }
     }
@@ -1041,15 +1053,16 @@
   ShuffledSequence.prototype.each = function(fn) {
     var shuffled = this.parent.toArray(),
         floor = Math.floor,
-        random = Math.random;
+        random = Math.random,
+        j = 0;
 
     for (var i = shuffled.length - 1; i > 0; --i) {
       swap(shuffled, i, floor(random() * i) + 1);
-      if (fn(shuffled[i]) === false) {
+      if (fn(shuffled[i], j++) === false) {
         return;
       }
     }
-    fn(shuffled[0]);
+    fn(shuffled[0], j);
   };
 
   // TODO: This should really return an object, not an jagged array. Will
@@ -1096,10 +1109,11 @@
   });
 
   UniqueSequence.prototype.each = function(fn) {
-    var set = new Set();
+    var set = new Set(),
+        i = 0;
     this.parent.each(function(e) {
       if (set.add(e)) {
-        return fn(e);
+        return fn(e, i++);
       }
     });
   };
@@ -1109,11 +1123,15 @@
   });
 
   FlattenedSequence.prototype.each = function(fn) {
+    // Hack: store the index in a tiny array so we can increment it from outside
+    // this function.
+    var index = [0];
+
     this.parent.each(function(e) {
       if (e instanceof Array) {
-        return recursiveForEach(e, fn);
+        return recursiveForEach(e, fn, index);
       } else {
-        return fn(e);
+        return fn(e, index[0]++);
       }
     });
   };
@@ -1124,10 +1142,11 @@
   });
 
   WithoutSequence.prototype.each = function(fn) {
-    var set = createSet(this.values);
+    var set = createSet(this.values),
+        i = 0;
     this.parent.each(function(e) {
       if (!set.contains(e)) {
-        return fn(e);
+        return fn(e, i++);
       }
     });
   };
@@ -1139,12 +1158,13 @@
 
   UnionSequence.prototype.each = function(fn) {
     var set = {},
+        i = 0,
         done = false;
 
     this.parent.each(function(e) {
       if (!set[e]) {
         set[e] = true;
-        if (fn(e) === false) {
+        if (fn(e, i++) === false) {
           done = true;
           return false;
         }
@@ -1160,7 +1180,7 @@
         Lazy(array).each(function(e) {
           if (!set[e]) {
             set[e] = true;
-            if (fn(e) === false) {
+            if (fn(e, i++) === false) {
               done = true;
               return false;
             }
@@ -1180,13 +1200,15 @@
       .map(function(values) { return createSet(values); })
       .toArray();
 
+    var i = 0;
     this.parent.each(function(e) {
-      for (var i = 0; i < sets.length; ++i) {
-        if (!sets[i].contains(e)) {
+      var j = -1;
+      while (++j < sets.length) {
+        if (!sets[j].contains(e)) {
           return;
         }
       }
-      return fn(e);
+      return fn(e, i++);
     });
   };
 
@@ -1205,8 +1227,7 @@
           group.push(arrays[j][i]);
         }
       }
-      ++i;
-      return fn(group);
+      return fn(group, i++);
     });
   };
 
@@ -1498,19 +1519,35 @@
     return x > y ? 1 : -1;
   }
 
-  function recursiveForEach(array, fn) {
+  /**
+   * Iterates over every individual element in an array of arrays (of arrays...).
+   *
+   * @param {Array} array The outermost array.
+   * @param {Function} fn The function to call on every element, which can return
+   *     false to stop the iteration early.
+   * @param {Array=} index An optional counter container, to keep track of the
+   *     current index.
+   * @return {boolean} True if every element in the entire sequence was iterated,
+   *     otherwise false.
+   */
+  function recursiveForEach(array, fn, index) {
+    // It's easier to ensure this is initialized than to add special handling
+    // in case it isn't.
+    index = index || [0];
+
     var i = -1;
     while (++i < array.length) {
       if (array[i] instanceof Array) {
-        if (recursiveForEach(array[i], fn) === false) {
+        if (recursiveForEach(array[i], fn, index) === false) {
           return false;
         }
       } else {
-        if (fn(array[i]) === false) {
+        if (fn(array[i], index[0]++) === false) {
           return false;
         }
       }
     }
+    return true;
   }
 
   function getFirst(sequence) {

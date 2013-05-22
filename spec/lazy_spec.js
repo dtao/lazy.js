@@ -858,6 +858,13 @@ describe("Lazy", function() {
         });
       expect(familyAcronym).toEqual("DMLADH");
     });
+
+    it("passes the index of each element into the accumulator function", function() {
+      var sumOfIndices = Lazy(people).reduce(function(sum, p, i) {
+        return sum + i;
+      }, 0);
+      expect(sumOfIndices).toEqual(0 + 1 + 2 + 3 + 4 + 5);
+    });
   });
 
   describe("reduceRight", function() {
@@ -867,6 +874,13 @@ describe("Lazy", function() {
         return array;
       }, []);
       expect(firstInitials).toEqual(["H", "D", "A", "L", "M", "D"]);
+    });
+
+    it("passes indices in reverse order", function() {
+      var sumOfIndices = Lazy(people).reduceRight(function(str, p, i) {
+        return str + i;
+      }, "");
+      expect(sumOfIndices).toEqual("543210");
     });
   });
 
