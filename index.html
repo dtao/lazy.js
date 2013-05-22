@@ -10,30 +10,28 @@
   <script type="text/javascript" src="docs/lib/benchmark.js"></script>
   <script type="text/javascript" src="docs/lib/underscore.js"></script>
   <script type="text/javascript" src="docs/lib/lodash.js"></script>
-  <script type="text/javascript" src="docs/lib/linq.js"></script>
-  <script type="text/javascript" src="docs/lib/jslinq.js"></script>
-  <script type="text/javascript" src="docs/lib/from.js"></script>
   <script type="text/javascript" src="docs/lib/jquery.js"></script>
   <script type="text/javascript" src="docs/lib/highcharts.js"></script>
   <script type="text/javascript" src="docs/lib/hightables.js"></script>
   <script type="text/javascript" src="docs/lib/jquery.treetable.js"></script>
   <script type="text/javascript" src="docs/spec_reporter.js"></script>
+  <script type="text/javascript" src="docs/dom_example.js"></script>
   <script type="text/javascript" src="docs/boot.js"></script>
+  <script type="text/javascript" src="docs/specs.js"></script>
 
-  <!-- include source files here... -->
+  <!-- source files -->
   <script type="text/javascript" src="lazy.js"></script>
   <script type="text/javascript" src="lazy.dom.js"></script>
 
-  <!-- include spec files here... -->
+  <!-- spec files -->
   <script type="text/javascript" src="spec/support/person.js"></script>
   <script type="text/javascript" src="spec/lazy_spec.js"></script>
   <script type="text/javascript" src="docs/comparisons.js"></script>
-
 </head>
 
 <body>
   <header>
-    <h1>lazy.js</h1>
+    <h1><a href="index.html">lazy.js</a></h1>
     <a href="https://github.com/dtao/lazy.js" class="github-ribbon"></a>
   </header>
 
@@ -333,10 +331,9 @@
       <label><input id="test-to-array" type="radio"><code>toArray</code></input></label>
       <a class="why-to-array-vs-each" href="javascript:void(0);">(why?)</a>, and
       <button class="start-benchmarking">start benchmarking</button>
-      to compare Lazy.js, Underscore, Lo-Dash,
-      <a href="http://linqjs.codeplex.com/">Linq.js</a>,
-      <a href="http://jslinq.codeplex.com/">JSLINQ</a>, and
-      <a href="https://github.com/suckgamoni/fromjs/">From.js</a>.
+      to compare Lazy.js, Underscore, and Lo-Dash. For a more comprehensive comparison of several
+      more libraries that accomplish similar goals, see the
+      <a href="comparisons.html">comparisons</a> page.
     </form>
 
     <div id="why-to-array-vs-each">
@@ -380,9 +377,6 @@
           <th>Test</th>
           <th>Underscore</th>
           <th>Lo-Dash</th>
-          <th>Linq.js</th>
-          <th>JSLINQ</th>
-          <th>From.js</th>
           <th>Lazy.js</th>
         </tr>
       </table>
@@ -412,9 +406,6 @@
           <th>Test</th>
           <th>Underscore</th>
           <th>Lo-Dash</th>
-          <th>Linq.js</th>
-          <th>JSLINQ</th>
-          <th>From.js</th>
           <th>Lazy.js</th>
         </tr>
       </table>
@@ -444,9 +435,6 @@
           <th>Test</th>
           <th>Underscore</th>
           <th>Lo-Dash</th>
-          <th>Linq.js</th>
-          <th>JSLINQ</th>
-          <th>From.js</th>
           <th>Lazy.js</th>
         </tr>
       </table>

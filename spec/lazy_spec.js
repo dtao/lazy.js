@@ -27,25 +27,56 @@ describe("Lazy", function() {
 
     Person.reset(people);
 
-    this.addMatchers({
-      toMatchSequentially: function(expected) {
-        var success = true,
-            i = 0;
+    arraysCreated = 0;
+  });
 
-        this.actual.each(function(e) {
-          expect(e).toEqual(expected[i++]);
+  beforeEach(function() {
+    this.addMatchers({
+      toPassToEach: function(argumentIndex, expectedValues) {
+        var i = 0;
+        this.actual.each(function() {
+          expect(arguments[argumentIndex]).toEqual(expectedValues[i++]);
         });
-        return success && expected.length === i;
+        return true;
       }
     });
-
-    arraysCreated = 0;
   });
 
   function ensureLaziness(action) {
     it("doesn't eagerly iterate the collection", function() {
       action();
       expect(Person.accesses).toBe(0);
+    });
+  }
+
+  function createAsyncTest(description, options) {
+    it(description, function() {
+      var results = [];
+
+      // This can be a function, in case what we want to expect is not defined at the time
+      // createAsyncTest is called.
+      var expected = typeof options.expected === "function" ?
+        options.expected() :
+        options.expected;
+
+      runs(function() {
+        options.getSequence().each(function(e) { results.push(e); });
+
+        // Should not yet be populated.
+        expect(results.length).toBe(0);
+      });
+
+      waitsFor(function() {
+        return results.length === expected.length;
+      });
+
+      runs(function() {
+        expect(results).toEqual(expected);
+      });
+
+      if (options.additionalExpectations) {
+        runs(options.additionalExpectations);
+      }
     });
   }
 
@@ -110,6 +141,80 @@ describe("Lazy", function() {
     });
   });
 
+  describe("async", function() {
+    createAsyncTest("creates a sequence that can be iterated over asynchronously", {
+      getSequence: function() { return Lazy(people).async().map(Person.getName); },
+      expected: ["David", "Mary", "Lauren", "Adam", "Daniel", "Happy"]
+    });
+
+    it("cannot be called on an already-asynchronous sequence", function() {
+      expect(function() { Lazy(people).async().async(); }).toThrow();
+    });
+
+    describe("when interval is undefined", function() {
+      if (typeof global !== "undefined" && typeof global.setImmediate === "function") {
+        it("in Node.js, uses setImmediate if available", function() {
+          var personCount = 0;
+          runs(function() {
+            spyOn(global, "setImmediate").andCallThrough();
+            Lazy(people).async().each(function() { ++personCount; });
+          });
+          waitsFor(function() {
+            return personCount === people.length;
+          });
+          runs(function() {
+            expect(global.setImmediate).toHaveBeenCalled();
+            expect(global.setImmediate.callCount).toBe(6);
+          });
+        });
+
+      } else if (typeof process !== "undefined" && typeof process.nextTick === "function") {
+        it("in Node.js, uses process.nextTick if setImmediate is not available", function() {
+          var personCount = 0;
+          runs(function() {
+            spyOn(process, "nextTick").andCallThrough();
+            Lazy(people).async().each(function() { ++personCount; });
+          });
+          waitsFor(function() {
+            return personCount === people.length;
+          });
+          runs(function() {
+            expect(process.nextTick).toHaveBeenCalled();
+            expect(process.nextTick.callCount).toBe(6);
+          });
+        });
+
+      } else {
+        var originalSetImmediate = window.setImmediate;
+
+        beforeEach(function() {
+          window.setImmediate = window.setImmediate || function(fn) {
+            window.setTimeout(fn, 0);
+          };
+        });
+
+        afterEach(function() {
+          window.setImmediate = originalSetImmediate;
+        });
+
+        it("in a browser environment, uses window.setImmediate (if available)", function() {
+          var personCount = 0;
+          runs(function() {
+            spyOn(window, "setImmediate").andCallThrough();
+            Lazy(people).async().each(function() { ++personCount; });
+          });
+          waitsFor(function() {
+            return personCount === people.length;
+          });
+          runs(function() {
+            expect(window.setImmediate).toHaveBeenCalled();
+            expect(window.setImmediate.callCount).toBe(6);
+          });
+        });
+      }
+    });
+  });
+
   describe("split", function() {
     var values = Lazy.range(10).join(", ");
 
@@ -142,31 +247,20 @@ describe("Lazy", function() {
       var result = Lazy("foo").split(/(?:)/).toArray();
       expect(result).toEqual(["f", "o", "o"]);
     });
-  });
 
-  describe("async", function() {
-    it("creates a sequence that can be iterated over asynchronously", function() {
-      var names = [];
-
-      runs(function() {
-        Lazy(people).async().map(Person.getName).each(function(name) {
-          names.push(name);
-        });
-
-        expect(names.length).toBe(0);
-      });
-
-      waitsFor(function() {
-        return names.length === people.length;
-      });
-
-      runs(function() {
-        expect(names).toEqual(["David", "Mary", "Lauren", "Adam", "Daniel", "Happy"]);
-      });
+    createAsyncTest("split(string) supports asynchronous iteration", {
+      getSequence: function() { return Lazy(values).split(", ").async(); },
+      expected: values.split(", ")
     });
 
-    it("cannot be called on an already-asynchronous sequence", function() {
-      expect(function() { Lazy(people).async().async(); }).toThrow();
+    createAsyncTest("split(regexp) supports asynchronous iteration", {
+      getSequence: function() { return Lazy(values).split(/,\s*/).async(); },
+      expected: values.split(/,\s*/)
+    });
+
+    createAsyncTest("split('') supports asynchronous iteration", {
+      getSequence: function() { return Lazy(values).split("").async(); },
+      expected: values.split("")
     });
   });
 
@@ -176,6 +270,11 @@ describe("Lazy", function() {
     it("returns a sequence that will iterate every match in the string", function() {
       var result = Lazy(source).match(/\d+/).toArray();
       expect(result).toEqual(source.match(/\d+/g));
+    });
+
+    createAsyncTest("supports asynchronous iteration", {
+      getSequence: function() { return Lazy(source).match(/\d+/).async(); },
+      expected: ["123", "456"]
     });
   });
 
@@ -191,6 +290,19 @@ describe("Lazy", function() {
         "Daniel": daniel,
         "Happy": happy
       });
+    });
+  });
+
+  describe("toArray", function() {
+    it("for an object, creates an array of key/value pairs", function() {
+      var pairs = Lazy({ foo: "FOO", bar: "BAR" }).toArray();
+      expect(pairs).toEqual([["foo", "FOO"], ["bar", "BAR"]]);
+    })
+  });
+
+  describe("each", function() {
+    it("passes an index along with each element", function() {
+      expect(Lazy(people)).toPassToEach(1, [0, 1, 2, 3, 4, 5]);
     });
   });
 
@@ -218,6 +330,18 @@ describe("Lazy", function() {
     it("does not require iteration to index into the collection", function() {
       var lastName = Lazy(people).map(Person.getName).get(people.length - 1);
       expect(Person.objectsTouched).toEqual(1);
+    });
+
+    it("can also map objects", function() {
+      var keyValuePairs = Lazy({ foo: "FOO", bar: "BAR" })
+        .map(function(v, k) { return [k, v]; })
+        .toArray();
+      expect(keyValuePairs).toEqual([["foo", "FOO"], ["bar", "BAR"]]);
+    });
+
+    it("passes an index along with each element", function() {
+      var indices = Lazy(people).map(function(x, i) { return i; }).toArray();
+      expect(indices).toEqual([0, 1, 2, 3, 4, 5]);
     });
   });
 
@@ -259,6 +383,21 @@ describe("Lazy", function() {
         .toArray();
       expect(sons).toEqual([adam, daniel]);
     });
+
+    it("passes an index along with each element", function() {
+      expect(Lazy(people).filter(Person.isMale)).toPassToEach(1, [0, 1, 2]);
+    });
+
+    createAsyncTest("supports asynchronous iteration", {
+      getSequence: function() { return Lazy(people).filter(Person.isMale).async(); },
+      expected: function() { return [david, adam, daniel]; }
+    });
+
+    createAsyncTest("can exit early even when iterating asynchronously", {
+      getSequence: function() { return Lazy(people).filter(Person.isMale).async().take(1); },
+      expected: function() { return [david]; },
+      additionalExpectations: function() { expect(Person.accesses).toBe(1); }
+    });
   });
 
   describe("reject", function() {
@@ -296,6 +435,10 @@ describe("Lazy", function() {
       var lastPerson = reversed.get(0);
       expect(arraysCreated).toBe(0);
     });
+
+    it("passes an index along with each element", function() {
+      expect(Lazy(people).reverse()).toPassToEach(1, [0, 1, 2, 3, 4, 5]);
+    });
   });
 
   describe("concat", function() {
@@ -324,6 +467,10 @@ describe("Lazy", function() {
       var family = Lazy(people).concat(taos, nickses).toArray();
       expect(family).toEqual([david, mary, lauren, adam, daniel, happy, bill, anne, clifford, louise]);
     });
+
+    it("passes an index along with each element", function() {
+      expect(Lazy(people).concat(taos, nickses)).toPassToEach(1, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    });
   });
 
   describe("take", function() {
@@ -332,6 +479,10 @@ describe("Lazy", function() {
     it("only selects the first N elements from the collection", function() {
       var firstTwo = Lazy(people).take(2).toArray();
       expect(firstTwo).toEqual([david, mary]);
+    });
+
+    it("passes an index along with each element", function() {
+      expect(Lazy(people).take(2)).toPassToEach(1, [0, 1]);
     });
   });
 
@@ -346,6 +497,10 @@ describe("Lazy", function() {
     it("if N is given, selects all but the last N elements from the collection", function() {
       var allButDanAndHappy = Lazy(people).initial(2).toArray();
       expect(allButDanAndHappy).toEqual([david, mary, lauren, adam]);
+    });
+
+    it("passes an index along with each element", function() {
+      expect(Lazy(people).initial(2)).toPassToEach(1, [0, 1, 2, 3]);
     });
   });
 
@@ -366,6 +521,10 @@ describe("Lazy", function() {
       var everybody = Lazy(people).drop(0).toArray();
       expect(everybody).toEqual(people);
     });
+
+    it("passes an index along with each element", function() {
+      expect(Lazy(people).drop(2)).toPassToEach(1, [0, 1, 2, 3]);
+    });
   });
 
   describe("sortBy", function() {
@@ -374,6 +533,15 @@ describe("Lazy", function() {
     it("sorts the result by the specified selector", function() {
       var peopleByName = Lazy(people).sortBy(Person.getName).toArray();
       expect(peopleByName).toEqual([adam, daniel, david, happy, lauren, mary]);
+    });
+
+    createAsyncTest("supports asynchronous iteration", {
+      getSequence: function() { return Lazy(people).sortBy(Person.getName).async(); },
+      expected: function() { return [adam, daniel, david, happy, lauren, mary]; }
+    });
+
+    it("passes an index along with each element", function() {
+      expect(Lazy(people).sortBy(Person.getName)).toPassToEach(1, [0, 1, 2, 3, 4, 5]);
     });
   });
 
@@ -410,6 +578,10 @@ describe("Lazy", function() {
 
       expect(withoutFibonaccis).toEqual([4, 6, 7, 9, 10]);
     });
+
+    it("passes an index along with each element", function() {
+      expect(Lazy(people).without(david, mary, daniel, happy)).toPassToEach(1, [0, 1]);
+    });
   });
 
   describe("difference", function() {
@@ -424,6 +596,10 @@ describe("Lazy", function() {
 
       expect(minusFibonaccis).toEqual([4, 6, 7, 9, 10]);
     });
+
+    it("passes an index along with each element", function() {
+      expect(Lazy(people).difference([adam, daniel])).toPassToEach(1, [0, 1, 2, 3]);
+    });
   });
 
   describe("union", function() {
@@ -434,6 +610,10 @@ describe("Lazy", function() {
       var union = Lazy(oneThroughTen).union(fiveThroughFifteen).toArray();
       expect(union).toEqual([1, 2, 3, 4, 5, 6, 7, 8,  9, 10, 11, 12, 13, 14, 15]);
     });
+
+    it("passes an index along with each element", function() {
+      expect(Lazy(["foo", "bar"]).union(["bar", "baz"])).toPassToEach(1, [0, 1, 2]);
+    });
   });
 
   describe("intersection", function() {
@@ -443,6 +623,10 @@ describe("Lazy", function() {
     it("returns only the elements in all of the arrays", function() {
       var intersection = Lazy(oneThroughTen).intersection(fiveThroughFifteen).toArray();
       expect(intersection).toEqual([5, 6, 7, 8, 9, 10]);
+    });
+
+    it("passes an index along with each element", function() {
+      expect(Lazy(["foo", "bar", "baz"]).intersection(["bar", "baz", "blah"])).toPassToEach(1, [0, 1]);
     });
   });
 
@@ -478,6 +662,10 @@ describe("Lazy", function() {
 
       expect(differences).toBeGreaterThan(0);
     });
+
+    it("passes an index along with each element", function() {
+      expect(Lazy(people).shuffle()).toPassToEach(1, [0, 1, 2, 3, 4, 5]);
+    });
   });
 
   describe("flatten", function() {
@@ -487,6 +675,11 @@ describe("Lazy", function() {
       var nested = [[david], [mary], [lauren, adam], [[daniel], happy]];
       var flattened = Lazy(nested).flatten().toArray();
       expect(flattened).toEqual([david, mary, lauren, adam, daniel, happy]);
+    });
+
+    it("passes an index along with each element", function() {
+      var nested = [[david], [mary], [lauren, adam], [[daniel], happy]];
+      expect(Lazy(nested).flatten()).toPassToEach(1, [0, 1, 2, 3, 4, 5]);
     });
   });
 
@@ -522,6 +715,20 @@ describe("Lazy", function() {
       var results = Lazy(["__proto__", "constructor", "add", "contains"]).uniq().toArray();
       expect(results).toEqual(["__proto__", "constructor", "add", "contains"]);
     });
+
+    it("correctly distinguishes between distinct objects with the same string representation", function() {
+      var objects, x, y;
+      objects = [
+        x = { toString: function() { return "foo"; } },
+        y = { toString: function() { return "foo"; } }
+      ];
+
+      expect(Lazy(objects).uniq().toArray()).toEqual([x, y]);
+    });
+
+    it("passes an index along with each element", function() {
+      expect(Lazy([10, 5, 5, 5, 8, 8]).uniq()).toPassToEach(1, [0, 1, 2]);
+    });
   });
 
   describe("zip", function() {
@@ -545,6 +752,10 @@ describe("Lazy", function() {
         ["Daniel", daniel],
         ["Happy", happy]
       ]);
+    });
+
+    it("passes an index along with each element", function() {
+      expect(Lazy(names).zip(people)).toPassToEach(1, [0, 1, 2, 3, 4, 5]);
     });
   });
 
@@ -660,6 +871,24 @@ describe("Lazy", function() {
       }, []);
       expect(firstInitials).toEqual(["D", "M", "L", "A", "D", "H"]);
     });
+
+    it("if no memo is given, starts with the head and reduces over the tail", function() {
+      var familyAcronym = Lazy(people)
+        .map(Person.getName)
+        .map(function(name) { return name.charAt(0).toUpperCase(); })
+        .reduce(function(acronym, initial) {
+          acronym += initial;
+          return acronym;
+        });
+      expect(familyAcronym).toEqual("DMLADH");
+    });
+
+    it("passes the index of each element into the accumulator function", function() {
+      var sumOfIndices = Lazy(people).reduce(function(sum, p, i) {
+        return sum + i;
+      }, 0);
+      expect(sumOfIndices).toEqual(0 + 1 + 2 + 3 + 4 + 5);
+    });
   });
 
   describe("reduceRight", function() {
@@ -669,6 +898,13 @@ describe("Lazy", function() {
         return array;
       }, []);
       expect(firstInitials).toEqual(["H", "D", "A", "L", "M", "D"]);
+    });
+
+    it("passes indices in reverse order", function() {
+      var sumOfIndices = Lazy(people).reduceRight(function(str, p, i) {
+        return str + i;
+      }, "");
+      expect(sumOfIndices).toEqual("543210");
     });
   });
 
