@@ -507,6 +507,10 @@ describe("Lazy", function() {
       var everybody = Lazy(people).drop(0).toArray();
       expect(everybody).toEqual(people);
     });
+
+    it("passes an index along with each element", function() {
+      expect(Lazy(people).drop(2)).toPassToEach(1, [0, 1, 2, 3]);
+    });
   });
 
   describe("sortBy", function() {
@@ -520,6 +524,10 @@ describe("Lazy", function() {
     createAsyncTest("supports asynchronous iteration", {
       getSequence: function() { return Lazy(people).sortBy(Person.getName).async(); },
       expected: function() { return [adam, daniel, david, happy, lauren, mary]; }
+    });
+
+    it("passes an index along with each element", function() {
+      expect(Lazy(people).sortBy(Person.getName)).toPassToEach(1, [0, 1, 2, 3, 4, 5]);
     });
   });
 
@@ -556,6 +564,10 @@ describe("Lazy", function() {
 
       expect(withoutFibonaccis).toEqual([4, 6, 7, 9, 10]);
     });
+
+    it("passes an index along with each element", function() {
+      expect(Lazy(people).without(david, mary, daniel, happy)).toPassToEach(1, [0, 1]);
+    });
   });
 
   describe("difference", function() {
@@ -570,6 +582,10 @@ describe("Lazy", function() {
 
       expect(minusFibonaccis).toEqual([4, 6, 7, 9, 10]);
     });
+
+    it("passes an index along with each element", function() {
+      expect(Lazy(people).difference([adam, daniel])).toPassToEach(1, [0, 1, 2, 3]);
+    });
   });
 
   describe("union", function() {
@@ -580,6 +596,10 @@ describe("Lazy", function() {
       var union = Lazy(oneThroughTen).union(fiveThroughFifteen).toArray();
       expect(union).toEqual([1, 2, 3, 4, 5, 6, 7, 8,  9, 10, 11, 12, 13, 14, 15]);
     });
+
+    it("passes an index along with each element", function() {
+      expect(Lazy(["foo", "bar"]).union(["bar", "baz"])).toPassToEach(1, [0, 1, 2]);
+    });
   });
 
   describe("intersection", function() {
@@ -589,6 +609,10 @@ describe("Lazy", function() {
     it("returns only the elements in all of the arrays", function() {
       var intersection = Lazy(oneThroughTen).intersection(fiveThroughFifteen).toArray();
       expect(intersection).toEqual([5, 6, 7, 8, 9, 10]);
+    });
+
+    it("passes an index along with each element", function() {
+      expect(Lazy(["foo", "bar", "baz"]).intersection(["bar", "baz", "blah"])).toPassToEach(1, [0, 1]);
     });
   });
 
@@ -623,6 +647,10 @@ describe("Lazy", function() {
       });
 
       expect(differences).toBeGreaterThan(0);
+    });
+
+    it("passes an index along with each element", function() {
+      expect(Lazy(people).shuffle()).toPassToEach(1, [0, 1, 2, 3, 4, 5]);
     });
   });
 
