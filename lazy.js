@@ -787,9 +787,14 @@
     return new IndexedDropSequence(this, count);
   };
 
-  var ArrayWrapper = IndexedSequence.inherit(function(source) {
+  /**
+   * @constructor
+   */
+  function ArrayWrapper(source) {
     this.source = source;
-  });
+  }
+
+  ArrayWrapper.prototype = new IndexedSequence();
 
   ArrayWrapper.prototype.get = function(i) {
     return this.source[i];
@@ -806,6 +811,10 @@
         break;
       }
     }
+  };
+
+  ArrayWrapper.prototype.map = function(mapFn) {
+    return new MappedArrayWrapper(this.source, mapFn);
   };
 
   ArrayWrapper.prototype.toArray = function() {
@@ -853,6 +862,36 @@
 
   IndexedMappedSequence.prototype.get = function(i) {
     return this.mapFn(this.parent.get(i), i);
+  };
+
+  /**
+   * @constructor
+   */
+  function MappedArrayWrapper(source, mapFn) {
+    this.source = source;
+    this.mapFn  = mapFn;
+  }
+
+  MappedArrayWrapper.prototype = new IndexedSequence();
+
+  MappedArrayWrapper.prototype.get = function(i) {
+    return this.mapFn(this.source[i]);
+  };
+
+  MappedArrayWrapper.prototype.length = function() {
+    return this.source.length;
+  };
+
+  MappedArrayWrapper.prototype.each = function(fn) {
+    var source = this.source,
+        length = this.source.length,
+        mapFn  = this.mapFn,
+        i = -1;
+    while (++i < length) {
+      if (fn(mapFn(source[i], i), i) === false) {
+        return;
+      }
+    }
   };
 
   var FilteredSequence = CachingSequence.inherit(function(parent, filterFn) {
