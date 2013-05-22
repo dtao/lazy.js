@@ -325,6 +325,13 @@ describe("Lazy", function() {
       expect(Person.objectsTouched).toEqual(1);
     });
 
+    it("can also map objects", function() {
+      var keyValuePairs = Lazy({ foo: "FOO", bar: "BAR" })
+        .map(function(v, k) { return [k, v]; })
+        .toArray();
+      expect(keyValuePairs).toEqual([["foo", "FOO"], ["bar", "BAR"]]);
+    });
+
     it("passes an index along with each element", function() {
       var indices = Lazy(people).map(function(x, i) { return i; }).toArray();
       expect(indices).toEqual([0, 1, 2, 3, 4, 5]);

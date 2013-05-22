@@ -29,6 +29,7 @@ namespace :compile do
       set
       indexed_sequence
       array_wrapper
+      object_wrapper
       caching_sequence
       mapped_sequence
       filtered_sequence

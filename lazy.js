@@ -821,6 +821,33 @@
     return this.source.slice(0);
   };
 
+  /**
+   * @constructor
+   */
+  function ObjectWrapper(source) {
+    this.source = source;
+  }
+
+  ObjectWrapper.prototype = new Sequence();
+
+  ObjectWrapper.prototype.get = function(key) {
+    return this.source[key];
+  };
+
+  ObjectWrapper.prototype.each = function(fn) {
+    var source = this.source,
+        k;
+    for (k in source) {
+      if (fn(source[k], k) === false) {
+        return;
+      }
+    }
+  };
+
+  ObjectWrapper.prototype.map = function(mapFn) {
+    return new MappedSequence(this, mapFn);
+  };
+
   var CachingSequence = Sequence.inherit(function() {});
 
   CachingSequence.inherit = function(ctor) {
@@ -1496,8 +1523,10 @@
       return source;
     } else if (typeof source === "string") {
       return new StringWrapper(source);
+    } else if (source instanceof Array) {
+      return new ArrayWrapper(source);
     }
-    return new ArrayWrapper(source);
+    return new ObjectWrapper(source);
   };
 
   Lazy.async = function(source, interval) {
