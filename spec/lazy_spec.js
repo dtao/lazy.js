@@ -30,6 +30,18 @@ describe("Lazy", function() {
     arraysCreated = 0;
   });
 
+  beforeEach(function() {
+    this.addMatchers({
+      toPassToEach: function(argumentIndex, expectedValues) {
+        var i = 0;
+        this.actual.each(function() {
+          expect(arguments[argumentIndex]).toEqual(expectedValues[i++]);
+        });
+        return true;
+      }
+    });
+  });
+
   function ensureLaziness(action) {
     it("doesn't eagerly iterate the collection", function() {
       action();
@@ -278,6 +290,12 @@ describe("Lazy", function() {
         "Daniel": daniel,
         "Happy": happy
       });
+    });
+  });
+
+  describe("each", function() {
+    it("passes an index along with each element", function() {
+      expect(Lazy(people)).toPassToEach(1, [0, 1, 2, 3, 4, 5]);
     });
   });
 
