@@ -37,34 +37,46 @@ function readValue(object, keys) {
 // point I think we'll have a separate open-source project on our hands ;)
 
 var size = parseInt(process.argv[2], 10);
-var maxForDupes = Math.sqrt(size);
+var type = process.argv[3];
 
-var mostlyDupes = Lazy.generate(Math.random)
-  .map(function(x) { return Math.floor(x * maxForDupes) + 1; })
-  .take(size)
-  .toArray();
+var array = (function getArrayForType(type) {
+  var map;
+  switch (type) {
+    case "mostdupe":
+      map = function(x) { return Math.floor(x * Math.sqrt(size)) + 1; };
+      break;
+    case "halfdupe":
+      map = function(x) { return Math.floor(x * size / 2) + 1; };
+      break;
+    case "mostuniq":
+      map = function(x) { return Math.floor(x * size) + 1; };
+      break;
+    default:
+      throw "You must specify a type: 'mostdupe', 'halfdupe', or 'halfuniq'.";
+  }
 
-var mostlyUniques = Lazy.generate(Math.random)
-  .map(function(x) { return Math.floor(x * size) + 1; })
-  .take(size)
-  .toArray();
+  return Lazy.generate(Math.random)
+    .map(map)
+    .take(size)
+    .toArray();
+}(type));
 
 var tests = {
-  "Lazy.js - mostly dupes": function() {
-    Lazy(mostlyDupes).uniq().each(function(e) {});
+  "Lazy.js (no cache)": function() {
+    Lazy(array).uniq().eachNoCache(function(e) {});
   },
-  "Lazy.js - mostly uniques": function() {
-    Lazy(mostlyUniques).uniq().each(function(e) {});
+  "Lazy.js (array cache)": function() {
+    Lazy(array).uniq().eachArrayCache(function(e) {});
   },
-  "Lo-Dash - mostly dupes": function() {
-    _.each(_.uniq(mostlyDupes), function(e) {});
+  "Lazy.js (set cache)": function() {
+    Lazy(array).uniq().eachSetCache(function(e) {});
   },
-  "Lo-Dash - mostly uniques": function() {
-    _.each(_.uniq(mostlyUniques), function(e) {});
+  "Lo-Dash": function() {
+    _.each(_.uniq(array), function(e) {});
   }
 };
 
-console.log("Testing uniq for " + size + " elements.");
+console.log("Testing uniq for " + size + " elements (" + type + ").");
 
 var suite = Lazy(tests).reduce(function(suite, test, name) {
   suite.add(name, test);
