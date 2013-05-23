@@ -1227,6 +1227,7 @@
 
   UniqueArrayWrapper.prototype.eachNoCache = function(fn) {
     var source = this.parent.source,
+        length = source.length,
         value,
         found,
 
@@ -1236,7 +1237,7 @@
         j,
         k = 0;
 
-    while (++i < source.length) {
+    while (++i < length) {
       value = source[i];
       found = false;
 
@@ -1259,11 +1260,12 @@
     // Basically the same implementation as w/ the set, but using an array because
     // it's cheaper for smaller sequences.
     var source = this.parent.source,
+        length = source.length,
         cache = [],
         value,
         i = -1,
         j = 0;
-    while (++i < source.length) {
+    while (++i < length) {
       value = source[i];
       if (!contains(cache, value)) {
         cache.push(value);
@@ -1736,8 +1738,10 @@
   }
 
   function contains(array, element) {
-    var i = -1;
-    while (++i < array.length) {
+    var i = -1,
+        length = array.length;
+
+    while (++i < length) {
       if (array[i] === element) {
         return true;
       }
@@ -1748,7 +1752,7 @@
   if (typeof Array.prototype.indexOf === "function") {
     contains = function(array, element) {
       return array.indexOf(element) !== -1;
-    }
+    };
   }
 
   function swap(array, i, j) {
