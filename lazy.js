@@ -1274,10 +1274,18 @@
     }
   };
 
+  UniqueArrayWrapper.prototype.eachSetCache = UniqueSequence.prototype.each;
+
+  // So, this is kinda shocking.
+  // Soon I'll write a whole blog post about this; but for now suffice it to say
+  // that going w/ a no-cache approach is the fastest solution until around 200
+  // elements, at which point using an array-based cache is still faster than
+  // using a set-based cache. Not until somewhere around 800 elements does a set-
+  // based approach start to outpace the others.
   function getEachForSource(source) {
-    if (source.length < 20) {
+    if (source.length < 200) {
       return UniqueArrayWrapper.prototype.eachNoCache;
-    } else if (source.length < 200) {
+    } else if (source.length < 800) {
       return UniqueArrayWrapper.prototype.eachArrayCache;
     } else {
       return UniqueSequence.prototype.each;

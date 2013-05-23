@@ -744,14 +744,16 @@ describe("Lazy", function() {
       expect(Lazy([10, 5, 5, 5, 8, 8]).uniq()).toPassToEach(1, [0, 1, 2]);
     });
 
-    it("correctly selects unique elements for medium-sized (20 to 200 elements) collections", function() {
-      var fiftyIntegers = Lazy.range(50).toArray();
-      expect(Lazy(fiftyIntegers).uniq().toArray()).toEqual(fiftyIntegers);
+    it("correctly selects unique elements for medium-sized (~300 elements) collections", function() {
+      var medium = Lazy.range(150).toArray();
+      var result = Lazy(medium.concat(medium)).uniq().toArray()
+      expect(result).toEqual(medium);
     });
 
-    it("correctly selects unique elements for large (>= 200 elements) collections", function() {
-      var twoHundredFiftyIntegers = Lazy.range(250).toArray();
-      expect(Lazy(twoHundredFiftyIntegers).uniq().toArray()).toEqual(twoHundredFiftyIntegers);
+    it("correctly selects unique elements for large (>= 800 elements) collections", function() {
+      var large = Lazy.range(500).toArray();
+      var result = Lazy(large.concat(large)).uniq().toArray();
+      expect(result).toEqual(large);
     });
   });
 

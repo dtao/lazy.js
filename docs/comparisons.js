@@ -101,7 +101,18 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     linq: function(arr) { return Enumerable.From(arr).Distinct(); },
     jslinq: function(arr) { return JSLINQ(arr).Distinct(identity); },
     from: function(arr) { return from(arr).distinct(); },
-    inputs: [[dupes(0, 5, 10)], [dupes(0, 10, 100)]]
+    inputs: [[dupes(0, 2, 10)], [dupes(0, 10, 100)]]
+  });
+
+  compareAlternatives("uniq (about half dupes)", {
+    lazy: function(arr) { return Lazy(arr).uniq(); },
+    underscore: function(arr) { return _(arr).uniq(); },
+    lodash: function(arr) { return lodash.uniq(arr); },
+    sugar: function(arr) { return arr.unique(); },
+    linq: function(arr) { return Enumerable.From(arr).Distinct(); },
+    jslinq: function(arr) { return JSLINQ(arr).Distinct(identity); },
+    from: function(arr) { return from(arr).distinct(); },
+    inputs: [[dupes(0, 5, 10)], [dupes(0, 50, 100)]]
   });
 
   compareAlternatives("uniq (mostly uniques)", {
