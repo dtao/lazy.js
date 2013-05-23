@@ -2,6 +2,19 @@ var Benchmark = require("../docs/lib/benchmark.js");
 var Lazy = require("../lazy.js");
 var _ = require("../docs/lib/lodash.js");
 
+Benchmark.options.maxTime = 1;
+
+// Yeah, yeah. Big deal.
+String.prototype.padLeft = function(width) {
+  var padding = width - this.length;
+
+  if (padding <= 0) {
+    return this;
+  }
+
+  return this + new Array(padding + 1).join(" ");
+};
+
 // Right now this script only tests uniq, because that's what I'm working on at
 // the moment. Short-term goal is to refactor this to basically do a quick run
 // on ANY method. Medium-term goal is to make it environment-agnostic (so have
@@ -23,25 +36,27 @@ var mostlyUniques = Lazy.generate(Math.random)
   .take(size)
   .toArray();
 
+var tests = {
+  "Lazy.js - mostly dupes": function() {
+    Lazy(mostlyDupes).uniq().each(function(e) {});
+  },
+  "Lazy.js - mostly uniques": function() {
+    Lazy(mostlyUniques).uniq().each(function(e) {});
+  },
+  "Lo-Dash - mostly dupes": function() {
+    _.each(_.uniq(mostlyDupes), function(e) {});
+  },
+  "Lo-Dash - mostly uniques": function() {
+    _.each(_.uniq(mostlyUniques), function(e) {});
+  }
+};
+
 console.log("Testing uniq for " + size + " elements.");
 
-var suite = new Benchmark.Suite();
-
-suite.add("Lazy.js - mostly dupes", function() {
-  Lazy(mostlyDupes).uniq().each(function(e) {});
-});
-
-suite.add("Lazy.js - mostly uniques", function() {
-  Lazy(mostlyUniques).uniq().each(function(e) {});
-});
-
-suite.add("Lo-Dash - mostly dupes", function() {
-  _.each(_.uniq(mostlyDupes), function(e) {});
-});
-
-suite.add("Lo-Dash - mostly uniques", function() {
-  _.each(_.uniq(mostlyUniques), function(e) {});
-});
+var suite = Lazy(tests).reduce(function(suite, test, name) {
+  suite.add(name, test);
+  return suite;
+}, new Benchmark.Suite());
 
 suite.on("cycle", function(e) {
   console.log(e.target.name + ": " + e.target.hz);
@@ -50,21 +65,21 @@ suite.on("cycle", function(e) {
 suite.on("complete", function() {
   console.log("\nResults:\n");
 
-  var results = Lazy(suite)
+  var results = Lazy(suite.slice(0, suite.length))
     .sortBy(function(run) { return run.hz; })
-    .toArray();
+    .reverse();
 
   var columnWidths = Lazy(["name", "hz"])
     .map(function(columnName) {
       return [
         columnName,
-        Lazy(results).pluck(columnName).pluck("length").max()
+        results.pluck(columnName).map(String).pluck("length").max()
       ];
     })
     .toObject();
 
-  Lazy(results).each(function(result) {
-    console.log(result.name + " | " + result.hz);
+  results.each(function(result) {
+    console.log(result.name.padLeft(columnWidths.name) + " | " + result.hz);
   });
 });
 
