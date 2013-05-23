@@ -47,6 +47,27 @@ suite.on("cycle", function(e) {
   console.log(e.target.name + ": " + e.target.hz);
 });
 
+suite.on("complete", function() {
+  console.log("\nResults:\n");
+
+  var results = Lazy(suite)
+    .sortBy(function(run) { return run.hz; })
+    .toArray();
+
+  var columnWidths = Lazy(["name", "hz"])
+    .map(function(columnName) {
+      return [
+        columnName,
+        Lazy(results).pluck(columnName).pluck("length").max()
+      ];
+    })
+    .toObject();
+
+  Lazy(results).each(function(result) {
+    console.log(result.name + " | " + result.hz);
+  });
+});
+
 console.log("Running benchmarks...");
 
 suite.run();
