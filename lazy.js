@@ -849,6 +849,10 @@
     }
   };
 
+  ObjectWrapper.prototype.keys = function() {
+    return this.map(function(v, k) { return k; });
+  };
+
   ObjectWrapper.prototype.map = function(mapFn) {
     return new MappedSequence(this, mapFn);
   };
