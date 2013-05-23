@@ -307,6 +307,13 @@ describe("Lazy", function() {
     });
   });
 
+  describe("values", function() {
+    it("iterates over the values of an object", function() {
+      var keys = Lazy({ foo: "FOO", bar: "BAR" }).values().toArray();
+      expect(keys).toEqual(["FOO", "BAR"]);
+    });
+  });
+
   describe("each", function() {
     it("passes an index along with each element", function() {
       expect(Lazy(people)).toPassToEach(1, [0, 1, 2, 3, 4, 5]);

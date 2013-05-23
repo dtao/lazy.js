@@ -610,6 +610,19 @@
   };
 
   /**
+   * Gets the sum of the values in the sequence.
+   *
+   * TODO: This should support a value selector.
+   *
+   * @return {*} The sum.
+   */
+  Sequence.prototype.sum = function() {
+    return this.reduce(function(sum, value) {
+      return sum += value;
+    }, 0);
+  };
+
+  /**
    * Creates a string from joining together all of the elements in this sequence,
    * separated by the given delimiter.
    *
@@ -851,6 +864,10 @@
 
   ObjectWrapper.prototype.keys = function() {
     return this.map(function(v, k) { return k; });
+  };
+
+  ObjectWrapper.prototype.values = function() {
+    return this.map(function(v, k) { return v; });
   };
 
   ObjectWrapper.prototype.map = function(mapFn) {

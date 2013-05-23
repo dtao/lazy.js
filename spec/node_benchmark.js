@@ -5,14 +5,27 @@ var _ = require("../docs/lib/lodash.js");
 Benchmark.options.maxTime = 1;
 
 // Yeah, yeah. Big deal.
-String.prototype.padLeft = function(width) {
+String.prototype.padLeft = function(width, delimiter) {
   var padding = width - this.length;
 
   if (padding <= 0) {
     return this;
   }
 
-  return this + new Array(padding + 1).join(" ");
+  return this + new Array(padding + 1).join(delimiter || " ");
+};
+
+String.prototype.repeat = function(count) {
+  return "".padLeft(count, this);
+};
+
+function readValue(object, keys) {
+  var value = Lazy(keys.split(".")).reduce(function(obj, key) {
+    return obj[key];
+  }, object);
+
+  return typeof value === "number" && Math.floor(value) !== value ?
+    value.toFixed(3) : value;
 };
 
 // Right now this script only tests uniq, because that's what I'm working on at
@@ -69,17 +82,35 @@ suite.on("complete", function() {
     .sortBy(function(run) { return run.hz; })
     .reverse();
 
-  var columnWidths = Lazy(["name", "hz"])
+  var columns = ["name", "hz", "count", "cycles", "stats.rme", "stats.deviation"];
+
+  var columnWidths = Lazy(columns)
     .map(function(columnName) {
       return [
         columnName,
-        results.pluck(columnName).map(String).pluck("length").max()
+        results
+          .map(function(result) { return readValue(result, columnName); })
+          .map(String)
+          .pluck("length")
+          .concat([columnName.length])
+          .max()
       ];
     })
     .toObject();
 
+  var header = Lazy(columns)
+      .map(function(column) { return column.padLeft(columnWidths[column]); })
+      .join(" | ");
+
+  console.log(header);
+  console.log("-".repeat(header.length));
+
   results.each(function(result) {
-    console.log(result.name.padLeft(columnWidths.name) + " | " + result.hz);
+    console.log(
+      Lazy(columns)
+        .map(function(column) { return String(readValue(result, column)).padLeft(columnWidths[column]); })
+        .join(" | ")
+    );
   });
 });
 
