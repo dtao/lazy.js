@@ -25,7 +25,8 @@
     "util"
   ],
   "devDependecies": {
-    "jasmine-node": "1.7.x"
+    "jasmine-node": "1.7.x",
+    "jsdoc": "3.2.x"
   },
   "scripts": {
     "test": "jasmine-node spec/node_spec.js"

@@ -1,68 +1,75 @@
-def compile_file(output, source_files)
+SOURCE_FILES = %w[
+  sequence
+  iterator
+  set
+  indexed_sequence
+  array_wrapper
+  object_wrapper
+  caching_sequence
+  mapped_sequence
+  filtered_sequence
+  filtering_iterator
+  reversed_sequence
+  concatenated_sequence
+  take_sequence
+  drop_sequence
+  sorted_sequence
+  shuffled_sequence
+  grouped_sequence
+  counted_sequence
+  unique_sequence
+  flattened_sequence
+  without_sequence
+  union_sequence
+  intersection_sequence
+  zipped_sequence
+  generated_sequence
+  async_sequence
+  string_wrapper
+  string_match_sequence
+  string_match_iterator
+  split_string_sequence
+  split_with_regexp_iterator
+  split_with_string_iterator
+  char_iterator
+  init
+]
+
+def compile_file(output, source_files, options={})
   javascripts = source_files.map do |f|
     File.read(File.join("lib", "#{f}.js"))
   end
 
+  javascript = javascripts.join("\n")
+  javascript.gsub!(/^(?!$)/, "  ") unless options[:nowrap]
+
   File.open(output, "w") do |f|
-    f.write("(function(context) {\n\n")
-    f.write(javascripts.join("\n").gsub(/^(?!$)/, "  "))
-    f.write("\n}(typeof global !== 'undefined' ? global : window));")
+    f.write("(function(context) {\n\n") unless options[:nowrap]
+    f.write(javascript)
+    f.write("\n}(typeof global !== 'undefined' ? global : window));") unless options[:nowrap]
   end
 
-  compiler = Closure::Compiler.new({
-    :js_output_file => "#{output.chomp('.js')}.min.js",
-    :externs        => File.join("lib", "externs.js"),
-    :warning_level  => "VERBOSE"
-  })
+  unless options[:nocompile]
+    require "closure-compiler"
 
-  puts compiler.compile_file(output)
+    compiler = Closure::Compiler.new({
+      :js_output_file => "#{output.chomp('.js')}.min.js",
+      :externs        => File.join("lib", "externs.js"),
+      :warning_level  => "VERBOSE"
+    })
+
+    puts compiler.compile_file(output)
+  end
 end
 
 namespace :compile do
   desc "Compile lazy.js"
   task :lib do
-    require "closure-compiler"
-
-    compile_file("lazy.js", %w[
-      sequence
-      iterator
-      set
-      indexed_sequence
-      array_wrapper
-      object_wrapper
-      caching_sequence
-      mapped_sequence
-      filtered_sequence
-      filtering_iterator
-      reversed_sequence
-      concatenated_sequence
-      take_sequence
-      drop_sequence
-      sorted_sequence
-      shuffled_sequence
-      grouped_sequence
-      counted_sequence
-      unique_sequence
-      flattened_sequence
-      without_sequence
-      union_sequence
-      intersection_sequence
-      zipped_sequence
-      generated_sequence
-      async_sequence
-      string_wrapper
-      string_match_sequence
-      string_match_iterator
-      split_string_sequence
-      split_with_regexp_iterator
-      split_with_string_iterator
-      char_iterator
-      init
-    ])
+    compile_file("lazy.js", SOURCE_FILES)
   end
 
-  desc "Compile README.md to HTML"
-  task :docs do
+  desc "Compile the homepage (currently hosted on GitHub pages)"
+  task :site do
     require "mustache"
     require "nokogiri"
     require "pygments"
@@ -80,7 +87,7 @@ namespace :compile do
     # Find the Travis build status icon and add GitHub and Twitter buttons.
     travis_image = fragment.css("a[href='https://travis-ci.org/dtao/lazy.js']").first
     travis_image.parent["class"] = "sharing"
-    share_fragment = Nokogiri::HTML::fragment(File.read(File.join("docs", "share.html")))
+    share_fragment = Nokogiri::HTML::fragment(File.read(File.join("site", "share.html")))
     travis_image.add_next_sibling(share_fragment)
 
     # Add IDs to section headings.
@@ -107,5 +114,20 @@ namespace :compile do
     File.open("index.html", "w") do |f|
       f.write(final_html)
     end
+  end
+
+  desc "Compile documentation"
+  task :docs do
+    # Concatenate source files without wrapping (so JSDoc can see everything).
+    compile_file("temp.js", SOURCE_FILES, {
+      :nowrap    => true,
+      :nocompile => true
+    })
+
+    # Document that bad boy.
+    `jsdoc temp.js --destination docs`
+
+    # Quick! Run away!
+    File.delete("temp.js")
   end
 end
