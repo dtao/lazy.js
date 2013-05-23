@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Index</title>
+    <title>JSDoc: Source: filtering_iterator.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,30 +17,45 @@
 
 <div id="main">
     
-    <h1 class="page-title">Index</h1>
+    <h1 class="page-title">Source: filtering_iterator.js</h1>
     
     
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>/**
+ * @constructor
+ */
+function FilteringIterator(sequence, filterFn) {
+  this.iterator = sequence.getIterator();
+  this.filterFn = filterFn;
+}
 
+FilteringIterator.prototype.current = function() {
+  return this.value;
+};
 
-    <h3> </h3>
+FilteringIterator.prototype.moveNext = function() {
+  var iterator = this.iterator,
+      filterFn = this.filterFn,
+      value;
 
+  while (iterator.moveNext()) {
+    value = iterator.current();
+    if (filterFn(value)) {
+      this.value = value;
+      return true;
+    }
+  }
 
-
-
-
-
-
-
-
-    
-
-
-
-
-
+  this.value = undefined;
+  return false;
+};
+</code></pre>
+        </article>
+    </section>
 
 
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Index</title>
+    <title>JSDoc: Source: split_with_regexp_iterator.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,30 +17,54 @@
 
 <div id="main">
     
-    <h1 class="page-title">Index</h1>
+    <h1 class="page-title">Source: split_with_regexp_iterator.js</h1>
     
     
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>/**
+ * @constructor
+ */
+function SplitWithRegExpIterator(source, pattern) {
+  this.source = source;
 
+  // clone the RegExp
+  this.pattern = eval("" + pattern + (!pattern.global ? "g" : ""));
+}
 
-    <h3> </h3>
+SplitWithRegExpIterator.prototype.current = function() {
+  return this.source.substring(this.start, this.end);
+};
 
+SplitWithRegExpIterator.prototype.moveNext = function() {
+  if (!this.pattern) {
+    return false;
+  }
 
+  var match = this.pattern.exec(this.source);
 
+  if (match) {
+    this.start = this.nextStart ? this.nextStart : 0;
+    this.end = match.index;
+    this.nextStart = match.index + match[0].length;
+    return true;
 
+  } else if (this.pattern) {
+    this.start = this.nextStart;
+    this.end = undefined;
+    this.nextStart = undefined;
+    this.pattern = undefined;
+    return true;
+  }
 
-
-
-
-
-    
-
-
-
-
-
+  return false;
+};
+</code></pre>
+        </article>
+    </section>
 
 
 

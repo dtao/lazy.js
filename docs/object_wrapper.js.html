@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Index</title>
+    <title>JSDoc: Source: object_wrapper.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,30 +17,55 @@
 
 <div id="main">
     
-    <h1 class="page-title">Index</h1>
+    <h1 class="page-title">Source: object_wrapper.js</h1>
     
     
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>/**
+ * @constructor
+ */
+function ObjectWrapper(source) {
+  this.source = source;
+}
 
+ObjectWrapper.prototype = new Sequence();
 
-    <h3> </h3>
+ObjectWrapper.prototype.get = function(key) {
+  return this.source[key];
+};
 
+ObjectWrapper.prototype.each = function(fn) {
+  var source = this.source,
+      k;
+  for (k in source) {
+    if (fn(source[k], k) === false) {
+      return;
+    }
+  }
+};
 
+ObjectWrapper.prototype.keys = function() {
+  return this.map(function(v, k) { return k; });
+};
 
+ObjectWrapper.prototype.values = function() {
+  return this.map(function(v, k) { return v; });
+};
 
+ObjectWrapper.prototype.map = function(mapFn) {
+  return new MappedSequence(this, mapFn);
+};
 
-
-
-
-
-    
-
-
-
-
-
+ObjectWrapper.prototype.toArray = function() {
+  return this.map(function(v, k) { return [k, v]; }).toArray();
+};
+</code></pre>
+        </article>
+    </section>
 
 
 

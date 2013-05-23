@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Index</title>
+    <title>JSDoc: Source: string_wrapper.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,30 +17,31 @@
 
 <div id="main">
     
-    <h1 class="page-title">Index</h1>
+    <h1 class="page-title">Source: string_wrapper.js</h1>
     
     
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>/**
+ * @constructor
+ */
+function StringWrapper(source) {
+  this.source = source;
+}
 
+StringWrapper.prototype.match = function(pattern) {
+  return new StringMatchSequence(this.source, pattern);
+};
 
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+StringWrapper.prototype.split = function(delimiter) {
+  return new SplitStringSequence(this.source, delimiter);
+};
+</code></pre>
+        </article>
+    </section>
 
 
 

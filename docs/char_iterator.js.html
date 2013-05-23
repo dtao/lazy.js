@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Index</title>
+    <title>JSDoc: Source: char_iterator.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,30 +17,32 @@
 
 <div id="main">
     
-    <h1 class="page-title">Index</h1>
+    <h1 class="page-title">Source: char_iterator.js</h1>
     
     
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>/**
+ * @constructor
+ */
+function CharIterator(source) {
+  this.source = source;
+  this.index = -1;
+}
 
+CharIterator.prototype.current = function() {
+  return this.source.charAt(this.index);
+};
 
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+CharIterator.prototype.moveNext = function() {
+  return (++this.index &lt; this.source.length);
+};
+</code></pre>
+        </article>
+    </section>
 
 
 

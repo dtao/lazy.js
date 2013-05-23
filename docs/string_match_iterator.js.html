@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Index</title>
+    <title>JSDoc: Source: string_match_iterator.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,30 +17,34 @@
 
 <div id="main">
     
-    <h1 class="page-title">Index</h1>
+    <h1 class="page-title">Source: string_match_iterator.js</h1>
     
     
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>/**
+ * @constructor
+ */
+function StringMatchIterator(source, pattern) {
+  this.source = source;
 
+  // clone the RegExp
+  this.pattern = eval("" + pattern + (!pattern.global ? "g" : ""));
+}
 
-    <h3> </h3>
+StringMatchIterator.prototype.current = function() {
+  return this.match[0];
+};
 
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+StringMatchIterator.prototype.moveNext = function() {
+  return !!(this.match = this.pattern.exec(this.source));
+};
+</code></pre>
+        </article>
+    </section>
 
 
 

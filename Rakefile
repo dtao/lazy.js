@@ -118,16 +118,6 @@ namespace :compile do
 
   desc "Compile documentation"
   task :docs do
-    # Concatenate source files without wrapping (so JSDoc can see everything).
-    compile_file("temp.js", SOURCE_FILES, {
-      :nowrap    => true,
-      :nocompile => true
-    })
-
-    # Document that bad boy.
-    `jsdoc temp.js --destination docs`
-
-    # Quick! Run away!
-    File.delete("temp.js")
+    `jsdoc lib --recurse --destination docs`
   end
 end

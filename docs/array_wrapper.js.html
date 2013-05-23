@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Index</title>
+    <title>JSDoc: Source: array_wrapper.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,30 +17,55 @@
 
 <div id="main">
     
-    <h1 class="page-title">Index</h1>
+    <h1 class="page-title">Source: array_wrapper.js</h1>
     
     
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>/**
+ * @constructor
+ */
+function ArrayWrapper(source) {
+  this.source = source;
+}
 
+ArrayWrapper.prototype = new IndexedSequence();
 
-    <h3> </h3>
+ArrayWrapper.prototype.get = function(i) {
+  return this.source[i];
+};
 
+ArrayWrapper.prototype.length = function() {
+  return this.source.length;
+};
 
+ArrayWrapper.prototype.each = function(fn) {
+  var i = -1;
+  while (++i &lt; this.source.length) {
+    if (fn(this.source[i], i) === false) {
+      break;
+    }
+  }
+};
 
+ArrayWrapper.prototype.map = function(mapFn) {
+  return new MappedArrayWrapper(this.source, mapFn);
+};
 
+ArrayWrapper.prototype.uniq =
+ArrayWrapper.prototype.unique = function() {
+  return new UniqueArrayWrapper(this);
+};
 
-
-
-
-
-    
-
-
-
-
-
+ArrayWrapper.prototype.toArray = function() {
+  return this.source.slice(0);
+};
+</code></pre>
+        </article>
+    </section>
 
 
 

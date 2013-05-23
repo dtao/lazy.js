@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Index</title>
+    <title>JSDoc: Source: mapped_sequence.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,30 +17,67 @@
 
 <div id="main">
     
-    <h1 class="page-title">Index</h1>
+    <h1 class="page-title">Source: mapped_sequence.js</h1>
     
     
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>var MappedSequence = Sequence.inherit(function(parent, mapFn) {
+  this.parent = parent;
+  this.mapFn  = mapFn;
+});
 
+MappedSequence.prototype.each = function(fn) {
+  var mapFn = this.mapFn;
+  this.parent.each(function(e, i) {
+    return fn(mapFn(e, i), i);
+  });
+};
 
-    <h3> </h3>
+var IndexedMappedSequence = IndexedSequence.inherit(function(parent, mapFn) {
+  this.parent = parent;
+  this.mapFn  = mapFn;
+});
 
+IndexedMappedSequence.prototype.get = function(i) {
+  return this.mapFn(this.parent.get(i), i);
+};
 
+/**
+ * @constructor
+ */
+function MappedArrayWrapper(source, mapFn) {
+  this.source = source;
+  this.mapFn  = mapFn;
+}
 
+MappedArrayWrapper.prototype = new IndexedSequence();
 
+MappedArrayWrapper.prototype.get = function(i) {
+  return this.mapFn(this.source[i]);
+};
 
+MappedArrayWrapper.prototype.length = function() {
+  return this.source.length;
+};
 
-
-
-
-    
-
-
-
-
-
+MappedArrayWrapper.prototype.each = function(fn) {
+  var source = this.source,
+      length = this.source.length,
+      mapFn  = this.mapFn,
+      i = -1;
+  while (++i &lt; length) {
+    if (fn(mapFn(source[i], i), i) === false) {
+      return;
+    }
+  }
+};
+</code></pre>
+        </article>
+    </section>
 
 
 
