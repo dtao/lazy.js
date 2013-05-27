@@ -1,6 +1,15 @@
-var Benchmark = require("../docs/lib/benchmark.js");
+// Right now this script only tests uniq, because that's what I'm working on at
+// the moment. Short-term goal is to refactor this to basically do a quick run
+// on ANY method. Medium-term goal is to make it environment-agnostic (so have
+// a browser runner as well) and have it run against any other library.
+
+// Long-term goal is to make it library-agnostic (not just for Lazy.js). At that
+// point I think we'll have a separate open-source project on our hands ;)
+
+var Benchmark = require("../site/lib/benchmark.js");
+var ComparisonSuite = require("./support/comparison_suite.js");
 var Lazy = require("../lazy.js");
-var _ = require("../docs/lib/lodash.js");
+var _ = require("../site/lib/lodash.js");
 
 Benchmark.options.maxTime = 1;
 
@@ -28,18 +37,14 @@ function readValue(object, keys) {
     value.toFixed(3) : value;
 };
 
-// Right now this script only tests uniq, because that's what I'm working on at
-// the moment. Short-term goal is to refactor this to basically do a quick run
-// on ANY method. Medium-term goal is to make it environment-agnostic (so have
-// a browser runner as well) and have it run against any other library.
-
-// Long-term goal is to make it library-agnostic (not just for Lazy.js). At that
-// point I think we'll have a separate open-source project on our hands ;)
-
 var size = parseInt(process.argv[2], 10);
-var type = process.argv[3];
+if (!size) {
+  console.log("You must specify a size.");
+  process.exit();
+}
 
-var array = (function getArrayForType(type) {
+var type = process.argv[3];
+var input = (function getArrayForType(type) {
   var map;
   switch (type) {
     case "mostdupe":
@@ -52,7 +57,8 @@ var array = (function getArrayForType(type) {
       map = function(x) { return Math.floor(x * size) + 1; };
       break;
     default:
-      throw "You must specify a type: 'mostdupe', 'halfdupe', or 'halfuniq'.";
+      console.log("You must specify a type: 'mostdupe', 'halfdupe', or 'mostuniq'.");
+      process.exit();
   }
 
   return Lazy.generate(Math.random)
@@ -61,69 +67,64 @@ var array = (function getArrayForType(type) {
     .toArray();
 }(type));
 
-var tests = {
-  "Lazy.js (no cache)": function() {
-    Lazy(array).uniq().eachNoCache(function(e) {});
-  },
-  "Lazy.js (array cache)": function() {
-    Lazy(array).uniq().eachArrayCache(function(e) {});
-  },
-  "Lazy.js (set cache)": function() {
-    Lazy(array).uniq().eachSetCache(function(e) {});
-  },
-  "Lo-Dash": function() {
-    _.each(_.uniq(array), function(e) {});
+var suite = new ComparisonSuite({
+  reporter: {
+    onRunning: function(test) {
+      console.log("Running test '" + test.name + "'.");
+    },
+
+    onTestResults: function(tests) {
+      console.log("\nResults:\n");
+
+      var results = Lazy(tests)
+        .sortBy(function(test) { return test.hz; })
+        .reverse();
+
+      var columns = ["name", "hz", "count", "cycles", "stats.rme", "stats.deviation"];
+
+      var columnWidths = Lazy(columns)
+        .map(function(columnName) {
+          return [
+            columnName,
+            results
+              .map(function(result) { return readValue(result, columnName); })
+              .map(String)
+              .pluck("length")
+              .concat([columnName.length])
+              .max()
+          ];
+        })
+        .toObject();
+
+      var header = Lazy(columns)
+          .map(function(column) { return column.padLeft(columnWidths[column]); })
+          .join(" | ");
+
+      console.log(header);
+      console.log("-".repeat(header.length));
+
+      results.each(function(result) {
+        console.log(
+          Lazy(columns)
+            .map(function(column) { return String(readValue(result, column)).padLeft(columnWidths[column]); })
+            .join(" | ")
+        );
+      });
+    }
   }
-};
-
-console.log("Testing uniq for " + size + " elements (" + type + ").");
-
-var suite = Lazy(tests).reduce(function(suite, test, name) {
-  suite.add(name, test);
-  return suite;
-}, new Benchmark.Suite());
-
-suite.on("cycle", function(e) {
-  console.log(e.target.name + ": " + e.target.hz);
 });
 
-suite.on("complete", function() {
-  console.log("\nResults:\n");
+suite.add("uniq", {
+  tests: {
+    "Lazy.js (no cache)": function(array) { Lazy(array).uniq().eachNoCache(function(e) {}); },
+    "Lazy.js (array cache)": function(array) { Lazy(array).uniq().eachArrayCache(function(e) {}); },
+    "Lazy.js (set cache)": function(array) { Lazy(array).uniq().eachSetCache(function(e) {}); },
+    "Lo-Dash": function(array) { _.each(_.uniq(array), function(e) {}); }
+  },
 
-  var results = Lazy(suite.slice(0, suite.length))
-    .sortBy(function(run) { return run.hz; })
-    .reverse();
-
-  var columns = ["name", "hz", "count", "cycles", "stats.rme", "stats.deviation"];
-
-  var columnWidths = Lazy(columns)
-    .map(function(columnName) {
-      return [
-        columnName,
-        results
-          .map(function(result) { return readValue(result, columnName); })
-          .map(String)
-          .pluck("length")
-          .concat([columnName.length])
-          .max()
-      ];
-    })
-    .toObject();
-
-  var header = Lazy(columns)
-      .map(function(column) { return column.padLeft(columnWidths[column]); })
-      .join(" | ");
-
-  console.log(header);
-  console.log("-".repeat(header.length));
-
-  results.each(function(result) {
-    console.log(
-      Lazy(columns)
-        .map(function(column) { return String(readValue(result, column)).padLeft(columnWidths[column]); })
-        .join(" | ")
-    );
-  });
+  inputs: {
+    "array": [input]
+  }
 });
 
 console.log("Running benchmarks...");
