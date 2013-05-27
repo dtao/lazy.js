@@ -4,7 +4,7 @@ var Lazy = global.Lazy;
 
 function StreamedSequence(path, encoding) {
   this.path = path;
-  this.encoding = encoding;
+  this.encoding = encoding || "utf-8";
 }
 
 StreamedSequence.prototype = new Lazy.Sequence();
@@ -35,7 +35,7 @@ function StreamedLineSequence(parent) {
   this.parent = parent;
 }
 
-StreamedLineSequence.prototype = new Sequence();
+StreamedLineSequence.prototype = new Lazy.Sequence();
 
 /**
  * Handles every line of data in the underlying file.
