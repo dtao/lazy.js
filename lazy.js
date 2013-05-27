@@ -758,6 +758,18 @@
   IndexedSequence.prototype = new Sequence();
 
   /**
+   * Create a new constructor function for a type inheriting from
+   * {@link IndexedSequence}.
+   *
+   * @param {Function} ctor The constructor function.
+   * @return {Function} A constructor for a new type inheriting from {@link IndexedSequence}.
+   */
+  IndexedSequence.inherit = function(ctor) {
+    ctor.prototype = new IndexedSequence();
+    return ctor;
+  };
+
+  /**
    * Returns the element at the specified index.
    *
    * @param {number} i The index to access.
@@ -968,10 +980,11 @@
   CachingSequence.prototype = new Sequence();
 
   /**
-   * Create a new constructor function for a type inheriting from Sequence.
+   * Create a new constructor function for a type inheriting from
+   * {@link CachingSequence}.
    *
    * @param {Function} ctor The constructor function.
-   * @return {Function} A constructor for a new type inheriting from Sequence.
+   * @return {Function} A constructor for a new type inheriting from {@link CachingSequence}.
    */
   CachingSequence.inherit = function(ctor) {
     ctor.prototype = new CachingSequence();
@@ -1839,16 +1852,12 @@
    * Creates a sequence from a given starting value, up to a specified stopping
    * value, incrementing by a given step.
    *
-   * @param {number} start The first value of the sequence.
-   * @param {number=} stop The last value of the sequence.
-   * @param {number=} step The amount to increment the current value for each
-   *     element in the sequence.
    * @return {Sequence} The sequence defined by the given ranges.
    */
-  Lazy.range = function(start, stop, step) {
-    start = arguments.length > 1 ? arguments[0] : 0;
-    stop  = arguments.length > 1 ? arguments[1] : arguments[0];
-    step  = arguments.length > 2 ? arguments[2] : 1;
+  Lazy.range = function() {
+    var start = arguments.length > 1 ? arguments[0] : 0,
+        stop  = arguments.length > 1 ? arguments[1] : arguments[0],
+        step  = arguments.length > 2 ? arguments[2] : 1;
     return this.generate(function(i) { return start + (step * i); })
       .take(Math.floor((stop - start) / step));
   };
