@@ -46,7 +46,7 @@ def compile_file(output, source_files, options={})
   File.open(output, "w") do |f|
     f.write("(function(context) {\n\n") unless options[:nowrap]
     f.write(javascript)
-    f.write("\n}(typeof global !== 'undefined' ? global : window));") unless options[:nowrap]
+    f.write("\n}(typeof global !== 'undefined' ? global : window));\n") unless options[:nowrap]
   end
 
   unless options[:nocompile]
@@ -118,6 +118,6 @@ namespace :compile do
 
   desc "Compile documentation"
   task :docs do
-    `jsdoc lib --recurse --destination docs`
+    `jsdoc lib --conf conf.json --recurse --destination docs`
   end
 end

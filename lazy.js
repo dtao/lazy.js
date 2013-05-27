@@ -748,8 +748,8 @@
   /**
    * An IndexedSequence is a {@link Sequence} that provides random access to its
    * elements. This extends the API for iterating with the additional methods
-   * {@link get} and {@link length}, allowing a sequence to act as a "view" into
-   * a collection or other indexed data source.
+   * `get` and `length`, allowing a sequence to act as a "view" into a collection
+   * or other indexed data source.
    *
    * @constructor
    */
