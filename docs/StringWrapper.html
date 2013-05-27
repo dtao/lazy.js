@@ -39,18 +39,73 @@
     
         
 <dt>
-    <h4 class="name" id="StringWrapper"><span class="type-signature"></span>new StringWrapper<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="StringWrapper"><span class="type-signature"></span>new StringWrapper<span class="signature">(source)</span><span class="type-signature"></span></h4>
     
     
 </dt>
 <dd>
     
     
+    <div class="description">
+        Wraps a string exposing match and {@link split} methods that return
+<a href="Sequence.html">Sequence</a> objects instead of arrays, improving on the efficiency of
+JavaScript's built-in String.split and {@link String.match} methods
+and supporting asynchronous iteration.
+    </div>
+    
 
     
     
     
     
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>source</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The string to wrap.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
     
     
     
@@ -76,7 +131,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="string_wrapper.js.html">string_wrapper.js</a>, <a href="string_wrapper.js.html#line4">line 4</a>
+        <a href="string_wrapper.js.html">string_wrapper.js</a>, <a href="string_wrapper.js.html#line10">line 10</a>
     </li></ul></dd>
     
     
@@ -117,6 +172,295 @@
     
     
     
+        <h3 class="subsection-title">Methods</h3>
+        
+        <dl>
+            
+<dt>
+    <h4 class="name" id="match"><span class="type-signature"></span>match<span class="signature">(pattern)</span><span class="type-signature"> &rarr; {<a href="Sequence.html">Sequence</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Creates a sequence comprising all of the matches for the specified pattern
+in the underlying string.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>pattern</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">RegExp</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The pattern to match.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="string_wrapper.js.html">string_wrapper.js</a>, <a href="string_wrapper.js.html#line21">line 21</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    A sequence of all the matches.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="Sequence.html">Sequence</a></span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="split"><span class="type-signature"></span>split<span class="signature">(delimiter)</span><span class="type-signature"> &rarr; {<a href="Sequence.html">Sequence</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Creates a sequence comprising all of the substrings of this string separated
+by the given delimiter, which can be either a string or a regular expression.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>delimiter</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">RegExp</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The delimiter to use for recognizing
+    substrings.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="string_wrapper.js.html">string_wrapper.js</a>, <a href="string_wrapper.js.html#line34">line 34</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    A sequence of all the substrings separated by the given
+    delimiter.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="Sequence.html">Sequence</a></span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        </dl>
+    
     
     
     
@@ -131,13 +475,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="ArrayWrapper.html">ArrayWrapper</a></li><li><a href="CharIterator.html">CharIterator</a></li><li><a href="FilteringIterator.html">FilteringIterator</a></li><li><a href="Iterator.html">Iterator</a></li><li><a href="MappedArrayWrapper.html">MappedArrayWrapper</a></li><li><a href="ObjectWrapper.html">ObjectWrapper</a></li><li><a href="Sequence.html">Sequence</a></li><li><a href="Set.html">Set</a></li><li><a href="SplitWithRegExpIterator.html">SplitWithRegExpIterator</a></li><li><a href="SplitWithStringIterator.html">SplitWithStringIterator</a></li><li><a href="StringMatchIterator.html">StringMatchIterator</a></li><li><a href="StringWrapper.html">StringWrapper</a></li><li><a href="UniqueArrayWrapper.html">UniqueArrayWrapper</a></li></ul><h3>Global</h3><ul><li><a href="global.html#compare">compare</a></li><li><a href="global.html#createSet">createSet</a></li><li><a href="global.html#recursiveForEach">recursiveForEach</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="ArrayWrapper.html">ArrayWrapper</a></li><li><a href="AsyncSequence.html">AsyncSequence</a></li><li><a href="CachingSequence.html">CachingSequence</a></li><li><a href="CharIterator.html">CharIterator</a></li><li><a href="FilteringIterator.html">FilteringIterator</a></li><li><a href="GeneratedSequence.html">GeneratedSequence</a></li><li><a href="IndexedSequence.html">IndexedSequence</a></li><li><a href="Iterator.html">Iterator</a></li><li><a href="MappedArrayWrapper.html">MappedArrayWrapper</a></li><li><a href="ObjectWrapper.html">ObjectWrapper</a></li><li><a href="Sequence.html">Sequence</a></li><li><a href="Set.html">Set</a></li><li><a href="SplitWithRegExpIterator.html">SplitWithRegExpIterator</a></li><li><a href="SplitWithStringIterator.html">SplitWithStringIterator</a></li><li><a href="StringMatchIterator.html">StringMatchIterator</a></li><li><a href="StringWrapper.html">StringWrapper</a></li><li><a href="UniqueArrayWrapper.html">UniqueArrayWrapper</a></li></ul><h3>Global</h3><ul><li><a href="global.html#compare">compare</a></li><li><a href="global.html#createSet">createSet</a></li><li><a href="global.html#Lazy">Lazy</a></li><li><a href="global.html#recursiveForEach">recursiveForEach</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Thu May 23 2013 13:55:45 GMT-0700 (PDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Mon May 27 2013 12:37:02 GMT-0700 (PDT)
 </footer>
 
 <script> prettyPrint(); </script>

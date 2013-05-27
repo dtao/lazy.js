@@ -25,7 +25,18 @@
     
     <section>
         <article>
-            <pre class="prettyprint source"><code>var Lazy = function(source) {
+            <pre class="prettyprint source"><code>/**
+ * Wraps an object and returns something lazy.
+ *
+ * For arrays and objects, Lazy will create a {@link Sequence} object.
+ * For strings, Lazy will create a {@link StringWrapper}, with
+ * {@link StringWrapper.split} and {@link StringWrapper.match} methods that
+ * themselves create sequences.
+ *
+ * @param {*} source An array, object, or string to wrap.
+ * @return {StringWrapper|Sequence} The wrapped lazy object.
+ */
+var Lazy = function(source) {
   if (source instanceof Sequence) {
     return source;
   } else if (typeof source === "string") {
@@ -36,20 +47,53 @@
   return new ObjectWrapper(source);
 };
 
+/**
+ * Deprecated.
+ */
 Lazy.async = function(source, interval) {
   return new AsyncSequence(new ArrayWrapper(source), interval);
 };
 
-Lazy.generate = function(sequenceFn, length) {
-  return new GeneratedSequence(sequenceFn, length);
+/**
+ * Creates a {@link GeneratedSequence} using the specified generator function
+ * and (optionally) length.
+ *
+ * @param {function(number):*} generatorFn The function used to generate the
+ *     sequence. This function accepts an index as a parameter and should return
+ *     a value for that index in the resulting sequence.
+ * @param {number=} length The length of the sequence, for sequences with a
+ *     definite length.
+ * @return {Sequence} The generated sequence.
+ */
+Lazy.generate = function(generatorFn, length) {
+  return new GeneratedSequence(generatorFn, length);
 };
 
+/**
+ * Creates a sequence from a given starting value, up to a specified stopping
+ * value, incrementing by a given step.
+ *
+ * @return {Sequence} The sequence defined by the given ranges.
+ */
 Lazy.range = function() {
   var start = arguments.length > 1 ? arguments[0] : 0,
       stop  = arguments.length > 1 ? arguments[1] : arguments[0],
       step  = arguments.length > 2 ? arguments[2] : 1;
   return this.generate(function(i) { return start + (step * i); })
     .take(Math.floor((stop - start) / step));
+};
+
+/**
+ * Creates a sequence consisting of the given value repeated a specified number
+ * of times.
+ *
+ * @param {*} value The value to repeat.
+ * @param {number=} count The number of times the value should be repeated in
+ *     the sequence. If this argument is omitted, the value will repeat forever.
+ * @return {Sequence} The sequence containing the repeated value.
+ */
+Lazy.repeat = function(value, count) {
+  return Lazy.generate(function() { return value; }, count);
 };
 
 Lazy.Sequence = Sequence;
@@ -183,13 +227,13 @@ if (typeof module !== "undefined") {
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="ArrayWrapper.html">ArrayWrapper</a></li><li><a href="CharIterator.html">CharIterator</a></li><li><a href="FilteringIterator.html">FilteringIterator</a></li><li><a href="Iterator.html">Iterator</a></li><li><a href="MappedArrayWrapper.html">MappedArrayWrapper</a></li><li><a href="ObjectWrapper.html">ObjectWrapper</a></li><li><a href="Sequence.html">Sequence</a></li><li><a href="Set.html">Set</a></li><li><a href="SplitWithRegExpIterator.html">SplitWithRegExpIterator</a></li><li><a href="SplitWithStringIterator.html">SplitWithStringIterator</a></li><li><a href="StringMatchIterator.html">StringMatchIterator</a></li><li><a href="StringWrapper.html">StringWrapper</a></li><li><a href="UniqueArrayWrapper.html">UniqueArrayWrapper</a></li></ul><h3>Global</h3><ul><li><a href="global.html#compare">compare</a></li><li><a href="global.html#createSet">createSet</a></li><li><a href="global.html#recursiveForEach">recursiveForEach</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="ArrayWrapper.html">ArrayWrapper</a></li><li><a href="AsyncSequence.html">AsyncSequence</a></li><li><a href="CachingSequence.html">CachingSequence</a></li><li><a href="CharIterator.html">CharIterator</a></li><li><a href="FilteringIterator.html">FilteringIterator</a></li><li><a href="GeneratedSequence.html">GeneratedSequence</a></li><li><a href="IndexedSequence.html">IndexedSequence</a></li><li><a href="Iterator.html">Iterator</a></li><li><a href="MappedArrayWrapper.html">MappedArrayWrapper</a></li><li><a href="ObjectWrapper.html">ObjectWrapper</a></li><li><a href="Sequence.html">Sequence</a></li><li><a href="Set.html">Set</a></li><li><a href="SplitWithRegExpIterator.html">SplitWithRegExpIterator</a></li><li><a href="SplitWithStringIterator.html">SplitWithStringIterator</a></li><li><a href="StringMatchIterator.html">StringMatchIterator</a></li><li><a href="StringWrapper.html">StringWrapper</a></li><li><a href="UniqueArrayWrapper.html">UniqueArrayWrapper</a></li></ul><h3>Global</h3><ul><li><a href="global.html#compare">compare</a></li><li><a href="global.html#createSet">createSet</a></li><li><a href="global.html#Lazy">Lazy</a></li><li><a href="global.html#recursiveForEach">recursiveForEach</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Thu May 23 2013 13:55:45 GMT-0700 (PDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Mon May 27 2013 12:37:01 GMT-0700 (PDT)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: ArrayWrapper</title>
+    <title>JSDoc: Class: CachingSequence</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Class: ArrayWrapper</h1>
+    <h1 class="page-title">Class: CachingSequence</h1>
     
     
 
@@ -27,7 +27,7 @@
     
 <header>
     <h2>
-    ArrayWrapper
+    CachingSequence
     </h2>
     
 </header>  
@@ -39,7 +39,7 @@
     
         
 <dt>
-    <h4 class="name" id="ArrayWrapper"><span class="type-signature"></span>new ArrayWrapper<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="CachingSequence"><span class="type-signature"></span>new CachingSequence<span class="signature">()</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -47,9 +47,15 @@
     
     
     <div class="description">
-        ArrayWrapper is the most basic <a href="Sequence.html">Sequence</a>. It directly wraps an array
-and implements the same methods as <a href="IndexedSequence.html">IndexedSequence</a>, but more
-efficiently.
+        A CachingSequence is a <a href="Sequence.html">Sequence</a> that (probably) must fully evaluate
+the underlying sequence when each is called. For this reason, it
+provides a cache method to fully populate an array that can then be
+referenced internally.
+
+Frankly, I question the wisdom in this sequence type and think I will
+probably refactor this out in the near future. Most likely I will replace it
+with something like an 'IteratingSequence' which must expose a 'getIterator'
+and not provide get or {@link length} at all. But we'll see.
     </div>
     
 
@@ -82,7 +88,7 @@ efficiently.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="array_wrapper.js.html">array_wrapper.js</a>, <a href="array_wrapper.js.html#line8">line 8</a>
+        <a href="caching_sequence.js.html">caching_sequence.js</a>, <a href="caching_sequence.js.html#line14">line 14</a>
     </li></ul></dd>
     
     
@@ -120,64 +126,6 @@ efficiently.
     
     
     
-    
-        <h3 class="subsection-title">Members</h3>
-        
-        <dl>
-            
-<dt>
-    <h4 class="name" id="uniq"><span class="type-signature"></span>uniq<span class="type-signature"></span></h4>
-    
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        An optimized version of Sequence.uniq.
-    </div>
-    
-    
-    
-
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="array_wrapper.js.html">array_wrapper.js</a>, <a href="array_wrapper.js.html#line55">line 55</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-</dd>
-
-        </dl>
     
     
     
@@ -186,7 +134,7 @@ efficiently.
         <dl>
             
 <dt>
-    <h4 class="name" id="each"><span class="type-signature"></span>each<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="inherit"><span class="type-signature">&lt;static> </span>inherit<span class="signature">(ctor)</span><span class="type-signature"> &rarr; {Function}</span></h4>
     
     
 </dt>
@@ -194,76 +142,8 @@ efficiently.
     
     
     <div class="description">
-        An optimized version of Sequence.each.
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="array_wrapper.js.html">array_wrapper.js</a>, <a href="array_wrapper.js.html#line36">line 36</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="get"><span class="type-signature"></span>get<span class="signature">(i)</span><span class="type-signature"> &rarr; {*}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Returns the element at the specified index in the source array.
+        Create a new constructor function for a type inheriting from
+<a href="CachingSequence.html">CachingSequence</a>.
     </div>
     
 
@@ -297,13 +177,13 @@ efficiently.
 	
         <tr>
             
-                <td class="name"><code>i</code></td>
+                <td class="name"><code>ctor</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type">Function</span>
 
 
             
@@ -313,7 +193,7 @@ efficiently.
             
             
             
-            <td class="description last">The index to access.</td>
+            <td class="description last">The constructor function.</td>
         </tr>
 	
 	
@@ -344,7 +224,7 @@ efficiently.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="array_wrapper.js.html">array_wrapper.js</a>, <a href="array_wrapper.js.html#line20">line 20</a>
+        <a href="caching_sequence.js.html">caching_sequence.js</a>, <a href="caching_sequence.js.html#line26">line 26</a>
     </li></ul></dd>
     
     
@@ -369,7 +249,8 @@ efficiently.
     
             
 <div class="param-desc">
-    The element.
+    A constructor for a new type inheriting from
+    <a href="CachingSequence.html">CachingSequence</a>.
 </div>
 
 
@@ -380,7 +261,7 @@ efficiently.
 	</dt>
 	<dd>
 		
-<span class="param-type">*</span>
+<span class="param-type">Function</span>
 
 
 	</dd>
@@ -394,7 +275,7 @@ efficiently.
         
             
 <dt>
-    <h4 class="name" id="length"><span class="type-signature"></span>length<span class="signature">()</span><span class="type-signature"> &rarr; {number}</span></h4>
+    <h4 class="name" id="cache"><span class="type-signature"></span>cache<span class="signature">()</span><span class="type-signature"> &rarr; {Array}</span></h4>
     
     
 </dt>
@@ -402,7 +283,7 @@ efficiently.
     
     
     <div class="description">
-        Returns the length of the source array.
+        Fully evaluates the sequence and returns a cached result.
     </div>
     
 
@@ -435,7 +316,7 @@ efficiently.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="array_wrapper.js.html">array_wrapper.js</a>, <a href="array_wrapper.js.html#line29">line 29</a>
+        <a href="caching_sequence.js.html">caching_sequence.js</a>, <a href="caching_sequence.js.html#line37">line 37</a>
     </li></ul></dd>
     
     
@@ -460,7 +341,8 @@ efficiently.
     
             
 <div class="param-desc">
-    The length.
+    The cached array, fully populated with the elements in this
+    sequence.
 </div>
 
 
@@ -471,7 +353,7 @@ efficiently.
 	</dt>
 	<dd>
 		
-<span class="param-type">number</span>
+<span class="param-type">Array</span>
 
 
 	</dd>
@@ -485,7 +367,7 @@ efficiently.
         
             
 <dt>
-    <h4 class="name" id="map"><span class="type-signature"></span>map<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="get"><span class="type-signature"></span>get<span class="signature">()</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -493,7 +375,7 @@ efficiently.
     
     
     <div class="description">
-        An optimized version of Sequence.map.
+        For internal use only.
     </div>
     
 
@@ -526,7 +408,7 @@ efficiently.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="array_wrapper.js.html">array_wrapper.js</a>, <a href="array_wrapper.js.html#line48">line 48</a>
+        <a href="caching_sequence.js.html">caching_sequence.js</a>, <a href="caching_sequence.js.html#line47">line 47</a>
     </li></ul></dd>
     
     
@@ -554,7 +436,7 @@ efficiently.
         
             
 <dt>
-    <h4 class="name" id="toArray"><span class="type-signature"></span>toArray<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="length"><span class="type-signature"></span>length<span class="signature">()</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -562,7 +444,7 @@ efficiently.
     
     
     <div class="description">
-        An optimized version of Sequence.toArray.
+        For internal use only.
     </div>
     
 
@@ -595,7 +477,7 @@ efficiently.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="array_wrapper.js.html">array_wrapper.js</a>, <a href="array_wrapper.js.html#line63">line 63</a>
+        <a href="caching_sequence.js.html">caching_sequence.js</a>, <a href="caching_sequence.js.html#line54">line 54</a>
     </li></ul></dd>
     
     

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: FilteringIterator</title>
+    <title>JSDoc: Source: caching_sequence.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,113 +17,73 @@
 
 <div id="main">
     
-    <h1 class="page-title">Class: FilteringIterator</h1>
+    <h1 class="page-title">Source: caching_sequence.js</h1>
     
     
 
 
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>/**
+ * A CachingSequence is a {@link Sequence} that (probably) must fully evaluate
+ * the underlying sequence when {@link each} is called. For this reason, it
+ * provides a {@link cache} method to fully populate an array that can then be
+ * referenced internally.
+ *
+ * Frankly, I question the wisdom in this sequence type and think I will
+ * probably refactor this out in the near future. Most likely I will replace it
+ * with something like an 'IteratingSequence' which must expose a 'getIterator'
+ * and not provide {@link get} or {@link length} at all. But we'll see.
+ *
+ * @constructor
+ */
+function CachingSequence() {}
 
-<section>
-    
-<header>
-    <h2>
-    FilteringIterator
-    </h2>
-    
-</header>  
+CachingSequence.prototype = new Sequence();
 
-<article>
-    <div class="container-overview">
-    
-    
-    
-        
-<dt>
-    <h4 class="name" id="FilteringIterator"><span class="type-signature"></span>new FilteringIterator<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
+/**
+ * Create a new constructor function for a type inheriting from
+ * {@link CachingSequence}.
+ *
+ * @param {Function} ctor The constructor function.
+ * @return {Function} A constructor for a new type inheriting from
+ *     {@link CachingSequence}.
+ */
+CachingSequence.inherit = function(ctor) {
+  ctor.prototype = new CachingSequence();
+  return ctor;
+};
 
-    
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
+/**
+ * Fully evaluates the sequence and returns a cached result.
+ *
+ * @return {Array} The cached array, fully populated with the elements in this
+ *     sequence.
+ */
+CachingSequence.prototype.cache = function() {
+  if (!this.cached) {
+    this.cached = this.toArray();
+  }
+  return this.cached;
+};
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="filtering_iterator.js.html">filtering_iterator.js</a>, <a href="filtering_iterator.js.html#line4">line 4</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
+/**
+ * For internal use only.
+ */
+CachingSequence.prototype.get = function(i) {
+  return this.cache()[i];
+};
 
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-</dd>
-
-    
-    </div>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</article>
-
-</section>  
+/**
+ * For internal use only.
+ */
+CachingSequence.prototype.length = function() {
+  return this.cache().length;
+};
+</code></pre>
+        </article>
+    </section>
 
 
 

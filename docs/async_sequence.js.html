@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: FilteringIterator</title>
+    <title>JSDoc: Source: async_sequence.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,113 +17,70 @@
 
 <div id="main">
     
-    <h1 class="page-title">Class: FilteringIterator</h1>
+    <h1 class="page-title">Source: async_sequence.js</h1>
     
     
 
 
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>/**
+ * An AsyncSequence iterates over its elements asynchronously when {@link each}
+ * is called.
+ *
+ * @param {Sequence} parent A {@link Sequence} to wrap, to expose asynchronous
+ *     iteration.
+ * @param {number=} interval How many milliseconds should elapse between each
+ *     element when iterating over this sequence. If this argument is omitted,
+ *     asynchronous iteration will be executed as fast as possible.
+ * @constructor
+ */
+function AsyncSequence(parent, interval) {
+  if (parent instanceof AsyncSequence) {
+    throw "Sequence is already asynchronous!";
+  }
 
-<section>
-    
-<header>
-    <h2>
-    FilteringIterator
-    </h2>
-    
-</header>  
+  this.parent = parent;
+  this.onNextCallback = getOnNextCallback(interval);
+}
 
-<article>
-    <div class="container-overview">
-    
-    
-    
-        
-<dt>
-    <h4 class="name" id="FilteringIterator"><span class="type-signature"></span>new FilteringIterator<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
+AsyncSequence.prototype = new Sequence();
 
-    
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
+/**
+ * An asynchronous version of {@link Sequence.each}.
+ */
+AsyncSequence.prototype.each = function(fn) {
+  var iterator = this.parent.getIterator(),
+      onNextCallback = this.onNextCallback;
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="filtering_iterator.js.html">filtering_iterator.js</a>, <a href="filtering_iterator.js.html#line4">line 4</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
+  if (iterator.moveNext()) {
+    onNextCallback(function iterate() {
+      if (fn(iterator.current()) !== false && iterator.moveNext()) {
+        onNextCallback(iterate);
+      }
+    });
+  }
+};
 
-    
-    
+function getOnNextCallback(interval) {
+  if (typeof interval === "undefined") {
+    if (typeof context.setImmediate === "function") {
+      return context.setImmediate;
+    }
+    if (typeof process !== "undefined" && typeof process.nextTick === "function") {
+      return process.nextTick;
+    }
+  }
 
-    
-
-    
-    
-    
-    
-    
-    
-    
-</dd>
-
-    
-    </div>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</article>
-
-</section>  
+  interval = interval || 0;
+  return function(fn) {
+    setTimeout(fn, interval);
+  };
+}
+</code></pre>
+        </article>
+    </section>
 
 
 

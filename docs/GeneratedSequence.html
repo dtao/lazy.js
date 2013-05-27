@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: Set</title>
+    <title>JSDoc: Class: GeneratedSequence</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Class: Set</h1>
+    <h1 class="page-title">Class: GeneratedSequence</h1>
     
     
 
@@ -27,7 +27,7 @@
     
 <header>
     <h2>
-    Set
+    GeneratedSequence
     </h2>
     
 </header>  
@@ -39,7 +39,7 @@
     
         
 <dt>
-    <h4 class="name" id="Set"><span class="type-signature"></span>new Set<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="GeneratedSequence"><span class="type-signature"></span>new GeneratedSequence<span class="signature">(generatorFn, <span class="optional">length</span>)</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -47,7 +47,9 @@
     
     
     <div class="description">
-        A collection of unique elements.
+        A GeneratedSequence does not wrap an in-memory colllection but rather
+determines its elements on-the-fly during iteration according to a generator
+function.
     </div>
     
 
@@ -55,6 +57,99 @@
     
     
     
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>generatorFn</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">A function which accepts an index
+    and returns a value for the element at that position in the sequence.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>length</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">The length of the sequence. If this argument is
+    omitted, the sequence will go on forever.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
     
     
     
@@ -80,7 +175,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="set.js.html">set.js</a>, <a href="set.js.html#line6">line 6</a>
+        <a href="generated_sequence.js.html">generated_sequence.js</a>, <a href="generated_sequence.js.html#line12">line 12</a>
     </li></ul></dd>
     
     
@@ -126,7 +221,7 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="add"><span class="type-signature"></span>add<span class="signature">(value)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    <h4 class="name" id="each"><span class="type-signature"></span>each<span class="signature">()</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -134,7 +229,7 @@
     
     
     <div class="description">
-        Attempts to add a unique value to the set.
+        See Sequence.each.
     </div>
     
 
@@ -142,54 +237,6 @@
     
     
     
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>value</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">*</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">The value to add.</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
     
     
     
@@ -215,7 +262,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="set.js.html">set.js</a>, <a href="set.js.html#line17">line 17</a>
+        <a href="generated_sequence.js.html">generated_sequence.js</a>, <a href="generated_sequence.js.html#line31">line 31</a>
     </li></ul></dd>
     
     
@@ -236,29 +283,6 @@
     
     
     
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    True if the value was added to the set (meaning an equal
-    value was not already present), or else false.
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">boolean</span>
-
-
-	</dd>
-</dl>
-
-        
     
     
 </dd>
@@ -266,7 +290,7 @@
         
             
 <dt>
-    <h4 class="name" id="contains"><span class="type-signature"></span>contains<span class="signature">(value)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    <h4 class="name" id="length"><span class="type-signature"></span>length<span class="signature">()</span><span class="type-signature"> &rarr; {number}</span></h4>
     
     
 </dt>
@@ -274,7 +298,7 @@
     
     
     <div class="description">
-        Checks whether the set contains a value.
+        Returns the length of this sequence.
     </div>
     
 
@@ -282,54 +306,6 @@
     
     
     
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>value</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">*</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">The value to check for.</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
     
     
     
@@ -355,7 +331,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="set.js.html">set.js</a>, <a href="set.js.html#line38">line 38</a>
+        <a href="generated_sequence.js.html">generated_sequence.js</a>, <a href="generated_sequence.js.html#line24">line 24</a>
     </li></ul></dd>
     
     
@@ -380,7 +356,7 @@
     
             
 <div class="param-desc">
-    True if the set contains the value, or else false.
+    The length, or undefined if this is an indefinite sequence.
 </div>
 
 
@@ -391,7 +367,7 @@
 	</dt>
 	<dd>
 		
-<span class="param-type">boolean</span>
+<span class="param-type">number</span>
 
 
 	</dd>
