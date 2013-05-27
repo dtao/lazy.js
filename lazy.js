@@ -762,7 +762,8 @@
    * {@link IndexedSequence}.
    *
    * @param {Function} ctor The constructor function.
-   * @return {Function} A constructor for a new type inheriting from {@link IndexedSequence}.
+   * @return {Function} A constructor for a new type inheriting from
+   *     {@link IndexedSequence}.
    */
   IndexedSequence.inherit = function(ctor) {
     ctor.prototype = new IndexedSequence();
@@ -984,7 +985,8 @@
    * {@link CachingSequence}.
    *
    * @param {Function} ctor The constructor function.
-   * @return {Function} A constructor for a new type inheriting from {@link CachingSequence}.
+   * @return {Function} A constructor for a new type inheriting from
+   *     {@link CachingSequence}.
    */
   CachingSequence.inherit = function(ctor) {
     ctor.prototype = new CachingSequence();
@@ -1860,6 +1862,19 @@
         step  = arguments.length > 2 ? arguments[2] : 1;
     return this.generate(function(i) { return start + (step * i); })
       .take(Math.floor((stop - start) / step));
+  };
+
+  /**
+   * Creates a sequence consisting of the given value repeated a specified number
+   * of times.
+   *
+   * @param {*} value The value to repeat.
+   * @param {number=} count The number of times the value should be repeated in
+   *     the sequence. If this argument is omitted, the value will repeat forever.
+   * @return {Sequence} The sequence containing the repeated value.
+   */
+  Lazy.repeat = function(value, count) {
+    return Lazy.generate(function() { return value; }, count);
   };
 
   Lazy.Sequence = Sequence;
