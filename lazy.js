@@ -745,21 +745,40 @@
     return valuesForKey && contains(valuesForKey, value);
   };
 
-  var IndexedSequence = Sequence.inherit(function() {});
+  /**
+   * An IndexedSequence is a {@link Sequence} that provides random access to its
+   * elements. This extends the API for iterating with the additional methods
+   * {@link get} and {@link length}, allowing a sequence to act as a "view" into
+   * a collection or other indexed data source.
+   *
+   * @constructor
+   */
+  function IndexedSequence() {}
 
-  IndexedSequence.inherit = function(ctor) {
-    ctor.prototype = new IndexedSequence();
-    return ctor;
-  };
+  IndexedSequence.prototype = new Sequence();
 
+  /**
+   * Returns the element at the specified index.
+   *
+   * @param {number} i The index to access.
+   * @return {*} The element.
+   */
   IndexedSequence.prototype.get = function(i) {
     return this.parent.get(i);
   };
 
+  /**
+   * Returns the length of the sequence.
+   *
+   * @return {number} The length.
+   */
   IndexedSequence.prototype.length = function() {
     return this.parent.length();
   };
 
+  /**
+   * An optimized version of {@link Sequence.each}.
+   */
   IndexedSequence.prototype.each = function(fn) {
     var length = this.length(),
         i = -1;
@@ -770,23 +789,38 @@
     }
   };
 
+  /**
+   * An optimized version of {@link Sequence.map}, which creates an
+   * {@link IndexedSequence} so that the result still provides random access.
+   */
   IndexedSequence.prototype.map =
   IndexedSequence.prototype.collect = function(mapFn) {
     return new IndexedMappedSequence(this, mapFn);
   };
 
+  /**
+   * An optimized version of {@link Sequence.filter}.
+   */
   IndexedSequence.prototype.filter =
   IndexedSequence.prototype.select = function(filterFn) {
     return new IndexedFilteredSequence(this, filterFn);
   };
 
+  /**
+   * An optimized version of {@link Sequence.reverse}, which creates an
+   * {@link IndexedSequence} so that the result still provides random access.
+   */
   IndexedSequence.prototype.reverse = function() {
     return new IndexedReversedSequence(this);
   };
 
-  IndexedSequence.prototype.first =
-  IndexedSequence.prototype.head =
-  IndexedSequence.prototype.take = function(count) {
+  /**
+   * An optimized version of {@link Sequence.first}, which creates an
+   * {@link IndexedSequence} so that the result still provides random access.
+   *
+   * @param {number=} count
+   */
+  IndexedSequence.prototype.first = function(count) {
     if (typeof count === "undefined") {
       return this.get(0);
     }
@@ -794,13 +828,28 @@
     return new IndexedTakeSequence(this, count);
   };
 
-  IndexedSequence.prototype.rest =
-  IndexedSequence.prototype.tail =
-  IndexedSequence.prototype.drop = function(count) {
+  IndexedSequence.prototype.head =
+  IndexedSequence.prototype.take =
+  IndexedSequence.prototype.first;
+
+  /**
+   * An optimized version of {@link Sequence.rest}, which creates an
+   * {@link IndexedSequence} so that the result still provides random access.
+   *
+   * @param {number=} count
+   */
+  IndexedSequence.prototype.rest = function(count) {
     return new IndexedDropSequence(this, count);
   };
 
+  IndexedSequence.prototype.tail =
+  IndexedSequence.prototype.drop = IndexedSequence.prototype.rest;
+
   /**
+   * ArrayWrapper is the most basic {@link Sequence}. It directly wraps an array
+   * and implements the same methods as {@link IndexedSequence}, but more
+   * efficiently.
+   *
    * @constructor
    */
   function ArrayWrapper(source) {
@@ -809,14 +858,28 @@
 
   ArrayWrapper.prototype = new IndexedSequence();
 
+  /**
+   * Returns the element at the specified index in the source array.
+   *
+   * @param {number} i The index to access.
+   * @return {*} The element.
+   */
   ArrayWrapper.prototype.get = function(i) {
     return this.source[i];
   };
 
+  /**
+   * Returns the length of the source array.
+   *
+   * @return {number} The length.
+   */
   ArrayWrapper.prototype.length = function() {
     return this.source.length;
   };
 
+  /**
+   * An optimized version of {@link Sequence.each}.
+   */
   ArrayWrapper.prototype.each = function(fn) {
     var i = -1;
     while (++i < this.source.length) {
@@ -826,15 +889,24 @@
     }
   };
 
+  /**
+   * An optimized version of {@link Sequence.map}.
+   */
   ArrayWrapper.prototype.map = function(mapFn) {
     return new MappedArrayWrapper(this.source, mapFn);
   };
 
+  /**
+   * An optimized version of {@link Sequence.uniq}.
+   */
   ArrayWrapper.prototype.uniq =
   ArrayWrapper.prototype.unique = function() {
     return new UniqueArrayWrapper(this);
   };
 
+  /**
+   * An optimized version of {@link Sequence.toArray}.
+   */
   ArrayWrapper.prototype.toArray = function() {
     return this.source.slice(0);
   };
@@ -878,13 +950,40 @@
     return this.map(function(v, k) { return [k, v]; }).toArray();
   };
 
-  var CachingSequence = Sequence.inherit(function() {});
+  /**
+   * A CachingSequence is a {@link Sequence} that (probably) must fully evaluate
+   * the underlying sequence when {@link each} is called. For this reason, it
+   * provides a {@link cache} method to fully populate an array that can then be
+   * referenced internally.
+   *
+   * Frankly, I question the wisdom in this sequence type and think I will
+   * probably refactor this out in the near future. Most likely I will replace it
+   * with something like an 'IteratingSequence' which must expose a 'getIterator'
+   * and not provide {@link get} or {@link length} at all. But we'll see.
+   *
+   * @constructor
+   */
+  function CachingSequence() {}
 
+  CachingSequence.prototype = new Sequence();
+
+  /**
+   * Create a new constructor function for a type inheriting from Sequence.
+   *
+   * @param {Function} ctor The constructor function.
+   * @return {Function} A constructor for a new type inheriting from Sequence.
+   */
   CachingSequence.inherit = function(ctor) {
     ctor.prototype = new CachingSequence();
     return ctor;
   };
 
+  /**
+   * Fully evaluates the sequence and returns a cached result.
+   *
+   * @return {Array} The cached array, fully populated with the elements in this
+   *     sequence.
+   */
   CachingSequence.prototype.cache = function() {
     if (!this.cached) {
       this.cached = this.toArray();
@@ -892,10 +991,16 @@
     return this.cached;
   };
 
+  /**
+   * For internal use only.
+   */
   CachingSequence.prototype.get = function(i) {
     return this.cache()[i];
   };
 
+  /**
+   * For internal use only.
+   */
   CachingSequence.prototype.length = function() {
     return this.cache().length;
   };
@@ -1407,15 +1512,36 @@
     });
   };
 
-  var GeneratedSequence = Sequence.inherit(function(generatorFn, length) {
+  /**
+   * A GeneratedSequence does not wrap an in-memory colllection but rather
+   * determines its elements on-the-fly during iteration according to a generator
+   * function.
+   *
+   * @constructor
+   * @param {function(number, *):*} generatorFn A function which accepts an index
+   *     and returns a value for the element at that position in the sequence.
+   * @param {number=} length The length of the sequence. If this argument is
+   *     omitted, the sequence will go on forever.
+   */
+  function GeneratedSequence(generatorFn, length) {
     this.get = generatorFn;
     this.fixedLength = length;
-  });
+  }
 
+  GeneratedSequence.prototype = new Sequence();
+
+  /**
+   * Returns the length of this sequence.
+   *
+   * @return {number} The length, or undefined if this is an indefinite sequence.
+   */
   GeneratedSequence.prototype.length = function() {
     return this.fixedLength;
   };
 
+  /**
+   * See {@link Sequence.each}.
+   */
   GeneratedSequence.prototype.each = function(fn) {
     var generatorFn = this.get,
         length = this.fixedLength,
@@ -1427,15 +1553,31 @@
     }
   };
 
-  var AsyncSequence = Sequence.inherit(function(parent, interval) {
+  /**
+   * An AsyncSequence iterates over its elements asynchronously when {@link each}
+   * is called.
+   *
+   * @param {Sequence} parent A {@link Sequence} to wrap, to expose asynchronous
+   *     iteration.
+   * @param {number=} interval How many milliseconds should elapse between each
+   *     element when iterating over this sequence. If this argument is omitted,
+   *     asynchronous iteration will be executed as fast as possible.
+   * @constructor
+   */
+  function AsyncSequence(parent, interval) {
     if (parent instanceof AsyncSequence) {
       throw "Sequence is already asynchronous!";
     }
 
     this.parent = parent;
     this.onNextCallback = getOnNextCallback(interval);
-  });
+  }
 
+  AsyncSequence.prototype = new Sequence();
+
+  /**
+   * An asynchronous version of {@link Sequence.each}.
+   */
   AsyncSequence.prototype.each = function(fn) {
     var iterator = this.parent.getIterator(),
         onNextCallback = this.onNextCallback;
@@ -1466,16 +1608,38 @@
   }
 
   /**
+   * Wraps a string exposing {@link match} and {@link split} methods that return
+   * {@link Sequence} objects instead of arrays, improving on the efficiency of
+   * JavaScript's built-in {@link String.split} and {@link String.match} methods
+   * and supporting asynchronous iteration.
+   *
+   * @param {string} source The string to wrap.
    * @constructor
    */
   function StringWrapper(source) {
     this.source = source;
   }
 
+  /**
+   * Creates a sequence comprising all of the matches for the specified pattern
+   * in the underlying string.
+   *
+   * @param {RegExp} pattern The pattern to match.
+   * @return {Sequence} A sequence of all the matches.
+   */
   StringWrapper.prototype.match = function(pattern) {
     return new StringMatchSequence(this.source, pattern);
   };
 
+  /**
+   * Creates a sequence comprising all of the substrings of this string separated
+   * by the given delimiter, which can be either a string or a regular expression.
+   *
+   * @param {string|RegExp} delimiter The delimiter to use for recognizing
+   *     substrings.
+   * @return {Sequence} A sequence of all the substrings separated by the given
+   *     delimiter.
+   */
   StringWrapper.prototype.split = function(delimiter) {
     return new SplitStringSequence(this.source, delimiter);
   };
@@ -1627,6 +1791,17 @@
     return (++this.index < this.source.length);
   };
 
+  /**
+   * Wraps an object and returns something lazy.
+   *
+   * For arrays and objects, Lazy will create a {@link Sequence} object.
+   * For strings, Lazy will create a {@link StringWrapper}, with
+   * {@link StringWrapper.split} and {@link StringWrapper.match} methods that
+   * themselves create sequences.
+   *
+   * @param {*} source An array, object, or string to wrap.
+   * @return {StringWrapper|Sequence} The wrapped lazy object.
+   */
   var Lazy = function(source) {
     if (source instanceof Sequence) {
       return source;
@@ -1638,18 +1813,42 @@
     return new ObjectWrapper(source);
   };
 
+  /**
+   * Deprecated.
+   */
   Lazy.async = function(source, interval) {
     return new AsyncSequence(new ArrayWrapper(source), interval);
   };
 
-  Lazy.generate = function(sequenceFn, length) {
-    return new GeneratedSequence(sequenceFn, length);
+  /**
+   * Creates a {@link GeneratedSequence} using the specified generator function
+   * and (optionally) length.
+   *
+   * @param {function(number):*} generatorFn The function used to generate the
+   *     sequence. This function accepts an index as a parameter and should return
+   *     a value for that index in the resulting sequence.
+   * @param {number=} length The length of the sequence, for sequences with a
+   *     definite length.
+   * @return {Sequence} The generated sequence.
+   */
+  Lazy.generate = function(generatorFn, length) {
+    return new GeneratedSequence(generatorFn, length);
   };
 
-  Lazy.range = function() {
-    var start = arguments.length > 1 ? arguments[0] : 0,
-        stop  = arguments.length > 1 ? arguments[1] : arguments[0],
-        step  = arguments.length > 2 ? arguments[2] : 1;
+  /**
+   * Creates a sequence from a given starting value, up to a specified stopping
+   * value, incrementing by a given step.
+   *
+   * @param {number} start The first value of the sequence.
+   * @param {number=} stop The last value of the sequence.
+   * @param {number=} step The amount to increment the current value for each
+   *     element in the sequence.
+   * @return {Sequence} The sequence defined by the given ranges.
+   */
+  Lazy.range = function(start, stop, step) {
+    start = arguments.length > 1 ? arguments[0] : 0;
+    stop  = arguments.length > 1 ? arguments[1] : arguments[0];
+    step  = arguments.length > 2 ? arguments[2] : 1;
     return this.generate(function(i) { return start + (step * i); })
       .take(Math.floor((stop - start) / step));
   };
