@@ -202,7 +202,7 @@ var firstFiveLines = text.split("\n").slice(0, 5);
 
 But of course, this actually splits *the entire string* into every single line. If the string is very large, this is quite wasteful.
 
-In lower-level languages&mdash;e.g. Java, C#&mdash; we have the notion of *streams*. A stream is not necessarily all read into memory. We can get something like that with Lazy.js by wrapping the string with `Lazy` and calling `split`:
+With Lazy.js, we don't need to split up an entire string just to treat it as a sequence of lines. We can get the same effect by wrapping the string with `Lazy` and calling `split`:
 
 ```javascript
 var firstFiveLines = Lazy(text).split("\n").take(5);
@@ -213,10 +213,39 @@ This way we can read the first five lines of an arbitrarily large string (withou
 Similarly with `String.match`: let's say we wanted to find the first 5 alphanumeric matches in a string. With Lazy.js, it's easy!
 
 ```javascript
-var firstFiveWords = Lazy(text).match(/[a-z0-9]/i).take(5);
+var firstFiveWords = Lazy(text).match(/[a-z0-9]+/i).take(5);
 ```
 
 Piece of cake.
+
+### Stream processing
+
+Lazy.js can wrap *streams* in Node.js as well.
+
+Currently, three methods are offered (**Note: this API will almost certainly change.**);
+
+```javascript
+// Read the first 5 lines from a file:
+Lazy.readFile("path/to/file")
+  .lines()
+  .take(5)
+  .each(doSomething);
+
+// Read lines 5-10 from an HTTP response.
+Lazy.makeHttpRequest("http://example.com")
+  .lines()
+  .drop(5)
+  .take(5)
+  .each(doSomething);
+
+// Capitalize every line from stdin.
+Lazy.stdin()
+  .lines()
+  .map(function(line) { return line.toUpperCase(); })
+  .each(process.stdout.write);
+```
+
+In each case, the elements in the sequence will be "chunks" of data most likely comprising multiple lines. The `lines()` method splits each chunk into lines (lazily, of course).
 
 Available functions
 -------------------
