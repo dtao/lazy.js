@@ -115,6 +115,6 @@ namespace :compile do
 
   desc "Compile documentation"
   task :docs do
-    `jsdoc lib --conf conf.json --recurse --destination docs`
+    system "jsdoc lib --recurse --destination docs"
   end
 end
