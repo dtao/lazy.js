@@ -4,20 +4,20 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>Lazy.js</title>
 
-  <link rel="stylesheet" type="text/css" href="docs/assets/docs.css">
+  <link rel="stylesheet" type="text/css" href="site/assets/site.css">
 
-  <script type="text/javascript" src="docs/lib/jasmine.js"></script>
-  <script type="text/javascript" src="docs/lib/benchmark.js"></script>
-  <script type="text/javascript" src="docs/lib/underscore.js"></script>
-  <script type="text/javascript" src="docs/lib/lodash.js"></script>
-  <script type="text/javascript" src="docs/lib/jquery.js"></script>
-  <script type="text/javascript" src="docs/lib/highcharts.js"></script>
-  <script type="text/javascript" src="docs/lib/hightables.js"></script>
-  <script type="text/javascript" src="docs/lib/jquery.treetable.js"></script>
-  <script type="text/javascript" src="docs/spec_reporter.js"></script>
-  <script type="text/javascript" src="docs/dom_example.js"></script>
-  <script type="text/javascript" src="docs/boot.js"></script>
-  <script type="text/javascript" src="docs/specs.js"></script>
+  <script type="text/javascript" src="site/lib/jasmine.js"></script>
+  <script type="text/javascript" src="site/lib/benchmark.js"></script>
+  <script type="text/javascript" src="site/lib/underscore.js"></script>
+  <script type="text/javascript" src="site/lib/lodash.js"></script>
+  <script type="text/javascript" src="site/lib/jquery.js"></script>
+  <script type="text/javascript" src="site/lib/highcharts.js"></script>
+  <script type="text/javascript" src="site/lib/hightables.js"></script>
+  <script type="text/javascript" src="site/lib/jquery.treetable.js"></script>
+  <script type="text/javascript" src="site/spec_reporter.js"></script>
+  <script type="text/javascript" src="site/dom_example.js"></script>
+  <script type="text/javascript" src="site/boot.js"></script>
+  <script type="text/javascript" src="site/specs.js"></script>
 
   <!-- source files -->
   <script type="text/javascript" src="lazy.js"></script>
@@ -26,7 +26,7 @@
   <!-- spec files -->
   <script type="text/javascript" src="spec/support/person.js"></script>
   <script type="text/javascript" src="spec/lazy_spec.js"></script>
-  <script type="text/javascript" src="docs/comparisons.js"></script>
+  <script type="text/javascript" src="site/comparisons.js"></script>
 </head>
 
 <body>
@@ -45,14 +45,6 @@
   </nav>
 
   <section id="docs" class="top-level-section">
-    <nav class="subnav">
-      <ul>
-        <li><a href="#introduction">Introduction</a></li>
-        <li><a href="#features">Features</a></li>
-        <li><a href="#available-functions">Available functions</a></li>
-      </ul>
-    </nav>
-
     <h1 id="like-underscore-but-lazier">Like Underscore, but lazier</h1>
 
 <p class="sharing"><a href="https://travis-ci.org/dtao/lazy.js"><img src="https://travis-ci.org/dtao/lazy.js.png?branch=master" alt="Build Status"></a><!-- fun social stuff to include on project homepage -->
@@ -270,7 +262,7 @@
 
 <p>Lazy.js can wrap <em>streams</em> in Node.js as well.</p>
 
-<p>Currently, three methods are offered (<strong>Note: this API will almost certainly change.</strong>);</p>
+<p>Currently, three methods are offered. (<strong>Note: this API will definitely change.</strong>)</p>
 
 <div class="highlight"><pre><span class="c1">// Read the first 5 lines from a file:</span>
 <span class="nx">Lazy</span><span class="p">.</span><span class="nx">readFile</span><span class="p">(</span><span class="s2">"path/to/file"</span><span class="p">)</span>
@@ -285,7 +277,7 @@
   <span class="p">.</span><span class="nx">take</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">doSomething</span><span class="p">);</span>
 
-<span class="c1">// Capitalize every line from stdin.</span>
+<span class="c1">// Capitalize every line from standard input.</span>
 <span class="nx">Lazy</span><span class="p">.</span><span class="nx">stdin</span><span class="p">()</span>
   <span class="p">.</span><span class="nx">lines</span><span class="p">()</span>
   <span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">line</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">line</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">();</span> <span class="p">})</span>
@@ -298,7 +290,7 @@
 
 <p>Currently the following functions are available (meaning you can call them on any <code>Lazy.Sequence</code> object, such as what you get back from <code>Lazy(array)</code>, <code>Lazy.generate</code>, <code>Lazy(string).split</code>, &amp;c.):</p>
 
-<ul>
+<ul class="functions-list">
 <li><code>map</code></li>
 <li><code>pluck</code></li>
 <li>

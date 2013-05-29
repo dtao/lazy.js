@@ -93,6 +93,11 @@ namespace :compile do
       node["id"] = title.downcase.gsub(/\s+/, "-").gsub(/[^\w\-]/, "")
     end
 
+    # Add a distinguishing class to the 'Available functions' list so we can style it.
+    fragment.css("#available-functions ~ ul").each do |node|
+      node["class"] = "functions-list"
+    end
+
     # Do syntax highlighting w/ Pygments.
     fragment.css("code").each do |node|
       language = node["class"]

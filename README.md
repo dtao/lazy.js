@@ -222,7 +222,7 @@ Piece of cake.
 
 Lazy.js can wrap *streams* in Node.js as well.
 
-Currently, three methods are offered (**Note: this API will definitely change.**):
+Currently, three methods are offered. (**Note: this API will definitely change.**)
 
 ```javascript
 // Read the first 5 lines from a file:

@@ -1,6 +1,6 @@
 @import url(jquery.treetable.css);
 @import url(pygments.css);
-@import url(http://fonts.googleapis.com/css?family=Chewy|Open+Sans:400,300|Source+Code+Pro:700,400);
+@import url(http://fonts.googleapis.com/css?family=Chewy|Open+Sans:700,400,300|Source+Code+Pro:700,400);
 
 body {
   font-family: "Open Sans", sans-serif;
@@ -143,6 +143,12 @@ section h3 {
 
 figure {
   text-align: center;
+}
+
+.functions-list {
+  column-count: 3;
+  -moz-column-count: 3;
+  -webkit-column-count: 3;
 }
 
 #dom-event-source {
