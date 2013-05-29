@@ -8,7 +8,7 @@
     "email": "daniel.tao@gmail.com",
     "url": "http://philosopherdeveloper.com"
   },
-  "main": "lazy",
+  "main": "lazy.js",
   "license": "MIT",
   "repository": {
     "type": "git",
