@@ -1,14 +1,14 @@
 {
   "name": "lazyjs",
   "description": "Like Underscore, but lazier",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "homepage": "http://dtao.github.io/lazy.js/",
   "author": {
     "name": "Dan Tao",
     "email": "daniel.tao@gmail.com",
     "url": "http://philosopherdeveloper.com"
   },
-  "main": "lazy.js",
+  "main": "lazy.node.js",
   "license": "MIT",
   "repository": {
     "type": "git",

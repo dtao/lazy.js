@@ -1,6 +1,5 @@
-var fs = require("fs");
-
-var Lazy = global.Lazy;
+var fs   = require("fs");
+var Lazy = require("./lazy.js");
 
 function StreamedSequence(path, encoding) {
   this.path = path;
@@ -86,3 +85,5 @@ StreamedSequence.prototype.lines = function() {
 Lazy.stream = function(path, encoding) {
   return new StreamedSequence(path, encoding);
 };
+
+module.exports = Lazy;
