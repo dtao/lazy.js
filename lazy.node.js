@@ -1,11 +1,10 @@
 var fs   = require("fs");
+var http = require("http");
 var os   = require("os");
+var URL  = require("url");
 var Lazy = require("./lazy.js");
 
-function StreamedSequence(path, encoding) {
-  this.path = path;
-  this.encoding = encoding || "utf-8";
-}
+function StreamedSequence() {}
 
 StreamedSequence.prototype = new Lazy.Sequence();
 
@@ -17,18 +16,18 @@ StreamedSequence.prototype = new Lazy.Sequence();
  *     the stream.
  */
 StreamedSequence.prototype.each = function(fn) {
-  var stream = fs.createReadStream(this.path, {
-    encoding: this.encoding,
-    autoClose: true
+  var encoding = this.encoding || "utf-8";
+
+  this.openStream(function(stream) {
+    var listener = function(e) {
+      if (fn(e) === false) {
+        stream.removeListener("data", listener);
+      }
+    };
+
+    stream.setEncoding(encoding);
+    stream.on("data", listener);
   });
-
-  var listener = function(e) {
-    if (fn(e) === false) {
-      stream.removeListener("data", listener);
-    }
-  };
-
-  stream.on("data", listener);
 };
 
 function StreamedLineSequence(parent) {
@@ -45,6 +44,8 @@ StreamedLineSequence.prototype = new Lazy.Sequence();
  *     the file.
  */
 StreamedLineSequence.prototype.each = function(fn) {
+  var i = 0;
+
   this.parent.each(function(data) {
     var finished = false;
 
@@ -52,11 +53,12 @@ StreamedLineSequence.prototype.each = function(fn) {
     // middle of a line, this will artificially split that line in two. I'll
     // come back to this later.
     Lazy(data).split(os.EOL || "\n").each(function(line) {
-      if (fn(line) === false) {
+      if (fn(line, i++) === false) {
         finished = true;
         return false;
       }
     });
+
     if (finished) {
       return false;
     }
@@ -73,6 +75,18 @@ StreamedSequence.prototype.lines = function() {
   return new StreamedLineSequence(this);
 };
 
+function FileStreamSequence(path, encoding) {
+  this.path = path;
+  this.encoding = encoding;
+}
+
+FileStreamSequence.prototype = new StreamedSequence();
+
+FileStreamSequence.prototype.openStream = function(callback) {
+  var stream = fs.createReadStream(this.path, { autoClose: true });
+  callback(stream);
+};
+
 /**
  * Creates a {@link Sequence} from a file stream, whose elements are chunks of
  * data as the stream is read. This sequence works asynchronously, so
@@ -83,8 +97,32 @@ StreamedSequence.prototype.lines = function() {
  * @param {string} encoding The text encoding of the file (e.g., "utf-8").
  * @return {Sequence} The streamed sequence.
  */
-Lazy.stream = function(path, encoding) {
-  return new StreamedSequence(path, encoding);
+Lazy.readFile = function(path, encoding) {
+  return new FileStreamSequence(path, encoding);
+};
+
+function HttpStreamSequence(url, encoding) {
+  this.url = url;
+  this.encoding = encoding;
+}
+
+HttpStreamSequence.prototype = new StreamedSequence();
+
+HttpStreamSequence.prototype.openStream = function(callback) {
+  http.get(URL.parse(this.url), callback);
+};
+
+/**
+ * Creates a {@link Sequence} from an HTTP stream, whose elements are chunks of
+ * data as the stream is read. This sequence works asynchronously, so
+ * synchronous methods such as {@code indexOf}, {@code any}, and {@code toArray}
+ * won't work.
+ *
+ * @param {string} url The URL for the HTTP request.
+ * @return {Sequence} The streamed sequence.
+ */
+Lazy.makeHttpRequest = function(url) {
+  return new HttpStreamSequence(url);
 };
 
 module.exports = Lazy;
