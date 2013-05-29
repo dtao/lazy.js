@@ -1999,4 +1999,4 @@
     context.Lazy = Lazy;
   }
 
-}(typeof global !== 'undefined' ? global : window));
+}(this));

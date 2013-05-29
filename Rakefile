@@ -41,25 +41,22 @@ def compile_file(output, source_files, options={})
   end
 
   javascript = javascripts.join("\n")
-  javascript.gsub!(/^(?!$)/, "  ") unless options[:nowrap]
+  javascript.gsub!(/^(?!$)/, "  ")
 
   File.open(output, "w") do |f|
-    f.write("(function(context) {\n\n") unless options[:nowrap]
+    f.write("(function(context) {\n\n")
     f.write(javascript)
-    f.write("\n}(typeof global !== 'undefined' ? global : window));\n") unless options[:nowrap]
+    f.write("\n}(this));\n")
   end
 
-  unless options[:nocompile]
-    require "closure-compiler"
+  require "closure-compiler"
+  compiler = Closure::Compiler.new({
+    :js_output_file => "#{output.chomp('.js')}.min.js",
+    :externs        => File.join("lib", "externs.js"),
+    :warning_level  => "VERBOSE"
+  })
 
-    compiler = Closure::Compiler.new({
-      :js_output_file => "#{output.chomp('.js')}.min.js",
-      :externs        => File.join("lib", "externs.js"),
-      :warning_level  => "VERBOSE"
-    })
-
-    puts compiler.compile_file(output)
-  end
+  puts compiler.compile_file(output)
 end
 
 namespace :compile do
