@@ -46,7 +46,7 @@ def compile_file(output, source_files, options={})
   File.open(output, "w") do |f|
     f.write("(function(context) {\n\n")
     f.write(javascript)
-    f.write("\n}(this));\n")
+    f.write("\n}(typeof global !== 'undefined' ? global : window));\n")
   end
 
   require "closure-compiler"
