@@ -13,7 +13,20 @@ You can see that the performance difference becomes much more significant for me
 
 ![Lazy.js versus Underscore/Lo-Dash](http://i.imgur.com/oGPlPug.png)
 
-Intrigued? Great! Now let's look at what you can do with Lazy.js.
+Intrigued? Great! Lazy.js has no external dependencies, so you can get started right away with:
+
+```html
+<script type="text/javascript" src="lazy.min.js"></script>
+
+<!-- optional: if you want support for lazy DOM event sequences: -->
+<script type="text/javascript" src="lazy.dom.js"></script>
+```
+
+Or, if you're using Node.js:
+
+    npm install lazy.js
+
+Now let's look at what you can do with Lazy.js.
 
 Introduction
 ------------
