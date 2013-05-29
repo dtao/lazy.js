@@ -1,4 +1,5 @@
 var fs   = require("fs");
+var os   = require("os");
 var Lazy = require("./lazy.js");
 
 function StreamedSequence(path, encoding) {
@@ -50,7 +51,7 @@ StreamedLineSequence.prototype.each = function(fn) {
     // TODO: I'm pretty sure there's a bug here: if/when the buffer ends in the
     // middle of a line, this will artificially split that line in two. I'll
     // come back to this later.
-    Lazy(data).split("\n").each(function(line) {
+    Lazy(data).split(os.EOL).each(function(line) {
       if (fn(line) === false) {
         finished = true;
         return false;
