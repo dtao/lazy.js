@@ -125,4 +125,19 @@ Lazy.makeHttpRequest = function(url) {
   return new HttpStreamSequence(url);
 };
 
+/**
+ * Creates a {@link Sequence} from stdin, whose elements are chunks of data as
+ * the stream is read. This sequence works asynchronously, so synchronous
+ * methods such as {@code indexOf}, {@code any}, and {@code toArray} won't work.
+ *
+ * @return {Sequence} The streamed sequence.
+ */
+Lazy.stdin = function() {
+  var sequence = new StreamedSequence();
+  sequence.openStream = function(callback) {
+    callback(process.stdin);
+  };
+  return sequence;
+};
+
 module.exports = Lazy;
