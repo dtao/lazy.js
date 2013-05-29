@@ -222,7 +222,7 @@ Piece of cake.
 
 Lazy.js can wrap *streams* in Node.js as well.
 
-Currently, three methods are offered (**Note: this API will almost certainly change.**);
+Currently, three methods are offered (**Note: this API will definitely change.**):
 
 ```javascript
 // Read the first 5 lines from a file:
@@ -238,7 +238,7 @@ Lazy.makeHttpRequest("http://example.com")
   .take(5)
   .each(doSomething);
 
-// Capitalize every line from stdin.
+// Capitalize every line from standard input.
 Lazy.stdin()
   .lines()
   .map(function(line) { return line.toUpperCase(); })
