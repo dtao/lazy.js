@@ -262,7 +262,14 @@
 
 <p>Lazy.js can wrap <em>streams</em> in Node.js as well.</p>
 
-<p>Currently, three methods are offered. (<strong>Note: this API will definitely change.</strong>)</p>
+<p>Given any <a href="http://nodejs.org/api/stream.html#stream_class_stream_readable"><code>Readable Stream</code></a>, you can wrap it with <code>Lazy</code> just as with arrays:</p>
+
+<div class="highlight"><pre><span class="nx">Lazy</span><span class="p">(</span><span class="nx">stream</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">take</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="c1">// Read just the first 5 chunks of data read into the buffer.</span>
+  <span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">processData</span><span class="p">);</span>
+</pre></div>
+
+<p>For convenience, specialized helper methods for dealing with either file streamas or HTTP streams are also offered. (<strong>Note: this API will probably change.</strong>)</p>
 
 <div class="highlight"><pre><span class="c1">// Read the first 5 lines from a file:</span>
 <span class="nx">Lazy</span><span class="p">.</span><span class="nx">readFile</span><span class="p">(</span><span class="s2">"path/to/file"</span><span class="p">)</span>
@@ -276,12 +283,6 @@
   <span class="p">.</span><span class="nx">drop</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">take</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">doSomething</span><span class="p">);</span>
-
-<span class="c1">// Capitalize every line from standard input.</span>
-<span class="nx">Lazy</span><span class="p">.</span><span class="nx">stdin</span><span class="p">()</span>
-  <span class="p">.</span><span class="nx">lines</span><span class="p">()</span>
-  <span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">line</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">line</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">();</span> <span class="p">})</span>
-  <span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">);</span>
 </pre></div>
 
 <p>In each case, the elements in the sequence will be "chunks" of data most likely comprising multiple lines. The <code>lines()</code> method splits each chunk into lines (lazily, of course).</p>

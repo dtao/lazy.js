@@ -222,7 +222,15 @@ Piece of cake.
 
 Lazy.js can wrap *streams* in Node.js as well.
 
-Currently, three methods are offered. (**Note: this API will definitely change.**)
+Given any [`Readable Stream`](http://nodejs.org/api/stream.html#stream_class_stream_readable), you can wrap it with `Lazy` just as with arrays:
+
+```javascript
+Lazy(stream)
+  .take(5) // Read just the first 5 chunks of data read into the buffer.
+  .each(processData);
+```
+
+For convenience, specialized helper methods for dealing with either file streamas or HTTP streams are also offered. (**Note: this API will probably change.**)
 
 ```javascript
 // Read the first 5 lines from a file:
@@ -237,12 +245,6 @@ Lazy.makeHttpRequest("http://example.com")
   .drop(5)
   .take(5)
   .each(doSomething);
-
-// Capitalize every line from standard input.
-Lazy.stdin()
-  .lines()
-  .map(function(line) { return line.toUpperCase(); })
-  .each(process.stdout.write);
 ```
 
 In each case, the elements in the sequence will be "chunks" of data most likely comprising multiple lines. The `lines()` method splits each chunk into lines (lazily, of course).
