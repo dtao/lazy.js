@@ -1,12 +1,26 @@
-var fs   = require("fs");
-var http = require("http");
-var os   = require("os");
-var URL  = require("url");
+var fs     = require("fs");
+var http   = require("http");
+var os     = require("os");
+var Stream = require("stream");
+var URL    = require("url");
+
+// The starting point is everything that works in any environment (browser OR
+// Node.js)
 var Lazy = require("./lazy.js");
 
-function StreamedSequence() {}
+/**
+ * @constructor
+ */
+function StreamedSequence(stream) {
+  this.stream = stream;
+}
 
 StreamedSequence.prototype = new Lazy.Sequence();
+
+StreamedSequence.prototype.openStream = function(callback) {
+  this.stream.resume();
+  callback(this.stream);
+};
 
 /**
  * Handles every chunk of data in this sequence.
@@ -125,19 +139,37 @@ Lazy.makeHttpRequest = function(url) {
   return new HttpStreamSequence(url);
 };
 
-/**
- * Creates a {@link Sequence} from stdin, whose elements are chunks of data as
- * the stream is read. This sequence works asynchronously, so synchronous
- * methods such as {@code indexOf}, {@code any}, and {@code toArray} won't work.
+/*
+ * Assuming someone does:
+ * var Lazy = require("lazy.js");
  *
- * @return {Sequence} The streamed sequence.
+ * Then they should be able to write:
+ * Lazy(source)
+ *
+ * Where `source` can be a:
+ * - Array
+ * - Object
+ * - String
+ * - Stream
+ *
+ * This function provides the last one, and then falls back to the original
+ * 'Lazy' which provides the first three.
  */
-Lazy.stdin = function() {
-  var sequence = new StreamedSequence();
-  sequence.openStream = function(callback) {
-    callback(process.stdin);
-  };
-  return sequence;
+module.exports = function(source) {
+  if (source instanceof Stream) {
+    return new StreamedSequence(source);
+  } else {
+    return Lazy(source);
+  }
 };
 
-module.exports = Lazy;
+/*
+ * Attach all of the same properties that Lazy already had.
+ *
+ * TODO: Think of a better approach here. This is really hacky.
+ */
+for (var prop in Lazy) {
+  if (Lazy.hasOwnProperty(prop)) {
+    module.exports[prop] = Lazy[prop];
+  }
+}
