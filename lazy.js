@@ -910,6 +910,13 @@
   };
 
   /**
+   * An optimized version of {@link Sequence.filter}.
+   */
+  ArrayWrapper.prototype.filter = function(filterFn) {
+    return new FilteredArrayWrapper(this, filterFn);
+  };
+
+  /**
    * An optimized version of {@link Sequence.uniq}.
    */
   ArrayWrapper.prototype.uniq =
@@ -1090,14 +1097,15 @@
     });
   };
 
-  var IndexedFilteredSequence = CachingSequence.inherit(function(parent, filterFn) {
+  /**
+   * @constructor
+   */
+  function IndexedFilteredSequence(parent, filterFn) {
     this.parent   = parent;
     this.filterFn = filterFn;
-  });
+  }
 
-  IndexedFilteredSequence.prototype.getIterator = function() {
-    return new FilteringIterator(this.parent, this.filterFn);
-  };
+  IndexedFilteredSequence.prototype = new FilteredSequence();
 
   IndexedFilteredSequence.prototype.each = function(fn) {
     var parent = this.parent,
@@ -1109,6 +1117,32 @@
 
     while (++i < length) {
       e = parent.get(i);
+      if (filterFn(e, i) && fn(e, j++) === false) {
+        break;
+      }
+    }
+  };
+
+  /**
+   * @constructor
+   */
+  function FilteredArrayWrapper(parent, filterFn) {
+    this.parent   = parent;
+    this.filterFn = filterFn;
+  }
+
+  FilteredArrayWrapper.prototype = new FilteredSequence();
+
+  FilteredArrayWrapper.prototype.each = function(fn) {
+    var source = this.parent.source,
+        filterFn = this.filterFn,
+        length = source.length,
+        i = -1,
+        j = 0,
+        e;
+
+    while (++i < length) {
+      e = source[i];
       if (filterFn(e, i) && fn(e, j++) === false) {
         break;
       }
