@@ -9,7 +9,7 @@ describe("stream", function() {
       var lines = [];
 
       runs(function() {
-        Lazy.stream("./spec/data/lines.txt")
+        Lazy.readFile("./spec/data/lines.txt")
           .lines()
           .each(function(line) {
             lines.push(line);
