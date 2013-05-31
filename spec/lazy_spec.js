@@ -300,6 +300,20 @@ describe("Lazy", function() {
     })
   });
 
+  describe("keys", function() {
+    it("iterates over the keys (property names) of an object", function() {
+      var keys = Lazy({ foo: "FOO", bar: "BAR" }).keys().toArray();
+      expect(keys).toEqual(["foo", "bar"]);
+    });
+  });
+
+  describe("values", function() {
+    it("iterates over the values of an object", function() {
+      var keys = Lazy({ foo: "FOO", bar: "BAR" }).values().toArray();
+      expect(keys).toEqual(["FOO", "BAR"]);
+    });
+  });
+
   describe("each", function() {
     it("passes an index along with each element", function() {
       expect(Lazy(people)).toPassToEach(1, [0, 1, 2, 3, 4, 5]);
@@ -728,6 +742,18 @@ describe("Lazy", function() {
 
     it("passes an index along with each element", function() {
       expect(Lazy([10, 5, 5, 5, 8, 8]).uniq()).toPassToEach(1, [0, 1, 2]);
+    });
+
+    it("correctly selects unique elements for medium-sized (~300 elements) collections", function() {
+      var medium = Lazy.range(150).toArray();
+      var result = Lazy(medium.concat(medium)).uniq().toArray()
+      expect(result).toEqual(medium);
+    });
+
+    it("correctly selects unique elements for large (>= 800 elements) collections", function() {
+      var large = Lazy.range(500).toArray();
+      var result = Lazy(large.concat(large)).uniq().toArray();
+      expect(result).toEqual(large);
     });
   });
 
