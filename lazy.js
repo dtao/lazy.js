@@ -1856,10 +1856,19 @@
       return source;
     } else if (typeof source === "string") {
       return new StringWrapper(source);
-    } else if (source instanceof Array) {
+    } else if (Lazy.isArray(source)) {
       return new ArrayWrapper(source);
     }
     return new ObjectWrapper(source);
+  };
+
+  /**
+  * Determine if an object is an array.
+  * Delegates to ECMA5's native Array.isArray if available.
+  */
+
+  Lazy.isArray = Array.isArray || function(obj) {
+    return toString.call(obj) == '[object Array]';
   };
 
   /**
