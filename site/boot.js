@@ -1,5 +1,5 @@
 (function() {
-  Benchmark.options.maxTime = 1;
+  Benchmark.options.maxTime = 0.1;
 
   var arrays = {};
   var benchmarksForToArray = {};
@@ -74,7 +74,12 @@
         // From.js
         options.valueOnly ?
           new Benchmark(description, function() { options.from.apply(this, input); }) :
-          new Benchmark(description, function() { options.from.apply(this, input).toArray(); })
+          new Benchmark(description, function() { options.from.apply(this, input).toArray(); }),
+
+        // IxJS
+        options.valueOnly ?
+          new Benchmark(description, function() { options.ix.apply(this, input); }) :
+          new Benchmark(description, function() { options.ix.apply(this, input).toArray(); })
       ]);
     }
 
@@ -143,6 +148,13 @@
           new Benchmark(description, function() { options.from.apply(this, input); }) :
           new Benchmark(description, function() {
             options.from.apply(this, input).each(function(e) {});
+          }),
+
+        // IxJS
+        options.valueOnly ?
+          new Benchmark(description, function() { options.ix.apply(this, input); }) :
+          new Benchmark(description, function() {
+            options.ix.apply(this, input).forEach(function(e) {});
           })
       ]);
     }
@@ -179,6 +191,7 @@
       $("<td>").addClass("linqjs-result").appendTo(row);
       $("<td>").addClass("jslinq-result").appendTo(row);
       $("<td>").addClass("fromjs-result").appendTo(row);
+      $("<td>").addClass("ixjs-result").appendTo(row);
     }
 
     $("<td>").addClass("lazy-result").appendTo(row);
@@ -219,6 +232,7 @@
       addResultToCell(result.linq.hz, $(".linqjs-result", row), fastestResult);
       addResultToCell(result.jslinq.hz, $(".jslinq-result", row), fastestResult);
       addResultToCell(result.from.hz, $(".fromjs-result", row), fastestResult);
+      addResultToCell(result.ix.hz, $(".ixjs-result", row), fastestResult);
     }
     addResultToCell(result.lazy.hz, $(".lazy-result", row), fastestResult);
   }
@@ -366,6 +380,20 @@
           expect(lazyResult).toEqual(fromResult);
         });
       }
+
+      if (options.ix && !exceptions.contains("ix") && window.COMPARE_ALL_LIBS) {
+        it("returns the same result as IxJS for '" + description + "'", function() {
+          var lazyResult = options.lazy.apply(this, smallInput);
+          var ixResult = options.ix.apply(this, smallInput);
+          if (typeof lazyResult.toArray === "function") {
+            lazyResult = lazyResult.toArray();
+          }
+          if (typeof ixResult.toArray === "function") {
+            ixResult = ixResult.toArray();
+          }
+          expect(lazyResult).toEqual(ixResult);
+        });
+      }
     }
 
     inputs.each(function(input) {
@@ -460,7 +488,7 @@
         return false;
       }
 
-      var resultsPerBenchmark = window.COMPARE_ALL_LIBS ? 8 : 3;
+      var resultsPerBenchmark = window.COMPARE_ALL_LIBS ? 9 : 3;
 
       var currentResultSet = [];
       benchmarkSuite.on("cycle", function(e) {
@@ -482,6 +510,7 @@
             benchmarkResults.linq = currentResultSet[5];
             benchmarkResults.jslinq = currentResultSet[6];
             benchmarkResults.from = currentResultSet[7];
+            benchmarkResults.ix = currentResultSet[8];
           }
 
           addBenchmarkResultToTable(benchmarkResults);
