@@ -677,6 +677,41 @@
 
   ObjectLikeSequence.prototype = new Sequence();
 
+  /*
+   * You know what I just realized? These methods don't belong here at all --
+   * they should go directly on Sequence!
+   *
+   * (Do that after next commit.)
+   */
+
+  ObjectLikeSequence.prototype.filter = function(filterFn) {
+    return new FilteredObjectLikeSequence(this, filterFn);
+  };
+
+  ObjectLikeSequence.prototype.keys = function() {
+    return this.map(function(v, k) { return k; });
+  };
+
+  ObjectLikeSequence.prototype.values = function() {
+    return this.map(function(v, k) { return v; });
+  };
+
+  ObjectLikeSequence.prototype.assign = function(other) {
+    return new AssignSequence(this, other);
+  };
+
+  ObjectLikeSequence.prototype.extend = ObjectLikeSequence.prototype.assign;
+
+  ObjectLikeSequence.prototype.invert = function() {
+    return new InvertedSequence(this);
+  };
+
+  ObjectLikeSequence.prototype.functions = function() {
+    return this
+      .filter(function(v, k) { return typeof(v) === "function"; })
+      .map(function(v, k) { return k; });
+  };
+
   ObjectLikeSequence.prototype.toArray = function() {
     return this.map(function(v, k) { return [k, v]; }).toArray();
   };
@@ -971,18 +1006,6 @@
     }
   };
 
-  ObjectWrapper.prototype.keys = function() {
-    return this.map(function(v, k) { return k; });
-  };
-
-  ObjectWrapper.prototype.values = function() {
-    return this.map(function(v, k) { return v; });
-  };
-
-  ObjectWrapper.prototype.assign = function(other) {
-    return new AssignSequence(this, other);
-  };
-
   /**
    * A CachingSequence is a {@link Sequence} that (probably) must fully evaluate
    * the underlying sequence when {@link each} is called. For this reason, it
@@ -1091,10 +1114,17 @@
     }
   };
 
-  var FilteredSequence = CachingSequence.inherit(function(parent, filterFn) {
+  /**
+   * @constructor
+   * @param {Sequence=} parent
+   * @param {Function=} filterFn
+   */
+  function FilteredSequence(parent, filterFn) {
     this.parent   = parent;
     this.filterFn = filterFn;
-  });
+  }
+
+  FilteredSequence.prototype = new CachingSequence();
 
   FilteredSequence.prototype.getIterator = function() {
     return new FilteringIterator(this.parent, this.filterFn);
@@ -1160,6 +1190,26 @@
         break;
       }
     }
+  };
+
+  /**
+   * @constructor
+   */
+  function FilteredObjectLikeSequence(parent, filterFn) {
+    this.parent   = parent;
+    this.filterFn = filterFn;
+  }
+
+  FilteredObjectLikeSequence.prototype = new ObjectLikeSequence();
+
+  FilteredObjectLikeSequence.prototype.each = function(fn) {
+    var filterFn = this.filterFn;
+
+    this.parent.each(function(value, key) {
+      if (filterFn(value, key) && fn(value, key) === false) {
+        return false;
+      }
+    });
   };
 
   /**
@@ -1604,6 +1654,21 @@
         }
       });
     }
+  };
+
+  /**
+   * @constructor
+   */
+  function InvertedSequence(parent) {
+    this.parent = parent;
+  }
+
+  InvertedSequence.prototype = new ObjectLikeSequence();
+
+  InvertedSequence.prototype.each = function(fn) {
+    this.parent.each(function(value, key) {
+      return fn(key, value);
+    });
   };
 
   /**

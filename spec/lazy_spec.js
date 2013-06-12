@@ -841,6 +841,14 @@ describe("Lazy", function() {
     });
   });
 
+  describe("invert", function() {
+    it("swaps the keys/values of an object", function() {
+      var object = { foo: "bar", marco: "polo" };
+      var result = Lazy(object).invert();
+      expect(result.toObject()).toEqual({ bar: "foo", polo: "marco" });
+    });
+  });
+
   describe("all", function() {
     it("returns true if the condition holds true for every element", function() {
       var allPeople = Lazy(people).all(function(x) {

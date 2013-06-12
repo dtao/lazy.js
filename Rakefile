@@ -25,6 +25,7 @@ SOURCE_FILES = %w[
   intersection_sequence
   zipped_sequence
   assign_sequence
+  inverted_sequence
   generated_sequence
   async_sequence
   string_wrapper
