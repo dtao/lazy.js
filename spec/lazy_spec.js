@@ -823,6 +823,14 @@ describe("Lazy", function() {
     });
   });
 
+  describe("assign", function() {
+    it("creates a sequence from updating the object with new values", function() {
+      var people = { parent: david, child: daniel };
+      var result = Lazy(people).assign({ parent: mary });
+      expect(result.toObject()).toEqual({ parent: mary, child: daniel });
+    });
+  });
+
   describe("all", function() {
     it("returns true if the condition holds true for every element", function() {
       var allPeople = Lazy(people).all(function(x) {

@@ -669,6 +669,23 @@
   };
 
   /**
+   * The ObjectLikeSequence object represents a sequence of key/value pairs.
+   *
+   * @constructor
+   */
+  function ObjectLikeSequence() {}
+
+  ObjectLikeSequence.prototype = new Sequence();
+
+  ObjectLikeSequence.prototype.toArray = function() {
+    return this.map(function(v, k) { return [k, v]; }).toArray();
+  };
+
+  ObjectLikeSequence.prototype.toObject = function() {
+    return this.map(function(v, k) { return [k, v]; }).toObject();
+  };
+
+  /**
    * The Iterator object provides an API for iterating over a sequence.
    *
    * @constructor
@@ -720,7 +737,7 @@
    */
   Set.prototype.add = function(value) {
     var table = this.table,
-        key = "@" + value;
+        key   = "@" + value;
 
     if (!table[key]) {
       table[key] = [value];
@@ -938,7 +955,7 @@
     this.source = source;
   }
 
-  ObjectWrapper.prototype = new Sequence();
+  ObjectWrapper.prototype = new ObjectLikeSequence();
 
   ObjectWrapper.prototype.get = function(key) {
     return this.source[key];
@@ -962,12 +979,8 @@
     return this.map(function(v, k) { return v; });
   };
 
-  ObjectWrapper.prototype.map = function(mapFn) {
-    return new MappedSequence(this, mapFn);
-  };
-
-  ObjectWrapper.prototype.toArray = function() {
-    return this.map(function(v, k) { return [k, v]; }).toArray();
+  ObjectWrapper.prototype.assign = function(other) {
+    return new AssignSequence(this, other);
   };
 
   /**
@@ -1562,6 +1575,38 @@
   };
 
   /**
+   * @constructor
+   */
+  function AssignSequence(parent, other) {
+    this.parent = parent;
+    this.other  = other;
+  }
+
+  AssignSequence.prototype = new ObjectLikeSequence();
+
+  AssignSequence.prototype.each = function(fn) {
+    var merged = new Set(),
+        done   = false;
+
+    Lazy(this.other).each(function(value, key) {
+      if (fn(value, key) === false) {
+        done = true;
+        return false;
+      }
+
+      merged.add(key);
+    });
+
+    if (!done) {
+      this.parent.each(function(value, key) {
+        if (!merged.contains(key) && fn(value, key) === false) {
+          return false;
+        }
+      });
+    }
+  };
+
+  /**
    * A GeneratedSequence does not wrap an in-memory colllection but rather
    * determines its elements on-the-fly during iteration according to a generator
    * function.
@@ -1856,19 +1901,10 @@
       return source;
     } else if (typeof source === "string") {
       return new StringWrapper(source);
-    } else if (Lazy.isArray(source)) {
+    } else if (source instanceof Array) {
       return new ArrayWrapper(source);
     }
     return new ObjectWrapper(source);
-  };
-
-  /**
-  * Determine if an object is an array.
-  * Delegates to ECMA5's native Array.isArray if available.
-  */
-
-  Lazy.isArray = Array.isArray || function(obj) {
-    return toString.call(obj) == '[object Array]';
   };
 
   /**

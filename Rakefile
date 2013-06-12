@@ -1,5 +1,6 @@
 SOURCE_FILES = %w[
   sequence
+  object_like_sequence
   iterator
   set
   indexed_sequence
@@ -23,6 +24,7 @@ SOURCE_FILES = %w[
   union_sequence
   intersection_sequence
   zipped_sequence
+  assign_sequence
   generated_sequence
   async_sequence
   string_wrapper
