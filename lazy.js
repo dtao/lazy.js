@@ -677,13 +677,9 @@
 
   ObjectLikeSequence.prototype = new Sequence();
 
-  /*
-   * You know what I just realized? These methods don't belong here at all --
-   * they should go directly on Sequence!
-   *
-   * Scratch that. I actually need to create an "ObjectLike-" version of every
-   * specialized sequence for this to work right. Crap!
-   */
+  ObjectLikeSequence.prototype.filter = function(filterFn) {
+    return new FilteredObjectLikeSequence(this, filterFn);
+  };
 
   ObjectLikeSequence.prototype.keys = function() {
     return this.map(function(v, k) { return k; });
@@ -707,6 +703,14 @@
     return this
       .filter(function(v, k) { return typeof(v) === "function"; })
       .map(function(v, k) { return k; });
+  };
+
+  ObjectLikeSequence.prototype.methods = ObjectLikeSequence.prototype.functions;
+
+  ObjectLikeSequence.prototype.pick = function(properties) {
+    return this.filter(function(value, key) {
+      return contains(properties, key);
+    });
   };
 
   ObjectLikeSequence.prototype.toArray = function() {
@@ -1185,6 +1189,26 @@
         break;
       }
     }
+  };
+
+  /**
+   * @constructor
+   */
+  function FilteredObjectLikeSequence(parent, filterFn) {
+    this.parent   = parent;
+    this.filterFn = filterFn;
+  }
+
+  FilteredObjectLikeSequence.prototype = new ObjectLikeSequence();
+
+  FilteredObjectLikeSequence.prototype.each = function(fn) {
+    var filterFn = this.filterFn;
+
+    this.parent.each(function(value, key) {
+      if (filterFn(value, key) && fn(value, key) === false) {
+        return false;
+      }
+    });
   };
 
   /**
