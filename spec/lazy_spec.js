@@ -831,6 +831,16 @@ describe("Lazy", function() {
     });
   });
 
+  describe("functions", function() {
+    it("creates a sequence comprising the function properties of an object", function() {
+      var walk   = function() {};
+      var gobble = function() {};
+      var turkey = { size: 100, weight: 100, walk: walk, gobble: gobble };
+      var result = Lazy(turkey).functions();
+      expect(result.toArray()).toEqual(["walk", "gobble"]);
+    });
+  });
+
   describe("all", function() {
     it("returns true if the condition holds true for every element", function() {
       var allPeople = Lazy(people).all(function(x) {
