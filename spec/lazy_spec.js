@@ -865,6 +865,14 @@ describe("Lazy", function() {
     });
   });
 
+  describe("omit", function() {
+    it("does the opposite of pick", function() {
+      var object = { foo: "bar", marco: "polo" };
+      var result = Lazy(object).omit(["marco"]);
+      expect(result.toObject()).toEqual({ foo: "bar" });
+    });
+  });
+
   describe("all", function() {
     it("returns true if the condition holds true for every element", function() {
       var allPeople = Lazy(people).all(function(x) {

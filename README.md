@@ -254,6 +254,8 @@ Available functions
 
 Currently the following functions are available (meaning you can call them on any `Lazy.Sequence` object, such as what you get back from `Lazy(array)`, `Lazy.generate`, `Lazy(string).split`, &c.):
 
+### Arrays
+
 - `map`
 - `pluck`
 - `reduce` (aka `inject` or `foldl`)
@@ -289,5 +291,15 @@ Currently the following functions are available (meaning you can call them on an
 - `contains`
 - `min`
 - `max`
+
+### Objects
+
+- `keys`
+- `values`
+- `functions` (aka `methods`)
+- `extend` (aka `assign`)
+- `pick`
+- `omit`
+- `invert`
 
 This library is experimental and still a work in progress.
