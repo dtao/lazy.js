@@ -681,12 +681,9 @@
    * You know what I just realized? These methods don't belong here at all --
    * they should go directly on Sequence!
    *
-   * (Do that after next commit.)
+   * Scratch that. I actually need to create an "ObjectLike-" version of every
+   * specialized sequence for this to work right. Crap!
    */
-
-  ObjectLikeSequence.prototype.filter = function(filterFn) {
-    return new FilteredObjectLikeSequence(this, filterFn);
-  };
 
   ObjectLikeSequence.prototype.keys = function() {
     return this.map(function(v, k) { return k; });
@@ -772,7 +769,7 @@
    */
   Set.prototype.add = function(value) {
     var table = this.table,
-        key   = "@" + value;
+        key = "@" + value;
 
     if (!table[key]) {
       table[key] = [value];
@@ -1131,11 +1128,11 @@
   };
 
   FilteredSequence.prototype.each = function(fn) {
-    var filterFn = this.filterFn,
-        j = 0;
+    var filterFn = this.filterFn;
+
     this.parent.each(function(e, i) {
       if (filterFn(e, i)) {
-        return fn(e, j++);
+        return fn(e, i);
       }
     });
   };
@@ -1155,12 +1152,11 @@
         filterFn = this.filterFn,
         length = this.parent.length(),
         i = -1,
-        j = 0,
         e;
 
     while (++i < length) {
       e = parent.get(i);
-      if (filterFn(e, i) && fn(e, j++) === false) {
+      if (filterFn(e, i) && fn(e, i) === false) {
         break;
       }
     }
@@ -1181,35 +1177,14 @@
         filterFn = this.filterFn,
         length = source.length,
         i = -1,
-        j = 0,
         e;
 
     while (++i < length) {
       e = source[i];
-      if (filterFn(e, i) && fn(e, j++) === false) {
+      if (filterFn(e, i) && fn(e, i) === false) {
         break;
       }
     }
-  };
-
-  /**
-   * @constructor
-   */
-  function FilteredObjectLikeSequence(parent, filterFn) {
-    this.parent   = parent;
-    this.filterFn = filterFn;
-  }
-
-  FilteredObjectLikeSequence.prototype = new ObjectLikeSequence();
-
-  FilteredObjectLikeSequence.prototype.each = function(fn) {
-    var filterFn = this.filterFn;
-
-    this.parent.each(function(value, key) {
-      if (filterFn(value, key) && fn(value, key) === false) {
-        return false;
-      }
-    });
   };
 
   /**
