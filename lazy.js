@@ -677,16 +677,22 @@
 
   ObjectLikeSequence.prototype = new Sequence();
 
+  ObjectLikeSequence.prototype.map = function(mapFn) {
+    return new MappedObjectLikeSequence(this, mapFn);
+  };
+
+  ObjectLikeSequence.prototype.mapFlat = Sequence.prototype.map;
+
   ObjectLikeSequence.prototype.filter = function(filterFn) {
     return new FilteredObjectLikeSequence(this, filterFn);
   };
 
   ObjectLikeSequence.prototype.keys = function() {
-    return this.map(function(v, k) { return k; });
+    return this.mapFlat(function(v, k) { return k; });
   };
 
   ObjectLikeSequence.prototype.values = function() {
-    return this.map(function(v, k) { return v; });
+    return this.mapFlat(function(v, k) { return v; });
   };
 
   ObjectLikeSequence.prototype.assign = function(other) {
@@ -702,7 +708,7 @@
   ObjectLikeSequence.prototype.functions = function() {
     return this
       .filter(function(v, k) { return typeof(v) === "function"; })
-      .map(function(v, k) { return k; });
+      .mapFlat(function(v, k) { return k; });
   };
 
   ObjectLikeSequence.prototype.methods = ObjectLikeSequence.prototype.functions;
@@ -720,13 +726,13 @@
   };
 
   ObjectLikeSequence.prototype.toArray = function() {
-    return this.map(function(v, k) { return [k, v]; }).toArray();
+    return this.mapFlat(function(v, k) { return [k, v]; }).toArray();
   };
 
   ObjectLikeSequence.prototype.pairs = ObjectLikeSequence.prototype.toArray;
 
   ObjectLikeSequence.prototype.toObject = function() {
-    return this.map(function(v, k) { return [k, v]; }).toObject();
+    return this.mapFlat(function(v, k) { return [k, v]; }).toObject();
   };
 
   /**
@@ -1121,6 +1127,23 @@
         return;
       }
     }
+  };
+
+  /**
+   * @constructor
+   */
+  function MappedObjectLikeSequence(parent, mapFn) {
+    this.parent = parent;
+    this.mapFn  = mapFn;
+  };
+
+  MappedObjectLikeSequence.prototype = new ObjectLikeSequence();
+
+  MappedObjectLikeSequence.prototype.each = function(fn) {
+    var mapFn = this.mapFn;
+    this.parent.each(function(value, key) {
+      return fn(mapFn(value, key), key);
+    });
   };
 
   /**
