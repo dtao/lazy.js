@@ -677,22 +677,12 @@
 
   ObjectLikeSequence.prototype = new Sequence();
 
-  ObjectLikeSequence.prototype.map = function(mapFn) {
-    return new MappedObjectLikeSequence(this, mapFn);
-  };
-
-  ObjectLikeSequence.prototype.mapFlat = Sequence.prototype.map;
-
-  ObjectLikeSequence.prototype.filter = function(filterFn) {
-    return new FilteredObjectLikeSequence(this, filterFn);
-  };
-
   ObjectLikeSequence.prototype.keys = function() {
-    return this.mapFlat(function(v, k) { return k; });
+    return this.map(function(v, k) { return k; });
   };
 
   ObjectLikeSequence.prototype.values = function() {
-    return this.mapFlat(function(v, k) { return v; });
+    return this.map(function(v, k) { return v; });
   };
 
   ObjectLikeSequence.prototype.assign = function(other) {
@@ -708,31 +698,27 @@
   ObjectLikeSequence.prototype.functions = function() {
     return this
       .filter(function(v, k) { return typeof(v) === "function"; })
-      .mapFlat(function(v, k) { return k; });
+      .map(function(v, k) { return k; });
   };
 
   ObjectLikeSequence.prototype.methods = ObjectLikeSequence.prototype.functions;
 
   ObjectLikeSequence.prototype.pick = function(properties) {
-    return this.filter(function(value, key) {
-      return contains(properties, key);
-    });
+    return new PickSequence(this, properties);
   };
 
   ObjectLikeSequence.prototype.omit = function(properties) {
-    return this.filter(function(value, key) {
-      return !contains(properties, key);
-    });
+    return new OmitSequence(this, properties);
   };
 
   ObjectLikeSequence.prototype.toArray = function() {
-    return this.mapFlat(function(v, k) { return [k, v]; }).toArray();
+    return this.map(function(v, k) { return [k, v]; }).toArray();
   };
 
   ObjectLikeSequence.prototype.pairs = ObjectLikeSequence.prototype.toArray;
 
   ObjectLikeSequence.prototype.toObject = function() {
-    return this.mapFlat(function(v, k) { return [k, v]; }).toObject();
+    return this.map(function(v, k) { return [k, v]; }).toObject();
   };
 
   /**
@@ -1013,9 +999,10 @@
 
   ObjectWrapper.prototype.each = function(fn) {
     var source = this.source,
-        k;
-    for (k in source) {
-      if (fn(source[k], k) === false) {
+        key;
+
+    for (key in source) {
+      if (fn(source[key], key) === false) {
         return;
       }
     }
@@ -1131,23 +1118,6 @@
 
   /**
    * @constructor
-   */
-  function MappedObjectLikeSequence(parent, mapFn) {
-    this.parent = parent;
-    this.mapFn  = mapFn;
-  };
-
-  MappedObjectLikeSequence.prototype = new ObjectLikeSequence();
-
-  MappedObjectLikeSequence.prototype.each = function(fn) {
-    var mapFn = this.mapFn;
-    this.parent.each(function(value, key) {
-      return fn(mapFn(value, key), key);
-    });
-  };
-
-  /**
-   * @constructor
    * @param {Sequence=} parent
    * @param {Function=} filterFn
    */
@@ -1220,26 +1190,6 @@
         break;
       }
     }
-  };
-
-  /**
-   * @constructor
-   */
-  function FilteredObjectLikeSequence(parent, filterFn) {
-    this.parent   = parent;
-    this.filterFn = filterFn;
-  }
-
-  FilteredObjectLikeSequence.prototype = new ObjectLikeSequence();
-
-  FilteredObjectLikeSequence.prototype.each = function(fn) {
-    var filterFn = this.filterFn;
-
-    this.parent.each(function(value, key) {
-      if (filterFn(value, key) && fn(value, key) === false) {
-        return false;
-      }
-    });
   };
 
   /**
@@ -1698,6 +1648,48 @@
   InvertedSequence.prototype.each = function(fn) {
     this.parent.each(function(value, key) {
       return fn(key, value);
+    });
+  };
+
+  /**
+   * @constructor
+   */
+  function PickSequence(parent, properties) {
+    this.parent     = parent;
+    this.properties = properties;
+  }
+
+  PickSequence.prototype = new ObjectLikeSequence();
+
+  PickSequence.prototype.each = function(fn) {
+    var inArray    = contains,
+        properties = this.properties;
+
+    this.parent.each(function(value, key) {
+      if (inArray(properties, key)) {
+        return fn(value, key);
+      }
+    });
+  };
+
+  /**
+   * @constructor
+   */
+  function OmitSequence(parent, properties) {
+    this.parent     = parent;
+    this.properties = properties;
+  }
+
+  OmitSequence.prototype = new ObjectLikeSequence();
+
+  OmitSequence.prototype.each = function(fn) {
+    var inArray    = contains,
+        properties = this.properties;
+
+    this.parent.each(function(value, key) {
+      if (!inArray(properties, key)) {
+        return fn(value, key);
+      }
     });
   };
 

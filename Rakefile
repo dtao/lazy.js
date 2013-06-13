@@ -26,6 +26,8 @@ SOURCE_FILES = %w[
   zipped_sequence
   assign_sequence
   inverted_sequence
+  pick_sequence
+  omit_sequence
   generated_sequence
   async_sequence
   string_wrapper

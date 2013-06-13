@@ -296,6 +296,7 @@ Currently the following functions are available (meaning you can call them on an
 
 - `keys`
 - `values`
+- `pairs`
 - `functions` (aka `methods`)
 - `extend` (aka `assign`)
 - `pick`
