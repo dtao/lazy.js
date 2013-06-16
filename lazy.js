@@ -1,6 +1,1068 @@
 (function(context) {
 
   /**
+   * ArrayWrapper is the most basic {@link Sequence}. It directly wraps an array
+   * and implements the same methods as {@link IndexedSequence}, but more
+   * efficiently.
+   *
+   * @constructor
+   */
+  function ArrayWrapper(source) {
+    this.source = source;
+  }
+
+  ArrayWrapper.prototype = new IndexedSequence();
+
+  /**
+   * Returns the element at the specified index in the source array.
+   *
+   * @param {number} i The index to access.
+   * @return {*} The element.
+   */
+  ArrayWrapper.prototype.get = function(i) {
+    return this.source[i];
+  };
+
+  /**
+   * Returns the length of the source array.
+   *
+   * @return {number} The length.
+   */
+  ArrayWrapper.prototype.length = function() {
+    return this.source.length;
+  };
+
+  /**
+   * An optimized version of {@link Sequence.each}.
+   */
+  ArrayWrapper.prototype.each = function(fn) {
+    var i = -1;
+    while (++i < this.source.length) {
+      if (fn(this.source[i], i) === false) {
+        break;
+      }
+    }
+  };
+
+  /**
+   * An optimized version of {@link Sequence.map}.
+   */
+  ArrayWrapper.prototype.map = function(mapFn) {
+    return new MappedArrayWrapper(this.source, mapFn);
+  };
+
+  /**
+   * An optimized version of {@link Sequence.filter}.
+   */
+  ArrayWrapper.prototype.filter = function(filterFn) {
+    return new FilteredArrayWrapper(this, filterFn);
+  };
+
+  /**
+   * An optimized version of {@link Sequence.uniq}.
+   */
+  ArrayWrapper.prototype.uniq =
+  ArrayWrapper.prototype.unique = function() {
+    return new UniqueArrayWrapper(this);
+  };
+
+  /**
+   * An optimized version of {@link Sequence.toArray}.
+   */
+  ArrayWrapper.prototype.toArray = function() {
+    return this.source.slice(0);
+  };
+
+  /**
+   * @constructor
+   */
+  function AssignSequence(parent, other) {
+    this.parent = parent;
+    this.other  = other;
+  }
+
+  AssignSequence.prototype = new ObjectLikeSequence();
+
+  AssignSequence.prototype.each = function(fn) {
+    var merged = new Set(),
+        done   = false;
+
+    Lazy(this.other).each(function(value, key) {
+      if (fn(value, key) === false) {
+        done = true;
+        return false;
+      }
+
+      merged.add(key);
+    });
+
+    if (!done) {
+      this.parent.each(function(value, key) {
+        if (!merged.contains(key) && fn(value, key) === false) {
+          return false;
+        }
+      });
+    }
+  };
+
+  /**
+   * An AsyncSequence iterates over its elements asynchronously when {@link each}
+   * is called.
+   *
+   * @param {Sequence} parent A {@link Sequence} to wrap, to expose asynchronous
+   *     iteration.
+   * @param {number=} interval How many milliseconds should elapse between each
+   *     element when iterating over this sequence. If this argument is omitted,
+   *     asynchronous iteration will be executed as fast as possible.
+   * @constructor
+   */
+  function AsyncSequence(parent, interval) {
+    if (parent instanceof AsyncSequence) {
+      throw "Sequence is already asynchronous!";
+    }
+
+    this.parent = parent;
+    this.onNextCallback = getOnNextCallback(interval);
+  }
+
+  AsyncSequence.prototype = new Sequence();
+
+  /**
+   * An asynchronous version of {@link Sequence.each}.
+   */
+  AsyncSequence.prototype.each = function(fn) {
+    var iterator = this.parent.getIterator(),
+        onNextCallback = this.onNextCallback;
+
+    if (iterator.moveNext()) {
+      onNextCallback(function iterate() {
+        if (fn(iterator.current()) !== false && iterator.moveNext()) {
+          onNextCallback(iterate);
+        }
+      });
+    }
+  };
+
+  function getOnNextCallback(interval) {
+    if (typeof interval === "undefined") {
+      if (typeof context.setImmediate === "function") {
+        return context.setImmediate;
+      }
+      if (typeof process !== "undefined" && typeof process.nextTick === "function") {
+        return process.nextTick;
+      }
+    }
+
+    interval = interval || 0;
+    return function(fn) {
+      setTimeout(fn, interval);
+    };
+  }
+
+  /**
+   * A CachingSequence is a {@link Sequence} that (probably) must fully evaluate
+   * the underlying sequence when {@link each} is called. For this reason, it
+   * provides a {@link cache} method to fully populate an array that can then be
+   * referenced internally.
+   *
+   * Frankly, I question the wisdom in this sequence type and think I will
+   * probably refactor this out in the near future. Most likely I will replace it
+   * with something like an 'IteratingSequence' which must expose a 'getIterator'
+   * and not provide {@link get} or {@link length} at all. But we'll see.
+   *
+   * @constructor
+   */
+  function CachingSequence() {}
+
+  CachingSequence.prototype = new Sequence();
+
+  /**
+   * Create a new constructor function for a type inheriting from
+   * {@link CachingSequence}.
+   *
+   * @param {Function} ctor The constructor function.
+   * @return {Function} A constructor for a new type inheriting from
+   *     {@link CachingSequence}.
+   */
+  CachingSequence.inherit = function(ctor) {
+    ctor.prototype = new CachingSequence();
+    return ctor;
+  };
+
+  /**
+   * Fully evaluates the sequence and returns a cached result.
+   *
+   * @return {Array} The cached array, fully populated with the elements in this
+   *     sequence.
+   */
+  CachingSequence.prototype.cache = function() {
+    if (!this.cached) {
+      this.cached = this.toArray();
+    }
+    return this.cached;
+  };
+
+  /**
+   * For internal use only.
+   */
+  CachingSequence.prototype.get = function(i) {
+    return this.cache()[i];
+  };
+
+  /**
+   * For internal use only.
+   */
+  CachingSequence.prototype.length = function() {
+    return this.cache().length;
+  };
+
+  /**
+   * @constructor
+   */
+  function CharIterator(source) {
+    this.source = source;
+    this.index = -1;
+  }
+
+  CharIterator.prototype.current = function() {
+    return this.source.charAt(this.index);
+  };
+
+  CharIterator.prototype.moveNext = function() {
+    return (++this.index < this.source.length);
+  };
+
+  var ConcatenatedSequence = Sequence.inherit(function(parent, arrays) {
+    this.parent = parent;
+    this.arrays = arrays;
+  });
+
+  ConcatenatedSequence.prototype.each = function(fn) {
+    var done = false,
+        i = 0;
+
+    this.parent.each(function(e) {
+      if (fn(e, i++) === false) {
+        done = true;
+        return false;
+      }
+    });
+
+    if (!done) {
+      Lazy(this.arrays).flatten().each(function(e) {
+        if (fn(e, i++) === false) {
+          return false;
+        }
+      });
+    }
+  };
+
+  // TODO: This should return an object too (like GroupBySequence).
+  var CountedSequence = CachingSequence.inherit(function(parent, keyFn) {
+    this.each = function(fn) {
+      var grouped = {};
+      parent.each(function(e) {
+        var key = keyFn(e);
+        if (!grouped[key]) {
+          grouped[key] = 1;
+        } else {
+          grouped[key] += 1;
+        }
+      });
+      for (var key in grouped) {
+        fn([key, grouped[key]]);
+      }
+    };
+  });
+
+  var DropSequence = CachingSequence.inherit(function(parent, count) {
+    this.parent = parent;
+    this.count  = typeof count === "number" ? count : 1;
+  });
+
+  DropSequence.prototype.each = function(fn) {
+    var self = this,
+        i = 0;
+    self.parent.each(function(e) {
+      if (i++ < self.count) { return; }
+      return fn(e);
+    });
+  };
+
+  var IndexedDropSequence = IndexedSequence.inherit(function(parent, count) {
+    this.parent = parent;
+    this.count  = typeof count === "number" ? count : 1;
+  });
+
+  IndexedDropSequence.prototype.get = function(i) {
+    return this.parent.get(this.count + i);
+  };
+
+  IndexedDropSequence.prototype.length = function() {
+    var parentLength = this.parent.length();
+    return this.count <= parentLength ? parentLength - this.count : 0;
+  };
+
+  var console;
+  var process;
+  var module;
+  var global;
+
+  /**
+   * @constructor
+   * @param {Sequence=} parent
+   * @param {Function=} filterFn
+   */
+  function FilteredSequence(parent, filterFn) {
+    this.parent   = parent;
+    this.filterFn = filterFn;
+  }
+
+  FilteredSequence.prototype = new CachingSequence();
+
+  FilteredSequence.prototype.getIterator = function() {
+    return new FilteringIterator(this.parent, this.filterFn);
+  };
+
+  FilteredSequence.prototype.each = function(fn) {
+    var filterFn = this.filterFn;
+
+    this.parent.each(function(e, i) {
+      if (filterFn(e, i)) {
+        return fn(e, i);
+      }
+    });
+  };
+
+  /**
+   * @constructor
+   */
+  function IndexedFilteredSequence(parent, filterFn) {
+    this.parent   = parent;
+    this.filterFn = filterFn;
+  }
+
+  IndexedFilteredSequence.prototype = new FilteredSequence();
+
+  IndexedFilteredSequence.prototype.each = function(fn) {
+    var parent = this.parent,
+        filterFn = this.filterFn,
+        length = this.parent.length(),
+        i = -1,
+        e;
+
+    while (++i < length) {
+      e = parent.get(i);
+      if (filterFn(e, i) && fn(e, i) === false) {
+        break;
+      }
+    }
+  };
+
+  /**
+   * @constructor
+   */
+  function FilteredArrayWrapper(parent, filterFn) {
+    this.parent   = parent;
+    this.filterFn = filterFn;
+  }
+
+  FilteredArrayWrapper.prototype = new FilteredSequence();
+
+  FilteredArrayWrapper.prototype.each = function(fn) {
+    var source = this.parent.source,
+        filterFn = this.filterFn,
+        length = source.length,
+        i = -1,
+        e;
+
+    while (++i < length) {
+      e = source[i];
+      if (filterFn(e, i) && fn(e, i) === false) {
+        break;
+      }
+    }
+  };
+
+  /**
+   * @constructor
+   */
+  function FilteringIterator(sequence, filterFn) {
+    this.iterator = sequence.getIterator();
+    this.filterFn = filterFn;
+  }
+
+  FilteringIterator.prototype.current = function() {
+    return this.value;
+  };
+
+  FilteringIterator.prototype.moveNext = function() {
+    var iterator = this.iterator,
+        filterFn = this.filterFn,
+        value;
+
+    while (iterator.moveNext()) {
+      value = iterator.current();
+      if (filterFn(value)) {
+        this.value = value;
+        return true;
+      }
+    }
+
+    this.value = undefined;
+    return false;
+  };
+
+  var FlattenedSequence = CachingSequence.inherit(function(parent) {
+    this.parent = parent;
+  });
+
+  FlattenedSequence.prototype.each = function(fn) {
+    // Hack: store the index in a tiny array so we can increment it from outside
+    // this function.
+    var index = [0];
+
+    this.parent.each(function(e) {
+      if (e instanceof Array) {
+        return recursiveForEach(e, fn, index);
+      } else {
+        return fn(e, index[0]++);
+      }
+    });
+  };
+
+  /**
+   * A GeneratedSequence does not wrap an in-memory colllection but rather
+   * determines its elements on-the-fly during iteration according to a generator
+   * function.
+   *
+   * @constructor
+   * @param {function(number, *):*} generatorFn A function which accepts an index
+   *     and returns a value for the element at that position in the sequence.
+   * @param {number=} length The length of the sequence. If this argument is
+   *     omitted, the sequence will go on forever.
+   */
+  function GeneratedSequence(generatorFn, length) {
+    this.get = generatorFn;
+    this.fixedLength = length;
+  }
+
+  GeneratedSequence.prototype = new Sequence();
+
+  /**
+   * Returns the length of this sequence.
+   *
+   * @return {number} The length, or undefined if this is an indefinite sequence.
+   */
+  GeneratedSequence.prototype.length = function() {
+    return this.fixedLength;
+  };
+
+  /**
+   * See {@link Sequence.each}.
+   */
+  GeneratedSequence.prototype.each = function(fn) {
+    var generatorFn = this.get,
+        length = this.fixedLength,
+        i = 0;
+    while (typeof length === "undefined" || i < length) {
+      if (fn(generatorFn(i++)) === false) {
+        break;
+      }
+    }
+  };
+
+  // TODO: This should really return an object, not an jagged array. Will
+  // require a bit of rework -- but hopefully not too much!
+  var GroupedSequence = CachingSequence.inherit(function(parent, keyFn) {
+    this.each = function(fn) {
+      var grouped = {};
+      parent.each(function(e) {
+        var key = keyFn(e);
+        if (!grouped[key]) {
+          grouped[key] = [e];
+        } else {
+          grouped[key].push(e);
+        }
+      });
+      for (var key in grouped) {
+        if (fn([key, grouped[key]]) === false) {
+          break;
+        }
+      }
+    };
+  });
+
+  /**
+   * An IndexedSequence is a {@link Sequence} that provides random access to its
+   * elements. This extends the API for iterating with the additional methods
+   * `get` and `length`, allowing a sequence to act as a "view" into a collection
+   * or other indexed data source.
+   *
+   * @constructor
+   */
+  function IndexedSequence() {}
+
+  IndexedSequence.prototype = new Sequence();
+
+  /**
+   * Create a new constructor function for a type inheriting from
+   * {@link IndexedSequence}.
+   *
+   * @param {Function} ctor The constructor function.
+   * @return {Function} A constructor for a new type inheriting from
+   *     {@link IndexedSequence}.
+   */
+  IndexedSequence.inherit = function(ctor) {
+    ctor.prototype = new IndexedSequence();
+    return ctor;
+  };
+
+  /**
+   * Returns the element at the specified index.
+   *
+   * @param {number} i The index to access.
+   * @return {*} The element.
+   */
+  IndexedSequence.prototype.get = function(i) {
+    return this.parent.get(i);
+  };
+
+  /**
+   * Returns the length of the sequence.
+   *
+   * @return {number} The length.
+   */
+  IndexedSequence.prototype.length = function() {
+    return this.parent.length();
+  };
+
+  /**
+   * An optimized version of {@link Sequence.each}.
+   */
+  IndexedSequence.prototype.each = function(fn) {
+    var length = this.length(),
+        i = -1;
+    while (++i < length) {
+      if (fn(this.get(i), i) === false) {
+        break;
+      }
+    }
+  };
+
+  /**
+   * An optimized version of {@link Sequence.map}, which creates an
+   * {@link IndexedSequence} so that the result still provides random access.
+   */
+  IndexedSequence.prototype.map =
+  IndexedSequence.prototype.collect = function(mapFn) {
+    return new IndexedMappedSequence(this, mapFn);
+  };
+
+  /**
+   * An optimized version of {@link Sequence.filter}.
+   */
+  IndexedSequence.prototype.filter =
+  IndexedSequence.prototype.select = function(filterFn) {
+    return new IndexedFilteredSequence(this, filterFn);
+  };
+
+  /**
+   * An optimized version of {@link Sequence.reverse}, which creates an
+   * {@link IndexedSequence} so that the result still provides random access.
+   */
+  IndexedSequence.prototype.reverse = function() {
+    return new IndexedReversedSequence(this);
+  };
+
+  /**
+   * An optimized version of {@link Sequence.first}, which creates an
+   * {@link IndexedSequence} so that the result still provides random access.
+   *
+   * @param {number=} count
+   */
+  IndexedSequence.prototype.first = function(count) {
+    if (typeof count === "undefined") {
+      return this.get(0);
+    }
+
+    return new IndexedTakeSequence(this, count);
+  };
+
+  IndexedSequence.prototype.head =
+  IndexedSequence.prototype.take =
+  IndexedSequence.prototype.first;
+
+  /**
+   * An optimized version of {@link Sequence.rest}, which creates an
+   * {@link IndexedSequence} so that the result still provides random access.
+   *
+   * @param {number=} count
+   */
+  IndexedSequence.prototype.rest = function(count) {
+    return new IndexedDropSequence(this, count);
+  };
+
+  IndexedSequence.prototype.tail =
+  IndexedSequence.prototype.drop = IndexedSequence.prototype.rest;
+
+  /**
+   * Wraps an object and returns something lazy.
+   *
+   * For arrays and objects, Lazy will create a {@link Sequence} object.
+   * For strings, Lazy will create a {@link StringWrapper}, with
+   * {@link StringWrapper.split} and {@link StringWrapper.match} methods that
+   * themselves create sequences.
+   *
+   * @param {*} source An array, object, or string to wrap.
+   * @return {StringWrapper|Sequence} The wrapped lazy object.
+   */
+  var Lazy = function(source) {
+    if (source instanceof Sequence) {
+      return source;
+    } else if (typeof source === "string") {
+      return new StringWrapper(source);
+    } else if (source instanceof Array) {
+      return new ArrayWrapper(source);
+    }
+    return new ObjectWrapper(source);
+  };
+
+  /**
+   * Deprecated.
+   */
+  Lazy.async = function(source, interval) {
+    return new AsyncSequence(new ArrayWrapper(source), interval);
+  };
+
+  /**
+   * Creates a {@link GeneratedSequence} using the specified generator function
+   * and (optionally) length.
+   *
+   * @param {function(number):*} generatorFn The function used to generate the
+   *     sequence. This function accepts an index as a parameter and should return
+   *     a value for that index in the resulting sequence.
+   * @param {number=} length The length of the sequence, for sequences with a
+   *     definite length.
+   * @return {Sequence} The generated sequence.
+   */
+  Lazy.generate = function(generatorFn, length) {
+    return new GeneratedSequence(generatorFn, length);
+  };
+
+  /**
+   * Creates a sequence from a given starting value, up to a specified stopping
+   * value, incrementing by a given step.
+   *
+   * @return {Sequence} The sequence defined by the given ranges.
+   */
+  Lazy.range = function() {
+    var start = arguments.length > 1 ? arguments[0] : 0,
+        stop  = arguments.length > 1 ? arguments[1] : arguments[0],
+        step  = arguments.length > 2 ? arguments[2] : 1;
+    return this.generate(function(i) { return start + (step * i); })
+      .take(Math.floor((stop - start) / step));
+  };
+
+  /**
+   * Creates a sequence consisting of the given value repeated a specified number
+   * of times.
+   *
+   * @param {*} value The value to repeat.
+   * @param {number=} count The number of times the value should be repeated in
+   *     the sequence. If this argument is omitted, the value will repeat forever.
+   * @return {Sequence} The sequence containing the repeated value.
+   */
+  Lazy.repeat = function(value, count) {
+    return Lazy.generate(function() { return value; }, count);
+  };
+
+  Lazy.Sequence = Sequence;
+  Lazy.IndexedSequence = IndexedSequence;
+  Lazy.CachingSequence = CachingSequence;
+  Lazy.GeneratedSequence = GeneratedSequence;
+
+  /*** Useful utility methods ***/
+
+  /**
+   * Creates a Set containing the specified values.
+   *
+   * @param {...*} values One or more values (or array(s) of values) used to
+   *     populate the set.
+   * @return {Set} A new set containing the values passed in.
+   */
+  function createSet(values) {
+    var set = new Set();
+    Lazy(values || []).flatten().each(function(e) {
+      set.add(e);
+    });
+    return set;
+  };
+
+  /**
+   * Compares two elements for sorting purposes.
+   *
+   * @param {*} x The left element to compare.
+   * @param {*} y The right element to compare.
+   * @param {Function=} fn An optional function to call on each element, to get
+   *     the values to compare.
+   * @return {number} 1 if x > y, -1 if x < y, or 0 if x and y are equal.
+   */
+  function compare(x, y, fn) {
+    if (typeof fn === "function") {
+      return compare(fn(x), fn(y));
+    }
+
+    if (x === y) {
+      return 0;
+    }
+
+    return x > y ? 1 : -1;
+  }
+
+  /**
+   * Iterates over every individual element in an array of arrays (of arrays...).
+   *
+   * @param {Array} array The outermost array.
+   * @param {Function} fn The function to call on every element, which can return
+   *     false to stop the iteration early.
+   * @param {Array=} index An optional counter container, to keep track of the
+   *     current index.
+   * @return {boolean} True if every element in the entire sequence was iterated,
+   *     otherwise false.
+   */
+  function recursiveForEach(array, fn, index) {
+    // It's easier to ensure this is initialized than to add special handling
+    // in case it isn't.
+    index = index || [0];
+
+    var i = -1;
+    while (++i < array.length) {
+      if (array[i] instanceof Array) {
+        if (recursiveForEach(array[i], fn, index) === false) {
+          return false;
+        }
+      } else {
+        if (fn(array[i], index[0]++) === false) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  function getFirst(sequence) {
+    var result;
+    sequence.each(function(e) {
+      result = e;
+      return false;
+    });
+    return result;
+  }
+
+  function contains(array, element) {
+    var i = -1,
+        length = array.length;
+
+    while (++i < length) {
+      if (array[i] === element) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  if (typeof Array.prototype.indexOf === "function") {
+    contains = function(array, element) {
+      return array.indexOf(element) !== -1;
+    };
+  }
+
+  function swap(array, i, j) {
+    var temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+  }
+
+  function indent(depth) {
+    return new Array(depth).join("  ");
+  }
+
+  /*** Exposing Lazy to the world ***/
+
+  // For Node.js
+  if (typeof module !== "undefined") {
+    module.exports = Lazy;
+
+  // For browsers
+  } else {
+    context.Lazy = Lazy;
+  }
+
+  var IntersectionSequence = CachingSequence.inherit(function(parent, arrays) {
+    this.parent = parent;
+    this.arrays = arrays;
+  });
+
+  IntersectionSequence.prototype.each = function(fn) {
+    var sets = Lazy(this.arrays)
+      .map(function(values) { return createSet(values); })
+      .toArray();
+
+    var i = 0;
+    this.parent.each(function(e) {
+      var j = -1;
+      while (++j < sets.length) {
+        if (!sets[j].contains(e)) {
+          return;
+        }
+      }
+      return fn(e, i++);
+    });
+  };
+
+  /**
+   * @constructor
+   */
+  function InvertedSequence(parent) {
+    this.parent = parent;
+  }
+
+  InvertedSequence.prototype = new ObjectLikeSequence();
+
+  InvertedSequence.prototype.each = function(fn) {
+    this.parent.each(function(value, key) {
+      return fn(key, value);
+    });
+  };
+
+  /**
+   * The Iterator object provides an API for iterating over a sequence.
+   *
+   * @constructor
+   */
+  function Iterator(sequence) {
+    this.sequence = sequence;
+    this.index = -1;
+  }
+
+  /**
+   * Gets the current item this iterator is pointing to.
+   *
+   * @return {*} The current item.
+   */
+  Iterator.prototype.current = function() {
+    return this.sequence.get(this.index);
+  };
+
+  /**
+   * Moves the iterator to the next item in a sequence, if possible.
+   *
+   * @return {boolean} True if the iterator is able to move to a new item, or else
+   *     false.
+   */
+  Iterator.prototype.moveNext = function() {
+    if (this.index >= this.sequence.length() - 1) {
+      return false;
+    }
+
+    ++this.index;
+    return true;
+  };
+
+  var MappedSequence = Sequence.inherit(function(parent, mapFn) {
+    this.parent = parent;
+    this.mapFn  = mapFn;
+  });
+
+  MappedSequence.prototype.each = function(fn) {
+    var mapFn = this.mapFn;
+    this.parent.each(function(e, i) {
+      return fn(mapFn(e, i), i);
+    });
+  };
+
+  var IndexedMappedSequence = IndexedSequence.inherit(function(parent, mapFn) {
+    this.parent = parent;
+    this.mapFn  = mapFn;
+  });
+
+  IndexedMappedSequence.prototype.get = function(i) {
+    return this.mapFn(this.parent.get(i), i);
+  };
+
+  /**
+   * @constructor
+   */
+  function MappedArrayWrapper(source, mapFn) {
+    this.source = source;
+    this.mapFn  = mapFn;
+  }
+
+  MappedArrayWrapper.prototype = new IndexedSequence();
+
+  MappedArrayWrapper.prototype.get = function(i) {
+    return this.mapFn(this.source[i]);
+  };
+
+  MappedArrayWrapper.prototype.length = function() {
+    return this.source.length;
+  };
+
+  MappedArrayWrapper.prototype.each = function(fn) {
+    var source = this.source,
+        length = this.source.length,
+        mapFn  = this.mapFn,
+        i = -1;
+    while (++i < length) {
+      if (fn(mapFn(source[i], i), i) === false) {
+        return;
+      }
+    }
+  };
+
+  /**
+   * The ObjectLikeSequence object represents a sequence of key/value pairs.
+   *
+   * @constructor
+   */
+  function ObjectLikeSequence() {}
+
+  ObjectLikeSequence.prototype = new Sequence();
+
+  ObjectLikeSequence.prototype.keys = function() {
+    return this.map(function(v, k) { return k; });
+  };
+
+  ObjectLikeSequence.prototype.values = function() {
+    return this.map(function(v, k) { return v; });
+  };
+
+  ObjectLikeSequence.prototype.assign = function(other) {
+    return new AssignSequence(this, other);
+  };
+
+  ObjectLikeSequence.prototype.extend = ObjectLikeSequence.prototype.assign;
+
+  ObjectLikeSequence.prototype.invert = function() {
+    return new InvertedSequence(this);
+  };
+
+  ObjectLikeSequence.prototype.functions = function() {
+    return this
+      .filter(function(v, k) { return typeof(v) === "function"; })
+      .map(function(v, k) { return k; });
+  };
+
+  ObjectLikeSequence.prototype.methods = ObjectLikeSequence.prototype.functions;
+
+  ObjectLikeSequence.prototype.pick = function(properties) {
+    return new PickSequence(this, properties);
+  };
+
+  ObjectLikeSequence.prototype.omit = function(properties) {
+    return new OmitSequence(this, properties);
+  };
+
+  ObjectLikeSequence.prototype.toArray = function() {
+    return this.map(function(v, k) { return [k, v]; }).toArray();
+  };
+
+  ObjectLikeSequence.prototype.pairs = ObjectLikeSequence.prototype.toArray;
+
+  ObjectLikeSequence.prototype.toObject = function() {
+    return this.map(function(v, k) { return [k, v]; }).toObject();
+  };
+
+  /**
+   * @constructor
+   */
+  function ObjectWrapper(source) {
+    this.source = source;
+  }
+
+  ObjectWrapper.prototype = new ObjectLikeSequence();
+
+  ObjectWrapper.prototype.get = function(key) {
+    return this.source[key];
+  };
+
+  ObjectWrapper.prototype.each = function(fn) {
+    var source = this.source,
+        key;
+
+    for (key in source) {
+      if (fn(source[key], key) === false) {
+        return;
+      }
+    }
+  };
+
+  /**
+   * @constructor
+   */
+  function OmitSequence(parent, properties) {
+    this.parent     = parent;
+    this.properties = properties;
+  }
+
+  OmitSequence.prototype = new ObjectLikeSequence();
+
+  OmitSequence.prototype.each = function(fn) {
+    var inArray    = contains,
+        properties = this.properties;
+
+    this.parent.each(function(value, key) {
+      if (!inArray(properties, key)) {
+        return fn(value, key);
+      }
+    });
+  };
+
+  /**
+   * @constructor
+   */
+  function PickSequence(parent, properties) {
+    this.parent     = parent;
+    this.properties = properties;
+  }
+
+  PickSequence.prototype = new ObjectLikeSequence();
+
+  PickSequence.prototype.each = function(fn) {
+    var inArray    = contains,
+        properties = this.properties;
+
+    this.parent.each(function(value, key) {
+      if (inArray(properties, key)) {
+        return fn(value, key);
+      }
+    });
+  };
+
+  var ReversedSequence = CachingSequence.inherit(function(parent) {
+    this.parent = parent;
+  });
+
+  ReversedSequence.prototype.each = function(fn) {
+    var parentArray = this.parent.toArray(),
+        i = parentArray.length;
+    while (--i >= 0) {
+      if (fn(parentArray[i]) === false) {
+        break;
+      }
+    }
+  };
+
+  var IndexedReversedSequence = IndexedSequence.inherit(function(parent) {
+    this.parent = parent;
+  });
+
+  IndexedReversedSequence.prototype.get = function(i) {
+    return this.parent.get(this.length() - i - 1);
+  };
+
+  /**
    * The Sequence object provides a unified API encapsulating the notion of zero
    * or more consecutive elements in a collection, stream, etc.
    *
@@ -669,93 +1731,6 @@
   };
 
   /**
-   * The ObjectLikeSequence object represents a sequence of key/value pairs.
-   *
-   * @constructor
-   */
-  function ObjectLikeSequence() {}
-
-  ObjectLikeSequence.prototype = new Sequence();
-
-  ObjectLikeSequence.prototype.keys = function() {
-    return this.map(function(v, k) { return k; });
-  };
-
-  ObjectLikeSequence.prototype.values = function() {
-    return this.map(function(v, k) { return v; });
-  };
-
-  ObjectLikeSequence.prototype.assign = function(other) {
-    return new AssignSequence(this, other);
-  };
-
-  ObjectLikeSequence.prototype.extend = ObjectLikeSequence.prototype.assign;
-
-  ObjectLikeSequence.prototype.invert = function() {
-    return new InvertedSequence(this);
-  };
-
-  ObjectLikeSequence.prototype.functions = function() {
-    return this
-      .filter(function(v, k) { return typeof(v) === "function"; })
-      .map(function(v, k) { return k; });
-  };
-
-  ObjectLikeSequence.prototype.methods = ObjectLikeSequence.prototype.functions;
-
-  ObjectLikeSequence.prototype.pick = function(properties) {
-    return new PickSequence(this, properties);
-  };
-
-  ObjectLikeSequence.prototype.omit = function(properties) {
-    return new OmitSequence(this, properties);
-  };
-
-  ObjectLikeSequence.prototype.toArray = function() {
-    return this.map(function(v, k) { return [k, v]; }).toArray();
-  };
-
-  ObjectLikeSequence.prototype.pairs = ObjectLikeSequence.prototype.toArray;
-
-  ObjectLikeSequence.prototype.toObject = function() {
-    return this.map(function(v, k) { return [k, v]; }).toObject();
-  };
-
-  /**
-   * The Iterator object provides an API for iterating over a sequence.
-   *
-   * @constructor
-   */
-  function Iterator(sequence) {
-    this.sequence = sequence;
-    this.index = -1;
-  }
-
-  /**
-   * Gets the current item this iterator is pointing to.
-   *
-   * @return {*} The current item.
-   */
-  Iterator.prototype.current = function() {
-    return this.sequence.get(this.index);
-  };
-
-  /**
-   * Moves the iterator to the next item in a sequence, if possible.
-   *
-   * @return {boolean} True if the iterator is able to move to a new item, or else
-   *     false.
-   */
-  Iterator.prototype.moveNext = function() {
-    if (this.index >= this.sequence.length() - 1) {
-      return false;
-    }
-
-    ++this.index;
-    return true;
-  };
-
-  /**
    * A collection of unique elements.
    *
    * @constructor
@@ -798,548 +1773,6 @@
     return valuesForKey && contains(valuesForKey, value);
   };
 
-  /**
-   * An IndexedSequence is a {@link Sequence} that provides random access to its
-   * elements. This extends the API for iterating with the additional methods
-   * `get` and `length`, allowing a sequence to act as a "view" into a collection
-   * or other indexed data source.
-   *
-   * @constructor
-   */
-  function IndexedSequence() {}
-
-  IndexedSequence.prototype = new Sequence();
-
-  /**
-   * Create a new constructor function for a type inheriting from
-   * {@link IndexedSequence}.
-   *
-   * @param {Function} ctor The constructor function.
-   * @return {Function} A constructor for a new type inheriting from
-   *     {@link IndexedSequence}.
-   */
-  IndexedSequence.inherit = function(ctor) {
-    ctor.prototype = new IndexedSequence();
-    return ctor;
-  };
-
-  /**
-   * Returns the element at the specified index.
-   *
-   * @param {number} i The index to access.
-   * @return {*} The element.
-   */
-  IndexedSequence.prototype.get = function(i) {
-    return this.parent.get(i);
-  };
-
-  /**
-   * Returns the length of the sequence.
-   *
-   * @return {number} The length.
-   */
-  IndexedSequence.prototype.length = function() {
-    return this.parent.length();
-  };
-
-  /**
-   * An optimized version of {@link Sequence.each}.
-   */
-  IndexedSequence.prototype.each = function(fn) {
-    var length = this.length(),
-        i = -1;
-    while (++i < length) {
-      if (fn(this.get(i), i) === false) {
-        break;
-      }
-    }
-  };
-
-  /**
-   * An optimized version of {@link Sequence.map}, which creates an
-   * {@link IndexedSequence} so that the result still provides random access.
-   */
-  IndexedSequence.prototype.map =
-  IndexedSequence.prototype.collect = function(mapFn) {
-    return new IndexedMappedSequence(this, mapFn);
-  };
-
-  /**
-   * An optimized version of {@link Sequence.filter}.
-   */
-  IndexedSequence.prototype.filter =
-  IndexedSequence.prototype.select = function(filterFn) {
-    return new IndexedFilteredSequence(this, filterFn);
-  };
-
-  /**
-   * An optimized version of {@link Sequence.reverse}, which creates an
-   * {@link IndexedSequence} so that the result still provides random access.
-   */
-  IndexedSequence.prototype.reverse = function() {
-    return new IndexedReversedSequence(this);
-  };
-
-  /**
-   * An optimized version of {@link Sequence.first}, which creates an
-   * {@link IndexedSequence} so that the result still provides random access.
-   *
-   * @param {number=} count
-   */
-  IndexedSequence.prototype.first = function(count) {
-    if (typeof count === "undefined") {
-      return this.get(0);
-    }
-
-    return new IndexedTakeSequence(this, count);
-  };
-
-  IndexedSequence.prototype.head =
-  IndexedSequence.prototype.take =
-  IndexedSequence.prototype.first;
-
-  /**
-   * An optimized version of {@link Sequence.rest}, which creates an
-   * {@link IndexedSequence} so that the result still provides random access.
-   *
-   * @param {number=} count
-   */
-  IndexedSequence.prototype.rest = function(count) {
-    return new IndexedDropSequence(this, count);
-  };
-
-  IndexedSequence.prototype.tail =
-  IndexedSequence.prototype.drop = IndexedSequence.prototype.rest;
-
-  /**
-   * ArrayWrapper is the most basic {@link Sequence}. It directly wraps an array
-   * and implements the same methods as {@link IndexedSequence}, but more
-   * efficiently.
-   *
-   * @constructor
-   */
-  function ArrayWrapper(source) {
-    this.source = source;
-  }
-
-  ArrayWrapper.prototype = new IndexedSequence();
-
-  /**
-   * Returns the element at the specified index in the source array.
-   *
-   * @param {number} i The index to access.
-   * @return {*} The element.
-   */
-  ArrayWrapper.prototype.get = function(i) {
-    return this.source[i];
-  };
-
-  /**
-   * Returns the length of the source array.
-   *
-   * @return {number} The length.
-   */
-  ArrayWrapper.prototype.length = function() {
-    return this.source.length;
-  };
-
-  /**
-   * An optimized version of {@link Sequence.each}.
-   */
-  ArrayWrapper.prototype.each = function(fn) {
-    var i = -1;
-    while (++i < this.source.length) {
-      if (fn(this.source[i], i) === false) {
-        break;
-      }
-    }
-  };
-
-  /**
-   * An optimized version of {@link Sequence.map}.
-   */
-  ArrayWrapper.prototype.map = function(mapFn) {
-    return new MappedArrayWrapper(this.source, mapFn);
-  };
-
-  /**
-   * An optimized version of {@link Sequence.filter}.
-   */
-  ArrayWrapper.prototype.filter = function(filterFn) {
-    return new FilteredArrayWrapper(this, filterFn);
-  };
-
-  /**
-   * An optimized version of {@link Sequence.uniq}.
-   */
-  ArrayWrapper.prototype.uniq =
-  ArrayWrapper.prototype.unique = function() {
-    return new UniqueArrayWrapper(this);
-  };
-
-  /**
-   * An optimized version of {@link Sequence.toArray}.
-   */
-  ArrayWrapper.prototype.toArray = function() {
-    return this.source.slice(0);
-  };
-
-  /**
-   * @constructor
-   */
-  function ObjectWrapper(source) {
-    this.source = source;
-  }
-
-  ObjectWrapper.prototype = new ObjectLikeSequence();
-
-  ObjectWrapper.prototype.get = function(key) {
-    return this.source[key];
-  };
-
-  ObjectWrapper.prototype.each = function(fn) {
-    var source = this.source,
-        key;
-
-    for (key in source) {
-      if (fn(source[key], key) === false) {
-        return;
-      }
-    }
-  };
-
-  /**
-   * A CachingSequence is a {@link Sequence} that (probably) must fully evaluate
-   * the underlying sequence when {@link each} is called. For this reason, it
-   * provides a {@link cache} method to fully populate an array that can then be
-   * referenced internally.
-   *
-   * Frankly, I question the wisdom in this sequence type and think I will
-   * probably refactor this out in the near future. Most likely I will replace it
-   * with something like an 'IteratingSequence' which must expose a 'getIterator'
-   * and not provide {@link get} or {@link length} at all. But we'll see.
-   *
-   * @constructor
-   */
-  function CachingSequence() {}
-
-  CachingSequence.prototype = new Sequence();
-
-  /**
-   * Create a new constructor function for a type inheriting from
-   * {@link CachingSequence}.
-   *
-   * @param {Function} ctor The constructor function.
-   * @return {Function} A constructor for a new type inheriting from
-   *     {@link CachingSequence}.
-   */
-  CachingSequence.inherit = function(ctor) {
-    ctor.prototype = new CachingSequence();
-    return ctor;
-  };
-
-  /**
-   * Fully evaluates the sequence and returns a cached result.
-   *
-   * @return {Array} The cached array, fully populated with the elements in this
-   *     sequence.
-   */
-  CachingSequence.prototype.cache = function() {
-    if (!this.cached) {
-      this.cached = this.toArray();
-    }
-    return this.cached;
-  };
-
-  /**
-   * For internal use only.
-   */
-  CachingSequence.prototype.get = function(i) {
-    return this.cache()[i];
-  };
-
-  /**
-   * For internal use only.
-   */
-  CachingSequence.prototype.length = function() {
-    return this.cache().length;
-  };
-
-  var MappedSequence = Sequence.inherit(function(parent, mapFn) {
-    this.parent = parent;
-    this.mapFn  = mapFn;
-  });
-
-  MappedSequence.prototype.each = function(fn) {
-    var mapFn = this.mapFn;
-    this.parent.each(function(e, i) {
-      return fn(mapFn(e, i), i);
-    });
-  };
-
-  var IndexedMappedSequence = IndexedSequence.inherit(function(parent, mapFn) {
-    this.parent = parent;
-    this.mapFn  = mapFn;
-  });
-
-  IndexedMappedSequence.prototype.get = function(i) {
-    return this.mapFn(this.parent.get(i), i);
-  };
-
-  /**
-   * @constructor
-   */
-  function MappedArrayWrapper(source, mapFn) {
-    this.source = source;
-    this.mapFn  = mapFn;
-  }
-
-  MappedArrayWrapper.prototype = new IndexedSequence();
-
-  MappedArrayWrapper.prototype.get = function(i) {
-    return this.mapFn(this.source[i]);
-  };
-
-  MappedArrayWrapper.prototype.length = function() {
-    return this.source.length;
-  };
-
-  MappedArrayWrapper.prototype.each = function(fn) {
-    var source = this.source,
-        length = this.source.length,
-        mapFn  = this.mapFn,
-        i = -1;
-    while (++i < length) {
-      if (fn(mapFn(source[i], i), i) === false) {
-        return;
-      }
-    }
-  };
-
-  /**
-   * @constructor
-   * @param {Sequence=} parent
-   * @param {Function=} filterFn
-   */
-  function FilteredSequence(parent, filterFn) {
-    this.parent   = parent;
-    this.filterFn = filterFn;
-  }
-
-  FilteredSequence.prototype = new CachingSequence();
-
-  FilteredSequence.prototype.getIterator = function() {
-    return new FilteringIterator(this.parent, this.filterFn);
-  };
-
-  FilteredSequence.prototype.each = function(fn) {
-    var filterFn = this.filterFn;
-
-    this.parent.each(function(e, i) {
-      if (filterFn(e, i)) {
-        return fn(e, i);
-      }
-    });
-  };
-
-  /**
-   * @constructor
-   */
-  function IndexedFilteredSequence(parent, filterFn) {
-    this.parent   = parent;
-    this.filterFn = filterFn;
-  }
-
-  IndexedFilteredSequence.prototype = new FilteredSequence();
-
-  IndexedFilteredSequence.prototype.each = function(fn) {
-    var parent = this.parent,
-        filterFn = this.filterFn,
-        length = this.parent.length(),
-        i = -1,
-        e;
-
-    while (++i < length) {
-      e = parent.get(i);
-      if (filterFn(e, i) && fn(e, i) === false) {
-        break;
-      }
-    }
-  };
-
-  /**
-   * @constructor
-   */
-  function FilteredArrayWrapper(parent, filterFn) {
-    this.parent   = parent;
-    this.filterFn = filterFn;
-  }
-
-  FilteredArrayWrapper.prototype = new FilteredSequence();
-
-  FilteredArrayWrapper.prototype.each = function(fn) {
-    var source = this.parent.source,
-        filterFn = this.filterFn,
-        length = source.length,
-        i = -1,
-        e;
-
-    while (++i < length) {
-      e = source[i];
-      if (filterFn(e, i) && fn(e, i) === false) {
-        break;
-      }
-    }
-  };
-
-  /**
-   * @constructor
-   */
-  function FilteringIterator(sequence, filterFn) {
-    this.iterator = sequence.getIterator();
-    this.filterFn = filterFn;
-  }
-
-  FilteringIterator.prototype.current = function() {
-    return this.value;
-  };
-
-  FilteringIterator.prototype.moveNext = function() {
-    var iterator = this.iterator,
-        filterFn = this.filterFn,
-        value;
-
-    while (iterator.moveNext()) {
-      value = iterator.current();
-      if (filterFn(value)) {
-        this.value = value;
-        return true;
-      }
-    }
-
-    this.value = undefined;
-    return false;
-  };
-
-  var ReversedSequence = CachingSequence.inherit(function(parent) {
-    this.parent = parent;
-  });
-
-  ReversedSequence.prototype.each = function(fn) {
-    var parentArray = this.parent.toArray(),
-        i = parentArray.length;
-    while (--i >= 0) {
-      if (fn(parentArray[i]) === false) {
-        break;
-      }
-    }
-  };
-
-  var IndexedReversedSequence = IndexedSequence.inherit(function(parent) {
-    this.parent = parent;
-  });
-
-  IndexedReversedSequence.prototype.get = function(i) {
-    return this.parent.get(this.length() - i - 1);
-  };
-
-  var ConcatenatedSequence = Sequence.inherit(function(parent, arrays) {
-    this.parent = parent;
-    this.arrays = arrays;
-  });
-
-  ConcatenatedSequence.prototype.each = function(fn) {
-    var done = false,
-        i = 0;
-
-    this.parent.each(function(e) {
-      if (fn(e, i++) === false) {
-        done = true;
-        return false;
-      }
-    });
-
-    if (!done) {
-      Lazy(this.arrays).flatten().each(function(e) {
-        if (fn(e, i++) === false) {
-          return false;
-        }
-      });
-    }
-  };
-
-  var TakeSequence = CachingSequence.inherit(function(parent, count) {
-    this.parent = parent;
-    this.count  = count;
-  });
-
-  TakeSequence.prototype.each = function(fn) {
-    var self = this,
-        i = 0;
-    self.parent.each(function(e) {
-      var result = fn(e);
-      if (++i >= self.count) { return false; }
-      return result;
-    });
-  };
-
-  var IndexedTakeSequence = IndexedSequence.inherit(function(parent, count) {
-    this.parent = parent;
-    this.count  = count;
-  });
-
-  IndexedTakeSequence.prototype.length = function() {
-    var parentLength = this.parent.length();
-    return this.count <= parentLength ? this.count : parentLength;
-  };
-
-  var DropSequence = CachingSequence.inherit(function(parent, count) {
-    this.parent = parent;
-    this.count  = typeof count === "number" ? count : 1;
-  });
-
-  DropSequence.prototype.each = function(fn) {
-    var self = this,
-        i = 0;
-    self.parent.each(function(e) {
-      if (i++ < self.count) { return; }
-      return fn(e);
-    });
-  };
-
-  var IndexedDropSequence = IndexedSequence.inherit(function(parent, count) {
-    this.parent = parent;
-    this.count  = typeof count === "number" ? count : 1;
-  });
-
-  IndexedDropSequence.prototype.get = function(i) {
-    return this.parent.get(this.count + i);
-  };
-
-  IndexedDropSequence.prototype.length = function() {
-    var parentLength = this.parent.length();
-    return this.count <= parentLength ? parentLength - this.count : 0;
-  };
-
-  var SortedSequence = CachingSequence.inherit(function(parent, sortFn) {
-    this.parent = parent;
-    this.sortFn = sortFn;
-  });
-
-  SortedSequence.prototype.each = function(fn) {
-    var sortFn = this.sortFn,
-        sorted = this.parent.toArray(),
-        i = -1;
-
-    sorted.sort(function(x, y) { return compare(x, y, sortFn); });
-
-    while (++i < sorted.length) {
-      if (fn(sorted[i], i) === false) {
-        break;
-      }
-    }
-  };
-
   var ShuffledSequence = CachingSequence.inherit(function(parent) {
     this.parent = parent;
   });
@@ -1359,506 +1792,23 @@
     fn(shuffled[0], j);
   };
 
-  // TODO: This should really return an object, not an jagged array. Will
-  // require a bit of rework -- but hopefully not too much!
-  var GroupedSequence = CachingSequence.inherit(function(parent, keyFn) {
-    this.each = function(fn) {
-      var grouped = {};
-      parent.each(function(e) {
-        var key = keyFn(e);
-        if (!grouped[key]) {
-          grouped[key] = [e];
-        } else {
-          grouped[key].push(e);
-        }
-      });
-      for (var key in grouped) {
-        if (fn([key, grouped[key]]) === false) {
-          break;
-        }
-      }
-    };
+  var SortedSequence = CachingSequence.inherit(function(parent, sortFn) {
+    this.parent = parent;
+    this.sortFn = sortFn;
   });
 
-  // TODO: This should return an object too (like GroupBySequence).
-  var CountedSequence = CachingSequence.inherit(function(parent, keyFn) {
-    this.each = function(fn) {
-      var grouped = {};
-      parent.each(function(e) {
-        var key = keyFn(e);
-        if (!grouped[key]) {
-          grouped[key] = 1;
-        } else {
-          grouped[key] += 1;
-        }
-      });
-      for (var key in grouped) {
-        fn([key, grouped[key]]);
-      }
-    };
-  });
+  SortedSequence.prototype.each = function(fn) {
+    var sortFn = this.sortFn,
+        sorted = this.parent.toArray(),
+        i = -1;
 
-  var UniqueSequence = CachingSequence.inherit(function(parent) {
-    this.parent = parent;
-  });
+    sorted.sort(function(x, y) { return compare(x, y, sortFn); });
 
-  UniqueSequence.prototype.each = function(fn) {
-    var set = new Set(),
-        i = 0;
-    this.parent.each(function(e) {
-      if (set.add(e)) {
-        return fn(e, i++);
-      }
-    });
-  };
-
-  /**
-   * @constructor
-   */
-  function UniqueArrayWrapper(parent) {
-    this.parent = parent;
-    this.each = getEachForSource(parent.source);
-  }
-
-  UniqueArrayWrapper.prototype = new CachingSequence();
-
-  UniqueArrayWrapper.prototype.eachNoCache = function(fn) {
-    var source = this.parent.source,
-        length = source.length,
-        value,
-        found,
-
-        // Yes, this is hideous.
-        // Trying to get performance first, will refactor next!
-        i = -1,
-        j,
-        k = 0;
-
-    while (++i < length) {
-      value = source[i];
-      found = false;
-
-      // Scan downwards to look for a dupe.
-      j = i - 1;
-      while (j >= 0) {
-        if (source[j--] === value) {
-          found = true;
-          break;
-        }
-      }
-
-      if (!found && fn(source[i], k++) === false) {
-        return false;
-      }
-    }
-  };
-
-  UniqueArrayWrapper.prototype.eachArrayCache = function(fn) {
-    // Basically the same implementation as w/ the set, but using an array because
-    // it's cheaper for smaller sequences.
-    var source = this.parent.source,
-        length = source.length,
-        cache = [],
-        value,
-        i = -1,
-        j = 0;
-    while (++i < length) {
-      value = source[i];
-      if (!contains(cache, value)) {
-        cache.push(value);
-        if (fn(value, j++) === false) {
-          return false;
-        }
-      }
-    }
-  };
-
-  UniqueArrayWrapper.prototype.eachSetCache = UniqueSequence.prototype.each;
-
-  // So, this is kinda shocking.
-  // Soon I'll write a whole blog post about this; but for now suffice it to say
-  // that going w/ a no-cache approach is the fastest solution until around 200
-  // elements, at which point using an array-based cache is still faster than
-  // using a set-based cache. Not until somewhere around 800 elements does a set-
-  // based approach start to outpace the others.
-  function getEachForSource(source) {
-    if (source.length < 200) {
-      return UniqueArrayWrapper.prototype.eachNoCache;
-    } else if (source.length < 800) {
-      return UniqueArrayWrapper.prototype.eachArrayCache;
-    } else {
-      return UniqueSequence.prototype.each;
-    }
-  }
-
-  var FlattenedSequence = CachingSequence.inherit(function(parent) {
-    this.parent = parent;
-  });
-
-  FlattenedSequence.prototype.each = function(fn) {
-    // Hack: store the index in a tiny array so we can increment it from outside
-    // this function.
-    var index = [0];
-
-    this.parent.each(function(e) {
-      if (e instanceof Array) {
-        return recursiveForEach(e, fn, index);
-      } else {
-        return fn(e, index[0]++);
-      }
-    });
-  };
-
-  var WithoutSequence = CachingSequence.inherit(function(parent, values) {
-    this.parent = parent;
-    this.values = values;
-  });
-
-  WithoutSequence.prototype.each = function(fn) {
-    var set = createSet(this.values),
-        i = 0;
-    this.parent.each(function(e) {
-      if (!set.contains(e)) {
-        return fn(e, i++);
-      }
-    });
-  };
-
-  var UnionSequence = CachingSequence.inherit(function(parent, arrays) {
-    this.parent = parent;
-    this.arrays = arrays;
-  });
-
-  UnionSequence.prototype.each = function(fn) {
-    var set = {},
-        i = 0,
-        done = false;
-
-    this.parent.each(function(e) {
-      if (!set[e]) {
-        set[e] = true;
-        if (fn(e, i++) === false) {
-          done = true;
-          return false;
-        }
-      }
-    });
-
-    if (!done) {
-      Lazy(this.arrays).each(function(array) {
-        if (done) {
-          return false;
-        }
-
-        Lazy(array).each(function(e) {
-          if (!set[e]) {
-            set[e] = true;
-            if (fn(e, i++) === false) {
-              done = true;
-              return false;
-            }
-          }
-        })
-      });
-    }
-  };
-
-  var IntersectionSequence = CachingSequence.inherit(function(parent, arrays) {
-    this.parent = parent;
-    this.arrays = arrays;
-  });
-
-  IntersectionSequence.prototype.each = function(fn) {
-    var sets = Lazy(this.arrays)
-      .map(function(values) { return createSet(values); })
-      .toArray();
-
-    var i = 0;
-    this.parent.each(function(e) {
-      var j = -1;
-      while (++j < sets.length) {
-        if (!sets[j].contains(e)) {
-          return;
-        }
-      }
-      return fn(e, i++);
-    });
-  };
-
-  var ZippedSequence = CachingSequence.inherit(function(parent, arrays) {
-    this.parent = parent;
-    this.arrays = arrays;
-  });
-
-  ZippedSequence.prototype.each = function(fn) {
-    var arrays = this.arrays,
-        i = 0;
-    this.parent.each(function(e) {
-      var group = [e];
-      for (var j = 0; j < arrays.length; ++j) {
-        if (arrays[j].length > i) {
-          group.push(arrays[j][i]);
-        }
-      }
-      return fn(group, i++);
-    });
-  };
-
-  /**
-   * @constructor
-   */
-  function AssignSequence(parent, other) {
-    this.parent = parent;
-    this.other  = other;
-  }
-
-  AssignSequence.prototype = new ObjectLikeSequence();
-
-  AssignSequence.prototype.each = function(fn) {
-    var merged = new Set(),
-        done   = false;
-
-    Lazy(this.other).each(function(value, key) {
-      if (fn(value, key) === false) {
-        done = true;
-        return false;
-      }
-
-      merged.add(key);
-    });
-
-    if (!done) {
-      this.parent.each(function(value, key) {
-        if (!merged.contains(key) && fn(value, key) === false) {
-          return false;
-        }
-      });
-    }
-  };
-
-  /**
-   * @constructor
-   */
-  function InvertedSequence(parent) {
-    this.parent = parent;
-  }
-
-  InvertedSequence.prototype = new ObjectLikeSequence();
-
-  InvertedSequence.prototype.each = function(fn) {
-    this.parent.each(function(value, key) {
-      return fn(key, value);
-    });
-  };
-
-  /**
-   * @constructor
-   */
-  function PickSequence(parent, properties) {
-    this.parent     = parent;
-    this.properties = properties;
-  }
-
-  PickSequence.prototype = new ObjectLikeSequence();
-
-  PickSequence.prototype.each = function(fn) {
-    var inArray    = contains,
-        properties = this.properties;
-
-    this.parent.each(function(value, key) {
-      if (inArray(properties, key)) {
-        return fn(value, key);
-      }
-    });
-  };
-
-  /**
-   * @constructor
-   */
-  function OmitSequence(parent, properties) {
-    this.parent     = parent;
-    this.properties = properties;
-  }
-
-  OmitSequence.prototype = new ObjectLikeSequence();
-
-  OmitSequence.prototype.each = function(fn) {
-    var inArray    = contains,
-        properties = this.properties;
-
-    this.parent.each(function(value, key) {
-      if (!inArray(properties, key)) {
-        return fn(value, key);
-      }
-    });
-  };
-
-  /**
-   * A GeneratedSequence does not wrap an in-memory colllection but rather
-   * determines its elements on-the-fly during iteration according to a generator
-   * function.
-   *
-   * @constructor
-   * @param {function(number, *):*} generatorFn A function which accepts an index
-   *     and returns a value for the element at that position in the sequence.
-   * @param {number=} length The length of the sequence. If this argument is
-   *     omitted, the sequence will go on forever.
-   */
-  function GeneratedSequence(generatorFn, length) {
-    this.get = generatorFn;
-    this.fixedLength = length;
-  }
-
-  GeneratedSequence.prototype = new Sequence();
-
-  /**
-   * Returns the length of this sequence.
-   *
-   * @return {number} The length, or undefined if this is an indefinite sequence.
-   */
-  GeneratedSequence.prototype.length = function() {
-    return this.fixedLength;
-  };
-
-  /**
-   * See {@link Sequence.each}.
-   */
-  GeneratedSequence.prototype.each = function(fn) {
-    var generatorFn = this.get,
-        length = this.fixedLength,
-        i = 0;
-    while (typeof length === "undefined" || i < length) {
-      if (fn(generatorFn(i++)) === false) {
+    while (++i < sorted.length) {
+      if (fn(sorted[i], i) === false) {
         break;
       }
     }
-  };
-
-  /**
-   * An AsyncSequence iterates over its elements asynchronously when {@link each}
-   * is called.
-   *
-   * @param {Sequence} parent A {@link Sequence} to wrap, to expose asynchronous
-   *     iteration.
-   * @param {number=} interval How many milliseconds should elapse between each
-   *     element when iterating over this sequence. If this argument is omitted,
-   *     asynchronous iteration will be executed as fast as possible.
-   * @constructor
-   */
-  function AsyncSequence(parent, interval) {
-    if (parent instanceof AsyncSequence) {
-      throw "Sequence is already asynchronous!";
-    }
-
-    this.parent = parent;
-    this.onNextCallback = getOnNextCallback(interval);
-  }
-
-  AsyncSequence.prototype = new Sequence();
-
-  /**
-   * An asynchronous version of {@link Sequence.each}.
-   */
-  AsyncSequence.prototype.each = function(fn) {
-    var iterator = this.parent.getIterator(),
-        onNextCallback = this.onNextCallback;
-
-    if (iterator.moveNext()) {
-      onNextCallback(function iterate() {
-        if (fn(iterator.current()) !== false && iterator.moveNext()) {
-          onNextCallback(iterate);
-        }
-      });
-    }
-  };
-
-  function getOnNextCallback(interval) {
-    if (typeof interval === "undefined") {
-      if (typeof context.setImmediate === "function") {
-        return context.setImmediate;
-      }
-      if (typeof process !== "undefined" && typeof process.nextTick === "function") {
-        return process.nextTick;
-      }
-    }
-
-    interval = interval || 0;
-    return function(fn) {
-      setTimeout(fn, interval);
-    };
-  }
-
-  /**
-   * Wraps a string exposing {@link match} and {@link split} methods that return
-   * {@link Sequence} objects instead of arrays, improving on the efficiency of
-   * JavaScript's built-in {@link String.split} and {@link String.match} methods
-   * and supporting asynchronous iteration.
-   *
-   * @param {string} source The string to wrap.
-   * @constructor
-   */
-  function StringWrapper(source) {
-    this.source = source;
-  }
-
-  /**
-   * Creates a sequence comprising all of the matches for the specified pattern
-   * in the underlying string.
-   *
-   * @param {RegExp} pattern The pattern to match.
-   * @return {Sequence} A sequence of all the matches.
-   */
-  StringWrapper.prototype.match = function(pattern) {
-    return new StringMatchSequence(this.source, pattern);
-  };
-
-  /**
-   * Creates a sequence comprising all of the substrings of this string separated
-   * by the given delimiter, which can be either a string or a regular expression.
-   *
-   * @param {string|RegExp} delimiter The delimiter to use for recognizing
-   *     substrings.
-   * @return {Sequence} A sequence of all the substrings separated by the given
-   *     delimiter.
-   */
-  StringWrapper.prototype.split = function(delimiter) {
-    return new SplitStringSequence(this.source, delimiter);
-  };
-
-  var StringMatchSequence = Sequence.inherit(function(source, pattern) {
-    this.source = source;
-    this.pattern = pattern;
-  });
-
-  StringMatchSequence.prototype.each = function(fn) {
-    var iterator = this.getIterator();
-    while (iterator.moveNext()) {
-      if (fn(iterator.current()) === false) {
-        return;
-      }
-    }
-  };
-
-  StringMatchSequence.prototype.getIterator = function() {
-    return new StringMatchIterator(this.source, this.pattern);
-  };
-
-  /**
-   * @constructor
-   */
-  function StringMatchIterator(source, pattern) {
-    this.source = source;
-
-    // clone the RegExp
-    this.pattern = eval("" + pattern + (!pattern.global ? "g" : ""));
-  }
-
-  StringMatchIterator.prototype.current = function() {
-    return this.match[0];
-  };
-
-  StringMatchIterator.prototype.moveNext = function() {
-    return !!(this.match = this.pattern.exec(this.source));
   };
 
   var SplitStringSequence = Sequence.inherit(function(source, pattern) {
@@ -1959,210 +1909,265 @@
   /**
    * @constructor
    */
-  function CharIterator(source) {
+  function StringMatchIterator(source, pattern) {
     this.source = source;
-    this.index = -1;
+
+    // clone the RegExp
+    this.pattern = eval("" + pattern + (!pattern.global ? "g" : ""));
   }
 
-  CharIterator.prototype.current = function() {
-    return this.source.charAt(this.index);
+  StringMatchIterator.prototype.current = function() {
+    return this.match[0];
   };
 
-  CharIterator.prototype.moveNext = function() {
-    return (++this.index < this.source.length);
+  StringMatchIterator.prototype.moveNext = function() {
+    return !!(this.match = this.pattern.exec(this.source));
   };
 
-  /**
-   * Wraps an object and returns something lazy.
-   *
-   * For arrays and objects, Lazy will create a {@link Sequence} object.
-   * For strings, Lazy will create a {@link StringWrapper}, with
-   * {@link StringWrapper.split} and {@link StringWrapper.match} methods that
-   * themselves create sequences.
-   *
-   * @param {*} source An array, object, or string to wrap.
-   * @return {StringWrapper|Sequence} The wrapped lazy object.
-   */
-  var Lazy = function(source) {
-    if (source instanceof Sequence) {
-      return source;
-    } else if (typeof source === "string") {
-      return new StringWrapper(source);
-    } else if (source instanceof Array) {
-      return new ArrayWrapper(source);
+  var StringMatchSequence = Sequence.inherit(function(source, pattern) {
+    this.source = source;
+    this.pattern = pattern;
+  });
+
+  StringMatchSequence.prototype.each = function(fn) {
+    var iterator = this.getIterator();
+    while (iterator.moveNext()) {
+      if (fn(iterator.current()) === false) {
+        return;
+      }
     }
-    return new ObjectWrapper(source);
+  };
+
+  StringMatchSequence.prototype.getIterator = function() {
+    return new StringMatchIterator(this.source, this.pattern);
   };
 
   /**
-   * Deprecated.
-   */
-  Lazy.async = function(source, interval) {
-    return new AsyncSequence(new ArrayWrapper(source), interval);
-  };
-
-  /**
-   * Creates a {@link GeneratedSequence} using the specified generator function
-   * and (optionally) length.
+   * Wraps a string exposing {@link match} and {@link split} methods that return
+   * {@link Sequence} objects instead of arrays, improving on the efficiency of
+   * JavaScript's built-in {@link String.split} and {@link String.match} methods
+   * and supporting asynchronous iteration.
    *
-   * @param {function(number):*} generatorFn The function used to generate the
-   *     sequence. This function accepts an index as a parameter and should return
-   *     a value for that index in the resulting sequence.
-   * @param {number=} length The length of the sequence, for sequences with a
-   *     definite length.
-   * @return {Sequence} The generated sequence.
+   * @param {string} source The string to wrap.
+   * @constructor
    */
-  Lazy.generate = function(generatorFn, length) {
-    return new GeneratedSequence(generatorFn, length);
+  function StringWrapper(source) {
+    this.source = source;
+  }
+
+  /**
+   * Creates a sequence comprising all of the matches for the specified pattern
+   * in the underlying string.
+   *
+   * @param {RegExp} pattern The pattern to match.
+   * @return {Sequence} A sequence of all the matches.
+   */
+  StringWrapper.prototype.match = function(pattern) {
+    return new StringMatchSequence(this.source, pattern);
   };
 
   /**
-   * Creates a sequence from a given starting value, up to a specified stopping
-   * value, incrementing by a given step.
+   * Creates a sequence comprising all of the substrings of this string separated
+   * by the given delimiter, which can be either a string or a regular expression.
    *
-   * @return {Sequence} The sequence defined by the given ranges.
+   * @param {string|RegExp} delimiter The delimiter to use for recognizing
+   *     substrings.
+   * @return {Sequence} A sequence of all the substrings separated by the given
+   *     delimiter.
    */
-  Lazy.range = function() {
-    var start = arguments.length > 1 ? arguments[0] : 0,
-        stop  = arguments.length > 1 ? arguments[1] : arguments[0],
-        step  = arguments.length > 2 ? arguments[2] : 1;
-    return this.generate(function(i) { return start + (step * i); })
-      .take(Math.floor((stop - start) / step));
+  StringWrapper.prototype.split = function(delimiter) {
+    return new SplitStringSequence(this.source, delimiter);
   };
 
-  /**
-   * Creates a sequence consisting of the given value repeated a specified number
-   * of times.
-   *
-   * @param {*} value The value to repeat.
-   * @param {number=} count The number of times the value should be repeated in
-   *     the sequence. If this argument is omitted, the value will repeat forever.
-   * @return {Sequence} The sequence containing the repeated value.
-   */
-  Lazy.repeat = function(value, count) {
-    return Lazy.generate(function() { return value; }, count);
-  };
+  var TakeSequence = CachingSequence.inherit(function(parent, count) {
+    this.parent = parent;
+    this.count  = count;
+  });
 
-  Lazy.Sequence = Sequence;
-  Lazy.IndexedSequence = IndexedSequence;
-  Lazy.CachingSequence = CachingSequence;
-  Lazy.GeneratedSequence = GeneratedSequence;
-
-  /*** Useful utility methods ***/
-
-  /**
-   * Creates a Set containing the specified values.
-   *
-   * @param {...*} values One or more values (or array(s) of values) used to
-   *     populate the set.
-   * @return {Set} A new set containing the values passed in.
-   */
-  function createSet(values) {
-    var set = new Set();
-    Lazy(values || []).flatten().each(function(e) {
-      set.add(e);
+  TakeSequence.prototype.each = function(fn) {
+    var self = this,
+        i = 0;
+    self.parent.each(function(e) {
+      var result = fn(e);
+      if (++i >= self.count) { return false; }
+      return result;
     });
-    return set;
   };
 
-  /**
-   * Compares two elements for sorting purposes.
-   *
-   * @param {*} x The left element to compare.
-   * @param {*} y The right element to compare.
-   * @param {Function=} fn An optional function to call on each element, to get
-   *     the values to compare.
-   * @return {number} 1 if x > y, -1 if x < y, or 0 if x and y are equal.
-   */
-  function compare(x, y, fn) {
-    if (typeof fn === "function") {
-      return compare(fn(x), fn(y));
-    }
+  var IndexedTakeSequence = IndexedSequence.inherit(function(parent, count) {
+    this.parent = parent;
+    this.count  = count;
+  });
 
-    if (x === y) {
-      return 0;
-    }
+  IndexedTakeSequence.prototype.length = function() {
+    var parentLength = this.parent.length();
+    return this.count <= parentLength ? this.count : parentLength;
+  };
 
-    return x > y ? 1 : -1;
-  }
+  var UnionSequence = CachingSequence.inherit(function(parent, arrays) {
+    this.parent = parent;
+    this.arrays = arrays;
+  });
 
-  /**
-   * Iterates over every individual element in an array of arrays (of arrays...).
-   *
-   * @param {Array} array The outermost array.
-   * @param {Function} fn The function to call on every element, which can return
-   *     false to stop the iteration early.
-   * @param {Array=} index An optional counter container, to keep track of the
-   *     current index.
-   * @return {boolean} True if every element in the entire sequence was iterated,
-   *     otherwise false.
-   */
-  function recursiveForEach(array, fn, index) {
-    // It's easier to ensure this is initialized than to add special handling
-    // in case it isn't.
-    index = index || [0];
+  UnionSequence.prototype.each = function(fn) {
+    var set = {},
+        i = 0,
+        done = false;
 
-    var i = -1;
-    while (++i < array.length) {
-      if (array[i] instanceof Array) {
-        if (recursiveForEach(array[i], fn, index) === false) {
-          return false;
-        }
-      } else {
-        if (fn(array[i], index[0]++) === false) {
+    this.parent.each(function(e) {
+      if (!set[e]) {
+        set[e] = true;
+        if (fn(e, i++) === false) {
+          done = true;
           return false;
         }
       }
-    }
-    return true;
-  }
-
-  function getFirst(sequence) {
-    var result;
-    sequence.each(function(e) {
-      result = e;
-      return false;
     });
-    return result;
+
+    if (!done) {
+      Lazy(this.arrays).each(function(array) {
+        if (done) {
+          return false;
+        }
+
+        Lazy(array).each(function(e) {
+          if (!set[e]) {
+            set[e] = true;
+            if (fn(e, i++) === false) {
+              done = true;
+              return false;
+            }
+          }
+        })
+      });
+    }
+  };
+
+  var UniqueSequence = CachingSequence.inherit(function(parent) {
+    this.parent = parent;
+  });
+
+  UniqueSequence.prototype.each = function(fn) {
+    var set = new Set(),
+        i = 0;
+    this.parent.each(function(e) {
+      if (set.add(e)) {
+        return fn(e, i++);
+      }
+    });
+  };
+
+  /**
+   * @constructor
+   */
+  function UniqueArrayWrapper(parent) {
+    this.parent = parent;
+    this.each = getEachForSource(parent.source);
   }
 
-  function contains(array, element) {
-    var i = -1,
-        length = array.length;
+  UniqueArrayWrapper.prototype = new CachingSequence();
+
+  UniqueArrayWrapper.prototype.eachNoCache = function(fn) {
+    var source = this.parent.source,
+        length = source.length,
+        value,
+        found,
+
+        // Yes, this is hideous.
+        // Trying to get performance first, will refactor next!
+        i = -1,
+        j,
+        k = 0;
 
     while (++i < length) {
-      if (array[i] === element) {
-        return true;
+      value = source[i];
+      found = false;
+
+      // Scan downwards to look for a dupe.
+      j = i - 1;
+      while (j >= 0) {
+        if (source[j--] === value) {
+          found = true;
+          break;
+        }
+      }
+
+      if (!found && fn(source[i], k++) === false) {
+        return false;
       }
     }
-    return false;
+  };
+
+  UniqueArrayWrapper.prototype.eachArrayCache = function(fn) {
+    // Basically the same implementation as w/ the set, but using an array because
+    // it's cheaper for smaller sequences.
+    var source = this.parent.source,
+        length = source.length,
+        cache = [],
+        value,
+        i = -1,
+        j = 0;
+    while (++i < length) {
+      value = source[i];
+      if (!contains(cache, value)) {
+        cache.push(value);
+        if (fn(value, j++) === false) {
+          return false;
+        }
+      }
+    }
+  };
+
+  UniqueArrayWrapper.prototype.eachSetCache = UniqueSequence.prototype.each;
+
+  // So, this is kinda shocking.
+  // Soon I'll write a whole blog post about this; but for now suffice it to say
+  // that going w/ a no-cache approach is the fastest solution until around 200
+  // elements, at which point using an array-based cache is still faster than
+  // using a set-based cache. Not until somewhere around 800 elements does a set-
+  // based approach start to outpace the others.
+  function getEachForSource(source) {
+    if (source.length < 200) {
+      return UniqueArrayWrapper.prototype.eachNoCache;
+    } else if (source.length < 800) {
+      return UniqueArrayWrapper.prototype.eachArrayCache;
+    } else {
+      return UniqueSequence.prototype.each;
+    }
   }
 
-  if (typeof Array.prototype.indexOf === "function") {
-    contains = function(array, element) {
-      return array.indexOf(element) !== -1;
-    };
-  }
+  var WithoutSequence = CachingSequence.inherit(function(parent, values) {
+    this.parent = parent;
+    this.values = values;
+  });
 
-  function swap(array, i, j) {
-    var temp = array[i];
-    array[i] = array[j];
-    array[j] = temp;
-  }
+  WithoutSequence.prototype.each = function(fn) {
+    var set = createSet(this.values),
+        i = 0;
+    this.parent.each(function(e) {
+      if (!set.contains(e)) {
+        return fn(e, i++);
+      }
+    });
+  };
 
-  function indent(depth) {
-    return new Array(depth).join("  ");
-  }
+  var ZippedSequence = CachingSequence.inherit(function(parent, arrays) {
+    this.parent = parent;
+    this.arrays = arrays;
+  });
 
-  /*** Exposing Lazy to the world ***/
-
-  // For Node.js
-  if (typeof module !== "undefined") {
-    module.exports = Lazy;
-
-  // For browsers
-  } else {
-    context.Lazy = Lazy;
-  }
+  ZippedSequence.prototype.each = function(fn) {
+    var arrays = this.arrays,
+        i = 0;
+    this.parent.each(function(e) {
+      var group = [e];
+      for (var j = 0; j < arrays.length; ++j) {
+        if (arrays[j].length > i) {
+          group.push(arrays[j][i]);
+        }
+      }
+      return fn(group, i++);
+    });
+  };
 
 }(typeof global !== 'undefined' ? global : window));

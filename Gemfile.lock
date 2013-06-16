@@ -1,0 +1,24 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    closure-compiler (1.1.10)
+    mini_portile (0.5.0)
+    mustache (0.99.4)
+    nokogiri (1.6.0)
+      mini_portile (~> 0.5.0)
+    posix-spawn (0.3.6)
+    pygments.rb (0.5.0)
+      posix-spawn (~> 0.3.6)
+      yajl-ruby (~> 1.1.0)
+    redcarpet (2.3.0)
+    yajl-ruby (1.1.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  closure-compiler
+  mustache
+  nokogiri
+  pygments.rb
+  redcarpet
