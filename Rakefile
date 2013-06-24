@@ -25,6 +25,7 @@ SOURCE_FILES = %w[
   intersection_sequence
   zipped_sequence
   assign_sequence
+  defaults_sequence
   inverted_sequence
   pick_sequence
   omit_sequence

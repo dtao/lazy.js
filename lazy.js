@@ -677,6 +677,10 @@
 
   ObjectLikeSequence.prototype = new Sequence();
 
+  ObjectLikeSequence.prototype.get = function(key) {
+    return this.parent.get(key);
+  };
+
   ObjectLikeSequence.prototype.keys = function() {
     return this.map(function(v, k) { return k; });
   };
@@ -690,6 +694,10 @@
   };
 
   ObjectLikeSequence.prototype.extend = ObjectLikeSequence.prototype.assign;
+
+  ObjectLikeSequence.prototype.defaults = function(defaults) {
+    return new DefaultsSequence(this, defaults);
+  };
 
   ObjectLikeSequence.prototype.invert = function() {
     return new InvertedSequence(this);
@@ -1629,6 +1637,40 @@
 
     if (!done) {
       this.parent.each(function(value, key) {
+        if (!merged.contains(key) && fn(value, key) === false) {
+          return false;
+        }
+      });
+    }
+  };
+
+  /**
+   * @constructor
+   */
+  function DefaultsSequence(parent, defaults) {
+    this.parent   = parent;
+    this.defaults = defaults;
+  }
+
+  DefaultsSequence.prototype = new ObjectLikeSequence();
+
+  DefaultsSequence.prototype.each = function(fn) {
+    var merged = new Set(),
+        done   = false;
+
+    this.parent.each(function(value, key) {
+      if (fn(value, key) === false) {
+        done = true;
+        return false;
+      }
+
+      if (typeof value !== "undefined") {
+        merged.add(key);
+      }
+    });
+
+    if (!done) {
+      Lazy(this.defaults).each(function(value, key) {
         if (!merged.contains(key) && fn(value, key) === false) {
           return false;
         }
