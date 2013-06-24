@@ -1,60 +1,4 @@
-SOURCE_FILES = %w[
-  sequence
-  object_like_sequence
-  iterator
-  set
-  indexed_sequence
-  array_wrapper
-  object_wrapper
-  caching_sequence
-  mapped_sequence
-  filtered_sequence
-  filtering_iterator
-  reversed_sequence
-  concatenated_sequence
-  take_sequence
-  drop_sequence
-  sorted_sequence
-  shuffled_sequence
-  grouped_sequence
-  counted_sequence
-  unique_sequence
-  flattened_sequence
-  without_sequence
-  union_sequence
-  intersection_sequence
-  zipped_sequence
-  assign_sequence
-  defaults_sequence
-  inverted_sequence
-  pick_sequence
-  omit_sequence
-  generated_sequence
-  async_sequence
-  string_wrapper
-  string_match_sequence
-  string_match_iterator
-  split_string_sequence
-  split_with_regexp_iterator
-  split_with_string_iterator
-  char_iterator
-  init
-]
-
-def compile_file(output, source_files, options={})
-  javascripts = source_files.map do |f|
-    File.read(File.join("lib", "#{f}.js"))
-  end
-
-  javascript = javascripts.join("\n")
-  javascript.gsub!(/^(?!$)/, "  ")
-
-  File.open(output, "w") do |f|
-    f.write("(function(context) {\n\n")
-    f.write(javascript)
-    f.write("\n}(typeof global !== 'undefined' ? global : window));\n")
-  end
-
+def compile_file(output)
   require "closure-compiler"
   compiler = Closure::Compiler.new({
     :js_output_file => "#{output.chomp('.js')}.min.js",
@@ -68,7 +12,7 @@ end
 namespace :compile do
   desc "Compile lazy.js"
   task :lib do
-    compile_file("lazy.js", SOURCE_FILES)
+    compile_file("lazy.js")
   end
 
   desc "Compile the homepage (currently hosted on GitHub pages)"
