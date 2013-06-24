@@ -70,6 +70,20 @@ namespace :compile do
 
   desc "Compile documentation"
   task :docs do
-    system "jsdoc lib --recurse --destination docs"
+    require "fileutils"
+    FileUtils.rm_rf("docs")
+
+    # OK so here's a hack: I'm going to strip out the first and last lines from
+    # lazy.js so that JSDoc can read the annotations. (There is almost certainly
+    # a more acceptable way to do this; but this is going to work so whatever.)
+    #
+    # Pretty awesome, right?
+    File.open("temp.js", "w") do |f|
+      f.write(File.read("lazy.js").lines[1..-2].join("\n"))
+    end
+
+    system "jsdoc temp.js --template templates/lazy"
+
+    FileUtils.rm("temp.js")
   end
 end

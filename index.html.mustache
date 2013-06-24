@@ -37,14 +37,15 @@
 
   <nav data-sections=".top-level-section">
     <ul>
-      <li class="selected"><a href="#docs">Docs</a></li>
+      <li class="selected"><a href="#about">About</a></li>
       <li><a href="#dom-example">DOM Example</a></li>
       <li><a href="#benchmark-results">Benchmark Results</a></li>
       <li><a href="#test-results">Spec Results</a></li>
+      <li><a href="#docs">API Docs</a></li>
     </ul>
   </nav>
 
-  <section id="docs" class="top-level-section">
+  <section id="about" class="top-level-section">
     {{{readme}}}
   </section>
 
@@ -201,6 +202,22 @@
         <th>Success</th>
       </tr>
     </table>
+  </section>
+
+  <section id="docs" class="top-level-section">
+    {{#classes}}
+    <section>
+      <h1>{{name}}</h1>
+      <p class="description">{{description}}</p>
+
+      {{#methods}}
+      <section class="method">
+        <h2>{{name}}</h2>
+        <p class="description">{{description}}</p>
+      </section>
+      {{/methods}}
+    </section>
+    {{/classes}}
   </section>
 </body>
 
