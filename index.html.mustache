@@ -4,7 +4,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>Lazy.js</title>
 
-  <link rel="stylesheet" type="text/css" href="site/assets/site.css">
+  <link rel="stylesheet" type="text/css" href="site/assets/site.css" />
 
   <script type="text/javascript" src="site/lib/jasmine.js"></script>
   <script type="text/javascript" src="site/lib/benchmark.js"></script>
@@ -41,7 +41,7 @@
       <li><a href="#dom-example">DOM Example</a></li>
       <li><a href="#benchmark-results">Benchmark Results</a></li>
       <li><a href="#test-results">Spec Results</a></li>
-      <li><a href="#docs">API Docs</a></li>
+      <li><a href="docs/">API Docs</a></li>
     </ul>
   </nav>
 
@@ -202,62 +202,6 @@
         <th>Success</th>
       </tr>
     </table>
-  </section>
-
-  <section id="docs" class="top-level-section" style="display: none;">
-    <nav class="subnav" data-sections=".doc-section">
-      <ul>
-        {{#classes}}
-        <li{{#first}} class="selected"{{/first}}><a href="#docs-{{name}}">{{name}}</a></li>
-        {{/classes}}
-      </ul>
-    </nav>
-
-    {{#classes}}
-    <section id="docs-{{name}}" class="doc-section">
-      <h2>{{name}}</h2>
-      <p class="description">{{{description}}}</p>
-
-      {{#methods}}
-      <section class="method"{{#hide}} style="display: none;"{{/hide}}>
-        <h3>{{name}}</h3>
-        <p class="description">{{{description}}}</p>
-
-        <h4>Parameters</h4>
-        <table class="params">
-          <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-
-          {{#params}}
-          <tr>
-            <td>{{name}}</td>
-            <td>{{type}}</td>
-            <td>{{{description}}}</td>
-          </tr>
-          {{/params}}
-        </table>
-
-        <h4>Returns</h4>
-        <table class="returns">
-          <tr>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-
-          {{#returns}}
-          <tr>
-            <td>{{type}}</td>
-            <td>{{{description}}}</td>
-          </tr>
-          {{/returns}}
-        </table>
-      </section>
-      {{/methods}}
-    </section>
-    {{/classes}}
   </section>
 </body>
 

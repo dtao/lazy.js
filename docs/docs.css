@@ -1,0 +1,6 @@
+table.params th,
+table.params td,
+table.returns th,
+table.returns td {
+  vertical-align: top;
+}

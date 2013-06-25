@@ -24,17 +24,12 @@ namespace :compile do
 
   desc "Compile the homepage (currently hosted on GitHub pages)"
   task :site do
-    require "json"
     require "mustache"
     require "nokogiri"
     require "pygments"
     require "redcarpet"
 
     markdown = File.read("README.md")
-
-    #############################################
-    # The README part
-    #############################################
 
     # Translate to HTML w/ Redcarpet.
     renderer = Redcarpet::Markdown.new(Redcarpet::Render::HTML, :fenced_code_blocks => true)
@@ -70,9 +65,21 @@ namespace :compile do
       end
     end
 
-    #############################################
-    # The API Docs part
-    #############################################
+    # Inject README into Mustache template.
+    template = File.read("index.html.mustache")
+    final_html = Mustache.render(template, { :readme => fragment.inner_html })
+
+    # Finally, write the rendered result to index.html.
+    File.open("index.html", "w") do |f|
+      f.write(final_html)
+    end
+  end
+
+  desc "Compile the API docs"
+  task :docs do
+    require "json"
+    require "mustache"
+    require "redcarpet"
 
     # OK so here's a hack: I'm going to strip out the first and last lines from
     # lazy.js so that JSDoc can read the annotations. (There is almost certainly
@@ -93,10 +100,6 @@ namespace :compile do
     classes.each_with_index do |class_data, index|
       class_data["description"] = simple_markdown(class_data["description"])
 
-      # Hack, if you ask me (but this is how the Mustache docs do it).
-      class_data["first"] = true if index == 0
-      class_data["hide"] = true if index > 1
-
       class_data["methods"].each do |method_data|
         method_data["description"] = simple_markdown(method_data["description"])
 
@@ -112,20 +115,23 @@ namespace :compile do
       end
     end
 
-    #############################################
-    # Putting it all together
-    #############################################
+    docs_index_template = File.read("docs/index.html.mustache")
+    docs_index_html = Mustache.render(docs_index_template, { :classes => classes })
 
-    # Inject README into Mustache template.
-    template = File.read("index.html.mustache")
-    final_html = Mustache.render(template, {
-      :readme  => fragment.inner_html,
-      :classes => classes
-    })
+    File.open("docs/index.html", "w") do |f|
+      f.write(docs_index_html)
+    end
 
-    # Finally, write the rendered result to index.html.
-    File.open("index.html", "w") do |f|
-      f.write(final_html)
+    class_template = File.read("docs/class.html.mustache")
+    classes.each do |class_data|
+      html = Mustache.render(class_template, {
+        :name    => class_data["name"],
+        :methods => class_data["methods"]
+      })
+
+      File.open("docs/#{class_data['name']}.html", "w") do |f|
+        f.write(html)
+      end
     end
   end
 end

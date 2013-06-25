@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Lazy.js API Docs - {{name}}</title>
+  <link rel="stylesheet" type="text/css" href="docs/docs.css" />
+</head>
+
+<body>
+  <article>
+    <header>
+      <h1>{{name}}</h1>
+      <p class="description">{{{description}}}</p>
+    </header>
+
+    {{#methods}}
+    <section id="{{name}}">
+      <header>
+        <h2>{{name}}</h2>
+        <p class="description">{{{description}}}</p>
+      </header>
+
+      <h3>Parameters</h3>
+      <table class="params">
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+
+        {{#params}}
+        <tr>
+          <td>{{name}}</td>
+          <td>{{type}}</td>
+          <td>{{{description}}}</td>
+        </tr>
+        {{/params}}
+      </table>
+
+      <h3>Returns</h3>
+      <table class="returns">
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+
+        {{#returns}}
+        <tr>
+          <td>{{type}}</td>
+          <td>{{{description}}}</td>
+        </tr>
+        {{/returns}}
+      </table>
+    </section>
+    {{/methods}}
+  </article>
+</body>
+
+</html>
