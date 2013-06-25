@@ -1110,5 +1110,15 @@ describe("Lazy", function() {
       var json = JSON.stringify(["foo", "bar", "baz"]);
       expect(Lazy.parse(json).toArray()).toEqual(["foo", "bar", "baz"]);
     });
+
+    it("translates a JSON array of integers", function() {
+      var json = JSON.stringify([1, 22, 333]);
+      expect(Lazy.parse(json).toArray()).toEqual([1, 22, 333]);
+    });
+
+    it("translates a JSON array of floats", function() {
+      var json = JSON.stringify([1.2, 34.56]);
+      expect(Lazy.parse(json).toArray()).toEqual([1.2, 34.56]);
+    });
   });
 });

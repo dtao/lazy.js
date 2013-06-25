@@ -2062,7 +2062,7 @@
     this.json         = json;
     this.pos          = -1;
     this.state        = null;
-    this.currentToken = null;
+    this.currentValue = null;
   };
 
   // Possible states:
@@ -2072,7 +2072,7 @@
   // 3 - object
 
   JsonIterator.prototype.current = function() {
-    return this.currentToken;
+    return this.currentValue;
   };
 
   JsonIterator.prototype.moveNext = function() {
@@ -2162,6 +2162,31 @@
     this.pos = pos;
   };
 
+  JsonIterator.prototype.readNumber = function() {
+    var pos  = this.pos,
+        json = this.json,
+        c    = json.charAt(pos);
+
+    while (c >= "0" && c <= "9") {
+      c = json.charAt(++pos);
+    }
+
+    // If we're reading a float right now, we'll allow one dot and then a bunch
+    // more numbers.
+    if (c === ".") {
+      do {
+        c = json.charAt(++pos);
+      } while (c >= "0" && c <= "9");
+
+      this.currentValue = parseFloat(json.substring(this.pos, pos));
+
+    } else {
+      this.currentValue = parseInt(json.substring(this.pos, pos));
+    }
+
+    this.pos = pos;
+  };
+
   JsonIterator.prototype.readString = function() {
     var pos  = this.pos,
         json = this.json,
@@ -2176,7 +2201,7 @@
       c = json.charAt(++pos);
     }
 
-    this.currentToken = json.substring(this.pos, pos);
+    this.currentValue = json.substring(this.pos, pos);
     this.pos = pos + 1;
   };
 
