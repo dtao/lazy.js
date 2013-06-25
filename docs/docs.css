@@ -1,34 +1,28 @@
 @import url(../site/assets/pygments.css);
+@import url(../site/assets/common.css);
 @import url(http://fonts.googleapis.com/css?family=Chewy|Open+Sans:700,400,300|Source+Code+Pro:700,400);
 
 body {
-  font-family: "Open Sans", sans-serif;
+  margin: 0;
+  padding: 20px;
+
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
 }
 
-article > header {
-  height: 60px;
-  margin-top: 12px;
-  background-color: #fff;
-  border-bottom: 12px solid #eee;
+article header h1 {
+  font-size: 40px;
+  font-weight: 300;
 }
 
-article > header h1 {
-  display: inline-block;
-  margin: 0 auto;
-  padding: 0;
-  font-family: "Chewy", cursive;
-  font-size: 72px;
-  line-height: 60px;
-  cursor: default;
+h1 small,
+h2 small {
+  color: #777;
+  font-size: 50%;
 }
 
-article > header h1 a {
-  color: #444;
+h1 small a {
   text-decoration: none;
-}
-
-article > header h1 a:hover {
-  color: #000;
 }
 
 table {
@@ -44,4 +38,75 @@ table td {
   padding: 0.5ex 0.5em;
   text-align: left;
   vertical-align: top;
+}
+
+article > header {
+  position: absolute;
+  top: 110px;
+  left: 20px;
+  right: 20px;
+  height: 60px;
+  border-bottom: 1px solid black;
+}
+
+article > header h1 {
+  margin: 0;
+}
+
+nav.doc-list {
+  position: absolute;
+  top: 170px;
+  left: 0;
+  width: 284px;
+  padding: 0 20px;
+}
+
+nav.doc-list ul li {
+  display: block;
+  padding-top: 0.5ex;
+  padding-bottom: 0.5ex;
+}
+
+nav.doc-list ul li.selected {
+  border-bottom: none;
+  border-left: 3px solid #555;
+}
+
+nav.doc-list ul li.selected a {
+  position: relative;
+  left: -3px;
+}
+
+section.methods {
+  position: absolute;
+  top: 170px;
+  left: 300px;
+  right: 0;
+  padding: 0 20px;
+}
+
+section.method h2 a {
+  text-decoration: none;
+}
+
+section.method table {
+  width: 50%;
+}
+
+section.method table tr:nth-child(odd) td {
+  background-color: #eee;
+}
+
+section.method table.params th,
+section.method table.params td {
+  width: 25%;
+}
+
+section.method table.params td:first-child {
+  font-family: "Source Code Pro", monospace;
+}
+
+section.method table th:last-child,
+section.method table td:last-child {
+  width: 50%;
 }

@@ -5,22 +5,24 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>Lazy.js API Docs - {{name}}</title>
   <link rel="stylesheet" type="text/css" href="docs.css" />
+  <script type="text/javascript" src="../site/lib/jquery.js"></script>
+  <script type="text/javascript" src="../site/common.js"></script>
 </head>
 
-<body>
+<body id="top">
+  <header>
+    <h1><a href="../index.html">lazy.js</a></h1>
+  </header>
+
   <article>
     <header>
-      <h1><a href="../index.html">lazy.js</a></h1>
+      <h1>
+        {{name}}
+        <small><a href="index.html">Back</a></small>
+      </h1>
     </header>
 
-    <h1>
-      {{name}}
-      <a href="index.html">Back</a>
-    </h1>
-
-    <p class="description">{{{description}}}</p>
-
-    <nav>
+    <nav class="doc-list" data-sections="section.method">
       <ul>
         {{#methods}}
         <li><a href="#{{name}}">{{name}}</a></li>
@@ -28,52 +30,64 @@
       </ul>
     </nav>
 
-    {{#methods}}
-    <section id="{{name}}">
-      <header>
-        <h2>
-          {{name}}
-          <small>{{longname}}</small>
-        </h2>
-        <p class="description">{{{description}}}</p>
-      </header>
+    <section class="methods">
+      {{#methods}}
+      <section id="{{name}}" class="method" style="display: none;">
+        <header>
+          <h2>
+            {{name}}
+            <small>{{longname}}</small>
+          </h2>
+          <p class="description">{{{description}}}</p>
+        </header>
 
-      <h3>Source</h3>
-      <pre><code class="javascript">{{{source}}}</code></pre>
-
-      <h3>Parameters</h3>
-      <table class="params">
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-
+        <h3>Parameters</h3>
         {{#params}}
-        <tr>
-          <td>{{name}}</td>
-          <td>{{type}}</td>
-          <td>{{{description}}}</td>
-        </tr>
+        <table class="params">
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+
+          {{#list}}
+          <tr>
+            <td>{{name}}</td>
+            <td>{{type}}</td>
+            <td>{{{description}}}</td>
+          </tr>
+          {{/list}}
+        </table>
         {{/params}}
-      </table>
+        {{^params}}
+        <p>None</p>
+        {{/params}}
 
-      <h3>Returns</h3>
-      <table class="returns">
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-
+        <h3>Returns</h3>
         {{#returns}}
-        <tr>
-          <td>{{type}}</td>
-          <td>{{{description}}}</td>
-        </tr>
+        <table class="returns">
+          <tr>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+
+          {{#list}}
+          <tr>
+            <td>{{type}}</td>
+            <td>{{{description}}}</td>
+          </tr>
+          {{/list}}
+        </table>
         {{/returns}}
-      </table>
+        {{^returns}}
+        <p>Nothing</p>
+        {{/returns}}
+
+        <h3>Source</h3>
+        <pre><code class="javascript">{{{source}}}</code></pre>
+      </section>
+      {{/methods}}
     </section>
-    {{/methods}}
   </article>
 </body>
 

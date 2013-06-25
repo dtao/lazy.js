@@ -24,6 +24,7 @@ end
 # This is a simple hack to render single-line strings (or anyway, short text)
 # from Markdown to HTML without wrapping in a <p> element.
 def simple_markdown(text)
+  return "" if text.nil?
   @renderer ||= Redcarpet::Markdown.new(Redcarpet::Render::HTML)
   @renderer.render(text)[3...-3]
 end
@@ -103,20 +104,20 @@ namespace :compile do
 
     # OK, I want to massage this data a little bit...
     classes.each_with_index do |class_data, index|
-      class_data["description"] = simple_markdown(class_data["description"])
-
       class_data["methods"].each do |method_data|
         method_data["description"] = simple_markdown(method_data["description"])
 
-        method_data["params"] && method_data["params"].each do |param_data|
+        (params = method_data["params"]) && params.each do |param_data|
           param_data["type"] = param_data["type"]["names"].join("|")
           param_data["description"] = simple_markdown(param_data["description"])
         end
+        method_data["params"] = { :list => params } unless params.nil? || params.empty?
 
-        method_data["returns"] && method_data["returns"].each do |returns_data|
+        (returns = method_data["returns"]) && returns.each do |returns_data|
           returns_data["type"] = returns_data["type"]["names"].join("|")
           returns_data["description"] = simple_markdown(returns_data["description"])
         end
+        method_data["returns"] = { :list => returns } unless returns.nil? || returns.empty?
 
         start  = method_data["range"][0].to_i
         stop   = method_data["range"][1].to_i
