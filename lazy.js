@@ -1843,6 +1843,24 @@
     this.source = source;
   }
 
+  StringWrapper.prototype = new Sequence();
+
+  StringWrapper.prototype.getIterator = function() {
+    return new CharIterator(this.source);
+  };
+
+  StringWrapper.prototype.each = function(fn) {
+    var source = this.source,
+        length = source.length,
+        i = -1;
+
+    while (++i < length) {
+      if (fn(source.charAt(i)) === false) {
+        break;
+      }
+    }
+  };
+
   /**
    * Creates a sequence comprising all of the matches for the specified pattern
    * in the underlying string.
@@ -2017,13 +2035,13 @@
   /**
    * Wraps an object and returns something lazy.
    *
-   * For arrays and objects, Lazy will create a {@link Sequence} object.
-   * For strings, Lazy will create a {@link StringWrapper}, with
-   * {@link StringWrapper.split} and {@link StringWrapper.match} methods that
-   * themselves create sequences.
+   * - For **arrays**, Lazy will create a sequence comprising the elements in
+   *   the array.
+   * - For **objects**, Lazy will create a sequence of key/value pairs.
+   * - For **strings**, Lazy will create a sequence of characters.
    *
    * @param {*} source An array, object, or string to wrap.
-   * @return {StringWrapper|Sequence} The wrapped lazy object.
+   * @return {Sequence} The wrapped lazy object.
    */
   var Lazy = function(source) {
     if (source instanceof Sequence) {
