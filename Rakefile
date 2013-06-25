@@ -9,6 +9,18 @@ def compile_file(output)
   puts compiler.compile_file(output)
 end
 
+# Take a Nokogiri HTML fragment and run its code blocks through Pygments.
+def syntax_highlight!(fragment)
+  fragment.css("code").each do |node|
+    language = node["class"]
+    if language
+      highlighted_html = Pygments.highlight(node.content, :lexer => language)
+      replacement = Nokogiri::HTML::fragment(highlighted_html)
+      node.parent.replace(replacement)
+    end
+  end
+end
+
 # This is a simple hack to render single-line strings (or anyway, short text)
 # from Markdown to HTML without wrapping in a <p> element.
 def simple_markdown(text)
@@ -56,14 +68,7 @@ namespace :compile do
     end
 
     # Do syntax highlighting w/ Pygments.
-    fragment.css("code").each do |node|
-      language = node["class"]
-      if language
-        highlighted_html = Pygments.highlight(node.content, :lexer => language)
-        replacement = Nokogiri::HTML::fragment(highlighted_html)
-        node.parent.replace(replacement)
-      end
-    end
+    syntax_highlight!(fragment)
 
     # Inject README into Mustache template.
     template = File.read("index.html.mustache")
@@ -79,6 +84,8 @@ namespace :compile do
   task :docs do
     require "json"
     require "mustache"
+    require "nokogiri"
+    require "pygments"
     require "redcarpet"
 
     # OK so here's a hack: I'm going to strip out the first and last lines from
@@ -86,17 +93,15 @@ namespace :compile do
     # a more acceptable way to do this; but this is going to work so whatever.)
     #
     # Pretty awesome, right?
+    full_source = File.read("lazy.js").lines[1..-2].join
     File.open("temp.js", "w") do |f|
-      f.write(File.read("lazy.js").lines[1..-2].join("\n"))
+      f.write(full_source)
     end
 
     # Get a JSON representation of our JSDoc comments.
     classes = JSON.parse(`jsdoc temp.js --template templates/lazy`)
 
-    # I called it temp.js for a reason, you guys!
-    File.delete("temp.js")
-
-    # OK, I want to finesse this data a little bit...
+    # OK, I want to massage this data a little bit...
     classes.each_with_index do |class_data, index|
       class_data["description"] = simple_markdown(class_data["description"])
 
@@ -112,8 +117,20 @@ namespace :compile do
           returns_data["type"] = returns_data["type"]["names"].join("|")
           returns_data["description"] = simple_markdown(returns_data["description"])
         end
+
+        start  = method_data["range"][0].to_i - 2 # to account for indentation
+        stop   = method_data["range"][1].to_i
+        source = full_source[start..stop].gsub(/^\s{1,2}/, "")
+
+        # in case range started after var
+        source = source[2..-1] if source.start_with?("r ")
+
+        method_data["source"] = source
       end
     end
+
+    # I called it temp.js for a reason, you guys!
+    File.delete("temp.js")
 
     docs_index_template = File.read("docs/index.html.mustache")
     docs_index_html = Mustache.render(docs_index_template, { :classes => classes })
@@ -129,8 +146,11 @@ namespace :compile do
         :methods => class_data["methods"]
       })
 
+      document = Nokogiri::HTML.parse(html)
+      syntax_highlight!(document)
+
       File.open("docs/#{class_data['name']}.html", "w") do |f|
-        f.write(html)
+        f.write(document.inner_html)
       end
     end
   end

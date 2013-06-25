@@ -4,22 +4,42 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>Lazy.js API Docs - {{name}}</title>
-  <link rel="stylesheet" type="text/css" href="docs/docs.css" />
+  <link rel="stylesheet" type="text/css" href="docs.css" />
 </head>
 
 <body>
   <article>
     <header>
-      <h1>{{name}}</h1>
-      <p class="description">{{{description}}}</p>
+      <h1><a href="../index.html">lazy.js</a></h1>
     </header>
+
+    <h1>
+      {{name}}
+      <a href="index.html">Back</a>
+    </h1>
+
+    <p class="description">{{{description}}}</p>
+
+    <nav>
+      <ul>
+        {{#methods}}
+        <li><a href="#{{name}}">{{name}}</a></li>
+        {{/methods}}
+      </ul>
+    </nav>
 
     {{#methods}}
     <section id="{{name}}">
       <header>
-        <h2>{{name}}</h2>
+        <h2>
+          {{name}}
+          <small>{{longname}}</small>
+        </h2>
         <p class="description">{{{description}}}</p>
       </header>
+
+      <h3>Source</h3>
+      <pre><code class="javascript">{{{source}}}</code></pre>
 
       <h3>Parameters</h3>
       <table class="params">

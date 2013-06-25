@@ -23,18 +23,23 @@ exports.publish = function(data, opts) {
   var doclets = data().get();
 
   var classes = Lazy(CLASSES_TO_DOCUMENT).map(function(className) {
-    var classDoc = Lazy(doclets).find(function(d) { return d.longname === className; });
+    var classDoc = Lazy(doclets).find(function(d) {
+      return d.longname === className;
+    });
 
-    var nameMatcher = new RegExp("^" + className + ".+");
+    var nameMatcher = new RegExp("^" + className);
     var methods = Lazy(doclets)
       .filter(function(d) { return d.kind === "function"; })
       .filter(function(d) { return nameMatcher.test(d.longname); })
       .map(function(d) {
         return {
+          longname: d.longname,
           name: d.name,
           description: d.description,
+          scope: d.scope,
           params: d.params,
-          returns: d.returns
+          returns: d.returns,
+          range: d.meta && d.meta.range
         };
       })
       .toArray();
