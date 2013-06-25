@@ -396,3 +396,10 @@ table td.negative {
 table tr:hover .failure-information {
   border-left: 3px solid red;
 }
+
+table.params th,
+table.params td,
+table.returns th,
+table.returns td {
+  vertical-align: top;
+}

@@ -1,22 +1,31 @@
-var fs       = require("fs");
-var Lazy     = require("../../lazy.js");
-var Markdown = require("./markdown.js");
-var Mustache = require("./mustache.js");
+/* All this file does is output a bunch of the data produced by JSDoc to the
+ * console in JSON format. The point of this is to make the data consumable by
+ * some other process. (For me, I shall choose Ruby.)
+ *
+ * TODO: Publish this as another open-source project. Or submit a pull request
+ * to the JSDoc project to make it part of their code. This really shouldn't
+ * have been this hard :(
+ */
 
+// Hey, let's use Lazy to generate its own docs!
+var Lazy = require("../../lazy.js");
+
+// I haven't decided which classes exactly make sense to provide documentation
+// for. At least these.
 var CLASSES_TO_DOCUMENT = [
   "Lazy",
-  "Sequence"
+  "Sequence",
+  "StringWrapper"
 ];
 
+// Spit it out, JSDoc!
 exports.publish = function(data, opts) {
   var doclets = data().get();
-  var markdown = fs.readFileSync("./README.md", "utf-8");
-  var template = fs.readFileSync("./index.html.mustache", "utf-8");
 
   var classes = Lazy(CLASSES_TO_DOCUMENT).map(function(className) {
     var classDoc = Lazy(doclets).find(function(d) { return d.longname === className; });
 
-    var nameMatcher = new RegExp("^" + className);
+    var nameMatcher = new RegExp("^" + className + ".+");
     var methods = Lazy(doclets)
       .filter(function(d) { return d.kind === "function"; })
       .filter(function(d) { return nameMatcher.test(d.longname); })
@@ -37,12 +46,5 @@ exports.publish = function(data, opts) {
     };
   }).toArray();
 
-  var readme = Markdown.toHTML(markdown);
-
-  var html = Mustache.render(template, {
-    readme: readme,
-    classes: classes
-  });
-
-  fs.writeFileSync("./index.html", html, "utf-8");
+  console.log(JSON.stringify(classes))
 };

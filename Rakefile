@@ -9,6 +9,13 @@ def compile_file(output)
   puts compiler.compile_file(output)
 end
 
+# This is a simple hack to render single-line strings (or anyway, short text)
+# from Markdown to HTML without wrapping in a <p> element.
+def simple_markdown(text)
+  @renderer ||= Redcarpet::Markdown.new(Redcarpet::Render::HTML)
+  @renderer.render(text)[3...-3]
+end
+
 namespace :compile do
   desc "Compile lazy.js"
   task :lib do
@@ -17,12 +24,17 @@ namespace :compile do
 
   desc "Compile the homepage (currently hosted on GitHub pages)"
   task :site do
+    require "json"
     require "mustache"
     require "nokogiri"
     require "pygments"
     require "redcarpet"
 
     markdown = File.read("README.md")
+
+    #############################################
+    # The README part
+    #############################################
 
     # Translate to HTML w/ Redcarpet.
     renderer = Redcarpet::Markdown.new(Redcarpet::Render::HTML, :fenced_code_blocks => true)
@@ -58,20 +70,9 @@ namespace :compile do
       end
     end
 
-    # Inject README into Mustache template.
-    template = File.read("index.html.mustache")
-    final_html = Mustache.render(template, :readme => fragment.inner_html)
-
-    # Finally, write the rendered result to index.html.
-    File.open("index.html", "w") do |f|
-      f.write(final_html)
-    end
-  end
-
-  desc "Compile documentation"
-  task :docs do
-    require "fileutils"
-    FileUtils.rm_rf("docs")
+    #############################################
+    # The API Docs part
+    #############################################
 
     # OK so here's a hack: I'm going to strip out the first and last lines from
     # lazy.js so that JSDoc can read the annotations. (There is almost certainly
@@ -82,8 +83,49 @@ namespace :compile do
       f.write(File.read("lazy.js").lines[1..-2].join("\n"))
     end
 
-    system "jsdoc temp.js --template templates/lazy"
+    # Get a JSON representation of our JSDoc comments.
+    classes = JSON.parse(`jsdoc temp.js --template templates/lazy`)
 
-    FileUtils.rm("temp.js")
+    # I called it temp.js for a reason, you guys!
+    File.delete("temp.js")
+
+    # OK, I want to finesse this data a little bit...
+    classes.each_with_index do |class_data, index|
+      class_data["description"] = simple_markdown(class_data["description"])
+
+      # Hack, if you ask me (but this is how the Mustache docs do it).
+      class_data["first"] = true if index == 0
+      class_data["hide"] = true if index > 1
+
+      class_data["methods"].each do |method_data|
+        method_data["description"] = simple_markdown(method_data["description"])
+
+        method_data["params"] && method_data["params"].each do |param_data|
+          param_data["type"] = param_data["type"]["names"].join("|")
+          param_data["description"] = simple_markdown(param_data["description"])
+        end
+
+        method_data["returns"] && method_data["returns"].each do |returns_data|
+          returns_data["type"] = returns_data["type"]["names"].join("|")
+          returns_data["description"] = simple_markdown(returns_data["description"])
+        end
+      end
+    end
+
+    #############################################
+    # Putting it all together
+    #############################################
+
+    # Inject README into Mustache template.
+    template = File.read("index.html.mustache")
+    final_html = Mustache.render(template, {
+      :readme  => fragment.inner_html,
+      :classes => classes
+    })
+
+    # Finally, write the rendered result to index.html.
+    File.open("index.html", "w") do |f|
+      f.write(final_html)
+    end
   end
 end

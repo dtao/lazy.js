@@ -204,16 +204,56 @@
     </table>
   </section>
 
-  <section id="docs" class="top-level-section">
+  <section id="docs" class="top-level-section" style="display: none;">
+    <nav class="subnav" data-sections=".doc-section">
+      <ul>
+        {{#classes}}
+        <li{{#first}} class="selected"{{/first}}><a href="#docs-{{name}}">{{name}}</a></li>
+        {{/classes}}
+      </ul>
+    </nav>
+
     {{#classes}}
-    <section>
-      <h1>{{name}}</h1>
-      <p class="description">{{description}}</p>
+    <section id="docs-{{name}}" class="doc-section">
+      <h2>{{name}}</h2>
+      <p class="description">{{{description}}}</p>
 
       {{#methods}}
-      <section class="method">
-        <h2>{{name}}</h2>
-        <p class="description">{{description}}</p>
+      <section class="method"{{#hide}} style="display: none;"{{/hide}}>
+        <h3>{{name}}</h3>
+        <p class="description">{{{description}}}</p>
+
+        <h4>Parameters</h4>
+        <table class="params">
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+
+          {{#params}}
+          <tr>
+            <td>{{name}}</td>
+            <td>{{type}}</td>
+            <td>{{{description}}}</td>
+          </tr>
+          {{/params}}
+        </table>
+
+        <h4>Returns</h4>
+        <table class="returns">
+          <tr>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+
+          {{#returns}}
+          <tr>
+            <td>{{type}}</td>
+            <td>{{{description}}}</td>
+          </tr>
+          {{/returns}}
+        </table>
       </section>
       {{/methods}}
     </section>
