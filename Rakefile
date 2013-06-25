@@ -118,12 +118,9 @@ namespace :compile do
           returns_data["description"] = simple_markdown(returns_data["description"])
         end
 
-        start  = method_data["range"][0].to_i - 2 # to account for indentation
+        start  = method_data["range"][0].to_i
         stop   = method_data["range"][1].to_i
         source = full_source[start..stop].gsub(/^\s{1,2}/, "")
-
-        # in case range started after var
-        source = source[2..-1] if source.start_with?("r ")
 
         method_data["source"] = source
       end
