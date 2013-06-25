@@ -1104,4 +1104,11 @@ describe("Lazy", function() {
       });
     });
   });
+
+  describe("parsing JSON", function() {
+    it("translates a JSON array of strings", function() {
+      var json = JSON.stringify(["foo", "bar", "baz"]);
+      expect(Lazy.parse(json).toArray()).toEqual(["foo", "bar", "baz"]);
+    });
+  });
 });
