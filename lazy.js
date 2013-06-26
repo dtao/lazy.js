@@ -82,6 +82,10 @@
    * @param {Function} mapFn The mapping function used to project this sequence's
    *     elements onto a new sequence.
    * @return {Sequence} The new sequence.
+   *
+   * @example
+   * var odds = [1, 3, 5];
+   * var evens = Lazy(odds).map(function(x) { return x + 1; });
    */
   Sequence.prototype.map = function(mapFn) {
     return new MappedSequence(this, mapFn);
@@ -96,6 +100,13 @@
    * @param {string} propertyName The name of the property to access for every
    *     element in this sequence.
    * @return {Sequence} The new sequence.
+   *
+   * @example
+   * var people = [
+   *   { first: "Dan", last: "Tao" },
+   *   { first: "Bob", last: "Smith" }
+   * ];
+   * var surnames = Lazy(people).pluck("last");
    */
   Sequence.prototype.pluck = function(propertyName) {
     return this.map(function(e) {
@@ -110,6 +121,20 @@
    * @param {string} methodName The name of the method to invoke for every element
    *     in this sequence.
    * @return {Sequence} The new sequence.
+   *
+   * @example
+   * function Person(first, last) {
+   *   this.fullName = function() {
+   *     return first + " " + last;
+   *   };
+   * }
+   *
+   * var people = [
+   *   new Person("Dan", "Tao"),
+   *   new Person("Bob", "Smith")
+   * ];
+   *
+   * var fullNames = Lazy(people).invoke("fullName");
    */
   Sequence.prototype.invoke = function(methodName) {
     return this.map(function(e) {
@@ -124,6 +149,10 @@
    * @param {Function} filterFn The predicate to call on each element in this
    *     sequence, which returns true if the element should be included.
    * @return {Sequence} The new sequence.
+   *
+   * @example
+   * var numbers = [1, 2, 3, 4, 5];
+   * var evens = Lazy(numbers).select(function(x) { return x % 2 === 0; });
    */
   Sequence.prototype.select = function(filterFn) {
     return new FilteredSequence(this, filterFn);
@@ -138,6 +167,10 @@
    * @param {Function} rejectFn The predicate to call on each element in this
    *     sequence, which returns true if the element should be omitted.
    * @return {Sequence} The new sequence.
+   *
+   * @example
+   * var numbers = [1, 2, 3, 4, 5];
+   * var odds = Lazy(numbers).reject(function(x) { return x % 2 === 0; });
    */
   Sequence.prototype.reject = function(rejectFn) {
     return this.filter(function(e) {
@@ -152,6 +185,13 @@
    * @param {Object} properties The properties that should be found on every
    *     element that is to be included in this sequence.
    * @return {Sequence} The new sequence.
+   *
+   * @example
+   * var people = [
+   *   { first: "Dan", last: "Tao" },
+   *   { first: "Bob", last: "Smith" }
+   * ];
+   * var dans = Lazy(people).where({ first: "Dan" });
    */
   Sequence.prototype.where = function(properties) {
     return this.filter(function(e) {
@@ -172,6 +212,10 @@
    * may require iterating the entire underlying source when `each` is called.
    *
    * @return {Sequence} The new sequence.
+   *
+   * @example
+   * var alphabet = "abcdefghijklmnopqrstuvwxyz";
+   * var alphabetBackwards = Lazy(alphabet).reverse();
    */
   Sequence.prototype.reverse = function() {
     return new ReversedSequence(this);
@@ -184,6 +228,11 @@
    * @param {...Array} var_args One or more arrays to use for additional items
    *     after this sequence.
    * @return {Sequence} The new sequence.
+   *
+   * @example
+   * var left = [1, 2, 3];
+   * var right = [4, 5, 6];
+   * var both = Lazy(left).concat(right);
    */
   Sequence.prototype.concat = function(var_args) {
     return new ConcatenatedSequence(this, Array.prototype.slice.call(arguments, 0));

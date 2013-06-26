@@ -41,8 +41,8 @@
           <p class="description">{{{description}}}</p>
         </header>
 
-        <h3>Parameters</h3>
         {{#params}}
+        <h3>Parameters</h3>
         <table class="params">
           <tr>
             <th>Name</th>
@@ -59,12 +59,9 @@
           {{/list}}
         </table>
         {{/params}}
-        {{^params}}
-        <p>None</p>
-        {{/params}}
 
-        <h3>Returns</h3>
         {{#returns}}
+        <h3>Returns</h3>
         <table class="returns">
           <tr>
             <th>Type</th>
@@ -79,9 +76,11 @@
           {{/list}}
         </table>
         {{/returns}}
-        {{^returns}}
-        <p>Nothing</p>
-        {{/returns}}
+
+        {{#examples}}
+        <h3>Example</h3>
+        <pre><code class="javascript">{{.}}</code></pre>
+        {{/examples}}
       </section>
       {{/methods}}
     </section>

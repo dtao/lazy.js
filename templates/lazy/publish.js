@@ -43,7 +43,7 @@ exports.publish = function(data, opts) {
           scope: d.scope,
           params: d.params,
           returns: d.returns,
-          range: d.meta && d.meta.range
+          examples: d.examples
         };
       })
       .toArray();

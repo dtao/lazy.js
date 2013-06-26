@@ -86,6 +86,8 @@ namespace :compile do
   task :docs do
     require "json"
     require "mustache"
+    require "nokogiri"
+    require "pygments"
     require "redcarpet"
 
     # OK so here's a hack: I'm going to strip out the first and last lines from
@@ -137,8 +139,11 @@ namespace :compile do
         :methods => class_data["methods"]
       })
 
+      document = Nokogiri::HTML(html)
+      syntax_highlight!(document)
+
       File.open("docs/#{class_data['name']}.html", "w") do |f|
-        f.write(html)
+        f.write(document.inner_html)
       end
     end
   end
