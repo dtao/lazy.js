@@ -40,6 +40,13 @@
    * (worse) cause the environment to hang.
    *
    * @return {Array} An array containing the current contents of the sequence.
+   *
+   * @example
+   * var range = Lazy.range(1, 10)
+   * // => sequence: (1, 2, ..., 9)
+   *
+   * var array = range.toArray();
+   * // => [1, 2, ..., 9]
    */
   Sequence.prototype.toArray = function() {
     var array = [];
@@ -55,6 +62,11 @@
    *
    * @return {Object} An object with keys and values corresponding to the pairs
    *     of elements in the sequence.
+   *
+   * @example
+   * var details = [["first", "Dan"], ["last", "Tao"], ["age", 29]];
+   * var person = Lazy(details).toObject();
+   * // => { first: "Dan", last: "Tao", age: 29 }
    */
   Sequence.prototype.toObject = function() {
     var object = {};
@@ -70,6 +82,10 @@
    *
    * @param {Function} fn The function to call on each element in the sequence.
    *     Return false from the function to end the iteration.
+   *
+   * @example
+   * var subordinates = [joe, bill, wendy];
+   * Lazy(subordinates).forEach(function(s) { s.reprimand(); });
    */
   Sequence.prototype.forEach = function(fn) {
     this.each(fn);
@@ -86,7 +102,7 @@
    * @example
    * var odds = [1, 3, 5];
    * var evens = Lazy(odds).map(function(x) { return x + 1; });
-   * // => (2, 4, 6)
+   * // => sequence: (2, 4, 6)
    */
   Sequence.prototype.map = function(mapFn) {
     return new MappedSequence(this, mapFn);
@@ -108,7 +124,7 @@
    *   { first: "Bob", last: "Smith" }
    * ];
    * var surnames = Lazy(people).pluck("last");
-   * // => ("Tao", "Smith")
+   * // => sequence: ("Tao", "Smith")
    */
   Sequence.prototype.pluck = function(propertyName) {
     return this.map(function(e) {
@@ -137,7 +153,7 @@
    * ];
    *
    * var fullNames = Lazy(people).invoke("fullName");
-   * // => ("Dan Tao", "Bob Smith")
+   * // => sequence: ("Dan Tao", "Bob Smith")
    */
   Sequence.prototype.invoke = function(methodName) {
     return this.map(function(e) {
@@ -156,7 +172,7 @@
    * @example
    * var numbers = [1, 2, 3, 4, 5, 6];
    * var evens = Lazy(numbers).select(function(x) { return x % 2 === 0; });
-   * // => (2, 4, 6)
+   * // => sequence: (2, 4, 6)
    */
   Sequence.prototype.select = function(filterFn) {
     return new FilteredSequence(this, filterFn);
@@ -175,7 +191,7 @@
    * @example
    * var numbers = [1, 2, 3, 4, 5, 6];
    * var odds = Lazy(numbers).reject(function(x) { return x % 2 === 0; });
-   * // => (1, 3, 5)
+   * // => sequence: (1, 3, 5)
    */
   Sequence.prototype.reject = function(rejectFn) {
     return this.filter(function(e) {
@@ -197,7 +213,7 @@
    *   { first: "Bob", last: "Smith" }
    * ];
    * var dans = Lazy(people).where({ first: "Dan" });
-   * // => ({ first: "Dan", last: "Tao" })
+   * // => sequence: ({ first: "Dan", last: "Tao" })
    */
   Sequence.prototype.where = function(properties) {
     return this.filter(function(e) {
@@ -222,7 +238,7 @@
    * @example
    * var alphabet = "abcdefghijklmnopqrstuvwxyz";
    * var alphabetBackwards = Lazy(alphabet).reverse();
-   * // => ("z", "y", "x", ..., "a")
+   * // => sequence: ("z", "y", "x", ..., "a")
    */
   Sequence.prototype.reverse = function() {
     return new ReversedSequence(this);
@@ -240,7 +256,7 @@
    * var left = [1, 2, 3];
    * var right = [4, 5, 6];
    * var both = Lazy(left).concat(right);
-   * // => (1, 2, 3, 4, 5, 6)
+   * // => sequence: (1, 2, 3, 4, 5, 6)
    */
   Sequence.prototype.concat = function(var_args) {
     return new ConcatenatedSequence(this, Array.prototype.slice.call(arguments, 0));
@@ -255,6 +271,14 @@
    *     will be essentially the same as this one.
    * @result {*} The new sequence (or the first element from this sequence if
    *     no count was given).
+   *
+   * @example
+   * function powerOfTwo(exp) {
+   *   return Math.pow(2, exp);
+   * }
+   *
+   * var firstTenPowersOf2 = Lazy.generate(powerOfTwo).first(10);
+   * // => sequence: (1, 2, 4, ..., 512)
    */
   Sequence.prototype.first = function(count) {
     if (typeof count === "undefined") {
@@ -274,6 +298,11 @@
    * @param {number=} count The number of items to omit from the end of the
    *     sequence (defaults to 1).
    * @return {Sequence} The new sequence.
+   *
+   * @example
+   * var produce = [apple, banana, carrot, durian];
+   * var edibleProduce = Lazy(produce).initial();
+   * // => sequence: (apple, banana, carrot)
    */
   Sequence.prototype.initial = function(count) {
     if (typeof count === "undefined") {
@@ -288,8 +317,13 @@
    *
    * @param {number=} count The number of items to take from the end of the
    *     sequence.
-   * @return {Sequence} The new sequence (or the last element from this sequence
+   * @return {*} The new sequence (or the last element from this sequence
    *     if no count was given).
+   *
+   * @example
+   * var siblings = [lauren, adam, daniel, happy];
+   * var favorite = Lazy(siblings).last();
+   * // => happy
    */
   Sequence.prototype.last = function(count) {
     if (typeof count === "undefined") {
@@ -306,6 +340,11 @@
    *     element in this sequence.
    * @return {*} The found element, or undefined if none exists in this
    *     sequence.
+   *
+   * @example
+   * var words = ["foo", "bar"];
+   * var foo = Lazy(words).findWhere({ 0: "f" });
+   * // => "foo"
    */
   Sequence.prototype.findWhere = function(properties) {
     return this.where(properties).first();
@@ -318,6 +357,11 @@
    * @param {number=} count The number of items to omit from the beginning of the
    *     sequence (defaults to 1).
    * @return {Sequence} The new sequence.
+   *
+   * @example
+   * var numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+   * var lastFive = Lazy(numbers).rest(5);
+   * // #=> sequence: (6, 7, 8, 9, 10)
    */
   Sequence.prototype.rest = function(count) {
     return new DropSequence(this, count);
@@ -2326,7 +2370,7 @@
    *
    * @example
    * var randomNumbers = Lazy.generate(Math.random);
-   * // => (0.4838115070015192, 0.637410914292559, ...)
+   * // => sequence: (0.4838115070015192, 0.637410914292559, ...)
    */
   Lazy.generate = function(generatorFn, length) {
     return new GeneratedSequence(generatorFn, length);
@@ -2340,13 +2384,13 @@
    *
    * @example
    * var integers = Lazy.range(10);
-   * // => (0, 1, ..., 9)
+   * // => sequence: (0, 1, ..., 9)
    *
    * var countingNumbers = Lazy.range(1, 11);
-   * // => (1, 2, ..., 10)
+   * // => sequence: (1, 2, ..., 10)
    *
    * var evenNumbers = Lazy.range(2, 10, 2);
-   * // => (2, 4, 6, 8)
+   * // => sequence: (2, 4, 6, 8)
    */
   Lazy.range = function() {
     var start = arguments.length > 1 ? arguments[0] : 0,
@@ -2367,7 +2411,7 @@
    *
    * @example
    * var hihihi = Lazy.repeat("hi", 3);
-   * // => ("hi", "hi", "hi")
+   * // => sequence: ("hi", "hi", "hi")
    */
   Lazy.repeat = function(value, count) {
     return Lazy.generate(function() { return value; }, count);
@@ -2390,7 +2434,8 @@
 
   Lazy.Sequence = Sequence;
   Lazy.ArrayLikeSequence = ArrayLikeSequence;
-  Lazy.CachingSequence = CachingSequence;
+  Lazy.ObjectLikeSequence = ObjectLikeSequence;
+  Lazy.StringLikeSequence = StringLikeSequence;
   Lazy.GeneratedSequence = GeneratedSequence;
 
   /*** Useful utility methods ***/
