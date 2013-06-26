@@ -6,7 +6,7 @@ $(document).ready(function() {
     var sections = nav.attr("data-sections");
 
     // If this link doesn't have an href like '#target', forget it!
-    if (target.charAt(0) !== "#") {
+    if (target.charAt(0) !== "#" && !link.is(".nav-link")) {
       return;
     }
 
