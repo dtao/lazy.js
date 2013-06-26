@@ -21,6 +21,7 @@
 
   /**
    * For debug purposes only.
+   * @debug
    */
   Sequence.prototype.depth = function() {
     return this.parent ? this.parent.depth() + 1 : 0;
@@ -28,6 +29,7 @@
 
   /**
    * For debug purposes only.
+   * @debug
    */
   Sequence.prototype.log = function(msg) {
     console.log(indent(this.depth()) + msg);

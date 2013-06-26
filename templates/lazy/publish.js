@@ -22,7 +22,13 @@ var CLASSES_TO_DOCUMENT = [
   "AsyncSequence"
 ];
 
-function getDocletData(doclet) {
+function isTaggedDebug(doclet) {
+  return doclet.tags && Lazy(doclet.tags).any(function(tag) {
+    return tag.title === "debug";
+  });
+}
+
+function getMethodData(doclet) {
   return {
     longname: doclet.longname,
     name: doclet.name,
@@ -39,20 +45,21 @@ exports.publish = function(data, opts) {
   var doclets = data().get();
 
   var classes = Lazy(CLASSES_TO_DOCUMENT).map(function(className) {
-    var classDoc = Lazy(doclets).findWhere({ longname: className });
+    var classDoclet = Lazy(doclets).findWhere({ longname: className });
 
     var nameMatcher = new RegExp("^" + className);
     var methods = Lazy(doclets)
-      .filter(function(d) { return d.kind === "function" || d.kind === "class"; })
+      .where({ kind: "function" })
       .filter(function(d) { return nameMatcher.test(d.longname); })
-      .map(getDocletData);
+      .reject(isTaggedDebug)
+      .map(getMethodData);
 
     var instanceMethods = methods.where({ scope: "instance" }).toArray();
     var staticMethods = methods.where({ scope: "static" }).toArray();
 
     return {
       name: className,
-      constructor: getDocletData(classDoc),
+      constructor: getMethodData(classDoclet),
       instanceMethods: instanceMethods,
       staticMethods: staticMethods
     };
