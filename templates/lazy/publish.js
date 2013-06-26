@@ -17,7 +17,8 @@ var CLASSES_TO_DOCUMENT = [
   "Sequence",
   "ArrayLikeSequence",
   "ObjectLikeSequence",
-  "StringLikeSequence"
+  "StringLikeSequence",
+  "GeneratedSequence"
 ];
 
 // Spit it out, JSDoc!
@@ -31,7 +32,7 @@ exports.publish = function(data, opts) {
 
     var nameMatcher = new RegExp("^" + className);
     var methods = Lazy(doclets)
-      .filter(function(d) { return d.kind === "function"; })
+      .filter(function(d) { return d.kind === "function" || d.kind === "class"; })
       .filter(function(d) { return nameMatcher.test(d.longname); })
       .map(function(d) {
         return {
