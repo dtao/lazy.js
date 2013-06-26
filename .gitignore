@@ -1,0 +1,16 @@
+Gemfile*
+Rakefile
+LICENSE*
+README*
+
+*.json
+*.mustache
+*.node.js
+
+lib/
+site/share.html
+spec/data/lines.txt
+spec/node_benchmark.js
+spec/node_spec.js
+spec/support/comparison_suite.js
+templates/
