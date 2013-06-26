@@ -85,8 +85,6 @@ namespace :compile do
   task :docs do
     require "json"
     require "mustache"
-    require "nokogiri"
-    require "pygments"
     require "redcarpet"
 
     # OK so here's a hack: I'm going to strip out the first and last lines from
@@ -118,12 +116,6 @@ namespace :compile do
           returns_data["description"] = simple_markdown(returns_data["description"])
         end
         method_data["returns"] = { :list => returns } unless returns.nil? || returns.empty?
-
-        start  = method_data["range"][0].to_i
-        stop   = method_data["range"][1].to_i
-        source = full_source[start..stop].gsub(/^\s{1,2}/, "")
-
-        method_data["source"] = source
       end
     end
 
@@ -144,11 +136,8 @@ namespace :compile do
         :methods => class_data["methods"]
       })
 
-      document = Nokogiri::HTML.parse(html)
-      syntax_highlight!(document)
-
       File.open("docs/#{class_data['name']}.html", "w") do |f|
-        f.write(document.inner_html)
+        f.write(html)
       end
     end
   end
