@@ -70,7 +70,7 @@ var input = (function getArrayForType(type) {
 var suite = new ComparisonSuite({
   reporter: {
     onRunning: function(test) {
-      console.log("Running test '" + test.name + "'.");
+      console.log("Running test '" + test.label + "'.");
     },
 
     onTestResults: function(tests) {
@@ -80,7 +80,7 @@ var suite = new ComparisonSuite({
         .sortBy(function(test) { return test.hz; })
         .reverse();
 
-      var columns = ["name", "hz", "count", "cycles", "stats.rme", "stats.deviation"];
+      var columns = ["label", "hz", "count", "cycles", "stats.rme", "stats.deviation"];
 
       var columnWidths = Lazy(columns)
         .map(function(columnName) {

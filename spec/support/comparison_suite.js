@@ -19,9 +19,11 @@ function ComparisonSuite(options) {
   });
 
   function addTestToSuite(name, test, input, addOptions) {
-    suite.add(name, function() {
+    var benchmark = new Benchmark(name, function() {
       addOptions.tests[test].apply(addOptions.context, addOptions.inputs[input]);
     });
+    benchmark.label = test;
+    suite.add(benchmark);
     if (!testsByName[name]) { testsByName[name] = []; }
     testsByName[name].push(test);
   }
