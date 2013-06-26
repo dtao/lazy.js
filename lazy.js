@@ -476,7 +476,7 @@
    * @return {Sequence} The new sequence.
    */
   Sequence.prototype.union = function(var_args) {
-    return new UnionSequence(this, Array.prototype.slice.call(arguments, 0));
+    return this.concat(var_args).uniq();
   };
 
   /**
@@ -1633,45 +1633,6 @@
         return fn(e, i++);
       }
     });
-  };
-
-  var UnionSequence = CachingSequence.inherit(function(parent, arrays) {
-    this.parent = parent;
-    this.arrays = arrays;
-  });
-
-  UnionSequence.prototype.each = function(fn) {
-    var set = {},
-        i = 0,
-        done = false;
-
-    this.parent.each(function(e) {
-      if (!set[e]) {
-        set[e] = true;
-        if (fn(e, i++) === false) {
-          done = true;
-          return false;
-        }
-      }
-    });
-
-    if (!done) {
-      Lazy(this.arrays).each(function(array) {
-        if (done) {
-          return false;
-        }
-
-        Lazy(array).each(function(e) {
-          if (!set[e]) {
-            set[e] = true;
-            if (fn(e, i++) === false) {
-              done = true;
-              return false;
-            }
-          }
-        })
-      });
-    }
   };
 
   var IntersectionSequence = CachingSequence.inherit(function(parent, arrays) {
