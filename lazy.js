@@ -1514,10 +1514,12 @@
   });
 
   UniqueSequence.prototype.each = function(fn) {
-    var set = new Set(),
-        i = 0;
+    var cache = [],
+        find  = contains,
+        i     = 0;
     this.parent.each(function(e) {
-      if (set.add(e)) {
+      if (!find(cache, e)) {
+        cache.push(e);
         return fn(e, i++);
       }
     });
@@ -1536,29 +1538,17 @@
   UniqueArrayWrapper.prototype.eachNoCache = function(fn) {
     var source = this.parent.source,
         length = source.length,
+        find   = containsBefore,
         value,
-        found,
 
         // Yes, this is hideous.
         // Trying to get performance first, will refactor next!
         i = -1,
-        j,
         k = 0;
 
     while (++i < length) {
       value = source[i];
-      found = false;
-
-      // Scan downwards to look for a dupe.
-      j = i - 1;
-      while (j >= 0) {
-        if (source[j--] === value) {
-          found = true;
-          break;
-        }
-      }
-
-      if (!found && fn(source[i], k++) === false) {
+      if (!find(source, value, i) && fn(value, k++) === false) {
         return false;
       }
     }
@@ -1569,13 +1559,14 @@
     // it's cheaper for smaller sequences.
     var source = this.parent.source,
         length = source.length,
-        cache = [],
+        cache  = [],
+        find   = contains,
         value,
         i = -1,
         j = 0;
     while (++i < length) {
       value = source[i];
-      if (!contains(cache, value)) {
+      if (!find(cache, value)) {
         cache.push(value);
         if (fn(value, j++) === false) {
           return false;
@@ -1593,7 +1584,7 @@
   // using a set-based cache. Not until somewhere around 800 elements does a set-
   // based approach start to outpace the others.
   function getEachForSource(source) {
-    if (source.length < 200) {
+    if (source.length < 40) {
       return UniqueArrayWrapper.prototype.eachNoCache;
     } else if (source.length < 800) {
       return UniqueArrayWrapper.prototype.eachArrayCache;
@@ -2491,10 +2482,15 @@
     return false;
   }
 
-  if (typeof Array.prototype.indexOf === "function") {
-    contains = function(array, element) {
-      return array.indexOf(element) !== -1;
-    };
+  function containsBefore(array, element, index) {
+    var i = -1;
+
+    while (++i < index) {
+      if (array[i] === element) {
+        return true;
+      }
+    }
+    return false;
   }
 
   function swap(array, i, j) {
