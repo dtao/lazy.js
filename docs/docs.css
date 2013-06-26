@@ -67,6 +67,16 @@ nav.doc-list ul li {
   padding-bottom: 0.5ex;
 }
 
+nav.doc-list ul li.nav-header {
+  margin-top: 12px;
+  border-top: 1px solid black;
+  font-weight: bold;
+}
+
+nav.doc-list ul li.nav-header:hover {
+  background: none;
+}
+
 nav.doc-list ul li.selected {
   border-bottom: none;
   border-left: 3px solid #555;

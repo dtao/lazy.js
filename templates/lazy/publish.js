@@ -22,38 +22,41 @@ var CLASSES_TO_DOCUMENT = [
   "AsyncSequence"
 ];
 
+function getDocletData(doclet) {
+  return {
+    longname: doclet.longname,
+    name: doclet.name,
+    description: doclet.description,
+    scope: doclet.scope,
+    params: doclet.params,
+    returns: doclet.returns,
+    examples: doclet.examples
+  };
+}
+
 // Spit it out, JSDoc!
 exports.publish = function(data, opts) {
   var doclets = data().get();
 
   var classes = Lazy(CLASSES_TO_DOCUMENT).map(function(className) {
-    var classDoc = Lazy(doclets).find(function(d) {
-      return d.longname === className;
-    });
+    var classDoc = Lazy(doclets).findWhere({ longname: className });
 
     var nameMatcher = new RegExp("^" + className);
     var methods = Lazy(doclets)
       .filter(function(d) { return d.kind === "function" || d.kind === "class"; })
       .filter(function(d) { return nameMatcher.test(d.longname); })
-      .map(function(d) {
-        return {
-          longname: d.longname,
-          name: d.name,
-          description: d.description,
-          scope: d.scope,
-          params: d.params,
-          returns: d.returns,
-          examples: d.examples
-        };
-      })
-      .toArray();
+      .map(getDocletData);
+
+    var instanceMethods = methods.where({ scope: "instance" }).toArray();
+    var staticMethods = methods.where({ scope: "static" }).toArray();
 
     return {
       name: className,
-      description: classDoc.description,
-      methods: methods
+      constructor: [getDocletData(classDoc)],
+      instanceMethods: instanceMethods,
+      staticMethods: staticMethods
     };
   }).toArray();
 
-  console.log(JSON.stringify(classes))
+  console.log(JSON.stringify(classes));
 };
