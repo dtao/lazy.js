@@ -15,8 +15,9 @@ var Lazy = require("../../lazy.js");
 var CLASSES_TO_DOCUMENT = [
   "Lazy",
   "Sequence",
+  "ArrayLikeSequence",
   "ObjectLikeSequence",
-  "StringWrapper"
+  "StringLikeSequence"
 ];
 
 // Spit it out, JSDoc!

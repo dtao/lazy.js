@@ -669,7 +669,7 @@
   };
 
   /**
-   * The ObjectLikeSequence object represents a sequence of key/value pairs.
+   * An `ObjectLikeSequence` object represents a sequence of key/value pairs.
    *
    * @constructor
    */
@@ -807,27 +807,27 @@
   };
 
   /**
-   * An IndexedSequence is a {@link Sequence} that provides random access to its
+   * An `ArrayLikeSequence` is a {@link Sequence} that provides random access to its
    * elements. This extends the API for iterating with the additional methods
    * `get` and `length`, allowing a sequence to act as a "view" into a collection
    * or other indexed data source.
    *
    * @constructor
    */
-  function IndexedSequence() {}
+  function ArrayLikeSequence() {}
 
-  IndexedSequence.prototype = new Sequence();
+  ArrayLikeSequence.prototype = new Sequence();
 
   /**
    * Create a new constructor function for a type inheriting from
-   * {@link IndexedSequence}.
+   * {@link ArrayLikeSequence}.
    *
    * @param {Function} ctor The constructor function.
    * @return {Function} A constructor for a new type inheriting from
-   *     {@link IndexedSequence}.
+   *     {@link ArrayLikeSequence}.
    */
-  IndexedSequence.inherit = function(ctor) {
-    ctor.prototype = new IndexedSequence();
+  ArrayLikeSequence.inherit = function(ctor) {
+    ctor.prototype = new ArrayLikeSequence();
     return ctor;
   };
 
@@ -837,7 +837,7 @@
    * @param {number} i The index to access.
    * @return {*} The element.
    */
-  IndexedSequence.prototype.get = function(i) {
+  ArrayLikeSequence.prototype.get = function(i) {
     return this.parent.get(i);
   };
 
@@ -846,14 +846,14 @@
    *
    * @return {number} The length.
    */
-  IndexedSequence.prototype.length = function() {
+  ArrayLikeSequence.prototype.length = function() {
     return this.parent.length();
   };
 
   /**
    * An optimized version of {@link Sequence.each}.
    */
-  IndexedSequence.prototype.each = function(fn) {
+  ArrayLikeSequence.prototype.each = function(fn) {
     var length = this.length(),
         i = -1;
     while (++i < length) {
@@ -865,36 +865,36 @@
 
   /**
    * An optimized version of {@link Sequence.map}, which creates an
-   * {@link IndexedSequence} so that the result still provides random access.
+   * {@link ArrayLikeSequence} so that the result still provides random access.
    */
-  IndexedSequence.prototype.map =
-  IndexedSequence.prototype.collect = function(mapFn) {
+  ArrayLikeSequence.prototype.map =
+  ArrayLikeSequence.prototype.collect = function(mapFn) {
     return new IndexedMappedSequence(this, mapFn);
   };
 
   /**
    * An optimized version of {@link Sequence.filter}.
    */
-  IndexedSequence.prototype.filter =
-  IndexedSequence.prototype.select = function(filterFn) {
+  ArrayLikeSequence.prototype.filter =
+  ArrayLikeSequence.prototype.select = function(filterFn) {
     return new IndexedFilteredSequence(this, filterFn);
   };
 
   /**
    * An optimized version of {@link Sequence.reverse}, which creates an
-   * {@link IndexedSequence} so that the result still provides random access.
+   * {@link ArrayLikeSequence} so that the result still provides random access.
    */
-  IndexedSequence.prototype.reverse = function() {
+  ArrayLikeSequence.prototype.reverse = function() {
     return new IndexedReversedSequence(this);
   };
 
   /**
    * An optimized version of {@link Sequence.first}, which creates an
-   * {@link IndexedSequence} so that the result still provides random access.
+   * {@link ArrayLikeSequence} so that the result still provides random access.
    *
    * @param {number=} count
    */
-  IndexedSequence.prototype.first = function(count) {
+  ArrayLikeSequence.prototype.first = function(count) {
     if (typeof count === "undefined") {
       return this.get(0);
     }
@@ -902,26 +902,26 @@
     return new IndexedTakeSequence(this, count);
   };
 
-  IndexedSequence.prototype.head =
-  IndexedSequence.prototype.take =
-  IndexedSequence.prototype.first;
+  ArrayLikeSequence.prototype.head =
+  ArrayLikeSequence.prototype.take =
+  ArrayLikeSequence.prototype.first;
 
   /**
    * An optimized version of {@link Sequence.rest}, which creates an
-   * {@link IndexedSequence} so that the result still provides random access.
+   * {@link ArrayLikeSequence} so that the result still provides random access.
    *
    * @param {number=} count
    */
-  IndexedSequence.prototype.rest = function(count) {
+  ArrayLikeSequence.prototype.rest = function(count) {
     return new IndexedDropSequence(this, count);
   };
 
-  IndexedSequence.prototype.tail =
-  IndexedSequence.prototype.drop = IndexedSequence.prototype.rest;
+  ArrayLikeSequence.prototype.tail =
+  ArrayLikeSequence.prototype.drop = ArrayLikeSequence.prototype.rest;
 
   /**
    * ArrayWrapper is the most basic {@link Sequence}. It directly wraps an array
-   * and implements the same methods as {@link IndexedSequence}, but more
+   * and implements the same methods as {@link ArrayLikeSequence}, but more
    * efficiently.
    *
    * @constructor
@@ -930,7 +930,7 @@
     this.source = source;
   }
 
-  ArrayWrapper.prototype = new IndexedSequence();
+  ArrayWrapper.prototype = new ArrayLikeSequence();
 
   /**
    * Returns the element at the specified index in the source array.
@@ -1085,7 +1085,7 @@
     });
   };
 
-  var IndexedMappedSequence = IndexedSequence.inherit(function(parent, mapFn) {
+  var IndexedMappedSequence = ArrayLikeSequence.inherit(function(parent, mapFn) {
     this.parent = parent;
     this.mapFn  = mapFn;
   });
@@ -1102,7 +1102,7 @@
     this.mapFn  = mapFn;
   }
 
-  MappedArrayWrapper.prototype = new IndexedSequence();
+  MappedArrayWrapper.prototype = new ArrayLikeSequence();
 
   MappedArrayWrapper.prototype.get = function(i) {
     return this.mapFn(this.source[i]);
@@ -1243,7 +1243,7 @@
     }
   };
 
-  var IndexedReversedSequence = IndexedSequence.inherit(function(parent) {
+  var IndexedReversedSequence = ArrayLikeSequence.inherit(function(parent) {
     this.parent = parent;
   });
 
@@ -1291,7 +1291,7 @@
     });
   };
 
-  var IndexedTakeSequence = IndexedSequence.inherit(function(parent, count) {
+  var IndexedTakeSequence = ArrayLikeSequence.inherit(function(parent, count) {
     this.parent = parent;
     this.count  = count;
   });
@@ -1315,7 +1315,7 @@
     });
   };
 
-  var IndexedDropSequence = IndexedSequence.inherit(function(parent, count) {
+  var IndexedDropSequence = ArrayLikeSequence.inherit(function(parent, count) {
     this.parent = parent;
     this.count  = typeof count === "number" ? count : 1;
   });
@@ -1831,25 +1831,22 @@
   }
 
   /**
-   * Wraps a string exposing {@link match} and {@link split} methods that return
-   * {@link Sequence} objects instead of arrays, improving on the efficiency of
-   * JavaScript's built-in {@link String.split} and {@link String.match} methods
-   * and supporting asynchronous iteration.
+   * A `StringLikeSequence` represents a sequence of characters.
    *
-   * @param {string} source The string to wrap.
+   * TODO: The idea for this prototype is to be able to do things like represent
+   * "substrings" without actually allocating new strings. Right now that
+   * isn't implemented at all, though (every method assumes an actual string as
+   * `source`).
+   *
    * @constructor
    */
-  function StringWrapper(source) {
-    this.source = source;
-  }
+  function StringLikeSequence() {}
 
-  StringWrapper.prototype = new Sequence();
-
-  StringWrapper.prototype.getIterator = function() {
+  StringLikeSequence.prototype.getIterator = function() {
     return new CharIterator(this.source);
   };
 
-  StringWrapper.prototype.each = function(fn) {
+  StringLikeSequence.prototype.each = function(fn) {
     var source = this.source,
         length = source.length,
         i = -1;
@@ -1868,7 +1865,7 @@
    * @param {RegExp} pattern The pattern to match.
    * @return {Sequence} A sequence of all the matches.
    */
-  StringWrapper.prototype.match = function(pattern) {
+  StringLikeSequence.prototype.match = function(pattern) {
     return new StringMatchSequence(this.source, pattern);
   };
 
@@ -1881,9 +1878,24 @@
    * @return {Sequence} A sequence of all the substrings separated by the given
    *     delimiter.
    */
-  StringWrapper.prototype.split = function(delimiter) {
+  StringLikeSequence.prototype.split = function(delimiter) {
     return new SplitStringSequence(this.source, delimiter);
   };
+
+  /**
+   * Wraps a string exposing {@link match} and {@link split} methods that return
+   * {@link Sequence} objects instead of arrays, improving on the efficiency of
+   * JavaScript's built-in {@link String.split} and {@link String.match} methods
+   * and supporting asynchronous iteration.
+   *
+   * @param {string} source The string to wrap.
+   * @constructor
+   */
+  function StringWrapper(source) {
+    this.source = source;
+  }
+
+  StringWrapper.prototype = new StringLikeSequence();
 
   var StringMatchSequence = Sequence.inherit(function(source, pattern) {
     this.source = source;
@@ -2292,7 +2304,7 @@
   };
 
   Lazy.Sequence = Sequence;
-  Lazy.IndexedSequence = IndexedSequence;
+  Lazy.ArrayLikeSequence = ArrayLikeSequence;
   Lazy.CachingSequence = CachingSequence;
   Lazy.GeneratedSequence = GeneratedSequence;
 
