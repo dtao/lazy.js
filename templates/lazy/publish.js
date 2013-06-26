@@ -19,7 +19,8 @@ var CLASSES_TO_DOCUMENT = [
   "ObjectLikeSequence",
   "StringLikeSequence",
   "GeneratedSequence",
-  "AsyncSequence"
+  "AsyncSequence",
+  "Iterator"
 ];
 
 function isTaggedDebug(doclet) {
