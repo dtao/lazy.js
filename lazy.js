@@ -86,6 +86,7 @@
    * @example
    * var odds = [1, 3, 5];
    * var evens = Lazy(odds).map(function(x) { return x + 1; });
+   * // => (2, 4, 6)
    */
   Sequence.prototype.map = function(mapFn) {
     return new MappedSequence(this, mapFn);
@@ -107,6 +108,7 @@
    *   { first: "Bob", last: "Smith" }
    * ];
    * var surnames = Lazy(people).pluck("last");
+   * // => ("Tao", "Smith")
    */
   Sequence.prototype.pluck = function(propertyName) {
     return this.map(function(e) {
@@ -135,6 +137,7 @@
    * ];
    *
    * var fullNames = Lazy(people).invoke("fullName");
+   * // => ("Dan Tao", "Bob Smith")
    */
   Sequence.prototype.invoke = function(methodName) {
     return this.map(function(e) {
@@ -151,8 +154,9 @@
    * @return {Sequence} The new sequence.
    *
    * @example
-   * var numbers = [1, 2, 3, 4, 5];
+   * var numbers = [1, 2, 3, 4, 5, 6];
    * var evens = Lazy(numbers).select(function(x) { return x % 2 === 0; });
+   * // => (2, 4, 6)
    */
   Sequence.prototype.select = function(filterFn) {
     return new FilteredSequence(this, filterFn);
@@ -169,8 +173,9 @@
    * @return {Sequence} The new sequence.
    *
    * @example
-   * var numbers = [1, 2, 3, 4, 5];
+   * var numbers = [1, 2, 3, 4, 5, 6];
    * var odds = Lazy(numbers).reject(function(x) { return x % 2 === 0; });
+   * // => (1, 3, 5)
    */
   Sequence.prototype.reject = function(rejectFn) {
     return this.filter(function(e) {
@@ -192,6 +197,7 @@
    *   { first: "Bob", last: "Smith" }
    * ];
    * var dans = Lazy(people).where({ first: "Dan" });
+   * // => ({ first: "Dan", last: "Tao" })
    */
   Sequence.prototype.where = function(properties) {
     return this.filter(function(e) {
@@ -216,6 +222,7 @@
    * @example
    * var alphabet = "abcdefghijklmnopqrstuvwxyz";
    * var alphabetBackwards = Lazy(alphabet).reverse();
+   * // => ("z", "y", "x", ..., "a")
    */
   Sequence.prototype.reverse = function() {
     return new ReversedSequence(this);
@@ -233,6 +240,7 @@
    * var left = [1, 2, 3];
    * var right = [4, 5, 6];
    * var both = Lazy(left).concat(right);
+   * // => (1, 2, 3, 4, 5, 6)
    */
   Sequence.prototype.concat = function(var_args) {
     return new ConcatenatedSequence(this, Array.prototype.slice.call(arguments, 0));
@@ -2276,6 +2284,16 @@
    *
    * @param {*} source An array, object, or string to wrap.
    * @return {Sequence} The wrapped lazy object.
+   *
+   * @example
+   * var fromArray = Lazy([1, 2, 4]);
+   * // => Lazy.ArrayLikeSequence
+   *
+   * var fromObject = Lazy({ foo: "bar" });
+   * // => Lazy.ObjectLikeSequence
+   *
+   * var fromString = Lazy("hello, world!");
+   * // => Lazy.StringLikeSequence
    */
   var Lazy = function(source) {
     if (source instanceof Sequence) {
@@ -2305,6 +2323,10 @@
    * @param {number=} length The length of the sequence, for sequences with a
    *     definite length.
    * @return {Sequence} The generated sequence.
+   *
+   * @example
+   * var randomNumbers = Lazy.generate(Math.random);
+   * // => (0.4838115070015192, 0.637410914292559, ...)
    */
   Lazy.generate = function(generatorFn, length) {
     return new GeneratedSequence(generatorFn, length);
@@ -2315,6 +2337,16 @@
    * value, incrementing by a given step.
    *
    * @return {Sequence} The sequence defined by the given ranges.
+   *
+   * @example
+   * var integers = Lazy.range(10);
+   * // => (0, 1, ..., 9)
+   *
+   * var countingNumbers = Lazy.range(1, 11);
+   * // => (1, 2, ..., 10)
+   *
+   * var evenNumbers = Lazy.range(2, 10, 2);
+   * // => (2, 4, 6, 8)
    */
   Lazy.range = function() {
     var start = arguments.length > 1 ? arguments[0] : 0,
@@ -2332,6 +2364,10 @@
    * @param {number=} count The number of times the value should be repeated in
    *     the sequence. If this argument is omitted, the value will repeat forever.
    * @return {Sequence} The sequence containing the repeated value.
+   *
+   * @example
+   * var hihihi = Lazy.repeat("hi", 3);
+   * // => ("hi", "hi", "hi")
    */
   Lazy.repeat = function(value, count) {
     return Lazy.generate(function() { return value; }, count);
