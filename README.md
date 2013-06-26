@@ -230,7 +230,7 @@ Lazy(stream)
   .each(processData);
 ```
 
-For convenience, specialized helper methods for dealing with either file streamas or HTTP streams are also offered. (**Note: this API will probably change.**)
+For convenience, specialized helper methods for dealing with either file streams or HTTP streams are also offered. (**Note: this API will probably change.**)
 
 ```javascript
 // Read the first 5 lines from a file:
