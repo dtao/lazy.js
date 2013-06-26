@@ -26,7 +26,8 @@ end
 def simple_markdown(text)
   return "" if text.nil?
   @renderer ||= Redcarpet::Markdown.new(Redcarpet::Render::HTML)
-  @renderer.render(text)[3...-3]
+  html = @renderer.render(text)[3...-3]
+  html.gsub(/\{@link ([^}]*)\}/, '<a href="\1.html">\1</a>')
 end
 
 namespace :compile do
