@@ -49,13 +49,13 @@
     <section class="methods">
       {{#constructor}}
       <section id="{{name}}" class="constructor method">
-        {{> method}}
+        {{> method_template}}
       </section>
       {{/constructor}}
 
       {{#methods}}
       <section id="{{name}}" class="method" style="display: none;">
-        {{> method}}
+        {{> method_template}}
       </section>
       {{/methods}}
     </section>

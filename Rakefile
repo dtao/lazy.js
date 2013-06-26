@@ -134,17 +134,18 @@ namespace :compile do
     # I called it temp.js for a reason, you guys!
     File.delete("temp.js")
 
-    docs_index_template = File.read("docs/index.html.mustache")
-    docs_index_html = Mustache.render(docs_index_template, { :classes => classes })
+    Mustache.template_path = "docs/templates"
+
+    class IndexTemplate < Mustache; end
+    docs_index_html = IndexTemplate.render(:classes => classes)
 
     File.open("docs/index.html", "w") do |f|
       f.write(docs_index_html)
     end
 
-    class_template = File.read("docs/class.html.mustache")
-    Mustache.template_path = "docs"
+    class ClassTemplate < Mustache; end
     classes.each do |class_data|
-      html = Mustache.render(class_template, class_data)
+      html = ClassTemplate.render(class_data)
 
       document = Nokogiri::HTML(html)
       syntax_highlight!(document)
