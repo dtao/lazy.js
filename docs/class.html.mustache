@@ -28,128 +28,34 @@
         <li class="selected"><a href="#{{name}}">{{name}}</a> <small>(constructor)</small></li>
         {{/constructor}}
 
-        {{#staticMethods}}
+        {{#anyStaticMethods}}
         <li class="nav-header">Static methods</li>
 
-        {{#list}}
+        {{#staticMethods}}
         <li><a href="#{{name}}">{{name}}</a></li>
-        {{/list}}
         {{/staticMethods}}
+        {{/anyStaticMethods}}
 
-        {{#instanceMethods}}
+        {{#anyInstanceMethods}}
         <li class="nav-header">Instance methods</li>
 
-        {{#list}}
+        {{#instanceMethods}}
         <li><a href="#{{name}}">{{name}}</a></li>
-        {{/list}}
         {{/instanceMethods}}
+        {{/anyInstanceMethods}}
       </ul>
     </nav>
 
     <section class="methods">
       {{#constructor}}
       <section id="{{name}}" class="constructor method">
-        <header>
-          <h2>
-            {{name}}
-            <small>{{longname}}</small>
-          </h2>
-          <p class="description">{{{description}}}</p>
-        </header>
-
-        {{#params}}
-        <h3>Parameters</h3>
-        <table class="params">
-          <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-
-          {{#list}}
-          <tr>
-            <td>{{name}}</td>
-            <td>{{type}}</td>
-            <td>{{{description}}}</td>
-          </tr>
-          {{/list}}
-        </table>
-        {{/params}}
-
-        {{#returns}}
-        <h3>Returns</h3>
-        <table class="returns">
-          <tr>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-
-          {{#list}}
-          <tr>
-            <td>{{type}}</td>
-            <td>{{{description}}}</td>
-          </tr>
-          {{/list}}
-        </table>
-        {{/returns}}
-
-        {{#examples}}
-        <h3>Example</h3>
-        <pre><code class="javascript">{{.}}</code></pre>
-        {{/examples}}
+        {{> method}}
       </section>
       {{/constructor}}
 
       {{#methods}}
       <section id="{{name}}" class="method" style="display: none;">
-        <header>
-          <h2>
-            {{name}}
-            <small>{{longname}}</small>
-          </h2>
-          <p class="description">{{{description}}}</p>
-        </header>
-
-        {{#params}}
-        <h3>Parameters</h3>
-        <table class="params">
-          <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-
-          {{#list}}
-          <tr>
-            <td>{{name}}</td>
-            <td>{{type}}</td>
-            <td>{{{description}}}</td>
-          </tr>
-          {{/list}}
-        </table>
-        {{/params}}
-
-        {{#returns}}
-        <h3>Returns</h3>
-        <table class="returns">
-          <tr>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-
-          {{#list}}
-          <tr>
-            <td>{{type}}</td>
-            <td>{{{description}}}</td>
-          </tr>
-          {{/list}}
-        </table>
-        {{/returns}}
-
-        {{#examples}}
-        <h3>Example</h3>
-        <pre><code class="javascript">{{.}}</code></pre>
-        {{/examples}}
+        {{> method}}
       </section>
       {{/methods}}
     </section>

@@ -52,7 +52,7 @@ exports.publish = function(data, opts) {
 
     return {
       name: className,
-      constructor: [getDocletData(classDoc)],
+      constructor: getDocletData(classDoc),
       instanceMethods: instanceMethods,
       staticMethods: staticMethods
     };

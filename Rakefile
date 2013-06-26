@@ -30,8 +30,8 @@ def simple_markdown(text)
   html.gsub(/\{@link ([^}]*)\}/, '<code>\1</code>')
 end
 
-def normalize_methods!(class_data, method_category, mustachify=true)
-  class_data[method_category].each do |method_data|
+def normalize_methods!(methods)
+  methods.each do |method_data|
     method_data["description"] = simple_markdown(method_data["description"])
 
     (params = method_data["params"]) && params.each do |param_data|
@@ -45,12 +45,6 @@ def normalize_methods!(class_data, method_category, mustachify=true)
       returns_data["description"] = simple_markdown(returns_data["description"])
     end
     method_data["returns"] = { :list => returns } unless returns.nil? || returns.empty?
-  end
-
-  # Don't ask. Actually, go ahead and ask.
-  # http://stackoverflow.com/questions/8745802/dealing-with-an-empty-list-in-mustache-js
-  if mustachify
-    class_data[method_category] = { :list => class_data[method_category] }
   end
 end
 
@@ -129,10 +123,12 @@ namespace :compile do
 
     # OK, I want to massage this data a little bit...
     classes.each_with_index do |class_data, index|
-      normalize_methods!(class_data, "constructor", false)
-      normalize_methods!(class_data, "instanceMethods")
-      normalize_methods!(class_data, "staticMethods")
-      class_data["methods"] = class_data["staticMethods"][:list] + class_data["instanceMethods"][:list]
+      normalize_methods!([class_data["constructor"]])
+      normalize_methods!(class_data["instanceMethods"])
+      normalize_methods!(class_data["staticMethods"])
+      class_data["methods"] = class_data["staticMethods"] + class_data["instanceMethods"]
+      class_data["anyStaticMethods"] = class_data["staticMethods"].any?
+      class_data["anyInstanceMethods"] = class_data["instanceMethods"].any?
     end
 
     # I called it temp.js for a reason, you guys!
@@ -146,6 +142,7 @@ namespace :compile do
     end
 
     class_template = File.read("docs/class.html.mustache")
+    Mustache.template_path = "docs"
     classes.each do |class_data|
       html = Mustache.render(class_template, class_data)
 

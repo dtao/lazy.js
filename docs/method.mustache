@@ -1,0 +1,48 @@
+<header>
+  <h2>
+    {{name}}
+    <small>{{longname}}</small>
+  </h2>
+  <p class="description">{{{description}}}</p>
+</header>
+
+{{#examples}}
+<h3>Example</h3>
+<pre><code class="javascript">{{.}}</code></pre>
+{{/examples}}
+
+{{#params}}
+<h3>Parameters</h3>
+<table class="params">
+  <tr>
+    <th>Name</th>
+    <th>Type</th>
+    <th>Description</th>
+  </tr>
+
+  {{#list}}
+  <tr>
+    <td>{{name}}</td>
+    <td>{{type}}</td>
+    <td>{{{description}}}</td>
+  </tr>
+  {{/list}}
+</table>
+{{/params}}
+
+{{#returns}}
+<h3>Returns</h3>
+<table class="returns">
+  <tr>
+    <th>Type</th>
+    <th>Description</th>
+  </tr>
+
+  {{#list}}
+  <tr>
+    <td>{{type}}</td>
+    <td>{{{description}}}</td>
+  </tr>
+  {{/list}}
+</table>
+{{/returns}}
