@@ -249,58 +249,6 @@ Lazy.makeHttpRequest("http://example.com")
 
 In each case, the elements in the sequence will be "chunks" of data most likely comprising multiple lines. The `lines()` method splits each chunk into lines (lazily, of course).
 
-Available functions
--------------------
+***
 
-Currently the following functions are available (meaning you can call them on any `Lazy.Sequence` object, such as what you get back from `Lazy(array)`, `Lazy.generate`, `Lazy(string).split`, &c.):
-
-### Arrays
-
-- `map`
-- `pluck`
-- `reduce` (aka `inject` or `foldl`)
-- `reduceRight` (aka `foldr`)
-- `filter`
-- `reject`
-- `where`
-- `invoke`
-- `find`
-- `findWhere`
-- `first` (aka `head` or `take`)
-- `rest` (aka `tail` or `drop`)
-- `initial`
-- `last`
-- `sortBy`
-- `groupBy`
-- `countBy`
-- `uniq`
-- `zip`
-- `concat`
-- `without`
-- `difference`
-- `union`
-- `intersection`
-- `flatten`
-- `compact`
-- `shuffle`
-- `every` (aka `all`)
-- `some` (aka `any`)
-- `indexOf`
-- `lastIndexOf`
-- `sortedIndex`
-- `contains`
-- `min`
-- `max`
-
-### Objects
-
-- `keys`
-- `values`
-- `pairs`
-- `functions` (aka `methods`)
-- `extend` (aka `assign`)
-- `pick`
-- `omit`
-- `invert`
-
-This library is experimental and still a work in progress.
+**This library is experimental and still a work in progress.**

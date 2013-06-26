@@ -67,18 +67,12 @@ figure {
   text-align: center;
 }
 
-.functions-list {
-  column-count: 3;
-  -moz-column-count: 3;
-  -webkit-column-count: 3;
-}
-
 #dom-event-source {
   position: relative;
   height: 200px;
   border: dashed 5px #ccc;
   text-align: center;
-  cursor: pointer;
+  cursor: crosshair;
 }
 
 #dom-event-source p {
