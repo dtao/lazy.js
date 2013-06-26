@@ -1,0 +1,173 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Lazy.js API Docs - ArrayLikeSequence</title>
+<link rel="stylesheet" type="text/css" href="docs.css">
+<script type="text/javascript" src="../site/lib/jquery.js"></script><script type="text/javascript" src="../site/common.js"></script>
+</head>
+<body id="top">
+  <header><h1><a href="../index.html">lazy.js</a></h1>
+  </header><article><header><h1>
+        ArrayLikeSequence
+        <small><a href="index.html">Back</a></small>
+      </h1>
+    </header><nav class="doc-list" data-sections="section.method"><ul>
+<li class="selected">
+<a href="#ArrayLikeSequence">ArrayLikeSequence</a> <small>(constructor)</small>
+</li>
+
+        <li class="nav-header">Static methods</li>
+
+        <li><a href="#inherit">inherit</a></li>
+
+        <li class="nav-header">Instance methods</li>
+
+        <li><a href="#get">get</a></li>
+        <li><a href="#length">length</a></li>
+        <li><a href="#each">each</a></li>
+        <li><a href="#collect">collect</a></li>
+        <li><a href="#select">select</a></li>
+        <li><a href="#reverse">reverse</a></li>
+        <li><a href="#first">first</a></li>
+        <li><a href="#rest">rest</a></li>
+      </ul></nav><section class="methods"><section id="ArrayLikeSequence" class="constructor method"><header><h2>
+            ArrayLikeSequence
+            <small>ArrayLikeSequence</small>
+          </h2>
+          <p class="description">An <code>ArrayLikeSequence</code> is a <code>Sequence</code> that provides random access to its
+elements. This extends the API for iterating with the additional methods
+<code>get</code> and <code>length</code>, allowing a sequence to act as a "view" into a collection
+or other indexed data source.</p>
+        </header></section><section id="inherit" class="method" style="display: none;"><header><h2>
+            inherit
+            <small>ArrayLikeSequence.inherit</small>
+          </h2>
+          <p class="description">Create a new constructor function for a type inheriting from
+<code>ArrayLikeSequence</code>.</p>
+        </header><h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>ctor</td>
+            <td>Function</td>
+            <td>The constructor function.</td>
+          </tr>
+</table>
+<h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>Function</td>
+            <td>A constructor for a new type inheriting from
+    <code>ArrayLikeSequence</code>.</td>
+          </tr>
+</table></section><section id="get" class="method" style="display: none;"><header><h2>
+            get
+            <small>ArrayLikeSequence#get</small>
+          </h2>
+          <p class="description">Returns the element at the specified index.</p>
+        </header><h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>i</td>
+            <td>number</td>
+            <td>The index to access.</td>
+          </tr>
+</table>
+<h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>*</td>
+            <td>The element.</td>
+          </tr>
+</table></section><section id="length" class="method" style="display: none;"><header><h2>
+            length
+            <small>ArrayLikeSequence#length</small>
+          </h2>
+          <p class="description">Returns the length of the sequence.</p>
+        </header><h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>number</td>
+            <td>The length.</td>
+          </tr>
+</table></section><section id="each" class="method" style="display: none;"><header><h2>
+            each
+            <small>ArrayLikeSequence#each</small>
+          </h2>
+          <p class="description">An optimized version of <code>Sequence.each</code>.</p>
+        </header></section><section id="collect" class="method" style="display: none;"><header><h2>
+            collect
+            <small>ArrayLikeSequence#collect</small>
+          </h2>
+          <p class="description"></p>
+        </header></section><section id="select" class="method" style="display: none;"><header><h2>
+            select
+            <small>ArrayLikeSequence#select</small>
+          </h2>
+          <p class="description"></p>
+        </header></section><section id="reverse" class="method" style="display: none;"><header><h2>
+            reverse
+            <small>ArrayLikeSequence#reverse</small>
+          </h2>
+          <p class="description">An optimized version of <code>Sequence.reverse</code>, which creates an
+<code>ArrayLikeSequence</code> so that the result still provides random access.</p>
+        </header></section><section id="first" class="method" style="display: none;"><header><h2>
+            first
+            <small>ArrayLikeSequence#first</small>
+          </h2>
+          <p class="description">An optimized version of <code>Sequence.first</code>, which creates an
+<code>ArrayLikeSequence</code> so that the result still provides random access.</p>
+        </header><h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>count</td>
+            <td>number</td>
+            <td></td>
+          </tr>
+</table></section><section id="rest" class="method" style="display: none;"><header><h2>
+            rest
+            <small>ArrayLikeSequence#rest</small>
+          </h2>
+          <p class="description">An optimized version of <code>Sequence.rest</code>, which creates an
+<code>ArrayLikeSequence</code> so that the result still provides random access.</p>
+        </header><h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>count</td>
+            <td>number</td>
+            <td></td>
+          </tr>
+</table></section></section></article>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Lazy.js API Docs - StringLikeSequence</title>
+<link rel="stylesheet" type="text/css" href="docs.css">
+<script type="text/javascript" src="../site/lib/jquery.js"></script><script type="text/javascript" src="../site/common.js"></script>
+</head>
+<body id="top">
+  <header><h1><a href="../index.html">lazy.js</a></h1>
+  </header><article><header><h1>
+        StringLikeSequence
+        <small><a href="index.html">Back</a></small>
+      </h1>
+    </header><nav class="doc-list" data-sections="section.method"><ul>
+<li class="selected">
+<a href="#StringLikeSequence">StringLikeSequence</a> <small>(constructor)</small>
+</li>
+
+
+        <li class="nav-header">Instance methods</li>
+
+        <li><a href="#getIterator">getIterator</a></li>
+        <li><a href="#each">each</a></li>
+        <li><a href="#match">match</a></li>
+        <li><a href="#split">split</a></li>
+      </ul></nav><section class="methods"><section id="StringLikeSequence" class="constructor method"><header><h2>
+            StringLikeSequence
+            <small>StringLikeSequence</small>
+          </h2>
+          <p class="description">A <code>StringLikeSequence</code> represents a sequence of characters.</p>
+
+<p>TODO: The idea for this prototype is to be able to do things like represent
+"substrings" without actually allocating new strings. Right now that
+isn't implemented at all, though (every method assumes an actual string as
+<code>source</code>).</p>
+        </header></section><section id="getIterator" class="method" style="display: none;"><header><h2>
+            getIterator
+            <small>StringLikeSequence#getIterator</small>
+          </h2>
+          <p class="description"></p>
+        </header></section><section id="each" class="method" style="display: none;"><header><h2>
+            each
+            <small>StringLikeSequence#each</small>
+          </h2>
+          <p class="description"></p>
+        </header></section><section id="match" class="method" style="display: none;"><header><h2>
+            match
+            <small>StringLikeSequence#match</small>
+          </h2>
+          <p class="description">Creates a sequence comprising all of the matches for the specified pattern
+in the underlying string.</p>
+        </header><h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>pattern</td>
+            <td>RegExp</td>
+            <td>The pattern to match.</td>
+          </tr>
+</table>
+<h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>Sequence</td>
+            <td>A sequence of all the matches.</td>
+          </tr>
+</table></section><section id="split" class="method" style="display: none;"><header><h2>
+            split
+            <small>StringLikeSequence#split</small>
+          </h2>
+          <p class="description">Creates a sequence comprising all of the substrings of this string separated
+by the given delimiter, which can be either a string or a regular expression.</p>
+        </header><h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>delimiter</td>
+            <td>string|RegExp</td>
+            <td>The delimiter to use for recognizing
+    substrings.</td>
+          </tr>
+</table>
+<h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>Sequence</td>
+            <td>A sequence of all the substrings separated by the given
+    delimiter.</td>
+          </tr>
+</table></section></section></article>
+</body>
+</html>
