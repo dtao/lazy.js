@@ -441,7 +441,7 @@
     });
   };
 
-  $(document).ready(function() {
+  window.addEventListener("load", function() {
     $("#test-to-array").on("change", function() {
       $("#test-each").prop("checked", false);
     });
