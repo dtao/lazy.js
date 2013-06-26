@@ -1634,14 +1634,16 @@
 
   IntersectionSequence.prototype.each = function(fn) {
     var sets = Lazy(this.arrays)
-      .map(function(values) { return createSet(values); })
+      .map(function(values) { return Lazy(values).uniq().toArray(); })
       .toArray();
 
-    var i = 0;
+    var find = contains,
+        i = 0;
+
     this.parent.each(function(e) {
       var j = -1;
       while (++j < sets.length) {
-        if (!sets[j].contains(e)) {
+        if (!find(sets[j], e)) {
           return;
         }
       }
