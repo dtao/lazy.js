@@ -1,20 +1,21 @@
 (function(context) {
 
   /**
-   * The Sequence object provides a unified API encapsulating the notion of zero
-   * or more consecutive elements in a collection, stream, etc.
+   * The `Sequence` object provides a unified API encapsulating the notion of
+   * zero or more consecutive elements in a collection, stream, etc.
    *
    * @constructor
    */
   function Sequence() {}
 
   /**
-   * Create a new constructor function for a type inheriting from Sequence.
+   * Create a new constructor function for a type inheriting from `Sequence`.
    *
    * @param {Function} ctor The constructor function.
-   * @return {Function} A constructor for a new type inheriting from Sequence.
+   * @return {Function} A constructor for a new type inheriting from `Sequence`.
    */
   Sequence.inherit = function(ctor) {
+    ctor = ctor || function() {};
     ctor.prototype = new Sequence();
     return ctor;
   };
@@ -44,7 +45,7 @@
    * @return {Array} An array containing the current contents of the sequence.
    *
    * @example
-   * var range = Lazy.range(1, 10)
+   * var range = Lazy.range(1, 10);
    * // => sequence: (1, 2, ..., 9)
    *
    * var array = range.toArray();
@@ -66,7 +67,12 @@
    *     of elements in the sequence.
    *
    * @example
-   * var details = [["first", "Dan"], ["last", "Tao"], ["age", 29]];
+   * var details = [
+   *   ["first", "Dan"],
+   *   ["last", "Tao"],
+   *   ["age", 29]
+   * ];
+   *
    * var person = Lazy(details).toObject();
    * // => { first: "Dan", last: "Tao", age: 29 }
    */
@@ -379,20 +385,70 @@
    * @param {Function} sortFn The function to call on the elements in this
    *     sequence, in order to sort them.
    * @return {Sequence} The new sequence.
+   *
+   * function population(country) {
+   *   return country.pop;
+   * }
+   *
+   * function area(country) {
+   *   return country.sqkm;
+   * }
+   *
+   * var countries = [
+   *   { name: "USA", pop: 320000000, sqkm: 9600000 },
+   *   { name: "Brazil", pop: 194000000, sqkm: 8500000 },
+   *   { name: "Nigeria", pop: 174000000, sqkm: 924000 },
+   *   { name: "China", pop: 1350000000, sqkm: 9700000 },
+   *   { name: "Russia", pop: 143000000, sqkm: 17000000 },
+   *   { name: "Australia", pop: 23000000, sqkm: 7700000 }
+   * ];
+   *
+   * var mostPopulous = Lazy(countries).sortBy(population).last(3);
+   * // => sequence: (Brazil, USA, China)
+   *
+   * var largest = Lazy(countries).sortBy(area).last(3);
+   * // => sequence: (USA, China, Russia)
    */
   Sequence.prototype.sortBy = function(sortFn) {
     return new SortedSequence(this, sortFn);
   };
 
   /**
-   * TODO: Fix this guy.
+   * Creates a new sequence comprising the elements in this one, grouped
+   * together according to some key. The elements of the new sequence are pairs
+   * of the form `[key, values]` where `values` is an array containing all of
+   * the elements in this sequence with the same key.
+   *
+   * @param {Function} keyFn The function to call on the elements in this
+   *     sequence to obtain a key by which to group them.
+   * @return {Sequence} The new sequence.
+   *
+   * @example
+   * var numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+   * var oddsAndEvens = Lazy(numbers).groupBy(function(x) {
+   *   return x % 2 == 1 ? "odd" : "even";
+   * });
+   * // => sequence: (["odd", [1, 3, ..., 9]], ["even", [2, 4, ..., 10]])
    */
   Sequence.prototype.groupBy = function(keyFn) {
     return new GroupedSequence(this, keyFn);
   };
 
   /**
-   * TODO: Fix this guy.
+   * Creates a new sequence containing the unique keys of all the elements in
+   * this sequence, each paired with a number representing the number of times
+   * that key appears in the sequence.
+   *
+   * @param {Function} keyFn The function to call on the elements in this
+   *     sequence to obtain a key by which to count them.
+   * @return {Sequence} The new sequence.
+   *
+   * @example
+   * var numbers = [1, 2, 3, 4, 5];
+   * var oddsAndEvens = Lazy(numbers).countBy(function(x) {
+   *   return x % 2 == 1 ? "odd" : "even";
+   * });
+   * // => sequence: (["odd", 3], ["even", 2])
    */
   Sequence.prototype.countBy = function(keyFn) {
     return new CountedSequence(this, keyFn);
@@ -403,6 +459,10 @@
    * exactly once (i.e., with duplicates removed).
    *
    * @return {Sequence} The new sequence.
+   *
+   * @example
+   * Lazy([1, 2, 2, 3, 3, 3]).uniq();
+   * // => sequence: (1, 2, 3)
    */
   Sequence.prototype.uniq = function() {
     return new UniqueSequence(this);
@@ -417,6 +477,10 @@
    * @param {...Array} var_args One or more arrays of elements to combine with
    *     those of this sequence.
    * @return {Sequence} The new sequence.
+   *
+   * @example
+   * Lazy([1, 2]).zip([3, 4]);
+   * // => sequence: ([1, 3], [2, 4])
    */
   Sequence.prototype.zip = function(var_args) {
     return new ZippedSequence(this, Array.prototype.slice.call(arguments, 0));
@@ -427,6 +491,10 @@
    * order.
    *
    * @return {Sequence} The new sequence.
+   *
+   * @example
+   * Lazy([1, 2, 3, 4, 5]).shuffle();
+   * // => sequence: (2, 3, 5, 4, 1)
    */
   Sequence.prototype.shuffle = function() {
     return new ShuffledSequence(this);
@@ -438,6 +506,10 @@
    * values.
    *
    * @return {Sequence} The new sequence.
+   *
+   * @example
+   * Lazy([1, [2, 3], [4, [5]]]).flatten();
+   * // => sequence: (1, 2, 3, 4, 5)
    */
   Sequence.prototype.flatten = function() {
     return new FlattenedSequence(this);
@@ -448,6 +520,10 @@
    * falsy values (false, 0, "", null, and undefined).
    *
    * @return {Sequence} The new sequence.
+   *
+   * @example
+   * Lazy(["foo", null, "bar", undefined]).compact();
+   * // => sequence: ("foo", "bar")
    */
   Sequence.prototype.compact = function() {
     return this.filter(function(e) { return !!e; });
@@ -460,6 +536,10 @@
    * @param {...*} var_args The values, or array(s) of values, to be excluded from the
    *     resulting sequence.
    * @return {Sequence} The new sequence.
+   *
+   * @example
+   * Lazy([1, 2, 3, 4, 5]).without(2, 3);
+   * // => sequence: (1, 4, 5)
    */
   Sequence.prototype.without = function(var_args) {
     return new WithoutSequence(this, Array.prototype.slice.call(arguments, 0));
@@ -474,6 +554,10 @@
    * @param {...*} var_args The values, or array(s) of values, to be additionally
    *     included in the resulting sequence.
    * @return {Sequence} The new sequence.
+   *
+   * @example
+   * Lazy(["foo", "bar"]).union(["bar", "baz"]);
+   * // => sequence: ("foo", "bar", "baz")
    */
   Sequence.prototype.union = function(var_args) {
     return this.concat(var_args).uniq();
@@ -486,6 +570,10 @@
    * @param {...*} var_args The values, or array(s) of values, in which elements
    *     from this sequence must also be included to end up in the resulting sequence.
    * @return {Sequence} The new sequence.
+   *
+   * @example
+   * Lazy(["foo", "bar"]).intersection(["bar", "baz"]);
+   * // => sequence: ("bar")
    */
   Sequence.prototype.intersection = function(var_args) {
     return new IntersectionSequence(this, Array.prototype.slice.call(arguments, 0));
@@ -499,6 +587,15 @@
    * @return {boolean} True if `predicate` returns true for every element in the
    *     sequence (or the sequence is empty). False if `predicate` returns false
    *     for at least one element.
+   *
+   * @example
+   * var numbers = [1, 2, 3, 4, 5];
+   *
+   * var allEven = Lazy(numbers).every(function(x) { return x % 2 === 0; });
+   * // => false
+   *
+   * var allPositive = Lazy(numbers).every(function(x) { return x > 0; });
+   * // => true
    */
   Sequence.prototype.every = function(predicate) {
     var success = true;
@@ -523,6 +620,15 @@
    * @return {boolean} True if `predicate` returns true for at least one element
    *     in the sequence. False if `predicate` returns false for every element (or
    *     the sequence is empty).
+   *
+   * @example
+   * var numbers = [1, 2, 3, 4, 5];
+   *
+   * var someEven = Lazy(numbers).some(function(x) { return x % 2 === 0; });
+   * // => true
+   *
+   * var someNegative = Lazy(numbers).some(function(x) { return x < 0; });
+   * // => false
    */
   Sequence.prototype.some = function(predicate) {
     if (!predicate) {
@@ -546,18 +652,35 @@
    *
    * @return {boolean} True if the sequence is empty, false if it contains at
    *     least one element.
+   *
+   * @example
+   * Lazy([]).isEmpty();
+   * // => true
+   *
+   * Lazy([1, 2, 3]).isEmpty();
+   * // => false
    */
   Sequence.prototype.isEmpty = function() {
     return !this.any();
   };
 
   /**
-   * Performs (at worst) a linear search from the head of this sequence, returning
-   * the first index at which the specified value is found.
+   * Performs (at worst) a linear search from the head of this sequence,
+   * returning the first index at which the specified value is found.
    *
    * @param {*} value The element to search for in the sequence.
    * @return {number} The index within this sequence where the given value is
    *     located, or -1 if the sequence doesn't contain the value.
+   *
+   * @example
+   * Lazy(["foo", "bar", "baz"]).indexOf("bar");
+   * // => 1
+   *
+   * Lazy([1, 2, 3]).indexOf(4);
+   * // => -1
+   *
+   * Lazy([1, 2, 3]).map(function(x) { return x * 2; }).indexOf(2);
+   * // => 0
    */
   Sequence.prototype.indexOf = function(value) {
     var index = 0;
@@ -573,12 +696,19 @@
   };
 
   /**
-   * Performs (at worst) a linear search from the tail of this sequence, returning
-   * the last index at which the specified value is found.
+   * Performs (at worst) a linear search from the tail of this sequence,
+   * returning the last index at which the specified value is found.
    *
    * @param {*} value The element to search for in the sequence.
    * @return {number} The last index within this sequence where the given value
    *     is located, or -1 if the sequence doesn't contain the value.
+   *
+   * @example
+   * Lazy(["a", "b", "c", "b", "a"]).lastIndexOf("b");
+   * // => 3
+   *
+   * Lazy([1, 2, 3]).lastIndexOf(0);
+   * // => -1
    */
   Sequence.prototype.lastIndexOf = function(value) {
     var index = this.reverse().indexOf(value);
@@ -590,14 +720,19 @@
 
   /**
    * Performs a binary search of this sequence, returning the lowest index where
-   * the given value is either found, or where it belongs (if it is not already in
-   * the sequence).
+   * the given value is either found, or where it belongs (if it is not already
+   * in the sequence).
    *
-   * This method assumes the sequence is in sorted order and will fail otherwise.
+   * This method assumes the sequence is in sorted order and will fail
+   * otherwise.
    *
    * @param {*} value The element to search for in the sequence.
    * @return {number} An index within this sequence where the given value is
    *     located, or where it belongs in sorted order.
+   *
+   * @example
+   * Lazy([1, 3, 6, 9, 12, 15, 18, 21]).sortedIndex(3);
+   * // => 1
    */
   Sequence.prototype.sortedIndex = function(value) {
     var lower = 0;
@@ -620,6 +755,15 @@
    *
    * @param {*} value The element to search for in the sequence.
    * @return {boolean} True if the sequence contains the value, false if not.
+   *
+   * @example
+   * var numbers = [5, 10, 15, 20];
+   *
+   * Lazy(numbers).contains(15);
+   * // => true
+   *
+   * Lazy(numbers).contains(13);
+   * // => false
    */
   Sequence.prototype.contains = function(value) {
     return this.indexOf(value) !== -1;
@@ -633,8 +777,15 @@
    *     in the sequence. For every element, the function will be passed the total
    *     aggregated result thus far and the element itself, and should return a
    *     new aggregated result.
-   * @param {*=} memo The starting value to use for the aggregated result.
+   * @param {*=} memo The starting value to use for the aggregated result
+   *     (defaults to the first element in the sequence).
    * @return {*} The result of the aggregation.
+   *
+   * @example
+   * var numbers = [5, 10, 15, 20];
+   *
+   * var sum = Lazy(numbers).reduce(function(x, y) { return x + y; }, 0);
+   * // => 50
    */
   Sequence.prototype.reduce = function(aggregator, memo) {
     if (arguments.length < 2) {
@@ -660,8 +811,18 @@
    *     new aggregated result.
    * @param {*} memo The starting value to use for the aggregated result.
    * @return {*} The result of the aggregation.
+   *
+   * @example
+   * var letters = "abcde";
+   *
+   * var backwards = Lazy(letters).reduceRight(function(x, y) { return x + y; });
+   * // => "edcba"
    */
   Sequence.prototype.reduceRight = function(aggregator, memo) {
+    if (arguments.length < 2) {
+      return this.initial(1).reduceRight(aggregator, this.last());
+    }
+
     // This bothers me... but frankly, calling reverse().reduce() is potentially
     // going to eagerly evaluate the sequence anyway; so it's really not an issue.
     var i = this.length() - 1;
@@ -679,6 +840,15 @@
    *     in the sequence.
    * @return {*} The first element in the sequence for which `predicate` returns
    *     true, or undefined if no such element is found.
+   *
+   * @example
+   * var numbers = [5, 6, 7, 8, 9, 10];
+   *
+   * Lazy(numbers).find(function(x) { return x % 3 === 0; });
+   * // => 6
+   *
+   * Lazy(numbers).find(function(x) { return x < 0; });
+   * // => undefined
    */
   Sequence.prototype.find = function(predicate) {
     return this.filter(predicate).first();
@@ -692,6 +862,10 @@
    * TODO: This should support a value selector.
    *
    * @return {*} The element with the lowest value in the sequence.
+   *
+   * @example
+   * Lazy([6, 18, 2, 49, 34]).min();
+   * // => 2
    */
   Sequence.prototype.min = function() {
     return this.reduce(function(least, value) {
@@ -705,6 +879,10 @@
    * TODO: This should support a value selector.
    *
    * @return {*} The element with the highest value in the sequence.
+   *
+   * @example
+   * Lazy([6, 18, 2, 49, 34]).max();
+   * // => 49
    */
   Sequence.prototype.max = function() {
     return this.reduce(function(greatest, value) {
@@ -718,6 +896,10 @@
    * TODO: This should support a value selector.
    *
    * @return {*} The sum.
+   *
+   * @example
+   * Lazy([1, 2, 3, 4]).sum();
+   * // => 10
    */
   Sequence.prototype.sum = function() {
     return this.reduce(function(sum, value) {
@@ -732,6 +914,10 @@
    * @param {string} delimiter The separator to insert between every element from
    *     this sequence in the resulting string.
    * @return {string} The delimited string.
+   *
+   * @example
+   * Lazy([6, 29, 1984]).join("/");
+   * // => "6/29/1984"
    */
   Sequence.prototype.join = function(delimiter) {
     var str = "";
@@ -753,6 +939,24 @@
    * asynchronous iteration.
    *
    * @return {Iterator} An iterator object.
+   *
+   * @example
+   * var iterator = Lazy([1, 2]).getIterator();
+   *
+   * iterator.moveNext();
+   * // => true
+   *
+   * iterator.current();
+   * // => 1
+   *
+   * iterator.moveNext();
+   * // => true
+   *
+   * iterator.current();
+   * // => 2
+   *
+   * iterator.moveNext();
+   * // => false
    */
   Sequence.prototype.getIterator = function() {
     return new Iterator(this);
@@ -766,6 +970,12 @@
    *     should elapse between each element in the resulting sequence. Omitting
    *     this argument will result in the fastest possible asynchronous iteration.
    * @return {Sequence} The new asynchronous sequence.
+   *
+   * @example
+   * Lazy([1, 2, 3]).async(1000).each(function(x) {
+   *   console.log(x);
+   * });
+   * // (logs the numbers 1, 2, and 3 to the console, one second apart)
    */
   Sequence.prototype.async = function(interval) {
     return new AsyncSequence(this, interval);
