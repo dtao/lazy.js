@@ -883,17 +883,18 @@
    *     value was not already present), or else false.
    */
   Set.prototype.add = function(value) {
-    var table = this.table,
-        key = "@" + value;
+    var table  = this.table,
+        key    = typeof value,
+        values = table[key];
 
-    if (!table[key]) {
-      table[key] = [value];
+    if (!values) {
+      values = table[key] = [value];
       return true;
     }
-    if (contains(table[key], value)) {
+    if (contains(values, value)) {
       return false;
     }
-    table[key].push(value);
+    values.push(value);
     return true;
   };
 
@@ -904,9 +905,9 @@
    * @return {boolean} True if the set contains the value, or else false.
    */
   Set.prototype.contains = function(value) {
-    var key = "@" + value,
-        valuesForKey = this.table[key];
-    return valuesForKey && contains(valuesForKey, value);
+    var key = typeof value,
+        values = this.table[key];
+    return values && contains(values, value);
   };
 
   /**
