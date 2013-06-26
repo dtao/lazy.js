@@ -18,7 +18,8 @@ var CLASSES_TO_DOCUMENT = [
   "ArrayLikeSequence",
   "ObjectLikeSequence",
   "StringLikeSequence",
-  "GeneratedSequence"
+  "GeneratedSequence",
+  "AsyncSequence"
 ];
 
 // Spit it out, JSDoc!
