@@ -1898,6 +1898,8 @@
    */
   function StringLikeSequence() {}
 
+  StringLikeSequence.prototype = new ArrayLikeSequence();
+
   StringLikeSequence.prototype.getIterator = function() {
     return new CharIterator(this.source);
   };
@@ -1952,6 +1954,14 @@
   }
 
   StringWrapper.prototype = new StringLikeSequence();
+
+  StringWrapper.prototype.get = function(i) {
+    return this.source.charAt(i);
+  };
+
+  StringWrapper.prototype.length = function() {
+    return this.source.length;
+  };
 
   var StringMatchSequence = Sequence.inherit(function(source, pattern) {
     this.source = source;
