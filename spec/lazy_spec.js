@@ -399,7 +399,15 @@ describe("Lazy", function() {
     });
 
     it("passes an index along with each element", function() {
-      expect(Lazy(people).filter(Person.isMale)).toPassToEach(1, [0, 1, 2]);
+      // NOTE: So here Lazy deviates from Underscore/Lo-Dash in that filter
+      // will pass along the index *in the original array*, not an incrementing
+      // index starting from 0. This is to provide unified behavior between
+      // arrays and objects (when iterating over objects, the second argument is
+      // the *key*, which should be the same in the result as in the source).
+      //
+      // My reasoning here is that if a dev wants indexes starting from 0 w/ a
+      // step of 1 he/she can trivially produce that him-/herself.
+      expect(Lazy(people).filter(Person.isMale)).toPassToEach(1, [0, 3, 4]);
     });
 
     createAsyncTest("supports asynchronous iteration", {
@@ -823,6 +831,48 @@ describe("Lazy", function() {
     });
   });
 
+  describe("assign", function() {
+    it("creates a sequence from updating the object with new values", function() {
+      var people = { parent: david, child: daniel };
+      var result = Lazy(people).assign({ parent: mary });
+      expect(result.toObject()).toEqual({ parent: mary, child: daniel });
+    });
+  });
+
+  describe("functions", function() {
+    it("creates a sequence comprising the function properties of an object", function() {
+      var walk   = function() {};
+      var gobble = function() {};
+      var turkey = { size: 100, weight: 100, walk: walk, gobble: gobble };
+      var result = Lazy(turkey).functions();
+      expect(result.toArray()).toEqual(["walk", "gobble"]);
+    });
+  });
+
+  describe("invert", function() {
+    it("swaps the keys/values of an object", function() {
+      var object = { foo: "bar", marco: "polo" };
+      var result = Lazy(object).invert();
+      expect(result.toObject()).toEqual({ bar: "foo", polo: "marco" });
+    });
+  });
+
+  describe("pick", function() {
+    it("picks only the listed properties from the object", function() {
+      var object = { foo: "bar", marco: "polo" };
+      var result = Lazy(object).pick(["marco"]);
+      expect(result.toObject()).toEqual({ marco: "polo" });
+    });
+  });
+
+  describe("omit", function() {
+    it("does the opposite of pick", function() {
+      var object = { foo: "bar", marco: "polo" };
+      var result = Lazy(object).omit(["marco"]);
+      expect(result.toObject()).toEqual({ foo: "bar" });
+    });
+  });
+
   describe("all", function() {
     it("returns true if the condition holds true for every element", function() {
       var allPeople = Lazy(people).all(function(x) {
@@ -1052,6 +1102,23 @@ describe("Lazy", function() {
 
         expect(arraysCreated).toEqual(1);
       });
+    });
+  });
+
+  describe("parsing JSON", function() {
+    it("translates a JSON array of strings", function() {
+      var json = JSON.stringify(["foo", "bar", "baz"]);
+      expect(Lazy.parse(json).toArray()).toEqual(["foo", "bar", "baz"]);
+    });
+
+    it("translates a JSON array of integers", function() {
+      var json = JSON.stringify([1, 22, 333]);
+      expect(Lazy.parse(json).toArray()).toEqual([1, 22, 333]);
+    });
+
+    it("translates a JSON array of floats", function() {
+      var json = JSON.stringify([1.2, 34.56]);
+      expect(Lazy.parse(json).toArray()).toEqual([1.2, 34.56]);
     });
   });
 });

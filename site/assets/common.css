@@ -1,0 +1,91 @@
+body {
+  font-family: "Open Sans", sans-serif;
+}
+
+body > header {
+  height: 60px;
+  margin-top: 12px;
+  background-color: #fff;
+  border-bottom: 12px solid #eee;
+}
+
+body > header h1 {
+  display: inline-block;
+  margin: 0 auto;
+  padding: 0;
+  font-family: "Chewy", cursive;
+  font-size: 72px;
+  line-height: 60px;
+  cursor: default;
+}
+
+body > header h1 a {
+  color: #444;
+  text-decoration: none;
+}
+
+body > header h1 a:hover {
+  color: #000;
+}
+
+h1, h2, h3 {
+  color: #444;
+}
+
+nav ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+nav ul li {
+  display: inline-block;
+  padding: 10px;
+}
+
+nav ul li a {
+  color: #456;
+  text-decoration: none;
+}
+
+nav ul li.selected {
+  border-bottom: 3px solid black;
+}
+
+nav ul li:hover {
+  background-color: #eee;
+}
+
+nav ul li:hover a {
+  color: #789;
+}
+
+section h1,
+section h2,
+section h3 {
+  font-weight: 300;
+}
+
+section h1 {
+  font-size: 40px;
+}
+
+section h2 {
+  font-size: 32px;
+}
+
+section h3 {
+  font-size: 24px;
+}
+
+pre, code {
+  font-family: "Source Code Pro", monospace;
+}
+
+pre {
+  font-size: 80%;
+  padding: 8px;
+}
+
+code {
+  color: #04b;
+}

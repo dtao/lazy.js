@@ -4,7 +4,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>Lazy.js</title>
 
-  <link rel="stylesheet" type="text/css" href="site/assets/site.css">
+  <link rel="stylesheet" type="text/css" href="site/assets/site.css" />
 
   <script type="text/javascript" src="site/lib/jasmine.js"></script>
   <script type="text/javascript" src="site/lib/benchmark.js"></script>
@@ -16,6 +16,7 @@
   <script type="text/javascript" src="site/lib/jquery.treetable.js"></script>
   <script type="text/javascript" src="site/spec_reporter.js"></script>
   <script type="text/javascript" src="site/dom_example.js"></script>
+  <script type="text/javascript" src="site/common.js"></script>
   <script type="text/javascript" src="site/boot.js"></script>
   <script type="text/javascript" src="site/specs.js"></script>
 
@@ -37,22 +38,23 @@
 
   <nav data-sections=".top-level-section">
     <ul>
-      <li class="selected"><a href="#docs">Docs</a></li>
+      <li class="selected"><a href="#about">About</a></li>
       <li><a href="#dom-example">DOM Example</a></li>
       <li><a href="#benchmark-results">Benchmark Results</a></li>
       <li><a href="#test-results">Spec Results</a></li>
+      <li><a href="docs/index.html">API Docs</a></li>
     </ul>
   </nav>
 
-  <section id="docs" class="top-level-section">
+  <section id="about" class="top-level-section">
     <h1 id="like-underscore-but-lazier">Like Underscore, but lazier</h1>
 
 <p class="sharing"><a href="https://travis-ci.org/dtao/lazy.js"><img src="https://travis-ci.org/dtao/lazy.js.png?branch=master" alt="Build Status"></a><!-- fun social stuff to include on project homepage -->
-<iframe src="http://ghbtns.com/github-btn.html?user=dtao&amp;repo=lazy.js&amp;type=watch&amp;count=true" allowtransparency="true" frameborder="0" scrolling="0" height="20">
+<iframe src="http://ghbtns.com/github-btn.html?user=dtao&amp;repo=lazy.js&amp;type=watch&amp;count=true" allowtransparency="true" frameborder="0" scrolling="0" height="20" style="width: 110px;">
 </iframe>
 <iframe src="http://ghbtns.com/github-btn.html?user=dtao&amp;repo=lazy.js&amp;type=fork&amp;count=true" allowtransparency="true" frameborder="0" scrolling="0" height="20">
 </iframe>
-<a href="https://twitter.com/share" class="twitter-share-button" data-text="Lazy.js: Like Underscore, but lazier" data-via="dan_tao" data-hashtags="lazyjs">Tweet</a>
+<a href="https://twitter.com/share" class="twitter-share-button" data-text="Lazy.js: Like Underscore, but lazier" data-url="http://dtao.github.io/lazy.js/" data-hashtags="lazyjs">Tweet</a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
 
 <p><strong>Lazy.js</strong> it a utility library for JavaScript, similar to <a href="http://underscorejs.org/">Underscore</a> and <a href="http://lodash.com/">Lo-Dash</a> but with one important difference: <strong>lazy evaluation</strong> (also known as deferred execution). This can translate to superior performance in many cases, <em>especially</em> when dealing with large arrays and/or "chaining" together multiple methods. For simple cases (<code>map</code>, <code>filter</code>, etc.) on small arrays, Lazy's performance should be similar to Underscore or Lo-Dash.</p>
@@ -291,6 +293,8 @@
 
 <p>Currently the following functions are available (meaning you can call them on any <code>Lazy.Sequence</code> object, such as what you get back from <code>Lazy(array)</code>, <code>Lazy.generate</code>, <code>Lazy(string).split</code>, &amp;c.):</p>
 
+<h3>Arrays</h3>
+
 <ul class="functions-list">
 <li><code>map</code></li>
 <li><code>pluck</code></li>
@@ -333,6 +337,19 @@
 <li><code>contains</code></li>
 <li><code>min</code></li>
 <li><code>max</code></li>
+</ul><h3>Objects</h3>
+
+<ul class="functions-list">
+<li><code>keys</code></li>
+<li><code>values</code></li>
+<li><code>pairs</code></li>
+<li>
+<code>functions</code> (aka <code>methods</code>)</li>
+<li>
+<code>extend</code> (aka <code>assign</code>)</li>
+<li><code>pick</code></li>
+<li><code>omit</code></li>
+<li><code>invert</code></li>
 </ul><p>This library is experimental and still a work in progress.</p>
   </section>
 

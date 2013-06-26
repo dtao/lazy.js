@@ -1,10 +1,7 @@
 @import url(jquery.treetable.css);
 @import url(pygments.css);
+@import url(common.css);
 @import url(http://fonts.googleapis.com/css?family=Chewy|Open+Sans:700,400,300|Source+Code+Pro:700,400);
-
-body {
-  font-family: "Open Sans", sans-serif;
-}
 
 @media all and (min-width: 960px) {
   body {
@@ -20,32 +17,6 @@ body.full-comparisons {
 
   box-sizing: border-box;
   -moz-box-sizing: border-box;
-}
-
-header {
-  height: 60px;
-  margin-top: 12px;
-  background-color: #fff;
-  border-bottom: 12px solid #eee;
-}
-
-header h1 {
-  display: inline-block;
-  margin: 0 auto;
-  padding: 0;
-  font-family: "Chewy", cursive;
-  font-size: 72px;
-  line-height: 60px;
-  cursor: default;
-}
-
-header h1 a {
-  color: #444;
-  text-decoration: none;
-}
-
-header h1 a:hover {
-  color: #000;
 }
 
 .sharing a,
@@ -75,37 +46,6 @@ a.github-ribbon:hover {
   background: url(https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png);
 }
 
-h1, h2, h3 {
-  color: #444;
-}
-
-nav ul {
-  list-style: none;
-  padding-left: 0;
-}
-
-nav ul li {
-  display: inline-block;
-  padding: 10px;
-}
-
-nav ul li a {
-  color: #456;
-  text-decoration: none;
-}
-
-nav ul li.selected {
-  border-bottom: 3px solid black;
-}
-
-nav ul li:hover {
-  background-color: #eee;
-}
-
-nav ul li:hover a {
-  color: #789;
-}
-
 nav.subnav ul li {
   padding-top: 5px;
   padding-bottom: 5px;
@@ -121,24 +61,6 @@ nav.subnav ul li a {
 
 nav.subnav ul li:hover a {
   color: #89a;
-}
-
-section h1,
-section h2,
-section h3 {
-  font-weight: 300;
-}
-
-section h1 {
-  font-size: 40px;
-}
-
-section h2 {
-  font-size: 32px;
-}
-
-section h3 {
-  font-size: 24px;
 }
 
 figure {
@@ -296,19 +218,6 @@ a.why-to-array-vs-each:hover {
   font-size: 90%;
 }
 
-pre, code {
-  font-family: "Source Code Pro", monospace;
-}
-
-pre {
-  font-size: 80%;
-  padding: 8px;
-}
-
-code {
-  color: #04b;
-}
-
 table {
   border-collapse: collapse;
   width: 100%;
@@ -340,12 +249,12 @@ table td {
 
 .full-comparisons .benchmark-results-table th,
 .full-comparisons .benchmark-results-table td {
-  width: 9%;
+  width: 8%;
 }
 
 .full-comparisons .benchmark-results-table th:first-child,
 .full-comparisons .benchmark-results-table td:first-child {
-  width: 19%;
+  width: 20%;
 }
 
 #test-results-table th:first-child,

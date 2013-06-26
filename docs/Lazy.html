@@ -1,0 +1,223 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Lazy.js API Docs - Lazy</title>
+<link rel="stylesheet" type="text/css" href="docs.css">
+<script type="text/javascript" src="../site/lib/jquery.js"></script><script type="text/javascript" src="../site/common.js"></script>
+</head>
+<body id="top">
+  <header><h1><a href="../index.html">lazy.js</a></h1>
+  </header><article><header><h1>
+        Lazy
+        <small><a href="index.html">Back</a></small>
+      </h1>
+    </header><nav class="doc-list" data-sections="section.method"><ul>
+<li class="selected">
+<a href="#Lazy">Lazy</a> <small>(constructor)</small>
+</li>
+
+        <li class="nav-header">Static methods</li>
+
+        <li><a href="#async">async</a></li>
+        <li><a href="#generate">generate</a></li>
+        <li><a href="#range">range</a></li>
+        <li><a href="#repeat">repeat</a></li>
+        <li><a href="#parse">parse</a></li>
+
+      </ul></nav><section class="methods"><section id="Lazy" class="constructor method"><header><h2>
+            Lazy
+            <small>Lazy</small>
+          </h2>
+          <p class="description">Wraps an object and returns something lazy.</p>
+
+<ul>
+<li>For <strong>arrays</strong>, Lazy will create a sequence comprising the elements in
+the array.</li>
+<li>For <strong>objects</strong>, Lazy will create a sequence of key/value pairs.</li>
+<li>For <strong>strings</strong>, Lazy will create a sequence of characters.</li>
+
+        </ul></header><h3>Example</h3>
+        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">fromArray</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]);</span>
+<span class="c1">// =&gt; Lazy.ArrayLikeSequence</span>
+
+<span class="kd">var</span> <span class="nx">fromObject</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">({</span> <span class="nx">foo</span><span class="o">:</span> <span class="s2">"bar"</span> <span class="p">});</span>
+<span class="c1">// =&gt; Lazy.ObjectLikeSequence</span>
+
+<span class="kd">var</span> <span class="nx">fromString</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="s2">"hello, world!"</span><span class="p">);</span>
+<span class="c1">// =&gt; Lazy.StringLikeSequence</span>
+</pre></div>
+        
+        <h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>source</td>
+            <td>*</td>
+            <td>An array, object, or string to wrap.</td>
+          </tr>
+</table>
+<h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>Sequence</td>
+            <td>The wrapped lazy object.</td>
+          </tr>
+</table></section><section id="async" class="method" style="display: none;"><header><h2>
+            async
+            <small>Lazy.async</small>
+          </h2>
+          <p class="description">Deprecated.</p>
+        </header></section><section id="generate" class="method" style="display: none;"><header><h2>
+            generate
+            <small>Lazy.generate</small>
+          </h2>
+          <p class="description">Creates a <code>GeneratedSequence</code> using the specified generator function
+and (optionally) length.</p>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">randomNumbers</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">generate</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">);</span>
+<span class="c1">// =&gt; sequence: (0.4838115070015192, 0.637410914292559, ...)</span>
+</pre></div>
+        
+        <h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>generatorFn</td>
+            <td>function</td>
+            <td>The function used to generate the
+    sequence. This function accepts an index as a parameter and should return
+    a value for that index in the resulting sequence.</td>
+          </tr>
+<tr>
+<td>length</td>
+            <td>number</td>
+            <td>The length of the sequence, for sequences with a
+    definite length.</td>
+          </tr>
+</table>
+<h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>Sequence</td>
+            <td>The generated sequence.</td>
+          </tr>
+</table></section><section id="range" class="method" style="display: none;"><header><h2>
+            range
+            <small>Lazy.range</small>
+          </h2>
+          <p class="description">Creates a sequence from a given starting value, up to a specified stopping
+value, incrementing by a given step.</p>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">integers</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">range</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+<span class="c1">// =&gt; sequence: (0, 1, ..., 9)</span>
+
+<span class="kd">var</span> <span class="nx">countingNumbers</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">);</span>
+<span class="c1">// =&gt; sequence: (1, 2, ..., 10)</span>
+
+<span class="kd">var</span> <span class="nx">evenNumbers</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+<span class="c1">// =&gt; sequence: (2, 4, 6, 8)</span>
+</pre></div>
+        
+        
+        <h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>Sequence</td>
+            <td>The sequence defined by the given ranges.</td>
+          </tr>
+</table></section><section id="repeat" class="method" style="display: none;"><header><h2>
+            repeat
+            <small>Lazy.repeat</small>
+          </h2>
+          <p class="description">Creates a sequence consisting of the given value repeated a specified number
+of times.</p>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">hihihi</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">repeat</span><span class="p">(</span><span class="s2">"hi"</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+<span class="c1">// =&gt; sequence: ("hi", "hi", "hi")</span>
+</pre></div>
+        
+        <h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>value</td>
+            <td>*</td>
+            <td>The value to repeat.</td>
+          </tr>
+<tr>
+<td>count</td>
+            <td>number</td>
+            <td>The number of times the value should be repeated in
+    the sequence. If this argument is omitted, the value will repeat forever.</td>
+          </tr>
+</table>
+<h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>Sequence</td>
+            <td>The sequence containing the repeated value.</td>
+          </tr>
+</table></section><section id="parse" class="method" style="display: none;"><header><h2>
+            parse
+            <small>Lazy.parse</small>
+          </h2>
+          <p class="description">Parses a JSON array into a sequence.</p>
+
+<p>NOTE: This method is <em>barely</em> functional right now! Only supports strings,
+doesn't really handle escaping, implementation basically sucks. Just a
+proof-of-concept at this point.</p>
+        </header><h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>json</td>
+            <td>string</td>
+            <td>A string representing a JSON array.</td>
+          </tr>
+</table>
+<h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>Sequence</td>
+            <td>A sequence comprising the elements in the JSON array,
+    which are parsed out lazily.</td>
+          </tr>
+</table></section></section></article>
+</body>
+</html>

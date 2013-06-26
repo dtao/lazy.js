@@ -6,7 +6,14 @@
   var benchmarksForEach = {};
   var benchmarkResults = {};
 
-  window.lodash = _.noConflict();
+  // Since Boiler.js is the last lib we added, it's the most recent hijacker of
+  // the _ identifier.
+  window.boiler = window._.noConflict();
+
+  // Lo-Dash was next in line.
+  window.lodash = window._.noConflict();
+
+  // Now Underscore is back!
 
   function getOrCreateArray(size) {
     if (!arrays[size]) {
@@ -79,7 +86,10 @@
         // IxJS
         options.valueOnly ?
           new Benchmark(description, function() { options.ix.apply(this, input); }) :
-          new Benchmark(description, function() { options.ix.apply(this, input).toArray(); })
+          new Benchmark(description, function() { options.ix.apply(this, input).toArray(); }),
+
+        // Boiler.js
+        new Benchmark(description, function() { options.boiler.apply(this, input); })
       ]);
     }
 
@@ -155,6 +165,13 @@
           new Benchmark(description, function() { options.ix.apply(this, input); }) :
           new Benchmark(description, function() {
             options.ix.apply(this, input).forEach(function(e) {});
+          }),
+
+        // Boiler.js
+        options.valueOnly ?
+          new Benchmark(description, function() { options.boiler.apply(this, input); }) :
+          new Benchmark(description, function() {
+            options.boiler.apply(this, input).each(function(e) {});
           })
       ]);
     }
@@ -192,6 +209,7 @@
       $("<td>").addClass("jslinq-result").appendTo(row);
       $("<td>").addClass("fromjs-result").appendTo(row);
       $("<td>").addClass("ixjs-result").appendTo(row);
+      $("<td>").addClass("boiler-result").appendTo(row);
     }
 
     $("<td>").addClass("lazy-result").appendTo(row);
@@ -233,6 +251,7 @@
       addResultToCell(result.jslinq.hz, $(".jslinq-result", row), fastestResult);
       addResultToCell(result.from.hz, $(".fromjs-result", row), fastestResult);
       addResultToCell(result.ix.hz, $(".ixjs-result", row), fastestResult);
+      addResultToCell(result.boiler.hz, $(".boiler-result", row), fastestResult);
     }
     addResultToCell(result.lazy.hz, $(".lazy-result", row), fastestResult);
   }
@@ -311,7 +330,7 @@
         });
       }
 
-      if (options.wu && !exceptions.contains("wu") && window.COMPARE_ALL_LIBS) {
+      if (options.wu && !exceptions.contains("wu")) {
         it("returns the same result as wu.js for '" + description + "'", function() {
           var lazyResult = options.lazy.apply(this, smallInput);
           var wuResult = options.wu.apply(this, smallInput);
@@ -325,7 +344,7 @@
         });
       }
 
-      if (options.sugar && !exceptions.contains("sugar") && window.COMPARE_ALL_LIBS) {
+      if (options.sugar && !exceptions.contains("sugar")) {
         it("returns the same result as Sugar for '" + description + "'", function() {
           var lazyResult = options.lazy.apply(this, smallInput);
           var sugarResult = options.sugar.apply(this, smallInput);
@@ -339,7 +358,7 @@
         });
       }
 
-      if (options.linq && !exceptions.contains("linq") && window.COMPARE_ALL_LIBS) {
+      if (options.linq && !exceptions.contains("linq")) {
         it("returns the same result as linq.js for '" + description + "'", function() {
           var lazyResult = options.lazy.apply(this, smallInput);
           var linqResult = options.linq.apply(this, smallInput);
@@ -353,7 +372,7 @@
         });
       }
 
-      if (options.jslinq && !exceptions.contains("jslinq") && window.COMPARE_ALL_LIBS) {
+      if (options.jslinq && !exceptions.contains("jslinq")) {
         it("returns the same result as JSLINQ for '" + description + "'", function() {
           var lazyResult = options.lazy.apply(this, smallInput);
           var jslinqResult = options.jslinq.apply(this, smallInput);
@@ -367,7 +386,7 @@
         });
       }
 
-      if (options.from && !exceptions.contains("from") && window.COMPARE_ALL_LIBS) {
+      if (options.from && !exceptions.contains("from")) {
         it("returns the same result as from.js for '" + description + "'", function() {
           var lazyResult = options.lazy.apply(this, smallInput);
           var fromResult = options.from.apply(this, smallInput);
@@ -381,7 +400,7 @@
         });
       }
 
-      if (options.ix && !exceptions.contains("ix") && window.COMPARE_ALL_LIBS) {
+      if (options.ix && !exceptions.contains("ix")) {
         it("returns the same result as IxJS for '" + description + "'", function() {
           var lazyResult = options.lazy.apply(this, smallInput);
           var ixResult = options.ix.apply(this, smallInput);
@@ -392,6 +411,20 @@
             ixResult = ixResult.toArray();
           }
           expect(lazyResult).toEqual(ixResult);
+        });
+      }
+
+      if (options.boiler && !exceptions.contains("boiler")) {
+        it("returns the same result as Boiler.js for '" + description + "'", function() {
+          var lazyResult = options.lazy.apply(this, smallInput);
+          var boilerResult = options.boiler.apply(this, smallInput);
+          if (typeof lazyResult.toArray === "function") {
+            lazyResult = lazyResult.toArray();
+          }
+          if (typeof boilerResult.end === "function") {
+            boilerResult = boilerResult.end();
+          }
+          expect(lazyResult).toEqual(boilerResult);
         });
       }
     }
@@ -409,33 +442,6 @@
   };
 
   window.addEventListener("load", function() {
-    $("nav ul li a").on("click", function() {
-      var link     = $(this);
-      var nav      = link.closest("nav");
-      var target   = link.attr("href");
-      var sections = nav.attr("data-sections");
-
-      // Highlight the tab
-      $("li.selected", nav).removeClass("selected");
-      link.closest("li").addClass("selected");
-
-      if (!sections) {
-        return;
-      }
-
-      // Show the section
-      $(sections).hide();
-      $(target).show();
-
-      // Refresh the chart, if necessary
-      var columnChart = $(".column-chart:visible");
-      if (columnChart.length > 0) {
-        HighTables.renderChart(columnChart[0]);
-      }
-
-      return false;
-    });
-
     $("#test-to-array").on("change", function() {
       $("#test-each").prop("checked", false);
     });
@@ -488,7 +494,7 @@
         return false;
       }
 
-      var resultsPerBenchmark = window.COMPARE_ALL_LIBS ? 9 : 3;
+      var resultsPerBenchmark = window.COMPARE_ALL_LIBS ? 10 : 3;
 
       var currentResultSet = [];
       benchmarkSuite.on("cycle", function(e) {
@@ -511,6 +517,7 @@
             benchmarkResults.jslinq = currentResultSet[6];
             benchmarkResults.from = currentResultSet[7];
             benchmarkResults.ix = currentResultSet[8];
+            benchmarkResults.boiler = currentResultSet[9];
           }
 
           addBenchmarkResultToTable(benchmarkResults);
