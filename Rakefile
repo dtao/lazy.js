@@ -11,11 +11,15 @@ def compile_file(output)
     main
   )
 
+  contents = source_files.map do |f|
+    File.read("lib/#{f}.js").gsub(/^([^\n])/, '  \1')
+  end
+
   javascript = [
     '(function(context) {',
-    *source_files.map { |f| File.read("lib/#{f}.js") },
+    *contents,
     '}(typeof global !== "undefined" ? global : window));'
-  ].join("\n").gsub(/^\s{2}/, "")
+  ].join("\n")
 
   File.open(output, "w") { |f| f.write(javascript) }
 
