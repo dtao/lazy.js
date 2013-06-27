@@ -299,3 +299,8 @@ table td.negative {
 table tr:hover .failure-information {
   border-left: 3px solid red;
 }
+
+/* Social sharing stuff */
+iframe.twitter-share-button {
+  width: 90px !important;
+}
