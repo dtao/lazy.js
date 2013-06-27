@@ -9,9 +9,6 @@ def compile_file(output)
     async_sequence
     stream_like_sequence
     main
-
-    set
-    experimental
   )
 
   javascript = [
