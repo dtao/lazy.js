@@ -24,7 +24,9 @@ Intrigued? Great! Lazy.js has no external dependencies, so you can get started r
 
 Or, if you're using Node.js:
 
-    npm install lazy.js
+```bash
+npm install lazy.js
+```
 
 Now let's look at what you can do with Lazy.js.
 

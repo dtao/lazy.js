@@ -35,8 +35,8 @@ end
 
 # Take a Nokogiri HTML fragment and run its code blocks through Pygments.
 def syntax_highlight!(fragment)
-  fragment.css("code").each do |node|
-    language = node["class"]
+  fragment.css("pre > code").each do |node|
+    language = node["class"] || "javascript"
     if language
       highlighted_html = Pygments.highlight(node.content, :lexer => language)
       replacement = Nokogiri::HTML::fragment(highlighted_html)
