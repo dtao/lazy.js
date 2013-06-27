@@ -70,6 +70,8 @@ def normalize_methods!(methods)
     end
     method_data["returns"] = { :list => returns } unless returns.nil? || returns.empty?
   end
+
+  methods.sort! { |x, y| x["name"] <=> y["name"] }
 end
 
 namespace :compile do
