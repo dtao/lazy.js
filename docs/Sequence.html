@@ -22,49 +22,63 @@
 
         <li class="nav-header">Instance methods</li>
 
-        <li><a href="#toArray">toArray</a></li>
-        <li><a href="#toObject">toObject</a></li>
-        <li><a href="#forEach">forEach</a></li>
-        <li><a href="#map">map</a></li>
-        <li><a href="#pluck">pluck</a></li>
-        <li><a href="#invoke">invoke</a></li>
-        <li><a href="#select">select</a></li>
-        <li><a href="#reject">reject</a></li>
-        <li><a href="#where">where</a></li>
-        <li><a href="#reverse">reverse</a></li>
-        <li><a href="#concat">concat</a></li>
-        <li><a href="#first">first</a></li>
-        <li><a href="#initial">initial</a></li>
-        <li><a href="#last">last</a></li>
-        <li><a href="#findWhere">findWhere</a></li>
-        <li><a href="#rest">rest</a></li>
-        <li><a href="#sortBy">sortBy</a></li>
-        <li><a href="#groupBy">groupBy</a></li>
-        <li><a href="#countBy">countBy</a></li>
-        <li><a href="#uniq">uniq</a></li>
-        <li><a href="#zip">zip</a></li>
-        <li><a href="#shuffle">shuffle</a></li>
-        <li><a href="#flatten">flatten</a></li>
+        <li><a href="#all">all</a></li>
+        <li><a href="#any">any</a></li>
+        <li><a href="#async">async</a></li>
+        <li><a href="#collect">collect</a></li>
         <li><a href="#compact">compact</a></li>
-        <li><a href="#without">without</a></li>
-        <li><a href="#union">union</a></li>
-        <li><a href="#intersection">intersection</a></li>
-        <li><a href="#every">every</a></li>
-        <li><a href="#some">some</a></li>
-        <li><a href="#isEmpty">isEmpty</a></li>
-        <li><a href="#indexOf">indexOf</a></li>
-        <li><a href="#lastIndexOf">lastIndexOf</a></li>
-        <li><a href="#sortedIndex">sortedIndex</a></li>
+        <li><a href="#concat">concat</a></li>
         <li><a href="#contains">contains</a></li>
+        <li><a href="#countBy">countBy</a></li>
+        <li><a href="#detect">detect</a></li>
+        <li><a href="#difference">difference</a></li>
+        <li><a href="#drop">drop</a></li>
+        <li><a href="#every">every</a></li>
+        <li><a href="#filter">filter</a></li>
+        <li><a href="#find">find</a></li>
+        <li><a href="#findWhere">findWhere</a></li>
+        <li><a href="#first">first</a></li>
+        <li><a href="#flatten">flatten</a></li>
+        <li><a href="#foldl">foldl</a></li>
+        <li><a href="#foldr">foldr</a></li>
+        <li><a href="#forEach">forEach</a></li>
+        <li><a href="#getIterator">getIterator</a></li>
+        <li><a href="#groupBy">groupBy</a></li>
+        <li><a href="#head">head</a></li>
+        <li><a href="#indexOf">indexOf</a></li>
+        <li><a href="#initial">initial</a></li>
+        <li><a href="#inject">inject</a></li>
+        <li><a href="#intersection">intersection</a></li>
+        <li><a href="#invoke">invoke</a></li>
+        <li><a href="#isEmpty">isEmpty</a></li>
+        <li><a href="#join">join</a></li>
+        <li><a href="#last">last</a></li>
+        <li><a href="#lastIndexOf">lastIndexOf</a></li>
+        <li><a href="#map">map</a></li>
+        <li><a href="#max">max</a></li>
+        <li><a href="#min">min</a></li>
+        <li><a href="#pluck">pluck</a></li>
         <li><a href="#reduce">reduce</a></li>
         <li><a href="#reduceRight">reduceRight</a></li>
-        <li><a href="#find">find</a></li>
-        <li><a href="#min">min</a></li>
-        <li><a href="#max">max</a></li>
+        <li><a href="#reject">reject</a></li>
+        <li><a href="#rest">rest</a></li>
+        <li><a href="#reverse">reverse</a></li>
+        <li><a href="#select">select</a></li>
+        <li><a href="#shuffle">shuffle</a></li>
+        <li><a href="#some">some</a></li>
+        <li><a href="#sortBy">sortBy</a></li>
+        <li><a href="#sortedIndex">sortedIndex</a></li>
         <li><a href="#sum">sum</a></li>
-        <li><a href="#join">join</a></li>
-        <li><a href="#getIterator">getIterator</a></li>
-        <li><a href="#async">async</a></li>
+        <li><a href="#tail">tail</a></li>
+        <li><a href="#take">take</a></li>
+        <li><a href="#toArray">toArray</a></li>
+        <li><a href="#toObject">toObject</a></li>
+        <li><a href="#union">union</a></li>
+        <li><a href="#uniq">uniq</a></li>
+        <li><a href="#unique">unique</a></li>
+        <li><a href="#where">where</a></li>
+        <li><a href="#without">without</a></li>
+        <li><a href="#zip">zip</a></li>
       </ul></nav><section class="methods"><section id="Sequence" class="constructor method"><header><h2>
             Sequence
             <small>Sequence</small>
@@ -99,20 +113,68 @@ zero or more consecutive elements in a collection, stream, etc.</p>
 <td>Function</td>
             <td>A constructor for a new type inheriting from <code>Sequence</code>.</td>
           </tr>
-</table></section><section id="toArray" class="method" style="display: none;"><header><h2>
-            toArray
-            <small>Sequence#toArray</small>
+</table></section><section id="all" class="method" style="display: none;"><header><h2>
+            all
+            <small>Sequence#all</small>
           </h2>
-          <p class="description">Creates an array snapshot of a sequence.</p>
-
-<p>Note that for indefinite sequences, this method may raise an exception or
-(worse) cause the environment to hang.</p>
+          <p class="description">Alias for <code>Sequence#evert</code>.</p>
+        </header></section><section id="any" class="method" style="display: none;"><header><h2>
+            any
+            <small>Sequence#any</small>
+          </h2>
+          <p class="description">Alias for <code>Sequence#some</code>.</p>
+        </header></section><section id="async" class="method" style="display: none;"><header><h2>
+            async
+            <small>Sequence#async</small>
+          </h2>
+          <p class="description">Creates a sequence, with the same elements as this one, that will be iterated
+over asynchronously when calling <code>each</code>.</p>
         </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">range</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
-<span class="c1">// =&gt; sequence: (1, 2, ..., 9)</span>
-
-<span class="kd">var</span> <span class="nx">array</span> <span class="o">=</span> <span class="nx">range</span><span class="p">.</span><span class="nx">toArray</span><span class="p">();</span>
-<span class="c1">// =&gt; [1, 2, ..., 9]</span>
+        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]).</span><span class="nx">async</span><span class="p">(</span><span class="mi">1000</span><span class="p">).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
+<span class="p">});</span>
+<span class="c1">// (logs the numbers 1, 2, and 3 to the console, one second apart)</span>
+</pre></div>
+        
+        <h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>interval</td>
+            <td>number</td>
+            <td>The approximate period, in milliseconds, that
+    should elapse between each element in the resulting sequence. Omitting
+    this argument will result in the fastest possible asynchronous iteration.</td>
+          </tr>
+</table>
+<h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>Sequence</td>
+            <td>The new asynchronous sequence.</td>
+          </tr>
+</table></section><section id="collect" class="method" style="display: none;"><header><h2>
+            collect
+            <small>Sequence#collect</small>
+          </h2>
+          <p class="description">Alias for <code>Sequence#map</code>.</p>
+        </header></section><section id="compact" class="method" style="display: none;"><header><h2>
+            compact
+            <small>Sequence#compact</small>
+          </h2>
+          <p class="description">Creates a new sequence with the same elements as this one, except for all
+falsy values (false, 0, "", null, and undefined).</p>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="s2">"foo"</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="s2">"bar"</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">]).</span><span class="nx">compact</span><span class="p">();</span>
+<span class="c1">// =&gt; sequence: ("foo", "bar")</span>
 </pre></div>
         
         
@@ -123,23 +185,300 @@ zero or more consecutive elements in a collection, stream, etc.</p>
             <th>Description</th>
           </tr>
 <tr>
-<td>Array</td>
-            <td>An array containing the current contents of the sequence.</td>
+<td>Sequence</td>
+            <td>The new sequence.</td>
           </tr>
-</table></section><section id="toObject" class="method" style="display: none;"><header><h2>
-            toObject
-            <small>Sequence#toObject</small>
+</table></section><section id="concat" class="method" style="display: none;"><header><h2>
+            concat
+            <small>Sequence#concat</small>
           </h2>
-          <p class="description">Creates an object from a sequence of key/value pairs.</p>
+          <p class="description">Creates a new sequence with all of the elements of this one, plus those of
+the given array(s).</p>
         </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">details</span> <span class="o">=</span> <span class="p">[</span>
-  <span class="p">[</span><span class="s2">"first"</span><span class="p">,</span> <span class="s2">"Dan"</span><span class="p">],</span>
-  <span class="p">[</span><span class="s2">"last"</span><span class="p">,</span> <span class="s2">"Tao"</span><span class="p">],</span>
-  <span class="p">[</span><span class="s2">"age"</span><span class="p">,</span> <span class="mi">29</span><span class="p">]</span>
-<span class="p">];</span>
+        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">left</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">];</span>
+<span class="kd">var</span> <span class="nx">right</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">];</span>
+<span class="kd">var</span> <span class="nx">both</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">left</span><span class="p">).</span><span class="nx">concat</span><span class="p">(</span><span class="nx">right</span><span class="p">);</span>
+<span class="c1">// =&gt; sequence: (1, 2, 3, 4, 5, 6)</span>
+</pre></div>
+        
+        <h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>var_args</td>
+            <td>*</td>
+            <td>One or more values (or arrays of values) to use for
+    additional items after this sequence.</td>
+          </tr>
+</table>
+<h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>Sequence</td>
+            <td>The new sequence.</td>
+          </tr>
+</table></section><section id="contains" class="method" style="display: none;"><header><h2>
+            contains
+            <small>Sequence#contains</small>
+          </h2>
+          <p class="description">Checks whether the given value is in this sequence.</p>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">];</span>
 
-<span class="kd">var</span> <span class="nx">person</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">details</span><span class="p">).</span><span class="nx">toObject</span><span class="p">();</span>
-<span class="c1">// =&gt; { first: "Dan", last: "Tao", age: 29 }</span>
+<span class="nx">Lazy</span><span class="p">(</span><span class="nx">numbers</span><span class="p">).</span><span class="nx">contains</span><span class="p">(</span><span class="mi">15</span><span class="p">);</span>
+<span class="c1">// =&gt; true</span>
+
+<span class="nx">Lazy</span><span class="p">(</span><span class="nx">numbers</span><span class="p">).</span><span class="nx">contains</span><span class="p">(</span><span class="mi">13</span><span class="p">);</span>
+<span class="c1">// =&gt; false</span>
+</pre></div>
+        
+        <h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>value</td>
+            <td>*</td>
+            <td>The element to search for in the sequence.</td>
+          </tr>
+</table>
+<h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>boolean</td>
+            <td>True if the sequence contains the value, false if not.</td>
+          </tr>
+</table></section><section id="countBy" class="method" style="display: none;"><header><h2>
+            countBy
+            <small>Sequence#countBy</small>
+          </h2>
+          <p class="description">Creates a new sequence containing the unique keys of all the elements in
+this sequence, each paired with a number representing the number of times
+that key appears in the sequence.</p>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">];</span>
+<span class="kd">var</span> <span class="nx">oddsAndEvens</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">numbers</span><span class="p">).</span><span class="nx">countBy</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">x</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">?</span> <span class="s2">"odd"</span> <span class="o">:</span> <span class="s2">"even"</span><span class="p">;</span>
+<span class="p">});</span>
+<span class="c1">// =&gt; sequence: (["odd", 3], ["even", 2])</span>
+</pre></div>
+        
+        <h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>keyFn</td>
+            <td>Function</td>
+            <td>The function to call on the elements in this
+    sequence to obtain a key by which to count them.</td>
+          </tr>
+</table>
+<h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>Sequence</td>
+            <td>The new sequence.</td>
+          </tr>
+</table></section><section id="detect" class="method" style="display: none;"><header><h2>
+            detect
+            <small>Sequence#detect</small>
+          </h2>
+          <p class="description">Alias for <code>Sequence#find</code>.</p>
+        </header></section><section id="difference" class="method" style="display: none;"><header><h2>
+            difference
+            <small>Sequence#difference</small>
+          </h2>
+          <p class="description">Alias for <code>Sequence#without</code>.</p>
+        </header></section><section id="drop" class="method" style="display: none;"><header><h2>
+            drop
+            <small>Sequence#drop</small>
+          </h2>
+          <p class="description">Alias for <code>Sequence#rest</code>.</p>
+        </header></section><section id="every" class="method" style="display: none;"><header><h2>
+            every
+            <small>Sequence#every</small>
+          </h2>
+          <p class="description">Checks whether every element in this sequence satisfies a given predicate.</p>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">];</span>
+
+<span class="kd">var</span> <span class="nx">allEven</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">numbers</span><span class="p">).</span><span class="nx">every</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">0</span><span class="p">;</span> <span class="p">});</span>
+<span class="c1">// =&gt; false</span>
+
+<span class="kd">var</span> <span class="nx">allPositive</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">numbers</span><span class="p">).</span><span class="nx">every</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span> <span class="p">});</span>
+<span class="c1">// =&gt; true</span>
+</pre></div>
+        
+        <h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>predicate</td>
+            <td>Function</td>
+            <td>A function to call on (potentially) every element
+    in this sequence.</td>
+          </tr>
+</table>
+<h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>boolean</td>
+            <td>True if <code>predicate</code> returns true for every element in the
+    sequence (or the sequence is empty). False if <code>predicate</code> returns false
+    for at least one element.</td>
+          </tr>
+</table></section><section id="filter" class="method" style="display: none;"><header><h2>
+            filter
+            <small>Sequence#filter</small>
+          </h2>
+          <p class="description">Alias for <code>Sequence#select</code>.</p>
+        </header></section><section id="find" class="method" style="display: none;"><header><h2>
+            find
+            <small>Sequence#find</small>
+          </h2>
+          <p class="description">Seaches for the first element in the sequence satisfying a given predicate.</p>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">];</span>
+
+<span class="nx">Lazy</span><span class="p">(</span><span class="nx">numbers</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">===</span> <span class="mi">0</span><span class="p">;</span> <span class="p">});</span>
+<span class="c1">// =&gt; 6</span>
+
+<span class="nx">Lazy</span><span class="p">(</span><span class="nx">numbers</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">;</span> <span class="p">});</span>
+<span class="c1">// =&gt; undefined</span>
+</pre></div>
+        
+        <h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>predicate</td>
+            <td>Function</td>
+            <td>A function to call on (potentially) every element
+    in the sequence.</td>
+          </tr>
+</table>
+<h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>*</td>
+            <td>The first element in the sequence for which <code>predicate</code> returns
+    true, or undefined if no such element is found.</td>
+          </tr>
+</table></section><section id="findWhere" class="method" style="display: none;"><header><h2>
+            findWhere
+            <small>Sequence#findWhere</small>
+          </h2>
+          <p class="description">Returns the first element in this sequence with property names and values
+matching those of the specified object.</p>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">words</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"foo"</span><span class="p">,</span> <span class="s2">"bar"</span><span class="p">];</span>
+<span class="kd">var</span> <span class="nx">foo</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">words</span><span class="p">).</span><span class="nx">findWhere</span><span class="p">({</span> <span class="mi">0</span><span class="o">:</span> <span class="s2">"f"</span> <span class="p">});</span>
+<span class="c1">// =&gt; "foo"</span>
+</pre></div>
+        
+        <h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>properties</td>
+            <td>Object</td>
+            <td>The properties that should be found on some
+    element in this sequence.</td>
+          </tr>
+</table>
+<h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>*</td>
+            <td>The found element, or undefined if none exists in this
+    sequence.</td>
+          </tr>
+</table></section><section id="first" class="method" style="display: none;"><header><h2>
+            first
+            <small>Sequence#first</small>
+          </h2>
+          <p class="description">Creates a new sequence comprising the first N elements from this sequence, OR
+(if N is undefined) simply returns the first element of this sequence.</p>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="kd">function</span> <span class="nx">powerOfTwo</span><span class="p">(</span><span class="nx">exp</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nx">exp</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">firstTenPowersOf2</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">generate</span><span class="p">(</span><span class="nx">powerOfTwo</span><span class="p">).</span><span class="nx">first</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+<span class="c1">// =&gt; sequence: (1, 2, 4, ..., 512)</span>
+</pre></div>
+        
+        <h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>count</td>
+            <td>number</td>
+            <td>The number of elements to take from this sequence. If
+    this value exceeds the length of the sequence, the resulting sequence
+    will be essentially the same as this one.</td>
+          </tr>
+</table></section><section id="flatten" class="method" style="display: none;"><header><h2>
+            flatten
+            <small>Sequence#flatten</small>
+          </h2>
+          <p class="description">Creates a new sequence with every element from this sequence, and with arrays
+exploded so that a sequence of arrays (of arrays) becomes a flat sequence of
+values.</p>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">]]]).</span><span class="nx">flatten</span><span class="p">();</span>
+<span class="c1">// =&gt; sequence: (1, 2, 3, 4, 5)</span>
 </pre></div>
         
         
@@ -150,11 +489,20 @@ zero or more consecutive elements in a collection, stream, etc.</p>
             <th>Description</th>
           </tr>
 <tr>
-<td>Object</td>
-            <td>An object with keys and values corresponding to the pairs
-    of elements in the sequence.</td>
+<td>Sequence</td>
+            <td>The new sequence.</td>
           </tr>
-</table></section><section id="forEach" class="method" style="display: none;"><header><h2>
+</table></section><section id="foldl" class="method" style="display: none;"><header><h2>
+            foldl
+            <small>Sequence#foldl</small>
+          </h2>
+          <p class="description">Alias for <code>Sequence#reduce</code>.</p>
+        </header></section><section id="foldr" class="method" style="display: none;"><header><h2>
+            foldr
+            <small>Sequence#foldr</small>
+          </h2>
+          <p class="description">Alias for <code>Sequence#reduceRight</code>.</p>
+        </header></section><section id="forEach" class="method" style="display: none;"><header><h2>
             forEach
             <small>Sequence#forEach</small>
           </h2>
@@ -177,16 +525,60 @@ zero or more consecutive elements in a collection, stream, etc.</p>
             <td>The function to call on each element in the sequence.
     Return false from the function to end the iteration.</td>
           </tr>
-</table></section><section id="map" class="method" style="display: none;"><header><h2>
-            map
-            <small>Sequence#map</small>
+</table></section><section id="getIterator" class="method" style="display: none;"><header><h2>
+            getIterator
+            <small>Sequence#getIterator</small>
           </h2>
-          <p class="description">Creates a new sequence whose values are calculated by passing this sequence's
-elements through some mapping function.</p>
+          <p class="description">Creates an iterator object with two methods, <code>moveNext</code> -- returning true or
+false -- and <code>current</code> -- returning the current value.</p>
+
+<p>This method is used when asynchronously iterating over sequences. Any type
+inheriting from <code>Sequence</code> must implement this method or it can't support
+asynchronous iteration.</p>
         </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">odds</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">];</span>
-<span class="kd">var</span> <span class="nx">evens</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">odds</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="p">});</span>
-<span class="c1">// =&gt; sequence: (2, 4, 6)</span>
+        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">iterator</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]).</span><span class="nx">getIterator</span><span class="p">();</span>
+
+<span class="nx">iterator</span><span class="p">.</span><span class="nx">moveNext</span><span class="p">();</span>
+<span class="c1">// =&gt; true</span>
+
+<span class="nx">iterator</span><span class="p">.</span><span class="nx">current</span><span class="p">();</span>
+<span class="c1">// =&gt; 1</span>
+
+<span class="nx">iterator</span><span class="p">.</span><span class="nx">moveNext</span><span class="p">();</span>
+<span class="c1">// =&gt; true</span>
+
+<span class="nx">iterator</span><span class="p">.</span><span class="nx">current</span><span class="p">();</span>
+<span class="c1">// =&gt; 2</span>
+
+<span class="nx">iterator</span><span class="p">.</span><span class="nx">moveNext</span><span class="p">();</span>
+<span class="c1">// =&gt; false</span>
+</pre></div>
+        
+        
+        <h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>Iterator</td>
+            <td>An iterator object.</td>
+          </tr>
+</table></section><section id="groupBy" class="method" style="display: none;"><header><h2>
+            groupBy
+            <small>Sequence#groupBy</small>
+          </h2>
+          <p class="description">Creates a new sequence comprising the elements in this one, grouped
+together according to some key. The elements of the new sequence are pairs
+of the form <code>[key, values]</code> where <code>values</code> is an array containing all of
+the elements in this sequence with the same key.</p>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">];</span>
+<span class="kd">var</span> <span class="nx">oddsAndEvens</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">numbers</span><span class="p">).</span><span class="nx">groupBy</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">x</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">?</span> <span class="s2">"odd"</span> <span class="o">:</span> <span class="s2">"even"</span><span class="p">;</span>
+<span class="p">});</span>
+<span class="c1">// =&gt; sequence: (["odd", [1, 3, ..., 9]], ["even", [2, 4, ..., 10]])</span>
 </pre></div>
         
         <h3>Parameters</h3>
@@ -197,10 +589,10 @@ elements through some mapping function.</p>
             <th>Description</th>
           </tr>
 <tr>
-<td>mapFn</td>
+<td>keyFn</td>
             <td>Function</td>
-            <td>The mapping function used to project this sequence's
-    elements onto a new sequence.</td>
+            <td>The function to call on the elements in this
+    sequence to obtain a key by which to group them.</td>
           </tr>
 </table>
 <h3>Returns</h3>
@@ -213,19 +605,26 @@ elements through some mapping function.</p>
 <td>Sequence</td>
             <td>The new sequence.</td>
           </tr>
-</table></section><section id="pluck" class="method" style="display: none;"><header><h2>
-            pluck
-            <small>Sequence#pluck</small>
+</table></section><section id="head" class="method" style="display: none;"><header><h2>
+            head
+            <small>Sequence#head</small>
           </h2>
-          <p class="description">Creates a new sequence whose values are calculated by accessing the specified
-property from each element in this sequence.</p>
+          <p class="description">Alias for <code>Sequence#first</code>.</p>
+        </header></section><section id="indexOf" class="method" style="display: none;"><header><h2>
+            indexOf
+            <small>Sequence#indexOf</small>
+          </h2>
+          <p class="description">Performs (at worst) a linear search from the head of this sequence,
+returning the first index at which the specified value is found.</p>
         </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">people</span> <span class="o">=</span> <span class="p">[</span>
-  <span class="p">{</span> <span class="nx">first</span><span class="o">:</span> <span class="s2">"Dan"</span><span class="p">,</span> <span class="nx">last</span><span class="o">:</span> <span class="s2">"Tao"</span> <span class="p">},</span>
-  <span class="p">{</span> <span class="nx">first</span><span class="o">:</span> <span class="s2">"Bob"</span><span class="p">,</span> <span class="nx">last</span><span class="o">:</span> <span class="s2">"Smith"</span> <span class="p">}</span>
-<span class="p">];</span>
-<span class="kd">var</span> <span class="nx">surnames</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">people</span><span class="p">).</span><span class="nx">pluck</span><span class="p">(</span><span class="s2">"last"</span><span class="p">);</span>
-<span class="c1">// =&gt; sequence: ("Tao", "Smith")</span>
+        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="s2">"foo"</span><span class="p">,</span> <span class="s2">"bar"</span><span class="p">,</span> <span class="s2">"baz"</span><span class="p">]).</span><span class="nx">indexOf</span><span class="p">(</span><span class="s2">"bar"</span><span class="p">);</span>
+<span class="c1">// =&gt; 1</span>
+
+<span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]).</span><span class="nx">indexOf</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+<span class="c1">// =&gt; -1</span>
+
+<span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">*</span> <span class="mi">2</span><span class="p">;</span> <span class="p">}).</span><span class="nx">indexOf</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="c1">// =&gt; 0</span>
 </pre></div>
         
         <h3>Parameters</h3>
@@ -236,10 +635,86 @@ property from each element in this sequence.</p>
             <th>Description</th>
           </tr>
 <tr>
-<td>propertyName</td>
-            <td>string</td>
-            <td>The name of the property to access for every
-    element in this sequence.</td>
+<td>value</td>
+            <td>*</td>
+            <td>The element to search for in the sequence.</td>
+          </tr>
+</table>
+<h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>number</td>
+            <td>The index within this sequence where the given value is
+    located, or -1 if the sequence doesn't contain the value.</td>
+          </tr>
+</table></section><section id="initial" class="method" style="display: none;"><header><h2>
+            initial
+            <small>Sequence#initial</small>
+          </h2>
+          <p class="description">Creates a new sequence comprising all but the last N elements of this
+sequence.</p>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">produce</span> <span class="o">=</span> <span class="p">[</span><span class="nx">apple</span><span class="p">,</span> <span class="nx">banana</span><span class="p">,</span> <span class="nx">carrot</span><span class="p">,</span> <span class="nx">durian</span><span class="p">];</span>
+<span class="kd">var</span> <span class="nx">edibleProduce</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">produce</span><span class="p">).</span><span class="nx">initial</span><span class="p">();</span>
+<span class="c1">// =&gt; sequence: (apple, banana, carrot)</span>
+</pre></div>
+        
+        <h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>count</td>
+            <td>number</td>
+            <td>The number of items to omit from the end of the
+    sequence (defaults to 1).</td>
+          </tr>
+</table>
+<h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>Sequence</td>
+            <td>The new sequence.</td>
+          </tr>
+</table></section><section id="inject" class="method" style="display: none;"><header><h2>
+            inject
+            <small>Sequence#inject</small>
+          </h2>
+          <p class="description">Alias for <code>Sequence#reduce</code>.</p>
+        </header></section><section id="intersection" class="method" style="display: none;"><header><h2>
+            intersection
+            <small>Sequence#intersection</small>
+          </h2>
+          <p class="description">Creates a new sequence with all the elements of this sequence that also
+appear among the specified arguments.</p>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="s2">"foo"</span><span class="p">,</span> <span class="s2">"bar"</span><span class="p">]).</span><span class="nx">intersection</span><span class="p">([</span><span class="s2">"bar"</span><span class="p">,</span> <span class="s2">"baz"</span><span class="p">]);</span>
+<span class="c1">// =&gt; sequence: ("bar")</span>
+</pre></div>
+        
+        <h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>var_args</td>
+            <td>*</td>
+            <td>The values, or array(s) of values, in which elements
+    from this sequence must also be included to end up in the resulting sequence.</td>
           </tr>
 </table>
 <h3>Returns</h3>
@@ -298,130 +773,17 @@ function on each element in this sequence.</p>
 <td>Sequence</td>
             <td>The new sequence.</td>
           </tr>
-</table></section><section id="select" class="method" style="display: none;"><header><h2>
-            select
-            <small>Sequence#select</small>
+</table></section><section id="isEmpty" class="method" style="display: none;"><header><h2>
+            isEmpty
+            <small>Sequence#isEmpty</small>
           </h2>
-          <p class="description">Creates a new sequence whose values are the elements of this sequence which
-satisfy the specified predicate.</p>
+          <p class="description">Checks whether the sequence has no elements.</p>
         </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">];</span>
-<span class="kd">var</span> <span class="nx">evens</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">numbers</span><span class="p">).</span><span class="nx">select</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">0</span><span class="p">;</span> <span class="p">});</span>
-<span class="c1">// =&gt; sequence: (2, 4, 6)</span>
-</pre></div>
-        
-        <h3>Parameters</h3>
-        <table class="params">
-<tr>
-<th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>filterFn</td>
-            <td>Function</td>
-            <td>The predicate to call on each element in this
-    sequence, which returns true if the element should be included.</td>
-          </tr>
-</table>
-<h3>Returns</h3>
-        <table class="returns">
-<tr>
-<th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>Sequence</td>
-            <td>The new sequence.</td>
-          </tr>
-</table></section><section id="reject" class="method" style="display: none;"><header><h2>
-            reject
-            <small>Sequence#reject</small>
-          </h2>
-          <p class="description">Creates a new sequence whose values exclude the elements of this sequence
-identified by the specified predicate.</p>
-        </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">];</span>
-<span class="kd">var</span> <span class="nx">odds</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">numbers</span><span class="p">).</span><span class="nx">reject</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">0</span><span class="p">;</span> <span class="p">});</span>
-<span class="c1">// =&gt; sequence: (1, 3, 5)</span>
-</pre></div>
-        
-        <h3>Parameters</h3>
-        <table class="params">
-<tr>
-<th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>rejectFn</td>
-            <td>Function</td>
-            <td>The predicate to call on each element in this
-    sequence, which returns true if the element should be omitted.</td>
-          </tr>
-</table>
-<h3>Returns</h3>
-        <table class="returns">
-<tr>
-<th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>Sequence</td>
-            <td>The new sequence.</td>
-          </tr>
-</table></section><section id="where" class="method" style="display: none;"><header><h2>
-            where
-            <small>Sequence#where</small>
-          </h2>
-          <p class="description">Creates a new sequence whose values are the elements of this sequence with
-property names and values matching those of the specified object.</p>
-        </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">people</span> <span class="o">=</span> <span class="p">[</span>
-  <span class="p">{</span> <span class="nx">first</span><span class="o">:</span> <span class="s2">"Dan"</span><span class="p">,</span> <span class="nx">last</span><span class="o">:</span> <span class="s2">"Tao"</span> <span class="p">},</span>
-  <span class="p">{</span> <span class="nx">first</span><span class="o">:</span> <span class="s2">"Bob"</span><span class="p">,</span> <span class="nx">last</span><span class="o">:</span> <span class="s2">"Smith"</span> <span class="p">}</span>
-<span class="p">];</span>
-<span class="kd">var</span> <span class="nx">dans</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">people</span><span class="p">).</span><span class="nx">where</span><span class="p">({</span> <span class="nx">first</span><span class="o">:</span> <span class="s2">"Dan"</span> <span class="p">});</span>
-<span class="c1">// =&gt; sequence: ({ first: "Dan", last: "Tao" })</span>
-</pre></div>
-        
-        <h3>Parameters</h3>
-        <table class="params">
-<tr>
-<th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>properties</td>
-            <td>Object</td>
-            <td>The properties that should be found on every
-    element that is to be included in this sequence.</td>
-          </tr>
-</table>
-<h3>Returns</h3>
-        <table class="returns">
-<tr>
-<th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>Sequence</td>
-            <td>The new sequence.</td>
-          </tr>
-</table></section><section id="reverse" class="method" style="display: none;"><header><h2>
-            reverse
-            <small>Sequence#reverse</small>
-          </h2>
-          <p class="description">Creates a new sequence with the same elements as this one, but to be iterated
-in the opposite order.</p>
+        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([]).</span><span class="nx">isEmpty</span><span class="p">();</span>
+<span class="c1">// =&gt; true</span>
 
-<p>Note that in some (but not all) cases, the only way to create such a sequence
-may require iterating the entire underlying source when <code>each</code> is called.</p>
-        </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">alphabet</span> <span class="o">=</span> <span class="s2">"abcdefghijklmnopqrstuvwxyz"</span><span class="p">;</span>
-<span class="kd">var</span> <span class="nx">alphabetBackwards</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">alphabet</span><span class="p">).</span><span class="nx">reverse</span><span class="p">();</span>
-<span class="c1">// =&gt; sequence: ("z", "y", "x", ..., "a")</span>
+<span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]).</span><span class="nx">isEmpty</span><span class="p">();</span>
+<span class="c1">// =&gt; false</span>
 </pre></div>
         
         
@@ -432,20 +794,19 @@ may require iterating the entire underlying source when <code>each</code> is cal
             <th>Description</th>
           </tr>
 <tr>
-<td>Sequence</td>
-            <td>The new sequence.</td>
+<td>boolean</td>
+            <td>True if the sequence is empty, false if it contains at
+    least one element.</td>
           </tr>
-</table></section><section id="concat" class="method" style="display: none;"><header><h2>
-            concat
-            <small>Sequence#concat</small>
+</table></section><section id="join" class="method" style="display: none;"><header><h2>
+            join
+            <small>Sequence#join</small>
           </h2>
-          <p class="description">Creates a new sequence with all of the elements of this one, plus those of
-the given array(s).</p>
+          <p class="description">Creates a string from joining together all of the elements in this sequence,
+separated by the given delimiter.</p>
         </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">left</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">];</span>
-<span class="kd">var</span> <span class="nx">right</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">];</span>
-<span class="kd">var</span> <span class="nx">both</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">left</span><span class="p">).</span><span class="nx">concat</span><span class="p">(</span><span class="nx">right</span><span class="p">);</span>
-<span class="c1">// =&gt; sequence: (1, 2, 3, 4, 5, 6)</span>
+        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="mi">6</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">1984</span><span class="p">]).</span><span class="nx">join</span><span class="p">(</span><span class="s2">"/"</span><span class="p">);</span>
+<span class="c1">// =&gt; "6/29/1984"</span>
 </pre></div>
         
         <h3>Parameters</h3>
@@ -456,10 +817,10 @@ the given array(s).</p>
             <th>Description</th>
           </tr>
 <tr>
-<td>var_args</td>
-            <td>Array</td>
-            <td>One or more arrays to use for additional items
-    after this sequence.</td>
+<td>delimiter</td>
+            <td>string</td>
+            <td>The separator to insert between every element from
+    this sequence in the resulting string.</td>
           </tr>
 </table>
 <h3>Returns</h3>
@@ -469,73 +830,8 @@ the given array(s).</p>
             <th>Description</th>
           </tr>
 <tr>
-<td>Sequence</td>
-            <td>The new sequence.</td>
-          </tr>
-</table></section><section id="first" class="method" style="display: none;"><header><h2>
-            first
-            <small>Sequence#first</small>
-          </h2>
-          <p class="description">Creates a new sequence comprising the first N elements from this sequence, OR
-(if N is undefined) simply returns the first element of this sequence.</p>
-        </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="kd">function</span> <span class="nx">powerOfTwo</span><span class="p">(</span><span class="nx">exp</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nx">exp</span><span class="p">);</span>
-<span class="p">}</span>
-
-<span class="kd">var</span> <span class="nx">firstTenPowersOf2</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">generate</span><span class="p">(</span><span class="nx">powerOfTwo</span><span class="p">).</span><span class="nx">first</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
-<span class="c1">// =&gt; sequence: (1, 2, 4, ..., 512)</span>
-</pre></div>
-        
-        <h3>Parameters</h3>
-        <table class="params">
-<tr>
-<th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>count</td>
-            <td>number</td>
-            <td>The number of elements to take from this sequence. If
-    this value exceeds the length of the sequence, the resulting sequence
-    will be essentially the same as this one.</td>
-          </tr>
-</table></section><section id="initial" class="method" style="display: none;"><header><h2>
-            initial
-            <small>Sequence#initial</small>
-          </h2>
-          <p class="description">Creates a new sequence comprising all but the last N elements of this
-sequence.</p>
-        </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">produce</span> <span class="o">=</span> <span class="p">[</span><span class="nx">apple</span><span class="p">,</span> <span class="nx">banana</span><span class="p">,</span> <span class="nx">carrot</span><span class="p">,</span> <span class="nx">durian</span><span class="p">];</span>
-<span class="kd">var</span> <span class="nx">edibleProduce</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">produce</span><span class="p">).</span><span class="nx">initial</span><span class="p">();</span>
-<span class="c1">// =&gt; sequence: (apple, banana, carrot)</span>
-</pre></div>
-        
-        <h3>Parameters</h3>
-        <table class="params">
-<tr>
-<th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>count</td>
-            <td>number</td>
-            <td>The number of items to omit from the end of the
-    sequence (defaults to 1).</td>
-          </tr>
-</table>
-<h3>Returns</h3>
-        <table class="returns">
-<tr>
-<th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>Sequence</td>
-            <td>The new sequence.</td>
+<td>string</td>
+            <td>The delimited string.</td>
           </tr>
 </table></section><section id="last" class="method" style="display: none;"><header><h2>
             last
@@ -573,591 +869,6 @@ sequence.</p>
 <td>*</td>
             <td>The new sequence (or the last element from this sequence
     if no count was given).</td>
-          </tr>
-</table></section><section id="findWhere" class="method" style="display: none;"><header><h2>
-            findWhere
-            <small>Sequence#findWhere</small>
-          </h2>
-          <p class="description">Returns the first element in this sequence with property names and values
-matching those of the specified object.</p>
-        </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">words</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"foo"</span><span class="p">,</span> <span class="s2">"bar"</span><span class="p">];</span>
-<span class="kd">var</span> <span class="nx">foo</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">words</span><span class="p">).</span><span class="nx">findWhere</span><span class="p">({</span> <span class="mi">0</span><span class="o">:</span> <span class="s2">"f"</span> <span class="p">});</span>
-<span class="c1">// =&gt; "foo"</span>
-</pre></div>
-        
-        <h3>Parameters</h3>
-        <table class="params">
-<tr>
-<th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>properties</td>
-            <td>Object</td>
-            <td>The properties that should be found on some
-    element in this sequence.</td>
-          </tr>
-</table>
-<h3>Returns</h3>
-        <table class="returns">
-<tr>
-<th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>*</td>
-            <td>The found element, or undefined if none exists in this
-    sequence.</td>
-          </tr>
-</table></section><section id="rest" class="method" style="display: none;"><header><h2>
-            rest
-            <small>Sequence#rest</small>
-          </h2>
-          <p class="description">Creates a new sequence comprising all but the first N elements of this
-sequence.</p>
-        </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">];</span>
-<span class="kd">var</span> <span class="nx">lastFive</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">numbers</span><span class="p">).</span><span class="nx">rest</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
-<span class="c1">// #=&gt; sequence: (6, 7, 8, 9, 10)</span>
-</pre></div>
-        
-        <h3>Parameters</h3>
-        <table class="params">
-<tr>
-<th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>count</td>
-            <td>number</td>
-            <td>The number of items to omit from the beginning of the
-    sequence (defaults to 1).</td>
-          </tr>
-</table>
-<h3>Returns</h3>
-        <table class="returns">
-<tr>
-<th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>Sequence</td>
-            <td>The new sequence.</td>
-          </tr>
-</table></section><section id="sortBy" class="method" style="display: none;"><header><h2>
-            sortBy
-            <small>Sequence#sortBy</small>
-          </h2>
-          <p class="description">Creates a new sequence with the same elements as this one, but ordered
-according to the values returned by the specified function.</p>
-        </header><h3>Parameters</h3>
-        <table class="params">
-<tr>
-<th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>sortFn</td>
-            <td>Function</td>
-            <td>The function to call on the elements in this
-    sequence, in order to sort them.</td>
-          </tr>
-</table>
-<h3>Returns</h3>
-        <table class="returns">
-<tr>
-<th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>Sequence</td>
-            <td>The new sequence.
-
-<p>function population(country) {
-  return country.pop;
-}</p>
-
-<p>function area(country) {
-  return country.sqkm;
-}</p>
-
-<p>var countries = [
-  { name: "USA", pop: 320000000, sqkm: 9600000 },
-  { name: "Brazil", pop: 194000000, sqkm: 8500000 },
-  { name: "Nigeria", pop: 174000000, sqkm: 924000 },
-  { name: "China", pop: 1350000000, sqkm: 9700000 },
-  { name: "Russia", pop: 143000000, sqkm: 17000000 },
-  { name: "Australia", pop: 23000000, sqkm: 7700000 }
-];</p>
-
-<p>var mostPopulous = Lazy(countries).sortBy(population).last(3);
-// =&gt; sequence: (Brazil, USA, China)</p>
-
-<p>var largest = Lazy(countries).sortBy(area).last(3);
-// =&gt; sequence: (USA, China, Russia)</p>
-</td>
-          </tr>
-</table></section><section id="groupBy" class="method" style="display: none;"><header><h2>
-            groupBy
-            <small>Sequence#groupBy</small>
-          </h2>
-          <p class="description">Creates a new sequence comprising the elements in this one, grouped
-together according to some key. The elements of the new sequence are pairs
-of the form <code>[key, values]</code> where <code>values</code> is an array containing all of
-the elements in this sequence with the same key.</p>
-        </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">];</span>
-<span class="kd">var</span> <span class="nx">oddsAndEvens</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">numbers</span><span class="p">).</span><span class="nx">groupBy</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">return</span> <span class="nx">x</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">?</span> <span class="s2">"odd"</span> <span class="o">:</span> <span class="s2">"even"</span><span class="p">;</span>
-<span class="p">});</span>
-<span class="c1">// =&gt; sequence: (["odd", [1, 3, ..., 9]], ["even", [2, 4, ..., 10]])</span>
-</pre></div>
-        
-        <h3>Parameters</h3>
-        <table class="params">
-<tr>
-<th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>keyFn</td>
-            <td>Function</td>
-            <td>The function to call on the elements in this
-    sequence to obtain a key by which to group them.</td>
-          </tr>
-</table>
-<h3>Returns</h3>
-        <table class="returns">
-<tr>
-<th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>Sequence</td>
-            <td>The new sequence.</td>
-          </tr>
-</table></section><section id="countBy" class="method" style="display: none;"><header><h2>
-            countBy
-            <small>Sequence#countBy</small>
-          </h2>
-          <p class="description">Creates a new sequence containing the unique keys of all the elements in
-this sequence, each paired with a number representing the number of times
-that key appears in the sequence.</p>
-        </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">];</span>
-<span class="kd">var</span> <span class="nx">oddsAndEvens</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">numbers</span><span class="p">).</span><span class="nx">countBy</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">return</span> <span class="nx">x</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">?</span> <span class="s2">"odd"</span> <span class="o">:</span> <span class="s2">"even"</span><span class="p">;</span>
-<span class="p">});</span>
-<span class="c1">// =&gt; sequence: (["odd", 3], ["even", 2])</span>
-</pre></div>
-        
-        <h3>Parameters</h3>
-        <table class="params">
-<tr>
-<th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>keyFn</td>
-            <td>Function</td>
-            <td>The function to call on the elements in this
-    sequence to obtain a key by which to count them.</td>
-          </tr>
-</table>
-<h3>Returns</h3>
-        <table class="returns">
-<tr>
-<th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>Sequence</td>
-            <td>The new sequence.</td>
-          </tr>
-</table></section><section id="uniq" class="method" style="display: none;"><header><h2>
-            uniq
-            <small>Sequence#uniq</small>
-          </h2>
-          <p class="description">Creates a new sequence with every unique element from this one appearing
-exactly once (i.e., with duplicates removed).</p>
-        </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]).</span><span class="nx">uniq</span><span class="p">();</span>
-<span class="c1">// =&gt; sequence: (1, 2, 3)</span>
-</pre></div>
-        
-        
-        <h3>Returns</h3>
-        <table class="returns">
-<tr>
-<th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>Sequence</td>
-            <td>The new sequence.</td>
-          </tr>
-</table></section><section id="zip" class="method" style="display: none;"><header><h2>
-            zip
-            <small>Sequence#zip</small>
-          </h2>
-          <p class="description">Creates a new sequence by combining the elements from this sequence with
-corresponding elements from the specified array(s).</p>
-        </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]).</span><span class="nx">zip</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]);</span>
-<span class="c1">// =&gt; sequence: ([1, 3], [2, 4])</span>
-</pre></div>
-        
-        <h3>Parameters</h3>
-        <table class="params">
-<tr>
-<th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>var_args</td>
-            <td>Array</td>
-            <td>One or more arrays of elements to combine with
-    those of this sequence.</td>
-          </tr>
-</table>
-<h3>Returns</h3>
-        <table class="returns">
-<tr>
-<th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>Sequence</td>
-            <td>The new sequence.</td>
-          </tr>
-</table></section><section id="shuffle" class="method" style="display: none;"><header><h2>
-            shuffle
-            <small>Sequence#shuffle</small>
-          </h2>
-          <p class="description">Creates a new sequence with the same elements as this one, in a randomized
-order.</p>
-        </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]).</span><span class="nx">shuffle</span><span class="p">();</span>
-<span class="c1">// =&gt; sequence: (2, 3, 5, 4, 1)</span>
-</pre></div>
-        
-        
-        <h3>Returns</h3>
-        <table class="returns">
-<tr>
-<th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>Sequence</td>
-            <td>The new sequence.</td>
-          </tr>
-</table></section><section id="flatten" class="method" style="display: none;"><header><h2>
-            flatten
-            <small>Sequence#flatten</small>
-          </h2>
-          <p class="description">Creates a new sequence with every element from this sequence, and with arrays
-exploded so that a sequence of arrays (of arrays) becomes a flat sequence of
-values.</p>
-        </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">]]]).</span><span class="nx">flatten</span><span class="p">();</span>
-<span class="c1">// =&gt; sequence: (1, 2, 3, 4, 5)</span>
-</pre></div>
-        
-        
-        <h3>Returns</h3>
-        <table class="returns">
-<tr>
-<th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>Sequence</td>
-            <td>The new sequence.</td>
-          </tr>
-</table></section><section id="compact" class="method" style="display: none;"><header><h2>
-            compact
-            <small>Sequence#compact</small>
-          </h2>
-          <p class="description">Creates a new sequence with the same elements as this one, except for all
-falsy values (false, 0, "", null, and undefined).</p>
-        </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="s2">"foo"</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="s2">"bar"</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">]).</span><span class="nx">compact</span><span class="p">();</span>
-<span class="c1">// =&gt; sequence: ("foo", "bar")</span>
-</pre></div>
-        
-        
-        <h3>Returns</h3>
-        <table class="returns">
-<tr>
-<th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>Sequence</td>
-            <td>The new sequence.</td>
-          </tr>
-</table></section><section id="without" class="method" style="display: none;"><header><h2>
-            without
-            <small>Sequence#without</small>
-          </h2>
-          <p class="description">Creates a new sequence with all the elements of this sequence that are not
-also among the specified arguments.</p>
-        </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]).</span><span class="nx">without</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
-<span class="c1">// =&gt; sequence: (1, 4, 5)</span>
-</pre></div>
-        
-        <h3>Parameters</h3>
-        <table class="params">
-<tr>
-<th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>var_args</td>
-            <td>*</td>
-            <td>The values, or array(s) of values, to be excluded from the
-    resulting sequence.</td>
-          </tr>
-</table>
-<h3>Returns</h3>
-        <table class="returns">
-<tr>
-<th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>Sequence</td>
-            <td>The new sequence.</td>
-          </tr>
-</table></section><section id="union" class="method" style="display: none;"><header><h2>
-            union
-            <small>Sequence#union</small>
-          </h2>
-          <p class="description">Creates a new sequence with all the unique elements either in this sequence
-or among the specified arguments.</p>
-        </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="s2">"foo"</span><span class="p">,</span> <span class="s2">"bar"</span><span class="p">]).</span><span class="nx">union</span><span class="p">([</span><span class="s2">"bar"</span><span class="p">,</span> <span class="s2">"baz"</span><span class="p">]);</span>
-<span class="c1">// =&gt; sequence: ("foo", "bar", "baz")</span>
-</pre></div>
-        
-        <h3>Parameters</h3>
-        <table class="params">
-<tr>
-<th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>var_args</td>
-            <td>*</td>
-            <td>The values, or array(s) of values, to be additionally
-    included in the resulting sequence.</td>
-          </tr>
-</table>
-<h3>Returns</h3>
-        <table class="returns">
-<tr>
-<th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>Sequence</td>
-            <td>The new sequence.</td>
-          </tr>
-</table></section><section id="intersection" class="method" style="display: none;"><header><h2>
-            intersection
-            <small>Sequence#intersection</small>
-          </h2>
-          <p class="description">Creates a new sequence with all the elements of this sequence that also
-appear among the specified arguments.</p>
-        </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="s2">"foo"</span><span class="p">,</span> <span class="s2">"bar"</span><span class="p">]).</span><span class="nx">intersection</span><span class="p">([</span><span class="s2">"bar"</span><span class="p">,</span> <span class="s2">"baz"</span><span class="p">]);</span>
-<span class="c1">// =&gt; sequence: ("bar")</span>
-</pre></div>
-        
-        <h3>Parameters</h3>
-        <table class="params">
-<tr>
-<th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>var_args</td>
-            <td>*</td>
-            <td>The values, or array(s) of values, in which elements
-    from this sequence must also be included to end up in the resulting sequence.</td>
-          </tr>
-</table>
-<h3>Returns</h3>
-        <table class="returns">
-<tr>
-<th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>Sequence</td>
-            <td>The new sequence.</td>
-          </tr>
-</table></section><section id="every" class="method" style="display: none;"><header><h2>
-            every
-            <small>Sequence#every</small>
-          </h2>
-          <p class="description">Checks whether every element in this sequence satisfies a given predicate.</p>
-        </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">];</span>
-
-<span class="kd">var</span> <span class="nx">allEven</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">numbers</span><span class="p">).</span><span class="nx">every</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">0</span><span class="p">;</span> <span class="p">});</span>
-<span class="c1">// =&gt; false</span>
-
-<span class="kd">var</span> <span class="nx">allPositive</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">numbers</span><span class="p">).</span><span class="nx">every</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span> <span class="p">});</span>
-<span class="c1">// =&gt; true</span>
-</pre></div>
-        
-        <h3>Parameters</h3>
-        <table class="params">
-<tr>
-<th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>predicate</td>
-            <td>Function</td>
-            <td>A function to call on (potentially) every element
-    in this sequence.</td>
-          </tr>
-</table>
-<h3>Returns</h3>
-        <table class="returns">
-<tr>
-<th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>boolean</td>
-            <td>True if <code>predicate</code> returns true for every element in the
-    sequence (or the sequence is empty). False if <code>predicate</code> returns false
-    for at least one element.</td>
-          </tr>
-</table></section><section id="some" class="method" style="display: none;"><header><h2>
-            some
-            <small>Sequence#some</small>
-          </h2>
-          <p class="description">Checks whether at least one element in this sequence satisfies a given
-predicate (or, if no predicate is specified, whether the sequence contains at
-least one element).</p>
-        </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">];</span>
-
-<span class="kd">var</span> <span class="nx">someEven</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">numbers</span><span class="p">).</span><span class="nx">some</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">0</span><span class="p">;</span> <span class="p">});</span>
-<span class="c1">// =&gt; true</span>
-
-<span class="kd">var</span> <span class="nx">someNegative</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">numbers</span><span class="p">).</span><span class="nx">some</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">;</span> <span class="p">});</span>
-<span class="c1">// =&gt; false</span>
-</pre></div>
-        
-        <h3>Parameters</h3>
-        <table class="params">
-<tr>
-<th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>predicate</td>
-            <td>Function</td>
-            <td>A function to call on (potentially) every element
-    in this sequence.</td>
-          </tr>
-</table>
-<h3>Returns</h3>
-        <table class="returns">
-<tr>
-<th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>boolean</td>
-            <td>True if <code>predicate</code> returns true for at least one element
-    in the sequence. False if <code>predicate</code> returns false for every element (or
-    the sequence is empty).</td>
-          </tr>
-</table></section><section id="isEmpty" class="method" style="display: none;"><header><h2>
-            isEmpty
-            <small>Sequence#isEmpty</small>
-          </h2>
-          <p class="description">Checks whether the sequence has no elements.</p>
-        </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([]).</span><span class="nx">isEmpty</span><span class="p">();</span>
-<span class="c1">// =&gt; true</span>
-
-<span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]).</span><span class="nx">isEmpty</span><span class="p">();</span>
-<span class="c1">// =&gt; false</span>
-</pre></div>
-        
-        
-        <h3>Returns</h3>
-        <table class="returns">
-<tr>
-<th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>boolean</td>
-            <td>True if the sequence is empty, false if it contains at
-    least one element.</td>
-          </tr>
-</table></section><section id="indexOf" class="method" style="display: none;"><header><h2>
-            indexOf
-            <small>Sequence#indexOf</small>
-          </h2>
-          <p class="description">Performs (at worst) a linear search from the head of this sequence,
-returning the first index at which the specified value is found.</p>
-        </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="s2">"foo"</span><span class="p">,</span> <span class="s2">"bar"</span><span class="p">,</span> <span class="s2">"baz"</span><span class="p">]).</span><span class="nx">indexOf</span><span class="p">(</span><span class="s2">"bar"</span><span class="p">);</span>
-<span class="c1">// =&gt; 1</span>
-
-<span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]).</span><span class="nx">indexOf</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
-<span class="c1">// =&gt; -1</span>
-
-<span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">*</span> <span class="mi">2</span><span class="p">;</span> <span class="p">}).</span><span class="nx">indexOf</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
-<span class="c1">// =&gt; 0</span>
-</pre></div>
-        
-        <h3>Parameters</h3>
-        <table class="params">
-<tr>
-<th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>value</td>
-            <td>*</td>
-            <td>The element to search for in the sequence.</td>
-          </tr>
-</table>
-<h3>Returns</h3>
-        <table class="returns">
-<tr>
-<th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>number</td>
-            <td>The index within this sequence where the given value is
-    located, or -1 if the sequence doesn't contain the value.</td>
           </tr>
 </table></section><section id="lastIndexOf" class="method" style="display: none;"><header><h2>
             lastIndexOf
@@ -1197,19 +908,16 @@ returning the last index at which the specified value is found.</p>
             <td>The last index within this sequence where the given value
     is located, or -1 if the sequence doesn't contain the value.</td>
           </tr>
-</table></section><section id="sortedIndex" class="method" style="display: none;"><header><h2>
-            sortedIndex
-            <small>Sequence#sortedIndex</small>
+</table></section><section id="map" class="method" style="display: none;"><header><h2>
+            map
+            <small>Sequence#map</small>
           </h2>
-          <p class="description">Performs a binary search of this sequence, returning the lowest index where
-the given value is either found, or where it belongs (if it is not already
-in the sequence).</p>
-
-<p>This method assumes the sequence is in sorted order and will fail
-otherwise.</p>
+          <p class="description">Creates a new sequence whose values are calculated by passing this sequence's
+elements through some mapping function.</p>
         </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">21</span><span class="p">]).</span><span class="nx">sortedIndex</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
-<span class="c1">// =&gt; 1</span>
+        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">odds</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">];</span>
+<span class="kd">var</span> <span class="nx">evens</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">odds</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="p">});</span>
+<span class="c1">// =&gt; sequence: (2, 4, 6)</span>
 </pre></div>
         
         <h3>Parameters</h3>
@@ -1220,9 +928,10 @@ otherwise.</p>
             <th>Description</th>
           </tr>
 <tr>
-<td>value</td>
-            <td>*</td>
-            <td>The element to search for in the sequence.</td>
+<td>mapFn</td>
+            <td>Function</td>
+            <td>The mapping function used to project this sequence's
+    elements onto a new sequence.</td>
           </tr>
 </table>
 <h3>Returns</h3>
@@ -1232,23 +941,68 @@ otherwise.</p>
             <th>Description</th>
           </tr>
 <tr>
-<td>number</td>
-            <td>An index within this sequence where the given value is
-    located, or where it belongs in sorted order.</td>
+<td>Sequence</td>
+            <td>The new sequence.</td>
           </tr>
-</table></section><section id="contains" class="method" style="display: none;"><header><h2>
-            contains
-            <small>Sequence#contains</small>
+</table></section><section id="max" class="method" style="display: none;"><header><h2>
+            max
+            <small>Sequence#max</small>
           </h2>
-          <p class="description">Checks whether the given value is in this sequence.</p>
+          <p class="description">Gets the maximum value in the sequence.</p>
+
+<p>TODO: This should support a value selector.</p>
         </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">];</span>
+        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="mi">6</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">49</span><span class="p">,</span> <span class="mi">34</span><span class="p">]).</span><span class="nx">max</span><span class="p">();</span>
+<span class="c1">// =&gt; 49</span>
+</pre></div>
+        
+        
+        <h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>*</td>
+            <td>The element with the highest value in the sequence.</td>
+          </tr>
+</table></section><section id="min" class="method" style="display: none;"><header><h2>
+            min
+            <small>Sequence#min</small>
+          </h2>
+          <p class="description">Gets the minimum value in the sequence.</p>
 
-<span class="nx">Lazy</span><span class="p">(</span><span class="nx">numbers</span><span class="p">).</span><span class="nx">contains</span><span class="p">(</span><span class="mi">15</span><span class="p">);</span>
-<span class="c1">// =&gt; true</span>
-
-<span class="nx">Lazy</span><span class="p">(</span><span class="nx">numbers</span><span class="p">).</span><span class="nx">contains</span><span class="p">(</span><span class="mi">13</span><span class="p">);</span>
-<span class="c1">// =&gt; false</span>
+<p>TODO: This should support a value selector.</p>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="mi">6</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">49</span><span class="p">,</span> <span class="mi">34</span><span class="p">]).</span><span class="nx">min</span><span class="p">();</span>
+<span class="c1">// =&gt; 2</span>
+</pre></div>
+        
+        
+        <h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>*</td>
+            <td>The element with the lowest value in the sequence.</td>
+          </tr>
+</table></section><section id="pluck" class="method" style="display: none;"><header><h2>
+            pluck
+            <small>Sequence#pluck</small>
+          </h2>
+          <p class="description">Creates a new sequence whose values are calculated by accessing the specified
+property from each element in this sequence.</p>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">people</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="p">{</span> <span class="nx">first</span><span class="o">:</span> <span class="s2">"Dan"</span><span class="p">,</span> <span class="nx">last</span><span class="o">:</span> <span class="s2">"Tao"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="nx">first</span><span class="o">:</span> <span class="s2">"Bob"</span><span class="p">,</span> <span class="nx">last</span><span class="o">:</span> <span class="s2">"Smith"</span> <span class="p">}</span>
+<span class="p">];</span>
+<span class="kd">var</span> <span class="nx">surnames</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">people</span><span class="p">).</span><span class="nx">pluck</span><span class="p">(</span><span class="s2">"last"</span><span class="p">);</span>
+<span class="c1">// =&gt; sequence: ("Tao", "Smith")</span>
 </pre></div>
         
         <h3>Parameters</h3>
@@ -1259,9 +1013,10 @@ otherwise.</p>
             <th>Description</th>
           </tr>
 <tr>
-<td>value</td>
-            <td>*</td>
-            <td>The element to search for in the sequence.</td>
+<td>propertyName</td>
+            <td>string</td>
+            <td>The name of the property to access for every
+    element in this sequence.</td>
           </tr>
 </table>
 <h3>Returns</h3>
@@ -1271,8 +1026,8 @@ otherwise.</p>
             <th>Description</th>
           </tr>
 <tr>
-<td>boolean</td>
-            <td>True if the sequence contains the value, false if not.</td>
+<td>Sequence</td>
+            <td>The new sequence.</td>
           </tr>
 </table></section><section id="reduce" class="method" style="display: none;"><header><h2>
             reduce
@@ -1363,19 +1118,177 @@ accumulator function.</p>
 <td>*</td>
             <td>The result of the aggregation.</td>
           </tr>
-</table></section><section id="find" class="method" style="display: none;"><header><h2>
-            find
-            <small>Sequence#find</small>
+</table></section><section id="reject" class="method" style="display: none;"><header><h2>
+            reject
+            <small>Sequence#reject</small>
           </h2>
-          <p class="description">Seaches for the first element in the sequence satisfying a given predicate.</p>
+          <p class="description">Creates a new sequence whose values exclude the elements of this sequence
+identified by the specified predicate.</p>
         </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">];</span>
+        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">];</span>
+<span class="kd">var</span> <span class="nx">odds</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">numbers</span><span class="p">).</span><span class="nx">reject</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">0</span><span class="p">;</span> <span class="p">});</span>
+<span class="c1">// =&gt; sequence: (1, 3, 5)</span>
+</pre></div>
+        
+        <h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>rejectFn</td>
+            <td>Function</td>
+            <td>The predicate to call on each element in this
+    sequence, which returns true if the element should be omitted.</td>
+          </tr>
+</table>
+<h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>Sequence</td>
+            <td>The new sequence.</td>
+          </tr>
+</table></section><section id="rest" class="method" style="display: none;"><header><h2>
+            rest
+            <small>Sequence#rest</small>
+          </h2>
+          <p class="description">Creates a new sequence comprising all but the first N elements of this
+sequence.</p>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">];</span>
+<span class="kd">var</span> <span class="nx">lastFive</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">numbers</span><span class="p">).</span><span class="nx">rest</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+<span class="c1">// #=&gt; sequence: (6, 7, 8, 9, 10)</span>
+</pre></div>
+        
+        <h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>count</td>
+            <td>number</td>
+            <td>The number of items to omit from the beginning of the
+    sequence (defaults to 1).</td>
+          </tr>
+</table>
+<h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>Sequence</td>
+            <td>The new sequence.</td>
+          </tr>
+</table></section><section id="reverse" class="method" style="display: none;"><header><h2>
+            reverse
+            <small>Sequence#reverse</small>
+          </h2>
+          <p class="description">Creates a new sequence with the same elements as this one, but to be iterated
+in the opposite order.</p>
 
-<span class="nx">Lazy</span><span class="p">(</span><span class="nx">numbers</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">===</span> <span class="mi">0</span><span class="p">;</span> <span class="p">});</span>
-<span class="c1">// =&gt; 6</span>
+<p>Note that in some (but not all) cases, the only way to create such a sequence
+may require iterating the entire underlying source when <code>each</code> is called.</p>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">alphabet</span> <span class="o">=</span> <span class="s2">"abcdefghijklmnopqrstuvwxyz"</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">alphabetBackwards</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">alphabet</span><span class="p">).</span><span class="nx">reverse</span><span class="p">();</span>
+<span class="c1">// =&gt; sequence: ("z", "y", "x", ..., "a")</span>
+</pre></div>
+        
+        
+        <h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>Sequence</td>
+            <td>The new sequence.</td>
+          </tr>
+</table></section><section id="select" class="method" style="display: none;"><header><h2>
+            select
+            <small>Sequence#select</small>
+          </h2>
+          <p class="description">Creates a new sequence whose values are the elements of this sequence which
+satisfy the specified predicate.</p>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">];</span>
+<span class="kd">var</span> <span class="nx">evens</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">numbers</span><span class="p">).</span><span class="nx">select</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">0</span><span class="p">;</span> <span class="p">});</span>
+<span class="c1">// =&gt; sequence: (2, 4, 6)</span>
+</pre></div>
+        
+        <h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>filterFn</td>
+            <td>Function</td>
+            <td>The predicate to call on each element in this
+    sequence, which returns true if the element should be included.</td>
+          </tr>
+</table>
+<h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>Sequence</td>
+            <td>The new sequence.</td>
+          </tr>
+</table></section><section id="shuffle" class="method" style="display: none;"><header><h2>
+            shuffle
+            <small>Sequence#shuffle</small>
+          </h2>
+          <p class="description">Creates a new sequence with the same elements as this one, in a randomized
+order.</p>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]).</span><span class="nx">shuffle</span><span class="p">();</span>
+<span class="c1">// =&gt; sequence: (2, 3, 5, 4, 1)</span>
+</pre></div>
+        
+        
+        <h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>Sequence</td>
+            <td>The new sequence.</td>
+          </tr>
+</table></section><section id="some" class="method" style="display: none;"><header><h2>
+            some
+            <small>Sequence#some</small>
+          </h2>
+          <p class="description">Checks whether at least one element in this sequence satisfies a given
+predicate (or, if no predicate is specified, whether the sequence contains at
+least one element).</p>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">];</span>
 
-<span class="nx">Lazy</span><span class="p">(</span><span class="nx">numbers</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">;</span> <span class="p">});</span>
-<span class="c1">// =&gt; undefined</span>
+<span class="kd">var</span> <span class="nx">someEven</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">numbers</span><span class="p">).</span><span class="nx">some</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">0</span><span class="p">;</span> <span class="p">});</span>
+<span class="c1">// =&gt; true</span>
+
+<span class="kd">var</span> <span class="nx">someNegative</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">numbers</span><span class="p">).</span><span class="nx">some</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">;</span> <span class="p">});</span>
+<span class="c1">// =&gt; false</span>
 </pre></div>
         
         <h3>Parameters</h3>
@@ -1389,7 +1302,7 @@ accumulator function.</p>
 <td>predicate</td>
             <td>Function</td>
             <td>A function to call on (potentially) every element
-    in the sequence.</td>
+    in this sequence.</td>
           </tr>
 </table>
 <h3>Returns</h3>
@@ -1399,55 +1312,103 @@ accumulator function.</p>
             <th>Description</th>
           </tr>
 <tr>
-<td>*</td>
-            <td>The first element in the sequence for which <code>predicate</code> returns
-    true, or undefined if no such element is found.</td>
+<td>boolean</td>
+            <td>True if <code>predicate</code> returns true for at least one element
+    in the sequence. False if <code>predicate</code> returns false for every element (or
+    the sequence is empty).</td>
           </tr>
-</table></section><section id="min" class="method" style="display: none;"><header><h2>
-            min
-            <small>Sequence#min</small>
+</table></section><section id="sortBy" class="method" style="display: none;"><header><h2>
+            sortBy
+            <small>Sequence#sortBy</small>
           </h2>
-          <p class="description">Gets the minimum value in the sequence.</p>
-
-<p>TODO: This should support a value selector.</p>
-        </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="mi">6</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">49</span><span class="p">,</span> <span class="mi">34</span><span class="p">]).</span><span class="nx">min</span><span class="p">();</span>
-<span class="c1">// =&gt; 2</span>
-</pre></div>
-        
-        
-        <h3>Returns</h3>
+          <p class="description">Creates a new sequence with the same elements as this one, but ordered
+according to the values returned by the specified function.</p>
+        </header><h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>sortFn</td>
+            <td>Function</td>
+            <td>The function to call on the elements in this
+    sequence, in order to sort them.</td>
+          </tr>
+</table>
+<h3>Returns</h3>
         <table class="returns">
 <tr>
 <th>Type</th>
             <th>Description</th>
           </tr>
 <tr>
-<td>*</td>
-            <td>The element with the lowest value in the sequence.</td>
-          </tr>
-</table></section><section id="max" class="method" style="display: none;"><header><h2>
-            max
-            <small>Sequence#max</small>
-          </h2>
-          <p class="description">Gets the maximum value in the sequence.</p>
+<td>Sequence</td>
+            <td>The new sequence.
 
-<p>TODO: This should support a value selector.</p>
+<p>function population(country) {
+  return country.pop;
+}</p>
+
+<p>function area(country) {
+  return country.sqkm;
+}</p>
+
+<p>var countries = [
+  { name: "USA", pop: 320000000, sqkm: 9600000 },
+  { name: "Brazil", pop: 194000000, sqkm: 8500000 },
+  { name: "Nigeria", pop: 174000000, sqkm: 924000 },
+  { name: "China", pop: 1350000000, sqkm: 9700000 },
+  { name: "Russia", pop: 143000000, sqkm: 17000000 },
+  { name: "Australia", pop: 23000000, sqkm: 7700000 }
+];</p>
+
+<p>var mostPopulous = Lazy(countries).sortBy(population).last(3);
+// =&gt; sequence: (Brazil, USA, China)</p>
+
+<p>var largest = Lazy(countries).sortBy(area).last(3);
+// =&gt; sequence: (USA, China, Russia)</p>
+</td>
+          </tr>
+</table></section><section id="sortedIndex" class="method" style="display: none;"><header><h2>
+            sortedIndex
+            <small>Sequence#sortedIndex</small>
+          </h2>
+          <p class="description">Performs a binary search of this sequence, returning the lowest index where
+the given value is either found, or where it belongs (if it is not already
+in the sequence).</p>
+
+<p>This method assumes the sequence is in sorted order and will fail
+otherwise.</p>
         </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="mi">6</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">49</span><span class="p">,</span> <span class="mi">34</span><span class="p">]).</span><span class="nx">max</span><span class="p">();</span>
-<span class="c1">// =&gt; 49</span>
+        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">21</span><span class="p">]).</span><span class="nx">sortedIndex</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+<span class="c1">// =&gt; 1</span>
 </pre></div>
         
-        
-        <h3>Returns</h3>
+        <h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>value</td>
+            <td>*</td>
+            <td>The element to search for in the sequence.</td>
+          </tr>
+</table>
+<h3>Returns</h3>
         <table class="returns">
 <tr>
 <th>Type</th>
             <th>Description</th>
           </tr>
 <tr>
-<td>*</td>
-            <td>The element with the highest value in the sequence.</td>
+<td>number</td>
+            <td>An index within this sequence where the given value is
+    located, or where it belongs in sorted order.</td>
           </tr>
 </table></section><section id="sum" class="method" style="display: none;"><header><h2>
             sum
@@ -1472,68 +1433,30 @@ accumulator function.</p>
 <td>*</td>
             <td>The sum.</td>
           </tr>
-</table></section><section id="join" class="method" style="display: none;"><header><h2>
-            join
-            <small>Sequence#join</small>
+</table></section><section id="tail" class="method" style="display: none;"><header><h2>
+            tail
+            <small>Sequence#tail</small>
           </h2>
-          <p class="description">Creates a string from joining together all of the elements in this sequence,
-separated by the given delimiter.</p>
-        </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="mi">6</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">1984</span><span class="p">]).</span><span class="nx">join</span><span class="p">(</span><span class="s2">"/"</span><span class="p">);</span>
-<span class="c1">// =&gt; "6/29/1984"</span>
-</pre></div>
-        
-        <h3>Parameters</h3>
-        <table class="params">
-<tr>
-<th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>delimiter</td>
-            <td>string</td>
-            <td>The separator to insert between every element from
-    this sequence in the resulting string.</td>
-          </tr>
-</table>
-<h3>Returns</h3>
-        <table class="returns">
-<tr>
-<th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>string</td>
-            <td>The delimited string.</td>
-          </tr>
-</table></section><section id="getIterator" class="method" style="display: none;"><header><h2>
-            getIterator
-            <small>Sequence#getIterator</small>
+          <p class="description">Alias for <code>Sequence#rest</code>.</p>
+        </header></section><section id="take" class="method" style="display: none;"><header><h2>
+            take
+            <small>Sequence#take</small>
           </h2>
-          <p class="description">Creates an iterator object with two methods, <code>moveNext</code> -- returning true or
-false -- and <code>current</code> -- returning the current value.</p>
+          <p class="description">Alias for <code>Sequence#first</code>.</p>
+        </header></section><section id="toArray" class="method" style="display: none;"><header><h2>
+            toArray
+            <small>Sequence#toArray</small>
+          </h2>
+          <p class="description">Creates an array snapshot of a sequence.</p>
 
-<p>This method is used when asynchronously iterating over sequences. Any type
-inheriting from <code>Sequence</code> must implement this method or it can't support
-asynchronous iteration.</p>
+<p>Note that for indefinite sequences, this method may raise an exception or
+(worse) cause the environment to hang.</p>
         </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">iterator</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]).</span><span class="nx">getIterator</span><span class="p">();</span>
+        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">range</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+<span class="c1">// =&gt; sequence: (1, 2, ..., 9)</span>
 
-<span class="nx">iterator</span><span class="p">.</span><span class="nx">moveNext</span><span class="p">();</span>
-<span class="c1">// =&gt; true</span>
-
-<span class="nx">iterator</span><span class="p">.</span><span class="nx">current</span><span class="p">();</span>
-<span class="c1">// =&gt; 1</span>
-
-<span class="nx">iterator</span><span class="p">.</span><span class="nx">moveNext</span><span class="p">();</span>
-<span class="c1">// =&gt; true</span>
-
-<span class="nx">iterator</span><span class="p">.</span><span class="nx">current</span><span class="p">();</span>
-<span class="c1">// =&gt; 2</span>
-
-<span class="nx">iterator</span><span class="p">.</span><span class="nx">moveNext</span><span class="p">();</span>
-<span class="c1">// =&gt; false</span>
+<span class="kd">var</span> <span class="nx">array</span> <span class="o">=</span> <span class="nx">range</span><span class="p">.</span><span class="nx">toArray</span><span class="p">();</span>
+<span class="c1">// =&gt; [1, 2, ..., 9]</span>
 </pre></div>
         
         
@@ -1544,20 +1467,46 @@ asynchronous iteration.</p>
             <th>Description</th>
           </tr>
 <tr>
-<td>Iterator</td>
-            <td>An iterator object.</td>
+<td>Array</td>
+            <td>An array containing the current contents of the sequence.</td>
           </tr>
-</table></section><section id="async" class="method" style="display: none;"><header><h2>
-            async
-            <small>Sequence#async</small>
+</table></section><section id="toObject" class="method" style="display: none;"><header><h2>
+            toObject
+            <small>Sequence#toObject</small>
           </h2>
-          <p class="description">Creates a sequence, with the same elements as this one, that will be iterated
-over asynchronously when calling <code>each</code>.</p>
+          <p class="description">Creates an object from a sequence of key/value pairs.</p>
         </header><h3>Example</h3>
-        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]).</span><span class="nx">async</span><span class="p">(</span><span class="mi">1000</span><span class="p">).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
-  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
-<span class="p">});</span>
-<span class="c1">// (logs the numbers 1, 2, and 3 to the console, one second apart)</span>
+        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">details</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="p">[</span><span class="s2">"first"</span><span class="p">,</span> <span class="s2">"Dan"</span><span class="p">],</span>
+  <span class="p">[</span><span class="s2">"last"</span><span class="p">,</span> <span class="s2">"Tao"</span><span class="p">],</span>
+  <span class="p">[</span><span class="s2">"age"</span><span class="p">,</span> <span class="mi">29</span><span class="p">]</span>
+<span class="p">];</span>
+
+<span class="kd">var</span> <span class="nx">person</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">details</span><span class="p">).</span><span class="nx">toObject</span><span class="p">();</span>
+<span class="c1">// =&gt; { first: "Dan", last: "Tao", age: 29 }</span>
+</pre></div>
+        
+        
+        <h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>Object</td>
+            <td>An object with keys and values corresponding to the pairs
+    of elements in the sequence.</td>
+          </tr>
+</table></section><section id="union" class="method" style="display: none;"><header><h2>
+            union
+            <small>Sequence#union</small>
+          </h2>
+          <p class="description">Creates a new sequence with all the unique elements either in this sequence
+or among the specified arguments.</p>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="s2">"foo"</span><span class="p">,</span> <span class="s2">"bar"</span><span class="p">]).</span><span class="nx">union</span><span class="p">([</span><span class="s2">"bar"</span><span class="p">,</span> <span class="s2">"baz"</span><span class="p">]);</span>
+<span class="c1">// =&gt; sequence: ("foo", "bar", "baz")</span>
 </pre></div>
         
         <h3>Parameters</h3>
@@ -1568,11 +1517,10 @@ over asynchronously when calling <code>each</code>.</p>
             <th>Description</th>
           </tr>
 <tr>
-<td>interval</td>
-            <td>number</td>
-            <td>The approximate period, in milliseconds, that
-    should elapse between each element in the resulting sequence. Omitting
-    this argument will result in the fastest possible asynchronous iteration.</td>
+<td>var_args</td>
+            <td>*</td>
+            <td>The values, or array(s) of values, to be additionally
+    included in the resulting sequence.</td>
           </tr>
 </table>
 <h3>Returns</h3>
@@ -1583,7 +1531,143 @@ over asynchronously when calling <code>each</code>.</p>
           </tr>
 <tr>
 <td>Sequence</td>
-            <td>The new asynchronous sequence.</td>
+            <td>The new sequence.</td>
+          </tr>
+</table></section><section id="uniq" class="method" style="display: none;"><header><h2>
+            uniq
+            <small>Sequence#uniq</small>
+          </h2>
+          <p class="description">Creates a new sequence with every unique element from this one appearing
+exactly once (i.e., with duplicates removed).</p>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]).</span><span class="nx">uniq</span><span class="p">();</span>
+<span class="c1">// =&gt; sequence: (1, 2, 3)</span>
+</pre></div>
+        
+        
+        <h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>Sequence</td>
+            <td>The new sequence.</td>
+          </tr>
+</table></section><section id="unique" class="method" style="display: none;"><header><h2>
+            unique
+            <small>Sequence#unique</small>
+          </h2>
+          <p class="description">Alias for <code>Sequence#uniq</code>.</p>
+        </header></section><section id="where" class="method" style="display: none;"><header><h2>
+            where
+            <small>Sequence#where</small>
+          </h2>
+          <p class="description">Creates a new sequence whose values are the elements of this sequence with
+property names and values matching those of the specified object.</p>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">people</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="p">{</span> <span class="nx">first</span><span class="o">:</span> <span class="s2">"Dan"</span><span class="p">,</span> <span class="nx">last</span><span class="o">:</span> <span class="s2">"Tao"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="nx">first</span><span class="o">:</span> <span class="s2">"Bob"</span><span class="p">,</span> <span class="nx">last</span><span class="o">:</span> <span class="s2">"Smith"</span> <span class="p">}</span>
+<span class="p">];</span>
+<span class="kd">var</span> <span class="nx">dans</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">people</span><span class="p">).</span><span class="nx">where</span><span class="p">({</span> <span class="nx">first</span><span class="o">:</span> <span class="s2">"Dan"</span> <span class="p">});</span>
+<span class="c1">// =&gt; sequence: ({ first: "Dan", last: "Tao" })</span>
+</pre></div>
+        
+        <h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>properties</td>
+            <td>Object</td>
+            <td>The properties that should be found on every
+    element that is to be included in this sequence.</td>
+          </tr>
+</table>
+<h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>Sequence</td>
+            <td>The new sequence.</td>
+          </tr>
+</table></section><section id="without" class="method" style="display: none;"><header><h2>
+            without
+            <small>Sequence#without</small>
+          </h2>
+          <p class="description">Creates a new sequence with all the elements of this sequence that are not
+also among the specified arguments.</p>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]).</span><span class="nx">without</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+<span class="c1">// =&gt; sequence: (1, 4, 5)</span>
+</pre></div>
+        
+        <h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>var_args</td>
+            <td>*</td>
+            <td>The values, or array(s) of values, to be excluded from the
+    resulting sequence.</td>
+          </tr>
+</table>
+<h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>Sequence</td>
+            <td>The new sequence.</td>
+          </tr>
+</table></section><section id="zip" class="method" style="display: none;"><header><h2>
+            zip
+            <small>Sequence#zip</small>
+          </h2>
+          <p class="description">Creates a new sequence by combining the elements from this sequence with
+corresponding elements from the specified array(s).</p>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]).</span><span class="nx">zip</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]);</span>
+<span class="c1">// =&gt; sequence: ([1, 3], [2, 4])</span>
+</pre></div>
+        
+        <h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>var_args</td>
+            <td>Array</td>
+            <td>One or more arrays of elements to combine with
+    those of this sequence.</td>
+          </tr>
+</table>
+<h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>Sequence</td>
+            <td>The new sequence.</td>
           </tr>
 </table></section></section></article>
 </body>

@@ -18,11 +18,9 @@
 
         <li class="nav-header">Static methods</li>
 
-        <li><a href="#async">async</a></li>
         <li><a href="#generate">generate</a></li>
         <li><a href="#range">range</a></li>
         <li><a href="#repeat">repeat</a></li>
-        <li><a href="#parse">parse</a></li>
 
       </ul></nav><section class="methods"><section id="Lazy" class="constructor method"><header><h2>
             Lazy
@@ -70,12 +68,7 @@ the array.</li>
 <td>Sequence</td>
             <td>The wrapped lazy object.</td>
           </tr>
-</table></section><section id="async" class="method" style="display: none;"><header><h2>
-            async
-            <small>Lazy.async</small>
-          </h2>
-          <p class="description">Deprecated.</p>
-        </header></section><section id="generate" class="method" style="display: none;"><header><h2>
+</table></section><section id="generate" class="method" style="display: none;"><header><h2>
             generate
             <small>Lazy.generate</small>
           </h2>
@@ -84,6 +77,15 @@ and (optionally) length.</p>
         </header><h3>Example</h3>
         <div class="highlight"><pre><span class="kd">var</span> <span class="nx">randomNumbers</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">generate</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">);</span>
 <span class="c1">// =&gt; sequence: (0.4838115070015192, 0.637410914292559, ...)</span>
+
+<span class="nx">randomNumbers</span><span class="p">.</span><span class="nx">length</span><span class="p">();</span>
+<span class="c1">// =&gt; undefined</span>
+
+<span class="kd">var</span> <span class="nx">countingNumbers</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">generate</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="p">},</span> <span class="mi">10</span><span class="p">);</span>
+<span class="c1">// =&gt; sequence: (1, 2, ..., 10)</span>
+
+<span class="nx">countingNumbers</span><span class="p">.</span><span class="nx">length</span><span class="p">();</span>
+<span class="c1">// =&gt; 10</span>
 </pre></div>
         
         <h3>Parameters</h3>
@@ -114,7 +116,7 @@ and (optionally) length.</p>
             <th>Description</th>
           </tr>
 <tr>
-<td>Sequence</td>
+<td>GeneratedSequence</td>
             <td>The generated sequence.</td>
           </tr>
 </table></section><section id="range" class="method" style="display: none;"><header><h2>
@@ -142,7 +144,7 @@ value, incrementing by a given step.</p>
             <th>Description</th>
           </tr>
 <tr>
-<td>Sequence</td>
+<td>GeneratedSequence</td>
             <td>The sequence defined by the given ranges.</td>
           </tr>
 </table></section><section id="repeat" class="method" style="display: none;"><header><h2>
@@ -182,41 +184,8 @@ of times.</p>
             <th>Description</th>
           </tr>
 <tr>
-<td>Sequence</td>
+<td>GeneratedSequence</td>
             <td>The sequence containing the repeated value.</td>
-          </tr>
-</table></section><section id="parse" class="method" style="display: none;"><header><h2>
-            parse
-            <small>Lazy.parse</small>
-          </h2>
-          <p class="description">Parses a JSON array into a sequence.</p>
-
-<p>NOTE: This method is <em>barely</em> functional right now! Only supports strings,
-doesn't really handle escaping, implementation basically sucks. Just a
-proof-of-concept at this point.</p>
-        </header><h3>Parameters</h3>
-        <table class="params">
-<tr>
-<th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>json</td>
-            <td>string</td>
-            <td>A string representing a JSON array.</td>
-          </tr>
-</table>
-<h3>Returns</h3>
-        <table class="returns">
-<tr>
-<th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>Sequence</td>
-            <td>A sequence comprising the elements in the JSON array,
-    which are parsed out lazily.</td>
           </tr>
 </table></section></section></article>
 </body>

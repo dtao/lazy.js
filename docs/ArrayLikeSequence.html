@@ -22,14 +22,14 @@
 
         <li class="nav-header">Instance methods</li>
 
+        <li><a href="#each">each</a></li>
+        <li><a href="#first">first</a></li>
         <li><a href="#get">get</a></li>
         <li><a href="#length">length</a></li>
-        <li><a href="#each">each</a></li>
-        <li><a href="#collect">collect</a></li>
-        <li><a href="#select">select</a></li>
-        <li><a href="#reverse">reverse</a></li>
-        <li><a href="#first">first</a></li>
+        <li><a href="#map">map</a></li>
         <li><a href="#rest">rest</a></li>
+        <li><a href="#reverse">reverse</a></li>
+        <li><a href="#select">select</a></li>
       </ul></nav><section class="methods"><section id="ArrayLikeSequence" class="constructor method"><header><h2>
             ArrayLikeSequence
             <small>ArrayLikeSequence</small>
@@ -67,6 +67,29 @@ or other indexed data source.</p>
 <td>Function</td>
             <td>A constructor for a new type inheriting from
     <code>ArrayLikeSequence</code>.</td>
+          </tr>
+</table></section><section id="each" class="method" style="display: none;"><header><h2>
+            each
+            <small>ArrayLikeSequence#each</small>
+          </h2>
+          <p class="description">An optimized version of <code>Sequence.each</code>.</p>
+        </header></section><section id="first" class="method" style="display: none;"><header><h2>
+            first
+            <small>ArrayLikeSequence#first</small>
+          </h2>
+          <p class="description">An optimized version of <code>Sequence.first</code>, which creates an
+<code>ArrayLikeSequence</code> so that the result still provides random access.</p>
+        </header><h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>count</td>
+            <td>number</td>
+            <td></td>
           </tr>
 </table></section><section id="get" class="method" style="display: none;"><header><h2>
             get
@@ -111,44 +134,21 @@ or other indexed data source.</p>
 <td>number</td>
             <td>The length.</td>
           </tr>
-</table></section><section id="each" class="method" style="display: none;"><header><h2>
-            each
-            <small>ArrayLikeSequence#each</small>
+</table></section><section id="map" class="method" style="display: none;"><header><h2>
+            map
+            <small>ArrayLikeSequence#map</small>
           </h2>
-          <p class="description">An optimized version of <code>Sequence.each</code>.</p>
-        </header></section><section id="collect" class="method" style="display: none;"><header><h2>
-            collect
-            <small>ArrayLikeSequence#collect</small>
-          </h2>
-          <p class="description"></p>
-        </header></section><section id="select" class="method" style="display: none;"><header><h2>
-            select
-            <small>ArrayLikeSequence#select</small>
-          </h2>
-          <p class="description"></p>
-        </header></section><section id="reverse" class="method" style="display: none;"><header><h2>
-            reverse
-            <small>ArrayLikeSequence#reverse</small>
-          </h2>
-          <p class="description">An optimized version of <code>Sequence.reverse</code>, which creates an
+          <p class="description">An optimized version of <code>Sequence.map</code>, which creates an
 <code>ArrayLikeSequence</code> so that the result still provides random access.</p>
-        </header></section><section id="first" class="method" style="display: none;"><header><h2>
-            first
-            <small>ArrayLikeSequence#first</small>
-          </h2>
-          <p class="description">An optimized version of <code>Sequence.first</code>, which creates an
-<code>ArrayLikeSequence</code> so that the result still provides random access.</p>
-        </header><h3>Parameters</h3>
-        <table class="params">
+        </header><h3>Returns</h3>
+        <table class="returns">
 <tr>
-<th>Name</th>
-            <th>Type</th>
+<th>Type</th>
             <th>Description</th>
           </tr>
 <tr>
-<td>count</td>
-            <td>number</td>
-            <td></td>
+<td>ArrayLikeSequence</td>
+            <td>The new array-like sequence.</td>
           </tr>
 </table></section><section id="rest" class="method" style="display: none;"><header><h2>
             rest
@@ -168,6 +168,17 @@ or other indexed data source.</p>
             <td>number</td>
             <td></td>
           </tr>
-</table></section></section></article>
+</table></section><section id="reverse" class="method" style="display: none;"><header><h2>
+            reverse
+            <small>ArrayLikeSequence#reverse</small>
+          </h2>
+          <p class="description">An optimized version of <code>Sequence.reverse</code>, which creates an
+<code>ArrayLikeSequence</code> so that the result still provides random access.</p>
+        </header></section><section id="select" class="method" style="display: none;"><header><h2>
+            select
+            <small>ArrayLikeSequence#select</small>
+          </h2>
+          <p class="description">An optimized version of <code>Sequence#select</code>.</p>
+        </header></section></section></article>
 </body>
 </html>

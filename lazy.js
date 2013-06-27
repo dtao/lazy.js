@@ -115,6 +115,13 @@
     return new MappedSequence(this, mapFn);
   };
 
+  /**
+   * Alias for {@link Sequence#map}.
+   *
+   * @function collect
+   * @memberOf Sequence
+   * @instance
+   */
   Sequence.prototype.collect = Sequence.prototype.map;
 
   /**
@@ -185,6 +192,13 @@
     return new FilteredSequence(this, filterFn);
   };
 
+  /**
+   * Alias for {@link Sequence#select}.
+   *
+   * @function filter
+   * @memberOf Sequence
+   * @instance
+   */
   Sequence.prototype.filter = Sequence.prototype.select;
 
   /**
@@ -295,7 +309,22 @@
     return new TakeSequence(this, count);
   };
 
-  Sequence.prototype.head =
+  /**
+   * Alias for {@link Sequence#first}.
+   *
+   * @function head
+   * @memberOf Sequence
+   * @instance
+   */
+  Sequence.prototype.head = Sequence.prototype.first;
+
+  /**
+   * Alias for {@link Sequence#first}.
+   *
+   * @function take
+   * @memberOf Sequence
+   * @instance
+   */
   Sequence.prototype.take = Sequence.prototype.first;
 
   /**
@@ -374,7 +403,22 @@
     return new DropSequence(this, count);
   };
 
-  Sequence.prototype.tail =
+  /**
+   * Alias for {@link Sequence#rest}.
+   *
+   * @function tail
+   * @memberOf Sequence
+   * @instance
+   */
+  Sequence.prototype.tail = Sequence.prototype.rest;
+
+  /**
+   * Alias for {@link Sequence#rest}.
+   *
+   * @function drop
+   * @memberOf Sequence
+   * @instance
+   */
   Sequence.prototype.drop = Sequence.prototype.rest;
 
   /**
@@ -467,6 +511,13 @@
     return new UniqueSequence(this);
   };
 
+  /**
+   * Alias for {@link Sequence#uniq}.
+   *
+   * @function unique
+   * @memberOf Sequence
+   * @instance
+   */
   Sequence.prototype.unique = Sequence.prototype.uniq;
 
   /**
@@ -544,6 +595,13 @@
     return new WithoutSequence(this, Array.prototype.slice.call(arguments, 0));
   };
 
+  /**
+   * Alias for {@link Sequence#without}.
+   *
+   * @function difference
+   * @memberOf Sequence
+   * @instance
+   */
   Sequence.prototype.difference = Sequence.prototype.without;
 
   /**
@@ -607,6 +665,13 @@
     return success;
   };
 
+  /**
+   * Alias for {@link Sequence#evert}.
+   *
+   * @function all
+   * @memberOf Sequence
+   * @instance
+   */
   Sequence.prototype.all = Sequence.prototype.every;
 
   /**
@@ -644,6 +709,13 @@
     return success;
   };
 
+  /**
+   * Alias for {@link Sequence#some}.
+   *
+   * @function any
+   * @memberOf Sequence
+   * @instance
+   */
   Sequence.prototype.any = Sequence.prototype.some;
 
   /**
@@ -797,7 +869,22 @@
     return memo;
   };
 
-  Sequence.prototype.inject =
+  /**
+   * Alias for {@link Sequence#reduce}.
+   *
+   * @function inject
+   * @memberOf Sequence
+   * @instance
+   */
+  Sequence.prototype.inject = Sequence.prototype.reduce;
+
+  /**
+   * Alias for {@link Sequence#reduce}.
+   *
+   * @function foldl
+   * @memberOf Sequence
+   * @instance
+   */
   Sequence.prototype.foldl = Sequence.prototype.reduce;
 
   /**
@@ -830,6 +917,13 @@
     }, memo);
   };
 
+  /**
+   * Alias for {@link Sequence#reduceRight}.
+   *
+   * @function foldr
+   * @memberOf Sequence
+   * @instance
+   */
   Sequence.prototype.foldr = Sequence.prototype.reduceRight;
 
   /**
@@ -853,6 +947,13 @@
     return this.filter(predicate).first();
   };
 
+  /**
+   * Alias for {@link Sequence#find}.
+   *
+   * @function detect
+   * @memberOf Sequence
+   * @instance
+   */
   Sequence.prototype.detect = Sequence.prototype.find;
 
   /**
@@ -1049,17 +1150,10 @@
     });
   };
 
-  /**
-   * @constructor
-   * @param {Sequence=} parent
-   * @param {Function=} filterFn
-   */
-  function FilteredSequence(parent, filterFn) {
+  var FilteredSequence = CachingSequence.inherit(function(parent, filterFn) {
     this.parent   = parent;
     this.filterFn = filterFn;
-  }
-
-  FilteredSequence.prototype = new CachingSequence();
+  });
 
   FilteredSequence.prototype.getIterator = function() {
     return new FilteringIterator(this.parent, this.filterFn);
@@ -1181,8 +1275,6 @@
     fn(shuffled[0], j);
   };
 
-  // TODO: This should really return an object, not an jagged array. Will
-  // require a bit of rework -- but hopefully not too much!
   var GroupedSequence = CachingSequence.inherit(function(parent, keyFn) {
     this.each = function(fn) {
       var grouped = {};
@@ -1202,7 +1294,6 @@
     };
   });
 
-  // TODO: This should return an object too (like GroupBySequence).
   var CountedSequence = CachingSequence.inherit(function(parent, keyFn) {
     this.each = function(fn) {
       var grouped = {};
@@ -1537,19 +1628,23 @@
   /**
    * An optimized version of {@link Sequence.map}, which creates an
    * {@link ArrayLikeSequence} so that the result still provides random access.
+   *
+   * @return {ArrayLikeSequence} The new array-like sequence.
    */
-  ArrayLikeSequence.prototype.map =
-  ArrayLikeSequence.prototype.collect = function(mapFn) {
+  ArrayLikeSequence.prototype.map = function(mapFn) {
     return new IndexedMappedSequence(this, mapFn);
   };
 
+  ArrayLikeSequence.prototype.collect = ArrayLikeSequence.prototype.map;
+
   /**
-   * An optimized version of {@link Sequence.filter}.
+   * An optimized version of {@link Sequence#select}.
    */
-  ArrayLikeSequence.prototype.filter =
   ArrayLikeSequence.prototype.select = function(filterFn) {
     return new IndexedFilteredSequence(this, filterFn);
   };
+
+  ArrayLikeSequence.prototype.filter = ArrayLikeSequence.prototype.select;
 
   /**
    * An optimized version of {@link Sequence.reverse}, which creates an
@@ -1862,40 +1957,162 @@
 
   ObjectLikeSequence.prototype = new Sequence();
 
+  /**
+   * Gets the element at the specified key in this sequence.
+   *
+   * @param {string} key The key.
+   * @return {*} The element.
+   *
+   * @example
+   * Lazy({ foo: "bar" }).get("foo");
+   * // => "bar"
+   */
   ObjectLikeSequence.prototype.get = function(key) {
     return this.parent.get(key);
   };
 
+  /**
+   * Returns a {@link Sequence} whose elements are the keys of this object-like
+   * sequence.
+   *
+   * @return {Sequence} The sequence based on this sequence's keys.
+   *
+   * @example
+   * Lazy({ hello: "hola", goodbye: "hasta luego" }).keys();
+   * // => sequence: ("hello", "goodbye")
+   */
   ObjectLikeSequence.prototype.keys = function() {
     return this.map(function(v, k) { return k; });
   };
 
+  /**
+   * Returns a {@link Sequence} whose elements are the values of this object-like
+   * sequence.
+   *
+   * @return {Sequence} The sequence based on this sequence's values.
+   *
+   * @example
+   * Lazy({ hello: "hola", goodbye: "hasta luego" }).values();
+   * // => sequence: ("hola", "hasta luego")
+   */
   ObjectLikeSequence.prototype.values = function() {
     return this.map(function(v, k) { return v; });
   };
 
+  /**
+   * Returns an {@link ObjectLikeSequence} whose elements are the combination of
+   * this sequence and another object. In the case of a key appearing in both this
+   * sequence and the given object, the other object's value will override the
+   * one in this sequence.
+   *
+   * @param {Object} other The other object to assign to this sequence.
+   * @return {ObjectLikeSequence} A new sequence comprising elements from this
+   *     sequence plus the contents of `other`.
+   *
+   * @example
+   * Lazy({ "uno": 1, "dos": 2 }).assign({ "tres": 3 });
+   * // => sequence: (("uno", 1), ("dos", 2), ("tres", 3))
+   *
+   * Lazy({ foo: "bar" }).assign({ foo: "baz" });
+   * // => sequence: (("foo", "baz"))
+   */
   ObjectLikeSequence.prototype.assign = function(other) {
     return new AssignSequence(this, other);
   };
 
+  /**
+   * Alias for {@link ObjectLikeSequence#assign}.
+   *
+   * @function extend
+   * @memberOf ObjectLikeSequence
+   * @instance
+   */
   ObjectLikeSequence.prototype.extend = ObjectLikeSequence.prototype.assign;
 
+  /**
+   * Returns an {@link ObjectLikeSequence} whose elements are the combination of
+   * this sequence and a 'default' object. In the case of a key appearing in both
+   * this sequence and the given object, this sequence's value will override the
+   * default object's.
+   *
+   * @param {Object} defaults The 'default' object to use for missing keys in this
+   *     sequence.
+   * @return {ObjectLikeSequence} A new sequence comprising elements from this
+   *     sequence supplemented by the contents of `defaults`.
+   *
+   * @example
+   * Lazy({ name: "Dan" }).defaults({ name: "User", password: "passw0rd" });
+   * // => sequence: (("name", "Dan"), ("password", "passw0rd"))
+   */
   ObjectLikeSequence.prototype.defaults = function(defaults) {
     return new DefaultsSequence(this, defaults);
   };
 
+  /**
+   * Returns an {@link ObjectLikeSequence} whose values are this sequence's keys,
+   * and whose keys are this sequence's values.
+   *
+   * @return {ObjectLikeSequence} A new sequence comprising the inverted keys and
+   *     values from this sequence.
+   *
+   * @example
+   * Lazy({ first: "Dan", last: "Tao" }).invert();
+   * // => sequence: (("Dan", "first"), ("Tao", "last"))
+   */
   ObjectLikeSequence.prototype.invert = function() {
     return new InvertedSequence(this);
   };
 
+  /**
+   * Creates a {@link Sequence} consisting of the keys from this sequence whose
+   *     values are functions.
+   *
+   * @return {Sequence} The new sequence.
+   *
+   * @example
+   * var dog = {
+   *   name: "Fido",
+   *   breed: "Golden Retriever",
+   *   bark: function() { console.log("Woof!"); },
+   *   wagTail: function() { console.log("TODO: implement robotic dog interface"); }
+   * };
+   *
+   * Lazy(dog).functions();
+   * // => sequence: ("bark", "wagTail")
+   */
   ObjectLikeSequence.prototype.functions = function() {
     return this
       .filter(function(v, k) { return typeof(v) === "function"; })
       .map(function(v, k) { return k; });
   };
 
+  /**
+   * Alias for {@link ObjectLikeSequence#functions}.
+   *
+   * @function methods
+   * @memberOf ObjectLikeSequence
+   * @instance
+   */
   ObjectLikeSequence.prototype.methods = ObjectLikeSequence.prototype.functions;
 
+  /**
+   * Creates an {@link ObjectLikeSequence} consisting of the key/value pairs from
+   * this sequence whose keys are included in the given array of property names.
+   *
+   * @param {Array} properties An array of the properties to "pick" from this
+   *     sequence.
+   * @return {ObjectLikeSequence} The new sequence.
+   *
+   * @example
+   * var players = {
+   *   "who": "first",
+   *   "what": "second",
+   *   "i don't know", "third"
+   * };
+   *
+   * Lazy(players).pick(["who", "what"]);
+   * // => sequence: (("who", "first"), ("what", "second"))
+   */
   ObjectLikeSequence.prototype.pick = function(properties) {
     return new PickSequence(this, properties);
   };
