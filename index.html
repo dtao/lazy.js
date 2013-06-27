@@ -324,14 +324,23 @@
     </nav>
 
     <form>
-      Select the tests you want to run below, choose either
-      <label><input id="test-each" type="radio" checked="checked"><code>each</code></input></label> or
-      <label><input id="test-to-array" type="radio"><code>toArray</code></input></label>
-      <a class="why-to-array-vs-each" href="javascript:void(0);">(why?)</a>, and
-      <button class="start-benchmarking">start benchmarking</button>
-      to compare Lazy.js, Underscore, and Lo-Dash. For a more comprehensive comparison of several
-      more libraries that accomplish similar goals, see the
-      <a href="comparisons.html">comparisons</a> page.
+      <p>
+        Select the tests you want to run below, choose either
+        <label><input id="test-each" type="radio" checked="checked"><code>each</code></input></label> or
+        <label><input id="test-to-array" type="radio"><code>toArray</code></input></label>
+        <a class="why-to-array-vs-each" href="javascript:void(0);">(why?)</a>, and
+        <button class="start-benchmarking">start benchmarking</button>
+        to compare Lazy.js, Underscore, and Lo-Dash. For a more comprehensive comparison of several
+        more libraries that accomplish similar goals, see the
+        <a href="comparisons.html">comparisons</a> page.
+      </p>
+
+      <p>
+        You can also choose to display results in
+        <label><input id="test-absolute" type="radio" checked="checked">absolute ops/second</input></label> or
+        <label><input id="test-proportional" type="radio">in proportion to the fastest method</input></label>
+        (may make the chart easier to read).
+      </p>
     </form>
 
     <div id="why-to-array-vs-each">

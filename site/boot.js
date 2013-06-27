@@ -222,7 +222,15 @@
       return;
     }
 
-    var parts = result.toFixed(2).split(".");
+    var resultToDisplay = result;
+
+    // Optionally display result as percentage of fastest result.
+    if ($("#test-proportional").is(":checked")) {
+      resultToDisplay = (result / fastestResult) * 100.0;
+    }
+
+    // Add commas.
+    var parts = resultToDisplay.toFixed(2).split(".");
     var pattern = /(\d+)(\d{3})/;
     while (pattern.test(parts[0])) {
         parts[0] = parts[0].replace(pattern, '$1,$2');
@@ -448,6 +456,14 @@
 
     $("#test-each").on("change", function() {
       $("#test-to-array").prop("checked", false);
+    });
+
+    $("#test-absolute").on("change", function() {
+      $("#test-proportional").prop("checked", false);
+    });
+
+    $("#test-proportional").on("change", function() {
+      $("#test-absolute").prop("checked", false);
     });
 
     $("a.why-to-array-vs-each").on("click", function() {

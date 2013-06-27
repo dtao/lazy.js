@@ -47,21 +47,30 @@
   </nav>
 
   <form>
-    Select the tests you want to run below, choose either
-    <label><input id="test-each" type="radio" checked="checked"><code>each</code></input></label> or
-    <label><input id="test-to-array" type="radio"><code>toArray</code></input></label>
-    <a class="why-to-array-vs-each" href="javascript:void(0);">(why?)</a>, and
-    <button class="start-benchmarking">start benchmarking</button>
-    to compare Lazy.js,
-    <a href="http://underscorejs.org/">Underscore</a>,
-    <a href="http://lodash.com">Lo-Dash</a>,
-    <a href="http://fitzgen.github.io/wu.js/">wu.js</a>,
-    <a href="http://sugarjs.com/">Sugar</a>,
-    <a href="http://linqjs.codeplex.com/">Linq.js</a>,
-    <a href="http://jslinq.codeplex.com/">JSLINQ</a>,
-    <a href="https://github.com/suckgamoni/fromjs/">From.js</a>,
-    <a href="http://rx.codeplex.com/">IxJS</a>, and
-    <a href="http://www.boilerjs.com/">Boiler.js</a>.
+    <p>
+      Select the tests you want to run below, choose either
+      <label><input id="test-each" type="radio" checked="checked"><code>each</code></input></label> or
+      <label><input id="test-to-array" type="radio"><code>toArray</code></input></label>
+      <a class="why-to-array-vs-each" href="javascript:void(0);">(why?)</a>, and
+      <button class="start-benchmarking">start benchmarking</button>
+      to compare Lazy.js,
+      <a href="http://underscorejs.org/">Underscore</a>,
+      <a href="http://lodash.com">Lo-Dash</a>,
+      <a href="http://fitzgen.github.io/wu.js/">wu.js</a>,
+      <a href="http://sugarjs.com/">Sugar</a>,
+      <a href="http://linqjs.codeplex.com/">Linq.js</a>,
+      <a href="http://jslinq.codeplex.com/">JSLINQ</a>,
+      <a href="https://github.com/suckgamoni/fromjs/">From.js</a>,
+      <a href="http://rx.codeplex.com/">IxJS</a>, and
+      <a href="http://www.boilerjs.com/">Boiler.js</a>.
+    </p>
+
+    <p>
+      You can also choose to display results in
+      <label><input id="test-absolute" type="radio" checked="checked">absolute ops/second</input></label> or
+      <label><input id="test-proportional" type="radio">in proportion to the fastest method</input></label>
+      (may make the chart easier to read).
+    </p>
   </form>
 
   <div id="why-to-array-vs-each">
