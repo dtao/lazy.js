@@ -1,4 +1,27 @@
 def compile_file(output)
+  source_files = %w(
+    sequence
+    iterator
+    array_like_sequence
+    object_like_sequence
+    string_like_sequence
+    generated_sequence
+    async_sequence
+    stream_like_sequence
+    main
+
+    set
+    experimental
+  )
+
+  javascript = [
+    '(function(context) {',
+    *source_files.map { |f| File.read("lib/#{f}.js") },
+    '}(typeof global !== "undefined" ? global : window));'
+  ].join("\n").gsub(/^\s{2}/, "")
+
+  File.open(output, "w") { |f| f.write(javascript) }
+
   require "closure-compiler"
   compiler = Closure::Compiler.new({
     :js_output_file => "#{output.chomp('.js')}.min.js",
