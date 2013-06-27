@@ -20,6 +20,7 @@ var CLASSES_TO_DOCUMENT = [
   "StringLikeSequence",
   "GeneratedSequence",
   "AsyncSequence",
+  "StreamLikeSequence",
   "Iterator"
 ];
 
