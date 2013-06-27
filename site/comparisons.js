@@ -69,6 +69,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     from: function(arr) { return from(arr).select(square); },
     ix: function(arr) { return Ix.Enumerable.fromArray(arr).select(square); },
     boiler: function(arr) { return boiler.map(arr, square); },
+    sloth: function(arr) { return sloth.ify(arr).map(square); },
 
     // JSLINQ skips falsy values (e.g., conflates Select and Where --
     // not sure why they thought that was a good idea).
@@ -86,6 +87,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     from: function(arr) { return from(arr).where(isEven); },
     ix: function(arr) { return Ix.Enumerable.fromArray(arr).where(isEven); },
     boiler: function(arr) { return boiler.filter(arr, isEven); },
+    sloth: function(arr) { return sloth.ify(arr).filter(isEven); }
   });
 
   compareAlternatives("flatten", {
@@ -146,6 +148,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     from: function(arr, other) { return from(arr).union(other); },
     ix: function(arr, other) { return Ix.Enumerable.fromArray(arr).union(other); },
     boiler: function(arr, other) { return boiler.union(arr, other); },
+    sloth: function(arr, other) { return sloth.ify(arr).union(other); },
     inputs: [[arr(0, 10), arr(5, 15)], [arr(0, 100), arr(50, 150)]]
   });
 
@@ -159,6 +162,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     from: function(arr, other) { return from(arr).intersect(other); },
     ix: function(arr, other) { return Ix.Enumerable.fromArray(arr).intersect(other); },
     boiler: function(arr, other) { return boiler.intersection(arr, other); },
+    sloth: function(arr, other) { return sloth.ify(arr).intersect(other); },
     inputs: [[arr(0, 10), arr(5, 15)], [arr(0, 100), arr(50, 150)]]
   });
 
@@ -221,7 +225,8 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     linq: function(arr) { return Enumerable.From(arr).Select(inc).Take(5); },
     from: function(arr) { return from(arr).select(inc).take(5); },
     ix: function(arr) { return Ix.Enumerable.fromArray(arr).select(inc).take(5); },
-    boiler: function(arr) { return boiler.chain(arr).map(inc).first(5).end(); }
+    boiler: function(arr) { return boiler.chain(arr).map(inc).first(5).end(); },
+    sloth: function(arr) { return sloth.ify(arr).map(inc).take(5); }
   });
 
   compareAlternatives("filter -> take", {
@@ -232,7 +237,8 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     linq: function(arr) { return Enumerable.From(arr).Where(isEven).Take(5); },
     from: function(arr) { return from(arr).where(isEven).take(5); },
     ix: function(arr) { return Ix.Enumerable.fromArray(arr).where(isEven).take(5); },
-    boiler: function(arr) { return boiler.chain(arr).filter(isEven).first(5).end(); }
+    boiler: function(arr) { return boiler.chain(arr).filter(isEven).first(5).end(); },
+    sloth: function(arr) { return sloth.ify(arr).filter(isEven).take(5); }
   });
 
   compareAlternatives("map -> filter -> take", {
@@ -244,7 +250,8 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     linq: function(arr) { return Enumerable.From(arr).Select(inc).Where(isEven).Take(5); },
     from: function(arr) { return from(arr).select(inc).where(isEven).take(5); },
     ix: function(arr) { return Ix.Enumerable.fromArray(arr).select(inc).where(isEven).take(5); },
-    boiler: function(arr) { return boiler.chain(arr).map(inc).filter(isEven).first(5).end(); }
+    boiler: function(arr) { return boiler.chain(arr).map(inc).filter(isEven).first(5).end(); },
+    sloth: function(arr) { return sloth.ify(arr).map(inc).filter(isEven).take(5); }
   });
 
   compareAlternatives("map -> drop -> take", {
@@ -256,7 +263,8 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     linq: function(arr) { return Enumerable.From(arr).Select(inc).Skip(5).Take(5); },
     from: function(arr) { return from(arr).select(inc).skip(5).take(5); },
     ix: function(arr) { return Ix.Enumerable.fromArray(arr).select(inc).skip(5).take(5); },
-    boiler: function(arr) { return boiler.chain(arr).map(inc).rest(5).first(5).end(); }
+    boiler: function(arr) { return boiler.chain(arr).map(inc).rest(5).first(5).end(); },
+    sloth: function(arr) { return sloth.ify(arr).map(inc).drop(5).take(5); }
   });
 
   compareAlternatives("filter -> drop -> take", {
@@ -266,7 +274,8 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     linq: function(arr) { return Enumerable.From(arr).Where(isEven).Skip(5).Take(5); },
     from: function(arr) { return from(arr).where(isEven).skip(5).take(5); },
     ix: function(arr) { return Ix.Enumerable.fromArray(arr).where(isEven).skip(5).take(5); },
-    boiler: function(arr) { return boiler.chain(arr).filter(isEven).rest(5).first(5).end(); }
+    boiler: function(arr) { return boiler.chain(arr).filter(isEven).rest(5).first(5).end(); },
+    sloth: function(arr) { return sloth.ify(arr).filter(isEven).drop(5).take(5); }
   });
 
   compareAlternatives("flatten -> take", {
@@ -300,6 +309,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     from: function(arr, other) { return from(arr).union(other).take(5); },
     ix: function(arr, other) { return Ix.Enumerable.fromArray(arr).union(other).take(5); },
     boiler: function(arr, other) { return boiler.chain(arr).union(other).first(5).end(); },
+    sloth: function(arr, other) { return sloth.ify(arr).union(other).take(5); },
     inputs: [[arr(0, 10), arr(5, 15)], [arr(0, 100), arr(50, 150)]]
   });
 
@@ -312,6 +322,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     from: function(arr, other) { return from(arr).intersect(other).take(5); },
     ix: function(arr, other) { return Ix.Enumerable.fromArray(arr).intersect(other).take(5); },
     boiler: function(arr, other) { return boiler.chain(arr).intersection(other).first(5).end(); },
+    sloth: function(arr, other) { return sloth.ify(arr).intersect(other).take(5); },
     inputs: [[arr(0, 10), arr(5, 15)], [arr(0, 100), arr(50, 150)]]
   });
 
@@ -352,6 +363,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     from: function(arr) { return from(arr).select(inc).any(isEven); },
     ix: function(arr) { return Ix.Enumerable.fromArray(arr).select(inc).any(isEven); },
     boiler: function(arr) { return boiler.chain(arr).map(inc).any(isEven); },
+    sloth: function(arr, other) { return sloth.ify(arr).map(inc).any(isEven); },
     valueOnly: true
   });
 
@@ -365,6 +377,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     from: function(arr) { return from(arr).select(inc).all(isEven); },
     ix: function(arr) { return Ix.Enumerable.fromArray(arr).select(inc).all(isEven); },
     boiler: function(arr) { return boiler.chain(arr).map(inc).all(isEven); },
+    sloth: function(arr, other) { return sloth.ify(arr).map(inc).all(isEven); },
     valueOnly: true
   });
 

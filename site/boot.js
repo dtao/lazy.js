@@ -89,7 +89,12 @@
           new Benchmark(description, function() { options.ix.apply(this, input).toArray(); }),
 
         // Boiler.js
-        new Benchmark(description, function() { options.boiler.apply(this, input); })
+        new Benchmark(description, function() { options.boiler.apply(this, input); }),
+
+        // Sloth.js
+        options.valueOnly ?
+          new Benchmark(description, function() { options.sloth.apply(this, input); }) :
+          new Benchmark(description, function() { options.sloth.apply(this, input).force(); })
       ]);
     }
 
@@ -172,6 +177,13 @@
           new Benchmark(description, function() { options.boiler.apply(this, input); }) :
           new Benchmark(description, function() {
             options.boiler.apply(this, input).each(function(e) {});
+          }),
+
+        // Sloth.js
+        options.valueOnly ?
+          new Benchmark(description, function() { options.sloth.apply(this, input); }) :
+          new Benchmark(description, function() {
+            options.sloth.apply(this, input).each(function(e) {});
           })
       ]);
     }
@@ -210,6 +222,7 @@
       $("<td>").addClass("fromjs-result").appendTo(row);
       $("<td>").addClass("ixjs-result").appendTo(row);
       $("<td>").addClass("boiler-result").appendTo(row);
+      $("<td>").addClass("sloth-result").appendTo(row);
     }
 
     $("<td>").addClass("lazy-result").appendTo(row);
@@ -260,6 +273,7 @@
       addResultToCell(result.from.hz, $(".fromjs-result", row), fastestResult);
       addResultToCell(result.ix.hz, $(".ixjs-result", row), fastestResult);
       addResultToCell(result.boiler.hz, $(".boiler-result", row), fastestResult);
+      addResultToCell(result.sloth.hz, $(".sloth-result", row), fastestResult);
     }
     addResultToCell(result.lazy.hz, $(".lazy-result", row), fastestResult);
   }
@@ -435,6 +449,20 @@
           expect(lazyResult).toEqual(boilerResult);
         });
       }
+
+      if (options.sloth && !exceptions.contains("sloth")) {
+        it("returns the same result as sloth.js for '" + description + "'", function() {
+          var lazyResult = options.lazy.apply(this, smallInput);
+          var slothResult = options.sloth.apply(this, smallInput);
+          if (typeof lazyResult.toArray === "function") {
+            lazyResult = lazyResult.toArray();
+          }
+          if (typeof slothResult.force === "function") {
+            slothResult = slothResult.force();
+          }
+          expect(lazyResult).toEqual(slothResult);
+        });
+      }
     }
 
     inputs.each(function(input) {
@@ -510,7 +538,7 @@
         return false;
       }
 
-      var resultsPerBenchmark = window.COMPARE_ALL_LIBS ? 10 : 3;
+      var resultsPerBenchmark = window.COMPARE_ALL_LIBS ? 11 : 3;
 
       var currentResultSet = [];
       benchmarkSuite.on("cycle", function(e) {
@@ -534,6 +562,7 @@
             benchmarkResults.from = currentResultSet[7];
             benchmarkResults.ix = currentResultSet[8];
             benchmarkResults.boiler = currentResultSet[9];
+            benchmarkResults.sloth = currentResultSet[10];
           }
 
           addBenchmarkResultToTable(benchmarkResults);

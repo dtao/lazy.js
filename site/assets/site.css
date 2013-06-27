@@ -243,12 +243,12 @@ table td {
 
 .full-comparisons .benchmark-results-table th,
 .full-comparisons .benchmark-results-table td {
-  width: 8%;
+  width: 7.5%;
 }
 
 .full-comparisons .benchmark-results-table th:first-child,
 .full-comparisons .benchmark-results-table td:first-child {
-  width: 20%;
+  width: 17.5%;
 }
 
 #test-results-table th:first-child,
