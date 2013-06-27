@@ -45,13 +45,32 @@ def syntax_highlight!(fragment)
   end
 end
 
-# This is a simple hack to render single-line strings (or anyway, short text)
-# from Markdown to HTML without wrapping in a <p> element.
 def simple_markdown(text)
   return "" if text.nil?
   @renderer ||= Redcarpet::Markdown.new(Redcarpet::Render::HTML)
-  html = @renderer.render(text)[3...-3]
-  html.gsub(/\{@link ([^}]*)\}/, '<code>\1</code>')
+
+  # HTML => Markdown
+  html = @renderer.render(text)
+
+  # Parse that HTML
+  fragment = Nokogiri::HTML.fragment(html)
+
+  # If it's just a single <p> element, let's strip out the <p>.
+  if fragment.children.count == 1 && fragment.children[0].name =~ /^P$/i
+    html = html[3..-4]
+
+  # Otherwise, do syntax highlighting! (This might be a big fragment w/
+  # examples and such.)
+  else
+    syntax_highlight!(fragment)
+    html = fragment.inner_html
+  end
+
+  html.gsub(/\{@link ([^\.#}]+)?([\.#][^}]+)?\}/) do |match|
+    file = $1 ? "#{$1}.html" : ""
+    anchor = $2 ? "#" + $2[1..-1] : ""
+    "<a class='internal-link' href='#{file}#{anchor}'><code>#{$1}#{$2}</code></a>"
+  end
 end
 
 def normalize_methods!(methods)
