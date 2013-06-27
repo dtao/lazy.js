@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Lazy.js API Docs - Lazy</title>
 <link rel="stylesheet" type="text/css" href="docs.css">
-<script type="text/javascript" src="../site/lib/jquery.js"></script><script type="text/javascript" src="../site/common.js"></script>
+<script type="text/javascript" src="../site/lib/jquery.js"></script><script type="text/javascript" src="../site/common.js"></script><script type="text/javascript" src="docs.js"></script>
 </head>
 <body id="top">
   <header><h1><a href="../index.html">lazy.js</a></h1>
@@ -26,15 +26,19 @@
             Lazy
             <small>Lazy</small>
           </h2>
-          <p class="description">Wraps an object and returns something lazy.</p>
+          <div class="description">
+<p>Wraps an object and returns a <a class="internal-link" href="Sequence.html"><code>Sequence</code></a>.</p>
 
 <ul>
 <li>For <strong>arrays</strong>, Lazy will create a sequence comprising the elements in
-the array.</li>
-<li>For <strong>objects</strong>, Lazy will create a sequence of key/value pairs.</li>
-<li>For <strong>strings</strong>, Lazy will create a sequence of characters.</li>
-
-        </ul></header><h3>Example</h3>
+the array (an <a class="internal-link" href="ArrayLikeSequence.html"><code>ArrayLikeSequence</code></a>).</li>
+<li>For <strong>objects</strong>, Lazy will create a sequence of key/value pairs
+(an <a class="internal-link" href="ObjectLikeSequence.html"><code>ObjectLikeSequence</code></a>).</li>
+<li>For <strong>strings</strong>, Lazy will create a sequence of characters (a
+<a class="internal-link" href="StringLikeSequence.html"><code>StringLikeSequence</code></a>).</li>
+</ul>
+</div>
+        </header><h3>Example</h3>
         <div class="highlight"><pre><span class="kd">var</span> <span class="nx">fromArray</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]);</span>
 <span class="c1">// =&gt; Lazy.ArrayLikeSequence</span>
 
@@ -54,7 +58,7 @@ the array.</li>
           </tr>
 <tr>
 <td>source</td>
-            <td>*</td>
+            <td>Array|Object|string</td>
             <td>An array, object, or string to wrap.</td>
           </tr>
 </table>
@@ -72,8 +76,8 @@ the array.</li>
             generate
             <small>Lazy.generate</small>
           </h2>
-          <p class="description">Creates a <code>GeneratedSequence</code> using the specified generator function
-and (optionally) length.</p>
+          <div class="description">Creates a <a class="internal-link" href="GeneratedSequence.html"><code>GeneratedSequence</code></a> using the specified generator function
+and (optionally) length.</div>
         </header><h3>Example</h3>
         <div class="highlight"><pre><span class="kd">var</span> <span class="nx">randomNumbers</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">generate</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">);</span>
 <span class="c1">// =&gt; sequence: (0.4838115070015192, 0.637410914292559, ...)</span>
@@ -123,8 +127,8 @@ and (optionally) length.</p>
             range
             <small>Lazy.range</small>
           </h2>
-          <p class="description">Creates a sequence from a given starting value, up to a specified stopping
-value, incrementing by a given step.</p>
+          <div class="description">Creates a sequence from a given starting value, up to a specified stopping
+value, incrementing by a given step.</div>
         </header><h3>Example</h3>
         <div class="highlight"><pre><span class="kd">var</span> <span class="nx">integers</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">range</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
 <span class="c1">// =&gt; sequence: (0, 1, ..., 9)</span>
@@ -151,11 +155,14 @@ value, incrementing by a given step.</p>
             repeat
             <small>Lazy.repeat</small>
           </h2>
-          <p class="description">Creates a sequence consisting of the given value repeated a specified number
-of times.</p>
+          <div class="description">Creates a sequence consisting of the given value repeated a specified number
+of times.</div>
         </header><h3>Example</h3>
         <div class="highlight"><pre><span class="kd">var</span> <span class="nx">hihihi</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">repeat</span><span class="p">(</span><span class="s2">"hi"</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
 <span class="c1">// =&gt; sequence: ("hi", "hi", "hi")</span>
+
+<span class="kd">var</span> <span class="nx">foreverYoung</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">repeat</span><span class="p">(</span><span class="s2">"young"</span><span class="p">);</span>
+<span class="c1">// =&gt; sequence: ("young", "young", ...)</span>
 </pre></div>
         
         <h3>Parameters</h3>

@@ -3,6 +3,61 @@
    * The `Sequence` object provides a unified API encapsulating the notion of
    * zero or more consecutive elements in a collection, stream, etc.
    *
+   * Lazy evaluation
+   * ---------------
+   *
+   * Generally speaking, creating a sequence should not be an expensive operation,
+   * and should not iterate over an underlying source or trigger any side effects.
+   * This means that chaining together methods that return sequences incurs only
+   * the cost of creating the `Sequence` objects themselves and not the cost of
+   * iterating an underlying data source multiple times.
+   *
+   * The following code, for example, creates 4 sequences and does nothing with
+   * `source`:
+   *
+   *     var seq = Lazy(source) // 1st sequence
+   *       .map(func)           // 2nd
+   *       .filter(pred)        // 3rd
+   *       .reverse();          // 4th
+   *
+   * Lazy's convention is to hold off on iterating or otherwise *doing* anything
+   * (aside from creating `Sequence` objects) until you call `each`:
+   *
+   *     seq.each(function(x) { console.log(x); });
+   *
+   * Defining custom sequences
+   * -------------------------
+   *
+   * Defining your own type of sequence is relatively simple:
+   *
+   * 1. Pass a constructor function to `Sequence.inherit`. By convention, this
+   *    function should *at least* accept a `parent` parameter, which will be set
+   *    to the underlying sequence.
+   * 2. Define an `each` method on this new function's prototype, which accepts
+   *    a function as a parameter and calls `this.parent.each` to fetch elements
+   *    one by one from the underlying sequence.
+   *
+   * As a trivial example, the following code defines a new type of sequence
+   * called `SampleSequence` which randomly may or may not include each element
+   * from its parent.
+   *
+   *     var SampleSequence = Sequence.inherit(function(parent) {
+   *       this.parent = parent;
+   *     });
+   *
+   *     SampleSequence.prototype.each = function(fn) {
+   *       this.parent.each(function(e) {
+   *         // 50/50 chance of including this element.
+   *         if (Math.random() > 0.5) {
+   *           return fn(e);
+   *         }
+   *       });
+   *     };
+   *
+   * (Of course, the above could also easily have been implemented using
+   * {@link #filter} instead of creating a custom sequence. But I *did* say this
+   * was a trivial example, to be fair.)
+   *
    * @constructor
    */
   function Sequence() {}
@@ -92,7 +147,18 @@
    *
    * @example
    * var subordinates = [joe, bill, wendy];
-   * Lazy(subordinates).forEach(function(s) { s.reprimand(); });
+   * Lazy(subordinates).each(function(s) { s.reprimand(); });
+   */
+  Sequence.prototype.each = function(fn) {
+    // Calling each on an empty sequence does nothing.
+  };
+
+  /**
+   * Alias for {@link Sequence#each}.
+   *
+   * @function forEach
+   * @memberOf Sequence
+   * @instance
    */
   Sequence.prototype.forEach = function(fn) {
     this.each(fn);
@@ -666,7 +732,7 @@
   };
 
   /**
-   * Alias for {@link Sequence#evert}.
+   * Alias for {@link Sequence#every}.
    *
    * @function all
    * @memberOf Sequence
@@ -1069,7 +1135,7 @@
    * @param {number=} interval The approximate period, in milliseconds, that
    *     should elapse between each element in the resulting sequence. Omitting
    *     this argument will result in the fastest possible asynchronous iteration.
-   * @return {Sequence} The new asynchronous sequence.
+   * @return {AsyncSequence} The new asynchronous sequence.
    *
    * @example
    * Lazy([1, 2, 3]).async(1000).each(function(x) {
@@ -1082,15 +1148,15 @@
   };
 
   /**
-   * A CachingSequence is a {@link Sequence} that (probably) must fully evaluate
-   * the underlying sequence when {@link each} is called. For this reason, it
-   * provides a {@link cache} method to fully populate an array that can then be
+   * A CachingSequence is a `Sequence` that (probably) must fully evaluate the
+   * underlying sequence when {@link #each} is called. For this reason, it
+   * provides a {@link #cache} method to fully populate an array that can then be
    * referenced internally.
    *
    * Frankly, I question the wisdom in this sequence type and think I will
    * probably refactor this out in the near future. Most likely I will replace it
    * with something like an 'IteratingSequence' which must expose a 'getIterator'
-   * and not provide {@link get} or {@link length} at all. But we'll see.
+   * and not provide {@link #get} or {@link #length} at all. But we'll see.
    *
    * @constructor
    */
@@ -1100,11 +1166,11 @@
 
   /**
    * Create a new constructor function for a type inheriting from
-   * {@link CachingSequence}.
+   * `CachingSequence`.
    *
    * @param {Function} ctor The constructor function.
    * @return {Function} A constructor for a new type inheriting from
-   *     {@link CachingSequence}.
+   *     `CachingSequence`.
    */
   CachingSequence.inherit = function(ctor) {
     ctor.prototype = new CachingSequence();
@@ -1569,10 +1635,10 @@
   };
 
   /**
-   * An `ArrayLikeSequence` is a {@link Sequence} that provides random access to its
-   * elements. This extends the API for iterating with the additional methods
-   * `get` and `length`, allowing a sequence to act as a "view" into a collection
-   * or other indexed data source.
+   * An `ArrayLikeSequence` is a {@link Sequence} that provides random access to
+   * its elements. This extends the API for iterating with the additional methods
+   * {@link #get} and {@link #length}, allowing a sequence to act as a "view" into
+   * a collection or other indexed data source.
    *
    * @constructor
    */
@@ -1582,11 +1648,11 @@
 
   /**
    * Create a new constructor function for a type inheriting from
-   * {@link ArrayLikeSequence}.
+   * `ArrayLikeSequence`.
    *
    * @param {Function} ctor The constructor function.
    * @return {Function} A constructor for a new type inheriting from
-   *     {@link ArrayLikeSequence}.
+   *     `ArrayLikeSequence`.
    */
   ArrayLikeSequence.inherit = function(ctor) {
     ctor.prototype = new ArrayLikeSequence();
@@ -1613,7 +1679,7 @@
   };
 
   /**
-   * An optimized version of {@link Sequence.each}.
+   * An optimized version of {@link Sequence#each}.
    */
   ArrayLikeSequence.prototype.each = function(fn) {
     var length = this.length(),
@@ -1626,8 +1692,8 @@
   };
 
   /**
-   * An optimized version of {@link Sequence.map}, which creates an
-   * {@link ArrayLikeSequence} so that the result still provides random access.
+   * An optimized version of {@link Sequence#map}, which creates an
+   * `ArrayLikeSequence` so that the result still provides random access.
    *
    * @return {ArrayLikeSequence} The new array-like sequence.
    */
@@ -1647,16 +1713,16 @@
   ArrayLikeSequence.prototype.filter = ArrayLikeSequence.prototype.select;
 
   /**
-   * An optimized version of {@link Sequence.reverse}, which creates an
-   * {@link ArrayLikeSequence} so that the result still provides random access.
+   * An optimized version of {@link Sequence#reverse}, which creates an
+   * `ArrayLikeSequence` so that the result still provides random access.
    */
   ArrayLikeSequence.prototype.reverse = function() {
     return new IndexedReversedSequence(this);
   };
 
   /**
-   * An optimized version of {@link Sequence.first}, which creates an
-   * {@link ArrayLikeSequence} so that the result still provides random access.
+   * An optimized version of {@link Sequence#first}, which creates an
+   * `ArrayLikeSequence` so that the result still provides random access.
    *
    * @param {number=} count
    */
@@ -1673,8 +1739,8 @@
   ArrayLikeSequence.prototype.first;
 
   /**
-   * An optimized version of {@link Sequence.rest}, which creates an
-   * {@link ArrayLikeSequence} so that the result still provides random access.
+   * An optimized version of {@link Sequence#rest}, which creates an
+   * `ArrayLikeSequence` so that the result still provides random access.
    *
    * @param {number=} count
    */
@@ -1784,7 +1850,7 @@
   };
 
   /**
-   * An optimized version of {@link Sequence.each}.
+   * An optimized version of {@link Sequence#each}.
    */
   ArrayWrapper.prototype.each = function(fn) {
     var i = -1;
@@ -1796,21 +1862,23 @@
   };
 
   /**
-   * An optimized version of {@link Sequence.map}.
+   * An optimized version of {@link Sequence#map}.
    */
-  ArrayWrapper.prototype.map = function(mapFn) {
+  ArrayWrapper.prototype.map =
+  ArrayWrapper.prototype.collect = function(mapFn) {
     return new MappedArrayWrapper(this.source, mapFn);
   };
 
   /**
-   * An optimized version of {@link Sequence.filter}.
+   * An optimized version of {@link Sequence#filter}.
    */
-  ArrayWrapper.prototype.filter = function(filterFn) {
+  ArrayWrapper.prototype.filter =
+  ArrayWrapper.prototype.select = function(filterFn) {
     return new FilteredArrayWrapper(this, filterFn);
   };
 
   /**
-   * An optimized version of {@link Sequence.uniq}.
+   * An optimized version of {@link Sequence#uniq}.
    */
   ArrayWrapper.prototype.uniq =
   ArrayWrapper.prototype.unique = function() {
@@ -1818,7 +1886,7 @@
   };
 
   /**
-   * An optimized version of {@link Sequence.toArray}.
+   * An optimized version of {@link Sequence#toArray}.
    */
   ArrayWrapper.prototype.toArray = function() {
     return this.source.slice(0);
@@ -1931,12 +1999,17 @@
 
   UniqueArrayWrapper.prototype.eachSetCache = UniqueSequence.prototype.each;
 
-  // So, this is kinda shocking.
-  // Soon I'll write a whole blog post about this; but for now suffice it to say
-  // that going w/ a no-cache approach is the fastest solution until around 200
-  // elements, at which point using an array-based cache is still faster than
-  // using a set-based cache. Not until somewhere around 800 elements does a set-
-  // based approach start to outpace the others.
+  /**
+   * So, this is kinda shocking.
+   * Soon I'll write a whole blog post about this; but for now suffice it to say
+   * that going w/ a no-cache approach is the fastest solution until around 200
+   * elements, at which point using an array-based cache is still faster than
+   * using a set-based cache. Not until somewhere around 800 elements does a set-
+   * based approach start to outpace the others.
+   *
+   * UPDATE: Scratch that. The array-based cache outperforms the no-cache approach
+   * after 40 elements or so. I'm scratching my head over this one now...
+   */
   function getEachForSource(source) {
     if (source.length < 40) {
       return UniqueArrayWrapper.prototype.eachNoCache;
@@ -1946,7 +2019,6 @@
       return UniqueSequence.prototype.each;
     }
   }
-
 
   /**
    * An `ObjectLikeSequence` object represents a sequence of key/value pairs.
@@ -2000,8 +2072,8 @@
   };
 
   /**
-   * Returns an {@link ObjectLikeSequence} whose elements are the combination of
-   * this sequence and another object. In the case of a key appearing in both this
+   * Returns an `ObjectLikeSequence` whose elements are the combination of this
+   * sequence and another object. In the case of a key appearing in both this
    * sequence and the given object, the other object's value will override the
    * one in this sequence.
    *
@@ -2030,9 +2102,9 @@
   ObjectLikeSequence.prototype.extend = ObjectLikeSequence.prototype.assign;
 
   /**
-   * Returns an {@link ObjectLikeSequence} whose elements are the combination of
-   * this sequence and a 'default' object. In the case of a key appearing in both
-   * this sequence and the given object, this sequence's value will override the
+   * Returns an `ObjectLikeSequence` whose elements are the combination of this
+   * sequence and a 'default' object. In the case of a key appearing in both this
+   * sequence and the given object, this sequence's value will override the
    * default object's.
    *
    * @param {Object} defaults The 'default' object to use for missing keys in this
@@ -2049,8 +2121,8 @@
   };
 
   /**
-   * Returns an {@link ObjectLikeSequence} whose values are this sequence's keys,
-   * and whose keys are this sequence's values.
+   * Returns an `ObjectLikeSequence` whose values are this sequence's keys, and
+   * whose keys are this sequence's values.
    *
    * @return {ObjectLikeSequence} A new sequence comprising the inverted keys and
    *     values from this sequence.
@@ -2096,8 +2168,8 @@
   ObjectLikeSequence.prototype.methods = ObjectLikeSequence.prototype.functions;
 
   /**
-   * Creates an {@link ObjectLikeSequence} consisting of the key/value pairs from
-   * this sequence whose keys are included in the given array of property names.
+   * Creates an `ObjectLikeSequence` consisting of the key/value pairs from this
+   * sequence whose keys are included in the given array of property names.
    *
    * @param {Array} properties An array of the properties to "pick" from this
    *     sequence.
@@ -2117,16 +2189,59 @@
     return new PickSequence(this, properties);
   };
 
+  /**
+   * Creates an `ObjectLikeSequence` consisting of the key/value pairs from this
+   * sequence excluding those with the specified keys.
+   *
+   * @param {Array} properties An array of the properties to *omit* from this
+   *     sequence.
+   * @return {ObjectLikeSequence} The new sequence.
+   *
+   * @example
+   * var players = {
+   *   "who": "first",
+   *   "what": "second",
+   *   "i don't know", "third"
+   * };
+   *
+   * Lazy(players).omit(["who", "what"]);
+   * // => sequence: (("i don't know", "third"))
+   */
   ObjectLikeSequence.prototype.omit = function(properties) {
     return new OmitSequence(this, properties);
   };
 
+  /**
+   * Creates an array from the key/value pairs in this sequence.
+   *
+   * @return {Array} An array of `[key, value]` elements.
+   *
+   * @example
+   * Lazy({ red: "#f00", green: "#0f0", blue: "#00f" }).toArray();
+   * // => [["red", "#f00"], ["green", "#0f0"], ["blue", "#00f"]]
+   */
   ObjectLikeSequence.prototype.toArray = function() {
     return this.map(function(v, k) { return [k, v]; }).toArray();
   };
 
+  /**
+   * Alias for {@link ObjectLikeSequence#toArray}.
+   *
+   * @function pairs
+   * @memberOf ObjectLikeSequence
+   * @instance
+   */
   ObjectLikeSequence.prototype.pairs = ObjectLikeSequence.prototype.toArray;
 
+  /**
+   * Creates an object with the key/value pairs from this sequence.
+   *
+   * @return {Object} An object with the same key/value pairs as this sequence.
+   *
+   * @example
+   * Lazy({ red: "#f00", green: "#0f0", blue: "#00f" }).toObject();
+   * // => { red: "#f00", green: "#0f0", blue: "#00f" }
+   */
   ObjectLikeSequence.prototype.toObject = function() {
     return this.map(function(v, k) { return [k, v]; }).toObject();
   };
@@ -2313,8 +2428,8 @@
   };
 
   /**
-   * Creates a sequence comprising all of the matches for the specified pattern
-   * in the underlying string.
+   * Creates a {@link Sequence} comprising all of the matches for the specified
+   * pattern in the underlying string.
    *
    * @param {RegExp} pattern The pattern to match.
    * @return {Sequence} A sequence of all the matches.
@@ -2324,8 +2439,9 @@
   };
 
   /**
-   * Creates a sequence comprising all of the substrings of this string separated
-   * by the given delimiter, which can be either a string or a regular expression.
+   * Creates a {@link Sequence} comprising all of the substrings of this string
+   * separated by the given delimiter, which can be either a string or a regular
+   * expression.
    *
    * @param {string|RegExp} delimiter The delimiter to use for recognizing
    *     substrings.
@@ -2383,10 +2499,10 @@
   };
 
   /**
-   * Wraps a string exposing {@link match} and {@link split} methods that return
+   * Wraps a string exposing {@link #match} and {@link #split} methods that return
    * {@link Sequence} objects instead of arrays, improving on the efficiency of
-   * JavaScript's built-in {@link String.split} and {@link String.match} methods
-   * and supporting asynchronous iteration.
+   * JavaScript's built-in `String#split` and `String.match` methods and
+   * supporting asynchronous iteration.
    *
    * @param {string} source The string to wrap.
    * @constructor
@@ -2447,7 +2563,7 @@
   };
 
   /**
-   * An AsyncSequence iterates over its elements asynchronously when {@link each}
+   * An AsyncSequence iterates over its elements asynchronously when {@link #each}
    * is called.
    *
    * @param {Sequence} parent A {@link Sequence} to wrap, to expose asynchronous
@@ -2469,7 +2585,7 @@
   AsyncSequence.prototype = new Sequence();
 
   /**
-   * An asynchronous version of {@link Sequence.each}.
+   * An asynchronous version of {@link Sequence#each}.
    */
   AsyncSequence.prototype.each = function(fn) {
     var iterator = this.parent.getIterator(),
@@ -2578,14 +2694,16 @@
   };
 
   /**
-   * Wraps an object and returns something lazy.
+   * Wraps an object and returns a {@link Sequence}.
    *
    * - For **arrays**, Lazy will create a sequence comprising the elements in
-   *   the array.
-   * - For **objects**, Lazy will create a sequence of key/value pairs.
-   * - For **strings**, Lazy will create a sequence of characters.
+   *   the array (an {@link ArrayLikeSequence}).
+   * - For **objects**, Lazy will create a sequence of key/value pairs
+   *   (an {@link ObjectLikeSequence}).
+   * - For **strings**, Lazy will create a sequence of characters (a
+   *   {@link StringLikeSequence}).
    *
-   * @param {*} source An array, object, or string to wrap.
+   * @param {Array|Object|string} source An array, object, or string to wrap.
    * @return {Sequence} The wrapped lazy object.
    *
    * @example
@@ -2599,12 +2717,12 @@
    * // => Lazy.StringLikeSequence
    */
   var Lazy = function(source) {
-    if (source instanceof Sequence) {
-      return source;
+    if (source instanceof Array) {
+      return new ArrayWrapper(source);
     } else if (typeof source === "string") {
       return new StringWrapper(source);
-    } else if (source instanceof Array) {
-      return new ArrayWrapper(source);
+    } else if (source instanceof Sequence) {
+      return source;
     }
     return new ObjectWrapper(source);
   };
@@ -2673,6 +2791,9 @@
    * @example
    * var hihihi = Lazy.repeat("hi", 3);
    * // => sequence: ("hi", "hi", "hi")
+   *
+   * var foreverYoung = Lazy.repeat("young");
+   * // => sequence: ("young", "young", ...)
    */
   Lazy.repeat = function(value, count) {
     return Lazy.generate(function() { return value; }, count);
@@ -2690,8 +2811,8 @@
   /**
    * Creates a Set containing the specified values.
    *
-   * @param {...*} values One or more values (or array(s) of values) used to
-   *     populate the set.
+   * @param {...Array} values One or more array(s) of values used to populate the
+   *     set.
    * @return {Set} A new set containing the values passed in.
    */
   function createSet(values) {

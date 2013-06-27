@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Lazy.js API Docs - StringLikeSequence</title>
 <link rel="stylesheet" type="text/css" href="docs.css">
-<script type="text/javascript" src="../site/lib/jquery.js"></script><script type="text/javascript" src="../site/common.js"></script>
+<script type="text/javascript" src="../site/lib/jquery.js"></script><script type="text/javascript" src="../site/common.js"></script><script type="text/javascript" src="docs.js"></script>
 </head>
 <body id="top">
   <header><h1><a href="../index.html">lazy.js</a></h1>
@@ -28,33 +28,35 @@
             StringLikeSequence
             <small>StringLikeSequence</small>
           </h2>
-          <p class="description">A <code>StringLikeSequence</code> represents a sequence of characters.</p>
+          <div class="description">
+<p>A <code>StringLikeSequence</code> represents a sequence of characters.</p>
 
 <p>TODO: The idea for this prototype is to be able to do things like represent
 "substrings" without actually allocating new strings. Right now that
 isn't implemented at all, though (every method assumes an actual string as
 <code>source</code>).</p>
+</div>
         </header></section><section id="charAt" class="method" style="display: none;"><header><h2>
             charAt
             <small>StringLikeSequence#charAt</small>
           </h2>
-          <p class="description"></p>
+          <div class="description"></div>
         </header></section><section id="each" class="method" style="display: none;"><header><h2>
             each
             <small>StringLikeSequence#each</small>
           </h2>
-          <p class="description"></p>
+          <div class="description"></div>
         </header></section><section id="getIterator" class="method" style="display: none;"><header><h2>
             getIterator
             <small>StringLikeSequence#getIterator</small>
           </h2>
-          <p class="description"></p>
+          <div class="description"></div>
         </header></section><section id="match" class="method" style="display: none;"><header><h2>
             match
             <small>StringLikeSequence#match</small>
           </h2>
-          <p class="description">Creates a sequence comprising all of the matches for the specified pattern
-in the underlying string.</p>
+          <div class="description">Creates a <a class="internal-link" href="Sequence.html"><code>Sequence</code></a> comprising all of the matches for the specified
+pattern in the underlying string.</div>
         </header><h3>Parameters</h3>
         <table class="params">
 <tr>
@@ -82,8 +84,9 @@ in the underlying string.</p>
             split
             <small>StringLikeSequence#split</small>
           </h2>
-          <p class="description">Creates a sequence comprising all of the substrings of this string separated
-by the given delimiter, which can be either a string or a regular expression.</p>
+          <div class="description">Creates a <a class="internal-link" href="Sequence.html"><code>Sequence</code></a> comprising all of the substrings of this string
+separated by the given delimiter, which can be either a string or a regular
+expression.</div>
         </header><h3>Parameters</h3>
         <table class="params">
 <tr>

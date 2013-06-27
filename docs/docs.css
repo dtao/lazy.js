@@ -95,8 +95,14 @@ section.methods {
   padding: 0 20px;
 }
 
-section.method h2 a {
-  text-decoration: none;
+section.method h2 {
+  font-size: 34px;
+  font-weight: normal;
+}
+
+section.method .description h2 {
+  font-size: 28px;
+  font-weight: normal;
 }
 
 section.method table {

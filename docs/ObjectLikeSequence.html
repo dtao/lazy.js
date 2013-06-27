@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Lazy.js API Docs - ObjectLikeSequence</title>
 <link rel="stylesheet" type="text/css" href="docs.css">
-<script type="text/javascript" src="../site/lib/jquery.js"></script><script type="text/javascript" src="../site/common.js"></script>
+<script type="text/javascript" src="../site/lib/jquery.js"></script><script type="text/javascript" src="../site/common.js"></script><script type="text/javascript" src="docs.js"></script>
 </head>
 <body id="top">
   <header><h1><a href="../index.html">lazy.js</a></h1>
@@ -28,6 +28,7 @@
         <li><a href="#keys">keys</a></li>
         <li><a href="#methods">methods</a></li>
         <li><a href="#omit">omit</a></li>
+        <li><a href="#pairs">pairs</a></li>
         <li><a href="#pick">pick</a></li>
         <li><a href="#toArray">toArray</a></li>
         <li><a href="#toObject">toObject</a></li>
@@ -36,15 +37,15 @@
             ObjectLikeSequence
             <small>ObjectLikeSequence</small>
           </h2>
-          <p class="description">An <code>ObjectLikeSequence</code> object represents a sequence of key/value pairs.</p>
+          <div class="description">An <code>ObjectLikeSequence</code> object represents a sequence of key/value pairs.</div>
         </header></section><section id="assign" class="method" style="display: none;"><header><h2>
             assign
             <small>ObjectLikeSequence#assign</small>
           </h2>
-          <p class="description">Returns an <code>ObjectLikeSequence</code> whose elements are the combination of
-this sequence and another object. In the case of a key appearing in both this
+          <div class="description">Returns an <code>ObjectLikeSequence</code> whose elements are the combination of this
+sequence and another object. In the case of a key appearing in both this
 sequence and the given object, the other object's value will override the
-one in this sequence.</p>
+one in this sequence.</div>
         </header><h3>Example</h3>
         <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">({</span> <span class="s2">"uno"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"dos"</span><span class="o">:</span> <span class="mi">2</span> <span class="p">}).</span><span class="nx">assign</span><span class="p">({</span> <span class="s2">"tres"</span><span class="o">:</span> <span class="mi">3</span> <span class="p">});</span>
 <span class="c1">// =&gt; sequence: (("uno", 1), ("dos", 2), ("tres", 3))</span>
@@ -81,10 +82,10 @@ one in this sequence.</p>
             defaults
             <small>ObjectLikeSequence#defaults</small>
           </h2>
-          <p class="description">Returns an <code>ObjectLikeSequence</code> whose elements are the combination of
-this sequence and a 'default' object. In the case of a key appearing in both
-this sequence and the given object, this sequence's value will override the
-default object's.</p>
+          <div class="description">Returns an <code>ObjectLikeSequence</code> whose elements are the combination of this
+sequence and a 'default' object. In the case of a key appearing in both this
+sequence and the given object, this sequence's value will override the
+default object's.</div>
         </header><h3>Example</h3>
         <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">({</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">"Dan"</span> <span class="p">}).</span><span class="nx">defaults</span><span class="p">({</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">"User"</span><span class="p">,</span> <span class="nx">password</span><span class="o">:</span> <span class="s2">"passw0rd"</span> <span class="p">});</span>
 <span class="c1">// =&gt; sequence: (("name", "Dan"), ("password", "passw0rd"))</span>
@@ -119,13 +120,13 @@ default object's.</p>
             extend
             <small>ObjectLikeSequence#extend</small>
           </h2>
-          <p class="description">Alias for <code>ObjectLikeSequence#assign</code>.</p>
+          <div class="description">Alias for <a class="internal-link" href="ObjectLikeSequence.html#assign"><code>ObjectLikeSequence#assign</code></a>.</div>
         </header></section><section id="functions" class="method" style="display: none;"><header><h2>
             functions
             <small>ObjectLikeSequence#functions</small>
           </h2>
-          <p class="description">Creates a <code>Sequence</code> consisting of the keys from this sequence whose
-    values are functions.</p>
+          <div class="description">Creates a <a class="internal-link" href="Sequence.html"><code>Sequence</code></a> consisting of the keys from this sequence whose
+    values are functions.</div>
         </header><h3>Example</h3>
         <div class="highlight"><pre><span class="kd">var</span> <span class="nx">dog</span> <span class="o">=</span> <span class="p">{</span>
   <span class="nx">name</span><span class="o">:</span> <span class="s2">"Fido"</span><span class="p">,</span>
@@ -153,7 +154,7 @@ default object's.</p>
             get
             <small>ObjectLikeSequence#get</small>
           </h2>
-          <p class="description">Gets the element at the specified key in this sequence.</p>
+          <div class="description">Gets the element at the specified key in this sequence.</div>
         </header><h3>Example</h3>
         <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">({</span> <span class="nx">foo</span><span class="o">:</span> <span class="s2">"bar"</span> <span class="p">}).</span><span class="nx">get</span><span class="p">(</span><span class="s2">"foo"</span><span class="p">);</span>
 <span class="c1">// =&gt; "bar"</span>
@@ -186,8 +187,8 @@ default object's.</p>
             invert
             <small>ObjectLikeSequence#invert</small>
           </h2>
-          <p class="description">Returns an <code>ObjectLikeSequence</code> whose values are this sequence's keys,
-and whose keys are this sequence's values.</p>
+          <div class="description">Returns an <code>ObjectLikeSequence</code> whose values are this sequence's keys, and
+whose keys are this sequence's values.</div>
         </header><h3>Example</h3>
         <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">({</span> <span class="nx">first</span><span class="o">:</span> <span class="s2">"Dan"</span><span class="p">,</span> <span class="nx">last</span><span class="o">:</span> <span class="s2">"Tao"</span> <span class="p">}).</span><span class="nx">invert</span><span class="p">();</span>
 <span class="c1">// =&gt; sequence: (("Dan", "first"), ("Tao", "last"))</span>
@@ -209,8 +210,8 @@ and whose keys are this sequence's values.</p>
             keys
             <small>ObjectLikeSequence#keys</small>
           </h2>
-          <p class="description">Returns a <code>Sequence</code> whose elements are the keys of this object-like
-sequence.</p>
+          <div class="description">Returns a <a class="internal-link" href="Sequence.html"><code>Sequence</code></a> whose elements are the keys of this object-like
+sequence.</div>
         </header><h3>Example</h3>
         <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">({</span> <span class="nx">hello</span><span class="o">:</span> <span class="s2">"hola"</span><span class="p">,</span> <span class="nx">goodbye</span><span class="o">:</span> <span class="s2">"hasta luego"</span> <span class="p">}).</span><span class="nx">keys</span><span class="p">();</span>
 <span class="c1">// =&gt; sequence: ("hello", "goodbye")</span>
@@ -231,18 +232,59 @@ sequence.</p>
             methods
             <small>ObjectLikeSequence#methods</small>
           </h2>
-          <p class="description">Alias for <code>ObjectLikeSequence#functions</code>.</p>
+          <div class="description">Alias for <a class="internal-link" href="ObjectLikeSequence.html#functions"><code>ObjectLikeSequence#functions</code></a>.</div>
         </header></section><section id="omit" class="method" style="display: none;"><header><h2>
             omit
             <small>ObjectLikeSequence#omit</small>
           </h2>
-          <p class="description"></p>
+          <div class="description">Creates an <code>ObjectLikeSequence</code> consisting of the key/value pairs from this
+sequence excluding those with the specified keys.</div>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">players</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s2">"who"</span><span class="o">:</span> <span class="s2">"first"</span><span class="p">,</span>
+  <span class="s2">"what"</span><span class="o">:</span> <span class="s2">"second"</span><span class="p">,</span>
+  <span class="s2">"i don't know"</span><span class="p">,</span> <span class="s2">"third"</span>
+<span class="p">};</span>
+
+<span class="nx">Lazy</span><span class="p">(</span><span class="nx">players</span><span class="p">).</span><span class="nx">omit</span><span class="p">([</span><span class="s2">"who"</span><span class="p">,</span> <span class="s2">"what"</span><span class="p">]);</span>
+<span class="c1">// =&gt; sequence: (("i don't know", "third"))</span>
+</pre></div>
+        
+        <h3>Parameters</h3>
+        <table class="params">
+<tr>
+<th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>properties</td>
+            <td>Array</td>
+            <td>An array of the properties to <em>omit</em> from this
+    sequence.</td>
+          </tr>
+</table>
+<h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>ObjectLikeSequence</td>
+            <td>The new sequence.</td>
+          </tr>
+</table></section><section id="pairs" class="method" style="display: none;"><header><h2>
+            pairs
+            <small>ObjectLikeSequence#pairs</small>
+          </h2>
+          <div class="description">Alias for <a class="internal-link" href="ObjectLikeSequence.html#toArray"><code>ObjectLikeSequence#toArray</code></a>.</div>
         </header></section><section id="pick" class="method" style="display: none;"><header><h2>
             pick
             <small>ObjectLikeSequence#pick</small>
           </h2>
-          <p class="description">Creates an <code>ObjectLikeSequence</code> consisting of the key/value pairs from
-this sequence whose keys are included in the given array of property names.</p>
+          <div class="description">Creates an <code>ObjectLikeSequence</code> consisting of the key/value pairs from this
+sequence whose keys are included in the given array of property names.</div>
         </header><h3>Example</h3>
         <div class="highlight"><pre><span class="kd">var</span> <span class="nx">players</span> <span class="o">=</span> <span class="p">{</span>
   <span class="s2">"who"</span><span class="o">:</span> <span class="s2">"first"</span><span class="p">,</span>
@@ -282,18 +324,50 @@ this sequence whose keys are included in the given array of property names.</p>
             toArray
             <small>ObjectLikeSequence#toArray</small>
           </h2>
-          <p class="description"></p>
-        </header></section><section id="toObject" class="method" style="display: none;"><header><h2>
+          <div class="description">Creates an array from the key/value pairs in this sequence.</div>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">({</span> <span class="nx">red</span><span class="o">:</span> <span class="s2">"#f00"</span><span class="p">,</span> <span class="nx">green</span><span class="o">:</span> <span class="s2">"#0f0"</span><span class="p">,</span> <span class="nx">blue</span><span class="o">:</span> <span class="s2">"#00f"</span> <span class="p">}).</span><span class="nx">toArray</span><span class="p">();</span>
+<span class="c1">// =&gt; [["red", "#f00"], ["green", "#0f0"], ["blue", "#00f"]]</span>
+</pre></div>
+        
+        
+        <h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>Array</td>
+            <td>An array of <code>[key, value]</code> elements.</td>
+          </tr>
+</table></section><section id="toObject" class="method" style="display: none;"><header><h2>
             toObject
             <small>ObjectLikeSequence#toObject</small>
           </h2>
-          <p class="description"></p>
-        </header></section><section id="values" class="method" style="display: none;"><header><h2>
+          <div class="description">Creates an object with the key/value pairs from this sequence.</div>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">({</span> <span class="nx">red</span><span class="o">:</span> <span class="s2">"#f00"</span><span class="p">,</span> <span class="nx">green</span><span class="o">:</span> <span class="s2">"#0f0"</span><span class="p">,</span> <span class="nx">blue</span><span class="o">:</span> <span class="s2">"#00f"</span> <span class="p">}).</span><span class="nx">toObject</span><span class="p">();</span>
+<span class="c1">// =&gt; { red: "#f00", green: "#0f0", blue: "#00f" }</span>
+</pre></div>
+        
+        
+        <h3>Returns</h3>
+        <table class="returns">
+<tr>
+<th>Type</th>
+            <th>Description</th>
+          </tr>
+<tr>
+<td>Object</td>
+            <td>An object with the same key/value pairs as this sequence.</td>
+          </tr>
+</table></section><section id="values" class="method" style="display: none;"><header><h2>
             values
             <small>ObjectLikeSequence#values</small>
           </h2>
-          <p class="description">Returns a <code>Sequence</code> whose elements are the values of this object-like
-sequence.</p>
+          <div class="description">Returns a <a class="internal-link" href="Sequence.html"><code>Sequence</code></a> whose elements are the values of this object-like
+sequence.</div>
         </header><h3>Example</h3>
         <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">({</span> <span class="nx">hello</span><span class="o">:</span> <span class="s2">"hola"</span><span class="p">,</span> <span class="nx">goodbye</span><span class="o">:</span> <span class="s2">"hasta luego"</span> <span class="p">}).</span><span class="nx">values</span><span class="p">();</span>
 <span class="c1">// =&gt; sequence: ("hola", "hasta luego")</span>
