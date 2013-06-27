@@ -73,6 +73,9 @@ def normalize_methods!(methods)
 end
 
 namespace :compile do
+  desc "Compile everything (the library, the site, and the API docs)"
+  task :all => [:lib, :site, :docs]
+
   desc "Compile lazy.js"
   task :lib do
     compile_file("lazy.js")
@@ -127,18 +130,8 @@ namespace :compile do
     require "pygments"
     require "redcarpet"
 
-    # OK so here's a hack: I'm going to strip out the first and last lines from
-    # lazy.js so that JSDoc can read the annotations. (There is almost certainly
-    # a more acceptable way to do this; but this is going to work so whatever.)
-    #
-    # Pretty awesome, right?
-    full_source = File.read("lazy.js").lines[1..-2].join
-    File.open("temp.js", "w") do |f|
-      f.write(full_source)
-    end
-
     # Get a JSON representation of our JSDoc comments.
-    classes = JSON.parse(`jsdoc temp.js --template templates/lazy`)
+    classes = JSON.parse(`jsdoc lib --recurse --template templates/lazy`)
 
     # OK, I want to massage this data a little bit...
     classes.each_with_index do |class_data, index|
@@ -149,9 +142,6 @@ namespace :compile do
       class_data["anyStaticMethods"] = class_data["staticMethods"].any?
       class_data["anyInstanceMethods"] = class_data["instanceMethods"].any?
     end
-
-    # I called it temp.js for a reason, you guys!
-    File.delete("temp.js")
 
     Mustache.template_path = "docs/templates"
 
