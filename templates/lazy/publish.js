@@ -53,6 +53,7 @@ exports.publish = function(data, opts) {
     var methods = Lazy(doclets)
       .where({ kind: "function" })
       .filter(function(d) { return nameMatcher.test(d.longname); })
+      .reject(function(d) { return d.meta.filename === "experimental.js"; })
       .reject(isTaggedDebug)
       .map(getMethodData);
 
