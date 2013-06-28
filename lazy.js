@@ -30,9 +30,9 @@
    *
    * Defining your own type of sequence is relatively simple:
    *
-   * 1. Pass a constructor function to `Sequence.inherit`. By convention, this
-   *    function should *at least* accept a `parent` parameter, which will be set
-   *    to the underlying sequence.
+   * 1. Pass a constructor function to {@link Sequence.inherit}. By convention,
+   *    this function should *at least* accept a `parent` parameter, which will be
+   *    set to the underlying sequence.
    * 2. Define an `each` method on this new function's prototype, which accepts
    *    a function as a parameter and calls `this.parent.each` to fetch elements
    *    one by one from the underlying sequence.
@@ -1639,6 +1639,44 @@
    * its elements. This extends the API for iterating with the additional methods
    * {@link #get} and {@link #length}, allowing a sequence to act as a "view" into
    * a collection or other indexed data source.
+   *
+   * Defining custom array-like sequences
+   * ------------------------------------
+   *
+   * Creating a custom `ArrayLikeSequence` is essentially the same as creating a
+   * custom {@link Sequence}. You just have a couple more methods you need to
+   * implement: `get` and (optionally) `length`.
+   *
+   * Here's an example. Let's define a sequence type called `OffsetSequence` that
+   * offsets each of its parent's elements by a set distance, and circles back to
+   * the beginning after reaching the end.
+   *
+   *     var OffsetSequence = ArrayLikeSequence.inherit(function(parent, offset) {
+   *       this.parent = parent;
+   *       this.offset = offset;
+   *     });
+   *
+   *     OffsetSequence.prototype.get = function(i) {
+   *       return this.parent.get((i + this.offset) % this.parent.length());
+   *     };
+   *
+   * It's worth noting a couple of things here.
+   *
+   * First, the default implementation of `length` simply returns the parent's
+   * length. In this case, since an `OffsetSequence` will always have the same
+   * number of elements as its parent, that implementation is fine; so we don't
+   * need to override it.
+   *
+   * Second, the default implementation of `each` uses `get` and `length` to
+   * essentially create a `for` loop, which is fine here. If you want to implement
+   * `each` your own way, you can do that; but in most cases (as here), you can
+   * probably just stick with the default.
+   *
+   * So we're already done, after only implementing `get`! Pretty slick, huh?
+   *
+   * (Also, as with the example provided for defining custom {@link Sequence}
+   * types, this example really could have been implemented using a function
+   * already available as part of Lazy.js: in this case, {@link Sequence#map}.)
    *
    * @constructor
    */

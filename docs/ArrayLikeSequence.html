@@ -34,10 +34,50 @@
             ArrayLikeSequence
             <small>ArrayLikeSequence</small>
           </h2>
-          <div class="description">An <code>ArrayLikeSequence</code> is a <a class="internal-link" href="Sequence.html"><code>Sequence</code></a> that provides random access to
+          <div class="description">
+<p>An <code>ArrayLikeSequence</code> is a <a class="internal-link" href="Sequence.html"><code>Sequence</code></a> that provides random access to
 its elements. This extends the API for iterating with the additional methods
 <a class="internal-link" href="#get"><code>#get</code></a> and <a class="internal-link" href="#length"><code>#length</code></a>, allowing a sequence to act as a "view" into
-a collection or other indexed data source.</div>
+a collection or other indexed data source.</p>
+
+<h2>Defining custom array-like sequences</h2>
+
+<p>Creating a custom <code>ArrayLikeSequence</code> is essentially the same as creating a
+custom <a class="internal-link" href="Sequence.html"><code>Sequence</code></a>. You just have a couple more methods you need to
+implement: <code>get</code> and (optionally) <code>length</code>.</p>
+
+<p>Here's an example. Let's define a sequence type called <code>OffsetSequence</code> that
+offsets each of its parent's elements by a set distance, and circles back to
+the beginning after reaching the end.</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">OffsetSequence</span> <span class="o">=</span> <span class="nx">ArrayLikeSequence</span><span class="p">.</span><span class="nx">inherit</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">parent</span><span class="p">,</span> <span class="nx">offset</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">parent</span> <span class="o">=</span> <span class="nx">parent</span><span class="p">;</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">offset</span> <span class="o">=</span> <span class="nx">offset</span><span class="p">;</span>
+<span class="p">});</span>
+
+<span class="nx">OffsetSequence</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">get</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">parent</span><span class="p">.</span><span class="nx">get</span><span class="p">((</span><span class="nx">i</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">offset</span><span class="p">)</span> <span class="o">%</span> <span class="k">this</span><span class="p">.</span><span class="nx">parent</span><span class="p">.</span><span class="nx">length</span><span class="p">());</span>
+<span class="p">};</span>
+</pre></div>
+
+<p>It's worth noting a couple of things here.</p>
+
+<p>First, the default implementation of <code>length</code> simply returns the parent's
+length. In this case, since an <code>OffsetSequence</code> will always have the same
+number of elements as its parent, that implementation is fine; so we don't
+need to override it.</p>
+
+<p>Second, the default implementation of <code>each</code> uses <code>get</code> and <code>length</code> to
+essentially create a <code>for</code> loop, which is fine here. If you want to implement
+<code>each</code> your own way, you can do that; but in most cases (as here), you can
+probably just stick with the default.</p>
+
+<p>So we're already done, after only implementing <code>get</code>! Pretty slick, huh?</p>
+
+<p>(Also, as with the example provided for defining custom <a class="internal-link" href="Sequence.html"><code>Sequence</code></a>
+types, this example really could have been implemented using a function
+already available as part of Lazy.js: in this case, <a class="internal-link" href="Sequence.html#map"><code>Sequence#map</code></a>.)</p>
+</div>
         </header></section><section id="inherit" class="method" style="display: none;"><header><h2>
             inherit
             <small>ArrayLikeSequence.inherit</small>

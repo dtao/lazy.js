@@ -117,9 +117,9 @@ iterating an underlying data source multiple times.</p>
 <p>Defining your own type of sequence is relatively simple:</p>
 
 <ol>
-<li>Pass a constructor function to <code>Sequence.inherit</code>. By convention, this
-function should <em>at least</em> accept a <code>parent</code> parameter, which will be set
-to the underlying sequence.</li>
+<li>Pass a constructor function to <a class="internal-link" href="Sequence.html#inherit"><code>Sequence.inherit</code></a>. By convention,
+this function should <em>at least</em> accept a <code>parent</code> parameter, which will be
+set to the underlying sequence.</li>
 <li>Define an <code>each</code> method on this new function's prototype, which accepts
 a function as a parameter and calls <code>this.parent.each</code> to fetch elements
 one by one from the underlying sequence.</li>
