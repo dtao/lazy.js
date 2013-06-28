@@ -33,6 +33,63 @@
         <li><a href="Iterator.html">Iterator</a></li>
       </ul>
     </nav>
+
+    <section class="preamble">
+      <p>Lazy.js is a lazy evaluation library for JavaScript.</p>
+
+<p>This has been done before. For examples see:</p>
+
+<ul>
+<li><a href="http://fitzgen.github.io/wu.js/">wu.js</a></li>
+<li><a href="http://linqjs.codeplex.com/">Linq.js</a></li>
+<li><a href="https://github.com/suckgamoni/fromjs/">from.js</a></li>
+<li><a href="http://rx.codeplex.com/">IxJS</a></li>
+<li><a href="http://rfw.name/sloth.js/">sloth.js</a></li>
+</ul><p>However, at least at present, Lazy.js is faster (on average) than any of
+those libraries. It is also more complete, with nearly all of the
+functionality of <a href="http://underscorejs.org/">Underscore</a> and
+<a href="http://lodash.com/">Lo-Dash</a>.</p>
+
+<h2>Finding your way around the code</h2>
+
+<p>At the heart of Lazy.js is the <a class='internal-link' href='Sequence.html'><code>Sequence</code></a> object. You create an initial
+sequence using <a class='internal-link' href='Lazy.html'><code>Lazy</code></a>, which can accept an array, object, or string.
+You can then "chain" together methods from this sequence, creating a new
+sequence with each call.</p>
+
+<p>Here's an example:</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">getReallyBigArray</span><span class="p">();</span>
+
+<span class="kd">var</span> <span class="nx">statistics</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">transform</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">validate</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">reduce</span><span class="p">(</span><span class="nx">aggregate</span><span class="p">);</span>
+</pre></div>
+
+<p><a class='internal-link' href='Sequence.html'><code>Sequence</code></a> is the foundation of other, more specific sequence types.</p>
+
+<p>An <a class='internal-link' href='ArrayLikeSequence.html'><code>ArrayLikeSequence</code></a> provides indexed access to its elements.</p>
+
+<p>An <a class='internal-link' href='ObjectLikeSequence.html'><code>ObjectLikeSequence</code></a> consists of key/value pairs.</p>
+
+<p>A <a class='internal-link' href='StringLikeSequence.html'><code>StringLikeSequence</code></a> is like a string (duh): actually, it is an
+<a class='internal-link' href='ArrayLikeSequence.html'><code>ArrayLikeSequence</code></a> whose elements happen to be characters.</p>
+
+<p>An <a class='internal-link' href='AsyncSequence.html'><code>AsyncSequence</code></a> is special: it iterates over its elements
+asynchronously (so calling <code>each</code> generally begins an asynchronous loop and
+returns immediately).</p>
+
+<h2>For more information</h2>
+
+<p>I wrote a blog post that explains a little bit more about Lazy.js, which you
+can read <a href="http://philosopherdeveloper.com/posts/introducing-lazy-js.html">here</a>.</p>
+
+<p>You can also <a href="https://github.com/dtao/lazy.js/issues">create an issue on GitHub</a>
+if you have any issues with the library. I work through them eventually.</p>
+
+<p><a href="https://github.com/dtao">@dtao</a></p>
+    </section>
   </article>
 </body>
 

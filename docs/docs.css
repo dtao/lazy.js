@@ -87,6 +87,7 @@ nav.doc-list ul li.selected a {
   left: -3px;
 }
 
+section.preamble,
 section.methods {
   position: absolute;
   top: 170px;

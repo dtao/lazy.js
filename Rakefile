@@ -11,11 +11,14 @@ def compile_file(output)
     main
   )
 
+  preamble = File.read("lib/preamble.js")
+
   contents = source_files.map do |f|
     File.read("lib/#{f}.js").gsub(/^([^\n])/, '  \1')
   end
 
   javascript = [
+    preamble,
     '(function(context) {',
     *contents,
     '}(typeof global !== "undefined" ? global : window));'
@@ -166,8 +169,18 @@ namespace :compile do
 
     Mustache.template_path = "docs/templates"
 
+    # Now HERE is some hacky malarkey: I'm going to read preamble.js directly,
+    # strip out the comment syntax, and convert to Markdown MYSELF.
+    #
+    # Just try and stop me.
+    preamble = File.read("lib/preamble.js").gsub(/^[\/ ]\*[\/ ]?/, "")
+    preamble_html = simple_markdown(preamble)
+
     class IndexTemplate < Mustache; end
-    docs_index_html = IndexTemplate.render(:classes => classes)
+    docs_index_html = IndexTemplate.render({
+      :classes  => classes,
+      :preamble => preamble_html
+    })
 
     File.open("docs/index.html", "w") do |f|
       f.write(docs_index_html)
