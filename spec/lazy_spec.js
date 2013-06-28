@@ -725,7 +725,8 @@ describe("Lazy", function() {
     });
 
     it("does not mistakenly combine distinct values w/ identical string representations", function() {
-      var results = Lazy([1, 1, "1", "1", { toString: function() { return "1"; } }]).uniq().toArray();
+      var source = [1, 1, "1", "1", { toString: function() { return "1"; } }];
+      var results = Lazy(source).uniq().toArray();
 
       // Not really sure how to test equality of an object w/ a function, so...
       expect(results.length).toEqual(3);
@@ -746,6 +747,17 @@ describe("Lazy", function() {
       ];
 
       expect(Lazy(objects).uniq().toArray()).toEqual([x, y]);
+    });
+
+    it("distinguishes between booleans, null, and undefined and their string equivalents", function() {
+      var source = [true, false, null, undefined, "true", "false", "null", "undefined"];
+      var results = Lazy(source).uniq().toArray();
+      expect(results).toEqual(source);
+    });
+
+    it("does not conflate a string w/ its prefixed self", function() {
+      var results = Lazy(["foo", "@foo"]).uniq().toArray();
+      expect(results).toEqual(["foo", "@foo"]);
     });
 
     it("passes an index along with each element", function() {
