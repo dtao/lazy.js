@@ -213,10 +213,6 @@
 
   /**
    * Alias for {@link Sequence#each}.
-   *
-   * @function forEach
-   * @memberOf Sequence
-   * @instance
    */
   Sequence.prototype.forEach = function(fn) {
     this.each(fn);
@@ -658,7 +654,7 @@
    */
   Sequence.prototype.zip = function(var_args) {
     if (arguments.length === 1) {
-      return new SimpleZippedSequence(this, var_args);
+      return new SimpleZippedSequence(this, (/** @type {Array} */ var_args));
     } else {
       return new ZippedSequence(this, Array.prototype.slice.call(arguments, 0));
     }

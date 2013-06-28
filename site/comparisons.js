@@ -18,12 +18,18 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
 
   function wuTake(arr, count) {
     var i = -1;
-    return wu(arr).takeWhile(function() { return ++i < count; });
+    if (arr instanceof Array) {
+      arr = wu(arr);
+    }
+    return arr.takeWhile(function() { return ++i < count; });
   }
 
   function wuDrop(arr, count) {
     var i = -1;
-    return wu(arr).dropWhile(function() { return ++i < count; });
+    if (arr instanceof Array) {
+      arr = wu(arr);
+    }
+    return arr.dropWhile(function() { return ++i < count; });
   }
 
   var jaggedArray = [
