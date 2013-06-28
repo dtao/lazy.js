@@ -1530,6 +1530,7 @@
   /**
    * The Iterator object provides an API for iterating over a sequence.
    *
+   * @param {Sequence=} sequence The sequence to iterate over.
    * @constructor
    */
   function Iterator(sequence) {
@@ -1598,6 +1599,8 @@
     this.source = source;
     this.index = -1;
   }
+
+  CharIterator.prototype = new Iterator();
 
   CharIterator.prototype.current = function() {
     return this.source.charAt(this.index);
@@ -2525,14 +2528,45 @@
 
   StringLikeSequence.prototype = new ArrayLikeSequence();
 
+  /**
+   * Returns an {@link Iterator} that will step over each character in this
+   * sequence one by one.
+   *
+   * @return {Iterator} The iterator.
+   */
   StringLikeSequence.prototype.getIterator = function() {
     return new CharIterator(this.source);
   };
 
+  /**
+   * Returns the character at the given index of this stream.
+   *
+   * @param {number} i The index of this sequence.
+   * @return {string} The character at the specified index.
+   *
+   * @example:
+   * Lazy("foo")
+   *   .charAt(0);
+   * // => "f"
+   */
   StringLikeSequence.prototype.charAt = function(i) {
     return this.get(i);
   };
 
+  /**
+   * @name get
+   *
+   * Returns the character at the given index of this stream.
+   * @example:
+   * Lazy("foo")
+   *   .map(function(c) { return c.toUpperCase(); })
+   *   .get(0);
+   * // => "F"
+   */
+
+  /**
+   * See {@link Sequence#each}.
+   */
   StringLikeSequence.prototype.each = function(fn) {
     var source = this.source,
         length = source.length,
