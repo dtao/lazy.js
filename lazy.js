@@ -1155,6 +1155,15 @@
   };
 
   /**
+   * Alias for {@link Sequence#join}.
+   *
+   * @function toString
+   * @memberOf Sequence
+   * @instance
+   */
+  Sequence.prototype.toString = Sequence.prototype.join;
+
+  /**
    * Creates an iterator object with two methods, `moveNext` -- returning true or
    * false -- and `current` -- returning the current value.
    *
