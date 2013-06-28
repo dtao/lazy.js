@@ -657,7 +657,11 @@
    * // => sequence: ([1, 3], [2, 4])
    */
   Sequence.prototype.zip = function(var_args) {
-    return new ZippedSequence(this, Array.prototype.slice.call(arguments, 0));
+    if (arguments.length === 1) {
+      return new SimpleZippedSequence(this, var_args);
+    } else {
+      return new ZippedSequence(this, Array.prototype.slice.call(arguments, 0));
+    }
   };
 
   /**
@@ -1135,8 +1139,8 @@
    * Creates a string from joining together all of the elements in this sequence,
    * separated by the given delimiter.
    *
-   * @param {string} delimiter The separator to insert between every element from
-   *     this sequence in the resulting string.
+   * @param {string=} delimiter The separator to insert between every element from
+   *     this sequence in the resulting string (defaults to `","`).
    * @return {string} The delimited string.
    *
    * @example
@@ -1144,6 +1148,8 @@
    * // => "6/29/1984"
    */
   Sequence.prototype.join = function(delimiter) {
+    delimiter = typeof delimiter === "string" ? delimiter : ",";
+
     var str = "";
     this.each(function(e) {
       if (str.length > 0) {
@@ -1514,6 +1520,28 @@
         }
       }
       return fn(e, i++);
+    });
+  };
+
+  /**
+   * An optimized version of {@link ZippedSequence}, when zipping a sequence with
+   * only one array.
+   *
+   * @param {Sequence} parent The underlying sequence.
+   * @param {Array} array The array with which to zip the sequence.
+   * @constructor
+   */
+  function SimpleZippedSequence(parent, array) {
+    this.parent = parent;
+    this.array  = array;
+  }
+
+  SimpleZippedSequence.prototype = new Sequence();
+
+  SimpleZippedSequence.prototype.each = function(fn) {
+    var array = this.array;
+    this.parent.each(function(e, i) {
+      return fn([e, array[i]], i);
     });
   };
 
