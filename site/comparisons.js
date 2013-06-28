@@ -146,7 +146,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     sugar: function(arr, other) { return arr.union(other); },
     linq: function(arr, other) { return Enumerable.From(arr).Union(other); },
     from: function(arr, other) { return from(arr).union(other); },
-    ix: function(arr, other) { return Ix.Enumerable.fromArray(arr).union(other); },
+    ix: function(arr, other) { return Ix.Enumerable.fromArray(arr).union(Ix.Enumerable.fromArray(other)); },
     boiler: function(arr, other) { return boiler.union(arr, other); },
     sloth: function(arr, other) { return sloth.ify(arr).union(other); },
     inputs: [[arr(0, 10), arr(5, 15)], [arr(0, 100), arr(50, 150)]]
@@ -160,7 +160,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     linq: function(arr, other) { return Enumerable.From(arr).Intersect(other); },
     jslinq: function(arr, other) { return JSLINQ(arr).Intersect(other); },
     from: function(arr, other) { return from(arr).intersect(other); },
-    ix: function(arr, other) { return Ix.Enumerable.fromArray(arr).intersect(other); },
+    ix: function(arr, other) { return Ix.Enumerable.fromArray(arr).intersect(Ix.Enumerable.fromArray(other)); },
     boiler: function(arr, other) { return boiler.intersection(arr, other); },
     sloth: function(arr, other) { return sloth.ify(arr).intersect(other); },
     inputs: [[arr(0, 10), arr(5, 15)], [arr(0, 100), arr(50, 150)]]
@@ -320,7 +320,7 @@ describe("compared to Underscore, Lo-Dash, etc.", function() {
     sugar: function(arr, other) { return arr.intersect(other).first(5); },
     linq: function(arr, other) { return Enumerable.From(arr).Intersect(other).Take(5); },
     from: function(arr, other) { return from(arr).intersect(other).take(5); },
-    ix: function(arr, other) { return Ix.Enumerable.fromArray(arr).intersect(other).take(5); },
+    ix: function(arr, other) { return Ix.Enumerable.fromArray(arr).intersect(Ix.Enumerable.fromArray(other)).take(5); },
     boiler: function(arr, other) { return boiler.chain(arr).intersection(other).first(5).end(); },
     sloth: function(arr, other) { return sloth.ify(arr).intersect(other).take(5); },
     inputs: [[arr(0, 10), arr(5, 15)], [arr(0, 100), arr(50, 150)]]
