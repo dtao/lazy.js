@@ -14,3 +14,5 @@ spec/node_benchmark.js
 spec/node_spec.js
 spec/support/comparison_suite.js
 templates/
+
+!site/lib
