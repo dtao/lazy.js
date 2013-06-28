@@ -1,6 +1,6 @@
 @import url(../site/assets/pygments.css);
 @import url(../site/assets/common.css);
-@import url(http://fonts.googleapis.com/css?family=Chewy|Open+Sans:700,400,300|Source+Code+Pro:700,400);
+@import url(http://fonts.googleapis.com/css?family=Chewy|Open+Sans:700,400,300|Oswald:400,300|Source+Code+Pro:700,400);
 
 body {
   margin: 0;
@@ -87,6 +87,7 @@ nav.doc-list ul li.selected a {
   left: -3px;
 }
 
+section.preamble,
 section.methods {
   position: absolute;
   top: 170px;
@@ -95,8 +96,19 @@ section.methods {
   padding: 0 20px;
 }
 
-section.method h2 a {
-  text-decoration: none;
+section.preamble h2,
+section.method h2,
+section.method h3 {
+  font-family: Oswald, Helvetica, Arial, sans-serif;
+  font-weight: normal;
+}
+
+section.method h2 {
+  font-size: 34px;
+}
+
+section.method .description h2 {
+  font-size: 28px;
 }
 
 section.method table {

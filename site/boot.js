@@ -46,6 +46,11 @@
     $(".benchmark-result").removeClass("running");
   }
 
+  function getReferenceResultKey() {
+    // Maybe later I'll make it so you can pick one.
+    return "lodash";
+  }
+
   function createBenchmarks(description, input, options) {
     var toArrayBenchmarks = [
       // Lazy.js
@@ -89,7 +94,12 @@
           new Benchmark(description, function() { options.ix.apply(this, input).toArray(); }),
 
         // Boiler.js
-        new Benchmark(description, function() { options.boiler.apply(this, input); })
+        new Benchmark(description, function() { options.boiler.apply(this, input); }),
+
+        // Sloth.js
+        options.valueOnly ?
+          new Benchmark(description, function() { options.sloth.apply(this, input); }) :
+          new Benchmark(description, function() { options.sloth.apply(this, input).force(); })
       ]);
     }
 
@@ -172,6 +182,13 @@
           new Benchmark(description, function() { options.boiler.apply(this, input); }) :
           new Benchmark(description, function() {
             options.boiler.apply(this, input).each(function(e) {});
+          }),
+
+        // Sloth.js
+        options.valueOnly ?
+          new Benchmark(description, function() { options.sloth.apply(this, input); }) :
+          new Benchmark(description, function() {
+            options.sloth.apply(this, input).each(function(e) {});
           })
       ]);
     }
@@ -210,25 +227,40 @@
       $("<td>").addClass("fromjs-result").appendTo(row);
       $("<td>").addClass("ixjs-result").appendTo(row);
       $("<td>").addClass("boiler-result").appendTo(row);
+      $("<td>").addClass("sloth-result").appendTo(row);
     }
 
     $("<td>").addClass("lazy-result").appendTo(row);
   }
 
-  function addResultToCell(result, cell, fastestResult) {
+  function addResultToCell(result, cell, fastestResult, referenceResult) {
     if (result === 0.0) {
       cell.addClass("not-applicable");
       cell.text("N/A");
       return;
     }
 
-    var parts = result.toFixed(2).split(".");
+    var resultToDisplay = result,
+        suffix = "";
+
+    // Optionally display result as percentage of fastest result.
+    if ($("#test-proportional").is(":checked")) {
+      resultToDisplay = (result / fastestResult) * 100.0;
+      suffix = "%";
+    } else if ($("#test-proportional-lodash").is(":checked")) {
+      resultToDisplay = (result / referenceResult) * 100.0;
+      suffix = "%";
+    }
+
+    // Add commas.
+    var parts = resultToDisplay.toFixed(2).split(".");
     var pattern = /(\d+)(\d{3})/;
     while (pattern.test(parts[0])) {
         parts[0] = parts[0].replace(pattern, '$1,$2');
     }
-    cell.text(parts.join("."));
+    cell.text(parts.join(".") + suffix);
 
+    // Highlight the fastest result for each benchmark.
     if (result === fastestResult) {
       cell.addClass("positive");
     }
@@ -242,18 +274,23 @@
       .map(function(data, key) { return data.hz; })
       .max();
 
-    addResultToCell(result.underscore.hz, $(".underscore-result", row), fastestResult);
-    addResultToCell(result.lodash.hz, $(".lodash-result", row), fastestResult);
+    var referenceResult = Lazy(result)
+      .find(function(data, key) { return key === getReferenceResultKey(); })
+      .hz;
+
+    addResultToCell(result.underscore.hz, $(".underscore-result", row), fastestResult, referenceResult);
+    addResultToCell(result.lodash.hz, $(".lodash-result", row), fastestResult, referenceResult);
     if (window.COMPARE_ALL_LIBS) {
-      addResultToCell(result.wu.hz, $(".wu-result", row), fastestResult);
-      addResultToCell(result.sugar.hz, $(".sugar-result", row), fastestResult);
-      addResultToCell(result.linq.hz, $(".linqjs-result", row), fastestResult);
-      addResultToCell(result.jslinq.hz, $(".jslinq-result", row), fastestResult);
-      addResultToCell(result.from.hz, $(".fromjs-result", row), fastestResult);
-      addResultToCell(result.ix.hz, $(".ixjs-result", row), fastestResult);
-      addResultToCell(result.boiler.hz, $(".boiler-result", row), fastestResult);
+      addResultToCell(result.wu.hz, $(".wu-result", row), fastestResult, referenceResult);
+      addResultToCell(result.sugar.hz, $(".sugar-result", row), fastestResult, referenceResult);
+      addResultToCell(result.linq.hz, $(".linqjs-result", row), fastestResult, referenceResult);
+      addResultToCell(result.jslinq.hz, $(".jslinq-result", row), fastestResult, referenceResult);
+      addResultToCell(result.from.hz, $(".fromjs-result", row), fastestResult, referenceResult);
+      addResultToCell(result.ix.hz, $(".ixjs-result", row), fastestResult, referenceResult);
+      addResultToCell(result.boiler.hz, $(".boiler-result", row), fastestResult, referenceResult);
+      addResultToCell(result.sloth.hz, $(".sloth-result", row), fastestResult, referenceResult);
     }
-    addResultToCell(result.lazy.hz, $(".lazy-result", row), fastestResult);
+    addResultToCell(result.lazy.hz, $(".lazy-result", row), fastestResult, referenceResult);
   }
 
   function clearRow(row) {
@@ -427,6 +464,20 @@
           expect(lazyResult).toEqual(boilerResult);
         });
       }
+
+      if (options.sloth && !exceptions.contains("sloth")) {
+        it("returns the same result as sloth.js for '" + description + "'", function() {
+          var lazyResult = options.lazy.apply(this, smallInput);
+          var slothResult = options.sloth.apply(this, smallInput);
+          if (typeof lazyResult.toArray === "function") {
+            lazyResult = lazyResult.toArray();
+          }
+          if (typeof slothResult.force === "function") {
+            slothResult = slothResult.force();
+          }
+          expect(lazyResult).toEqual(slothResult);
+        });
+      }
     }
 
     inputs.each(function(input) {
@@ -448,6 +499,21 @@
 
     $("#test-each").on("change", function() {
       $("#test-to-array").prop("checked", false);
+    });
+
+    $("#test-absolute").on("change", function() {
+      $("#test-proportional").prop("checked", false);
+      $("#test-proportional-lodash").prop("checked", false);
+    });
+
+    $("#test-proportional").on("change", function() {
+      $("#test-absolute").prop("checked", false);
+      $("#test-proportional-lodash").prop("checked", false);
+    });
+
+    $("#test-proportional-lodash").on("change", function() {
+      $("#test-absolute").prop("checked", false);
+      $("#test-proportional").prop("checked", false);
     });
 
     $("a.why-to-array-vs-each").on("click", function() {
@@ -494,7 +560,7 @@
         return false;
       }
 
-      var resultsPerBenchmark = window.COMPARE_ALL_LIBS ? 10 : 3;
+      var resultsPerBenchmark = window.COMPARE_ALL_LIBS ? 11 : 3;
 
       var currentResultSet = [];
       benchmarkSuite.on("cycle", function(e) {
@@ -518,6 +584,7 @@
             benchmarkResults.from = currentResultSet[7];
             benchmarkResults.ix = currentResultSet[8];
             benchmarkResults.boiler = currentResultSet[9];
+            benchmarkResults.sloth = currentResultSet[10];
           }
 
           addBenchmarkResultToTable(benchmarkResults);

@@ -18,6 +18,7 @@
   <script type="text/javascript" src="site/lib/i2o.js"></script>
   <script type="text/javascript" src="site/lib/ix.js"></script>
   <script type="text/javascript" src="site/lib/boiler.js"></script>
+  <script type="text/javascript" src="site/lib/sloth.js"></script>
   <script type="text/javascript" src="site/lib/jquery.js"></script>
   <script type="text/javascript" src="site/lib/highcharts.js"></script>
   <script type="text/javascript" src="site/lib/hightables.js"></script>
@@ -57,13 +58,41 @@
   <section id="about" class="top-level-section">
     <h1 id="like-underscore-but-lazier">Like Underscore, but lazier</h1>
 
-<p class="sharing"><a href="https://travis-ci.org/dtao/lazy.js"><img src="https://travis-ci.org/dtao/lazy.js.png?branch=master" alt="Build Status"></a><!-- fun social stuff to include on project homepage -->
-<iframe src="http://ghbtns.com/github-btn.html?user=dtao&amp;repo=lazy.js&amp;type=watch&amp;count=true" allowtransparency="true" frameborder="0" scrolling="0" height="20" style="width: 110px;">
+<p class="sharing"><a href="https://travis-ci.org/dtao/lazy.js"><img src="https://travis-ci.org/dtao/lazy.js.png?branch=master" alt="Build Status"></a><!-- GitHub stars & forks -->
+<iframe src="http://ghbtns.com/github-btn.html?user=dtao&amp;repo=lazy.js&amp;type=watch&amp;count=true" allowtransparency="true" frameborder="0" scrolling="0" height="20" style="width: 100px;">
 </iframe>
 <iframe src="http://ghbtns.com/github-btn.html?user=dtao&amp;repo=lazy.js&amp;type=fork&amp;count=true" allowtransparency="true" frameborder="0" scrolling="0" height="20">
 </iframe>
+
+<!-- Twitter -->
 <a href="https://twitter.com/share" class="twitter-share-button" data-text="Lazy.js: Like Underscore, but lazier" data-url="http://dtao.github.io/lazy.js/" data-hashtags="lazyjs">Tweet</a>
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+
+<!-- Google+ -->
+<span class="g-plusone" data-size="medium" data-href="http://dtao.github.io/lazy.js/">+1</span>
+
+<!-- Twitter JavaScript -->
+<script>
+  !function(d, s, id) {
+    var js,
+        fjs = d.getElementsByTagName(s)[0],
+        p = /^http:/.test(d.location) ? 'http' : 'https';
+    if (!d.getElementById(id)) {
+      js = d.createElement(s);
+      js.id = id;
+      js.src = p + '://platform.twitter.com/widgets.js';
+      fjs.parentNode.insertBefore(js,fjs);
+    }
+  }(document, 'script', 'twitter-wjs');
+</script><!-- Google+ JavaScript --><script type="text/javascript">
+  (function() {
+    var po = document.createElement('script');
+    po.type = 'text/javascript';
+    po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(po, s);
+  })();
+</script></p>
 
 <p><strong>Lazy.js</strong> it a utility library for JavaScript, similar to <a href="http://underscorejs.org/">Underscore</a> and <a href="http://lodash.com/">Lo-Dash</a> but with one important difference: <strong>lazy evaluation</strong> (also known as deferred execution). This can translate to superior performance in many cases, <em>especially</em> when dealing with large arrays and/or "chaining" together multiple methods. For simple cases (<code>map</code>, <code>filter</code>, etc.) on small arrays, Lazy's performance should be similar to Underscore or Lo-Dash.</p>
 
@@ -85,8 +114,8 @@
 
 <p>Or, if you're using Node.js:</p>
 
-<pre><code>npm install lazy.js
-</code></pre>
+<div class="highlight"><pre>npm install lazy.js
+</pre></div>
 
 <p>Now let's look at what you can do with Lazy.js.</p>
 
@@ -279,7 +308,7 @@
   <span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">processData</span><span class="p">);</span>
 </pre></div>
 
-<p>For convenience, specialized helper methods for dealing with either file streamas or HTTP streams are also offered. (<strong>Note: this API will probably change.</strong>)</p>
+<p>For convenience, specialized helper methods for dealing with either file streams or HTTP streams are also offered. (<strong>Note: this API will probably change.</strong>)</p>
 
 <div class="highlight"><pre><span class="c1">// Read the first 5 lines from a file:</span>
 <span class="nx">Lazy</span><span class="p">.</span><span class="nx">readFile</span><span class="p">(</span><span class="s2">"path/to/file"</span><span class="p">)</span>
@@ -297,68 +326,7 @@
 
 <p>In each case, the elements in the sequence will be "chunks" of data most likely comprising multiple lines. The <code>lines()</code> method splits each chunk into lines (lazily, of course).</p>
 
-<h2 id="available-functions">Available functions</h2>
-
-<p>Currently the following functions are available (meaning you can call them on any <code>Lazy.Sequence</code> object, such as what you get back from <code>Lazy(array)</code>, <code>Lazy.generate</code>, <code>Lazy(string).split</code>, &amp;c.):</p>
-
-<h3>Arrays</h3>
-
-<ul class="functions-list">
-<li><code>map</code></li>
-<li><code>pluck</code></li>
-<li>
-<code>reduce</code> (aka <code>inject</code> or <code>foldl</code>)</li>
-<li>
-<code>reduceRight</code> (aka <code>foldr</code>)</li>
-<li><code>filter</code></li>
-<li><code>reject</code></li>
-<li><code>where</code></li>
-<li><code>invoke</code></li>
-<li><code>find</code></li>
-<li><code>findWhere</code></li>
-<li>
-<code>first</code> (aka <code>head</code> or <code>take</code>)</li>
-<li>
-<code>rest</code> (aka <code>tail</code> or <code>drop</code>)</li>
-<li><code>initial</code></li>
-<li><code>last</code></li>
-<li><code>sortBy</code></li>
-<li><code>groupBy</code></li>
-<li><code>countBy</code></li>
-<li><code>uniq</code></li>
-<li><code>zip</code></li>
-<li><code>concat</code></li>
-<li><code>without</code></li>
-<li><code>difference</code></li>
-<li><code>union</code></li>
-<li><code>intersection</code></li>
-<li><code>flatten</code></li>
-<li><code>compact</code></li>
-<li><code>shuffle</code></li>
-<li>
-<code>every</code> (aka <code>all</code>)</li>
-<li>
-<code>some</code> (aka <code>any</code>)</li>
-<li><code>indexOf</code></li>
-<li><code>lastIndexOf</code></li>
-<li><code>sortedIndex</code></li>
-<li><code>contains</code></li>
-<li><code>min</code></li>
-<li><code>max</code></li>
-</ul><h3>Objects</h3>
-
-<ul class="functions-list">
-<li><code>keys</code></li>
-<li><code>values</code></li>
-<li><code>pairs</code></li>
-<li>
-<code>functions</code> (aka <code>methods</code>)</li>
-<li>
-<code>extend</code> (aka <code>assign</code>)</li>
-<li><code>pick</code></li>
-<li><code>omit</code></li>
-<li><code>invert</code></li>
-</ul><p>This library is experimental and still a work in progress.</p>
+<hr><p><strong>This library is experimental and still a work in progress.</strong></p>
   </section>
 
   <section id="dom-example" class="top-level-section" style="display: none;">
@@ -385,14 +353,25 @@
     </nav>
 
     <form>
-      Select the tests you want to run below, choose either
-      <label><input id="test-each" type="radio" checked="checked"><code>each</code></input></label> or
-      <label><input id="test-to-array" type="radio"><code>toArray</code></input></label>
-      <a class="why-to-array-vs-each" href="javascript:void(0);">(why?)</a>, and
-      <button class="start-benchmarking">start benchmarking</button>
-      to compare Lazy.js, Underscore, and Lo-Dash. For a more comprehensive comparison of several
-      more libraries that accomplish similar goals, see the
-      <a href="comparisons.html">comparisons</a> page.
+      <p>
+        Select the tests you want to run below, choose either
+        <label><input id="test-each" type="radio" checked="checked"><code>each</code></input></label> or
+        <label><input id="test-to-array" type="radio"><code>toArray</code></input></label>
+        <a class="why-to-array-vs-each" href="javascript:void(0);">(why?)</a>, and
+        <button class="start-benchmarking">start benchmarking</button>
+        to compare Lazy.js, Underscore, and Lo-Dash. For a more comprehensive comparison of several
+        more libraries that accomplish similar goals, see the
+        <a href="comparisons.html">comparisons</a> page.
+      </p>
+
+      <p>
+        You can also choose to display results in
+        <label><input id="test-absolute" type="radio" checked="checked">absolute ops/second</input></label>,
+        <label><input id="test-proportional" type="radio">in proportion to the fastest method</input></label>, or
+        <label><input id="test-proportional-lodash" type="radio">in proportion to Lo-Dash</input></label>
+        (which is generally the fastest of the popular JS utility libraries). Proportional results
+        will likely be easier to read when you've selected many benchmarks.
+      </p>
     </form>
 
     <div id="why-to-array-vs-each">

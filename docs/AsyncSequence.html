@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Lazy.js API Docs - AsyncSequence</title>
 <link rel="stylesheet" type="text/css" href="docs.css">
-<script type="text/javascript" src="../site/lib/jquery.js"></script><script type="text/javascript" src="../site/common.js"></script>
+<script type="text/javascript" src="../site/lib/jquery.js"></script><script type="text/javascript" src="../site/common.js"></script><script type="text/javascript" src="docs.js"></script>
 </head>
 <body id="top">
   <header><h1><a href="../index.html">lazy.js</a></h1>
@@ -24,8 +24,38 @@
             AsyncSequence
             <small>AsyncSequence</small>
           </h2>
-          <p class="description">An AsyncSequence iterates over its elements asynchronously when <code>each</code>
-is called.</p>
+          <div class="description">
+<p>An <code>AsyncSequence</code> iterates over its elements asynchronously when
+<a class="internal-link" href="#each"><code>#each</code></a> is called.</p>
+
+<h2>Returning values</h2>
+
+<p>Because of its asynchronous nature, an <code>AsyncSequence</code> cannot be used in the
+same way as other sequences for functions that return values directly (e.g.,
+<code>reduce</code>, <code>max</code>, <code>any</code>, even <code>toArray</code>).</p>
+
+<p>The plan is to eventually implement all of these methods differently for
+<code>AsyncSequence</code>: instead of returning values, they will accept a callback and
+pass a result to the callback once iteration has been completed (or an error
+is raised). But that isn't done yet.</p>
+
+<h2>Defining custom asynchronous sequences</h2>
+
+<p>There are plenty of ways to define an asynchronous sequence. Here's one.</p>
+
+<ol>
+<li>First, implement an <a class="internal-link" href="Iterator.html"><code>Iterator</code></a>. This is an object whose prototype
+has the methods <a class="internal-link" href="Iterator.html#moveNext"><code>Iterator#moveNext</code></a> (which returns a <code>boolean</code>) and
+<a class="internal-link" href="current.html"><code>current</code></a> (which returns the current value).</li>
+<li>Next, create a simple wrapper that inherits from <code>AsyncSequence</code>, whose
+<code>getIterator</code> function returns an instance of the iterator type you just
+defined.</li>
+</ol>
+<p>The default implementation for <a class="internal-link" href="#each"><code>#each</code></a> on an <code>AsyncSequence</code> is to
+create an iterator and then asynchronously call <a class="internal-link" href="Iterator.html#moveNext"><code>Iterator#moveNext</code></a>
+(using the most efficient mechanism for the platform) until the iterator
+can't move ahead any more.</p>
+</div>
         </header><h3>Parameters</h3>
         <table class="params">
 <tr>
@@ -36,7 +66,7 @@ is called.</p>
 <tr>
 <td>parent</td>
             <td>Sequence</td>
-            <td>A <code>Sequence</code> to wrap, to expose asynchronous
+            <td>A <a class="internal-link" href="Sequence.html"><code>Sequence</code></a> to wrap, to expose asynchronous
     iteration.</td>
           </tr>
 <tr>
@@ -50,7 +80,7 @@ is called.</p>
             each
             <small>AsyncSequence#each</small>
           </h2>
-          <p class="description">An asynchronous version of <code>Sequence.each</code>.</p>
+          <div class="description">An asynchronous version of <a class="internal-link" href="Sequence.html#each"><code>Sequence#each</code></a>.</div>
         </header></section></section></article>
 </body>
 </html>
