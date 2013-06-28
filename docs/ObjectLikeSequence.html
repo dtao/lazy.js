@@ -37,7 +37,32 @@
             ObjectLikeSequence
             <small>ObjectLikeSequence</small>
           </h2>
-          <div class="description">An <code>ObjectLikeSequence</code> object represents a sequence of key/value pairs.</div>
+          <div class="description">
+<p>An <code>ObjectLikeSequence</code> object represents a sequence of key/value pairs.</p>
+
+<p>So, this one is arguably the least... good... of the sequence types right
+now. A bunch of methods are implemented already, and they basically "work";
+but the problem is I haven't quite made up my mind exactly how they <em>should</em>
+work, to be consistent and useful.</p>
+
+<p>Here are a couple of issues (there are others):</p>
+
+<ol>
+<li>For iterating over an object, there is currently <em>not</em> a good way to do it
+asynchronously (that I know of). The best approach is to call
+<code>Object.keys</code> and then iterate over <em>those</em> asynchronously; but this of
+course eagerly iterates over the object's keys (though maybe that's not
+a really big deal).</li>
+<li>In terms of method chaining, it is a bit unclear how that should work.
+Iterating over an <code>ObjectLikeSequence</code> with <a class="internal-link" href="ObjectLikeSequence.html#each"><code>ObjectLikeSequence#each</code></a>
+passes <code>(value, key)</code> to the given function; but what about the result of
+<a class="internal-link" href="Sequence.html#map"><code>Sequence#map</code></a>, <a class="internal-link" href="Sequence.html#filter"><code>Sequence#filter</code></a>, etc.? I've flip-flopped
+between thinking they should return object-like sequences or regular
+sequences.</li>
+</ol>
+<p>Expect this section to be updated for a coming version of Lazy.js, when I
+will hopefully have figured this stuff out.</p>
+</div>
         </header></section><section id="assign" class="method" style="display: none;"><header><h2>
             assign
             <small>ObjectLikeSequence#assign</small>

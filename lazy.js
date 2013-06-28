@@ -409,7 +409,7 @@
 
   /**
    * Creates a new sequence comprising the first N elements from this sequence, OR
-   * (if N is undefined) simply returns the first element of this sequence.
+   * (if N is `undefined`) simply returns the first element of this sequence.
    *
    * @param {number=} count The number of elements to take from this sequence. If
    *     this value exceeds the length of the sequence, the resulting sequence
@@ -473,7 +473,7 @@
 
   /**
    * Creates a new sequence comprising the last N elements of this sequence, OR
-   * (if N is undefined) simply returns the last element of this sequence.
+   * (if N is `undefined`) simply returns the last element of this sequence.
    *
    * @param {number=} count The number of items to take from the end of the
    *     sequence.
@@ -498,7 +498,7 @@
    *
    * @param {Object} properties The properties that should be found on some
    *     element in this sequence.
-   * @return {*} The found element, or undefined if none exists in this
+   * @return {*} The found element, or `undefined` if none exists in this
    *     sequence.
    *
    * @example
@@ -691,7 +691,7 @@
 
   /**
    * Creates a new sequence with the same elements as this one, except for all
-   * falsy values (false, 0, "", null, and undefined).
+   * falsy values (`false`, `0`, `""`, `null`, and `undefined`).
    *
    * @return {Sequence} The new sequence.
    *
@@ -1056,7 +1056,7 @@
    * @param {Function} predicate A function to call on (potentially) every element
    *     in the sequence.
    * @return {*} The first element in the sequence for which `predicate` returns
-   *     true, or undefined if no such element is found.
+   *     `true`, or `undefined` if no such element is found.
    *
    * @example
    * var numbers = [5, 6, 7, 8, 9, 10];
@@ -2119,6 +2119,28 @@
   /**
    * An `ObjectLikeSequence` object represents a sequence of key/value pairs.
    *
+   * So, this one is arguably the least... good... of the sequence types right
+   * now. A bunch of methods are implemented already, and they basically "work";
+   * but the problem is I haven't quite made up my mind exactly how they *should*
+   * work, to be consistent and useful.
+   *
+   * Here are a couple of issues (there are others):
+   *
+   * 1. For iterating over an object, there is currently *not* a good way to do it
+   *    asynchronously (that I know of). The best approach is to call
+   *    `Object.keys` and then iterate over *those* asynchronously; but this of
+   *    course eagerly iterates over the object's keys (though maybe that's not
+   *    a really big deal).
+   * 2. In terms of method chaining, it is a bit unclear how that should work.
+   *    Iterating over an `ObjectLikeSequence` with {@link ObjectLikeSequence#each}
+   *    passes `(value, key)` to the given function; but what about the result of
+   *    {@link Sequence#map}, {@link Sequence#filter}, etc.? I've flip-flopped
+   *    between thinking they should return object-like sequences or regular
+   *    sequences.
+   *
+   * Expect this section to be updated for a coming version of Lazy.js, when I
+   * will hopefully have figured this stuff out.
+   *
    * @constructor
    */
   function ObjectLikeSequence() {}
@@ -2638,14 +2660,15 @@
   /**
    * Returns the length of this sequence.
    *
-   * @return {number} The length, or undefined if this is an indefinite sequence.
+   * @return {number} The length, or `undefined` if this is an indefinite
+   *     sequence.
    */
   GeneratedSequence.prototype.length = function() {
     return this.fixedLength;
   };
 
   /**
-   * See {@link Sequence.each}.
+   * See {@link Sequence#each}.
    */
   GeneratedSequence.prototype.each = function(fn) {
     var generatorFn = this.get,
@@ -2659,8 +2682,37 @@
   };
 
   /**
-   * An AsyncSequence iterates over its elements asynchronously when {@link #each}
-   * is called.
+   * An `AsyncSequence` iterates over its elements asynchronously when
+   * {@link #each} is called.
+   *
+   * Returning values
+   * ----------------
+   *
+   * Because of its asynchronous nature, an `AsyncSequence` cannot be used in the
+   * same way as other sequences for functions that return values directly (e.g.,
+   * `reduce`, `max`, `any`, even `toArray`).
+   *
+   * The plan is to eventually implement all of these methods differently for
+   * `AsyncSequence`: instead of returning values, they will accept a callback and
+   * pass a result to the callback once iteration has been completed (or an error
+   * is raised). But that isn't done yet.
+   *
+   * Defining custom asynchronous sequences
+   * --------------------------------------
+   *
+   * There are plenty of ways to define an asynchronous sequence. Here's one.
+   *
+   * 1. First, implement an {@link Iterator}. This is an object whose prototype
+   *    has the methods {@link Iterator#moveNext} (which returns a `boolean`) and
+   *    {@link current} (which returns the current value).
+   * 2. Next, create a simple wrapper that inherits from `AsyncSequence`, whose
+   *    `getIterator` function returns an instance of the iterator type you just
+   *    defined.
+   *
+   * The default implementation for {@link #each} on an `AsyncSequence` is to
+   * create an iterator and then asynchronously call {@link Iterator#moveNext}
+   * (using the most efficient mechanism for the platform) until the iterator
+   * can't move ahead any more.
    *
    * @param {Sequence} parent A {@link Sequence} to wrap, to expose asynchronous
    *     iteration.

@@ -232,7 +232,7 @@ over asynchronously when calling <code>each</code>.</div>
             <small>Sequence#compact</small>
           </h2>
           <div class="description">Creates a new sequence with the same elements as this one, except for all
-falsy values (false, 0, "", null, and undefined).</div>
+falsy values (<code>false</code>, <code>0</code>, <code>""</code>, <code>null</code>, and <code>undefined</code>).</div>
         </header><h3>Example</h3>
         <div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="s2">"foo"</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="s2">"bar"</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">]).</span><span class="nx">compact</span><span class="p">();</span>
 <span class="c1">// =&gt; sequence: ("foo", "bar")</span>
@@ -485,7 +485,7 @@ that key appears in the sequence.</div>
 <tr>
 <td>*</td>
             <td>The first element in the sequence for which <code>predicate</code> returns
-    true, or undefined if no such element is found.</td>
+    <code>true</code>, or <code>undefined</code> if no such element is found.</td>
           </tr>
 </table></section><section id="findWhere" class="method" style="display: none;"><header><h2>
             findWhere
@@ -521,7 +521,7 @@ matching those of the specified object.</div>
           </tr>
 <tr>
 <td>*</td>
-            <td>The found element, or undefined if none exists in this
+            <td>The found element, or <code>undefined</code> if none exists in this
     sequence.</td>
           </tr>
 </table></section><section id="first" class="method" style="display: none;"><header><h2>
@@ -529,7 +529,7 @@ matching those of the specified object.</div>
             <small>Sequence#first</small>
           </h2>
           <div class="description">Creates a new sequence comprising the first N elements from this sequence, OR
-(if N is undefined) simply returns the first element of this sequence.</div>
+(if N is <code>undefined</code>) simply returns the first element of this sequence.</div>
         </header><h3>Example</h3>
         <div class="highlight"><pre><span class="kd">function</span> <span class="nx">powerOfTwo</span><span class="p">(</span><span class="nx">exp</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nx">exp</span><span class="p">);</span>
@@ -911,7 +911,7 @@ separated by the given delimiter.</div>
             <small>Sequence#last</small>
           </h2>
           <div class="description">Creates a new sequence comprising the last N elements of this sequence, OR
-(if N is undefined) simply returns the last element of this sequence.</div>
+(if N is <code>undefined</code>) simply returns the last element of this sequence.</div>
         </header><h3>Example</h3>
         <div class="highlight"><pre><span class="kd">var</span> <span class="nx">siblings</span> <span class="o">=</span> <span class="p">[</span><span class="nx">lauren</span><span class="p">,</span> <span class="nx">adam</span><span class="p">,</span> <span class="nx">daniel</span><span class="p">,</span> <span class="nx">happy</span><span class="p">];</span>
 <span class="kd">var</span> <span class="nx">favorite</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">siblings</span><span class="p">).</span><span class="nx">last</span><span class="p">();</span>
