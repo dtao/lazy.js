@@ -28,7 +28,7 @@ Or, if you're using Node.js:
 npm install lazy.js
 ```
 
-Now let's look at what you can do with Lazy.js.
+Now let's look at what you can do with Lazy.js. (For more thorough information, take a look at the [API Docs](http://dtao.github.io/lazy.js/docs/).)
 
 Introduction
 ------------
