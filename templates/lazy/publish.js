@@ -24,9 +24,9 @@ var CLASSES_TO_DOCUMENT = [
   "Iterator"
 ];
 
-function isTaggedDebug(doclet) {
+function isTaggedSkip(doclet) {
   return doclet.tags && Lazy(doclet.tags).any(function(tag) {
-    return tag.title === "debug";
+    return tag.title === "skip";
   });
 }
 
@@ -54,7 +54,7 @@ exports.publish = function(data, opts) {
       .where({ kind: "function" })
       .filter(function(d) { return nameMatcher.test(d.longname); })
       .reject(function(d) { return d.meta.filename === "experimental.js"; })
-      .reject(isTaggedDebug)
+      .reject(isTaggedSkip)
       .map(getMethodData);
 
     var instanceMethods = methods.where({ scope: "instance" }).toArray();

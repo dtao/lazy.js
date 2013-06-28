@@ -88,9 +88,10 @@
    *
    * Defining your own type of sequence is relatively simple:
    *
-   * 1. Pass a constructor function to {@link Sequence.inherit}. By convention,
-   *    this function should *at least* accept a `parent` parameter, which will be
-   *    set to the underlying sequence.
+   * 1. Pass a *method name* and an *initialization function* to
+   *    {@link Sequence.define}. By convention, this function should at least
+   *    accept a `parent` parameter as its first argument, which will be set to
+   *    the underlying sequence.
    * 2. Define an `each` method on this new function's prototype, which accepts
    *    a function as a parameter and calls `this.parent.each` to fetch elements
    *    one by one from the underlying sequence.
@@ -99,9 +100,7 @@
    * called `SampleSequence` which randomly may or may not include each element
    * from its parent.
    *
-   *     var SampleSequence = Sequence.inherit(function(parent) {
-   *       this.parent = parent;
-   *     });
+   *     var SampleSequence = Lazy.Sequence.define("sample");
    *
    *     SampleSequence.prototype.each = function(fn) {
    *       this.parent.each(function(e) {
@@ -116,12 +115,25 @@
    * {@link #filter} instead of creating a custom sequence. But I *did* say this
    * was a trivial example, to be fair.)
    *
+   * Now it will be possible to create this type of sequence from any parent
+   * sequence by calling the method name you specified. In other words, you can
+   * now do this:
+   *
+   *     Lazy(arr).sample();
+   *     Lazy(arr).map(func).sample();
+   *     Lazy(arr).map(func).filter(pred).sample();
+   *
+   * Etc., etc.
+   *
    * @constructor
    */
   function Sequence() {}
 
   /**
    * Create a new constructor function for a type inheriting from `Sequence`.
+   *
+   * @deprecated Don't use this to define a new sequence! Use
+   *     {@link Sequence.define} instead.
    *
    * @param {Function} ctor The constructor function.
    * @return {Function} A constructor for a new type inheriting from `Sequence`.
@@ -133,8 +145,60 @@
   };
 
   /**
+   * Create a new constructor function for a type inheriting from `Sequence`.
+   *
+   * @param {string} methodName The name of the method to be used for constructing
+   *     the new sequence. The method will be attached to the `Sequence` prototype
+   *     so that it can be chained with any other sequence methods, like
+   *     {@link #map}, {@link #filter}, etc.
+   * @param {Function} init Any initialization logic for the sequence type.
+   * @return {Function} A constructor for a new type inheriting from `Sequence`.
+   *
+   * @example
+   * var VerboseSequence = Sequence.define("verbose");
+   *
+   * // This sequence type logs every element to the console
+   * // as it iterates over it.
+   * VerboseSequence.prototype.each = function(fn) {
+   *   this.parent.each(function(e, i) {
+   *     console.log(e);
+   *     return fn(e, i);
+   *   });
+   * };
+   *
+   * Lazy([1, 2, 3]).verbose().toArray();
+   * // (logs the numbers 1, 2, and 3 to the console)
+   */
+  Sequence.define = function(methodName, init) {
+    // Define a constructor that sets this sequence's parent to the first argument
+    // and (optionally) applies any additional initialization logic.
+
+    /** @constructor */
+    var ctor = init ? function(var_args) {
+                        this.parent = arguments[0];
+                        init.apply(this, arguments);
+                      } :
+                      function(var_args) {
+                        this.parent = arguments[0];
+                      };
+
+    // Make this type inherit from Sequence.
+    ctor.prototype = new Sequence();
+
+    // Expose the constructor as a chainable method so that we can do:
+    // Lazy(...).map(...).filter(...).blah(...);
+    /** @skip
+      * @suppress {checkTypes} */
+    Sequence.prototype[methodName] = function(x, y, z) {
+      return new ctor(this, x, y, z);
+    };
+
+    return ctor;
+  };
+
+  /**
    * For debug purposes only.
-   * @debug
+   * @skip
    */
   Sequence.prototype.depth = function() {
     return this.parent ? this.parent.depth() + 1 : 0;
@@ -142,7 +206,7 @@
 
   /**
    * For debug purposes only.
-   * @debug
+   * @skip
    */
   Sequence.prototype.log = function(msg) {
     console.log(indent(this.depth()) + msg);
@@ -1277,10 +1341,15 @@
     return this.cache().length;
   };
 
-  var MappedSequence = Sequence.inherit(function(parent, mapFn) {
+  /**
+   * @constructor
+   */
+  function MappedSequence(parent, mapFn) {
     this.parent = parent;
     this.mapFn  = mapFn;
-  });
+  }
+
+  MappedSequence.prototype = new Sequence();
 
   MappedSequence.prototype.each = function(fn) {
     var mapFn = this.mapFn;
@@ -1322,10 +1391,15 @@
     }
   };
 
-  var ConcatenatedSequence = Sequence.inherit(function(parent, arrays) {
+  /**
+   * @constructor
+   */
+  function ConcatenatedSequence(parent, arrays) {
     this.parent = parent;
     this.arrays = arrays;
-  });
+  }
+
+  ConcatenatedSequence.prototype = new Sequence();
 
   ConcatenatedSequence.prototype.each = function(fn) {
     var done = false,
@@ -2817,10 +2891,15 @@
     return new SplitStringSequence(this.source, delimiter);
   };
 
-  var StringMatchSequence = Sequence.inherit(function(source, pattern) {
+  /**
+   * @constructor
+   */
+  function StringMatchSequence(source, pattern) {
     this.source = source;
     this.pattern = pattern;
-  });
+  }
+
+  StringMatchSequence.prototype = new Sequence();
 
   StringMatchSequence.prototype.each = function(fn) {
     var iterator = this.getIterator();
@@ -2835,10 +2914,15 @@
     return new StringMatchIterator(this.source, this.pattern);
   };
 
-  var SplitStringSequence = Sequence.inherit(function(source, pattern) {
+  /**
+   * @constructor
+   */
+  function SplitStringSequence(source, pattern) {
     this.source = source;
     this.pattern = pattern;
-  });
+  }
+
+  SplitStringSequence.prototype = new Sequence();
 
   SplitStringSequence.prototype.each = function(fn) {
     var iterator = this.getIterator();
