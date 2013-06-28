@@ -757,7 +757,11 @@
    * // => sequence: ("bar")
    */
   Sequence.prototype.intersection = function(var_args) {
-    return new IntersectionSequence(this, Array.prototype.slice.call(arguments, 0));
+    if (arguments.length === 1 && arguments[0] instanceof Array) {
+      return new SimpleIntersectionSequence(this, (/** @type {Array} */ var_args));
+    } else {
+      return new IntersectionSequence(this, Array.prototype.slice.call(arguments, 0));
+    }
   };
 
   /**
@@ -1495,27 +1499,52 @@
     });
   };
 
+  /**
+   * @constructor
+   */
+  function SimpleIntersectionSequence(parent, array) {
+    this.parent = parent;
+    this.array  = array;
+  }
+
+  SimpleIntersectionSequence.prototype = new Sequence();
+
+  SimpleIntersectionSequence.prototype.each = function(fn) {
+    var iterator = new UniqueMemoizer(Lazy(this.array).getIterator()),
+        i = 0;
+
+    this.parent.each(function(e) {
+      if (iterator.contains(e)) {
+        return fn(e, i++);
+      }
+    });
+  };
+
   var IntersectionSequence = CachingSequence.inherit(function(parent, arrays) {
     this.parent = parent;
     this.arrays = arrays;
   });
 
   IntersectionSequence.prototype.each = function(fn) {
-    var sets = Lazy(this.arrays)
-      .map(function(values) { return Lazy(values).uniq().toArray(); })
-      .toArray();
+    var sets = Lazy(this.arrays).map(function(values) {
+      return new UniqueMemoizer(Lazy(values).getIterator());
+    });
 
-    var find = contains,
+    var setIterator = new UniqueMemoizer(sets.getIterator()),
         i = 0;
 
     this.parent.each(function(e) {
-      var j = -1;
-      while (++j < sets.length) {
-        if (!find(sets[j], e)) {
-          return;
+      var includedInAll = true;
+      setIterator.each(function(set) {
+        if (!set.contains(e)) {
+          includedInAll = false;
+          return false;
         }
+      });
+
+      if (includedInAll) {
+        return fn(e, i++);
       }
-      return fn(e, i++);
     });
   };
 
@@ -1726,6 +1755,71 @@
     }
 
     return !this.finished;
+  };
+
+  /**
+   * @constructor
+   */
+  function UniqueMemoizer(iterator) {
+    this.iterator     = iterator;
+    this.set          = new Set();
+    this.memo         = [];
+    this.currentValue = undefined;
+  }
+
+  UniqueMemoizer.prototype = new Iterator();
+
+  UniqueMemoizer.prototype.current = function() {
+    return this.currentValue;
+  };
+
+  UniqueMemoizer.prototype.moveNext = function() {
+    var iterator = this.iterator,
+        set = this.set,
+        memo = this.memo,
+        current;
+
+    while (iterator.moveNext()) {
+      current = iterator.current();
+      if (set.add(current)) {
+        memo.push(current);
+        this.currentValue = current;
+        return true;
+      }
+    }
+    return false;
+  };
+
+  UniqueMemoizer.prototype.each = function(fn) {
+    var memo = this.memo,
+        length = memo.length,
+        i = -1;
+
+    while (++i < length) {
+      if (fn(memo[i], i) === false) {
+        return false;
+      }
+    }
+
+    while (this.moveNext()) {
+      if (fn(this.currentValue, i++) === false) {
+        break;
+      }
+    }
+  };
+
+  UniqueMemoizer.prototype.contains = function(e) {
+    if (this.set.contains(e)) {
+      return true;
+    }
+
+    while (this.moveNext()) {
+      if (this.currentValue === e) {
+        return true;
+      }
+    }
+
+    return false;
   };
 
   /**
