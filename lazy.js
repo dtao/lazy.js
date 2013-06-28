@@ -1455,12 +1455,10 @@
   });
 
   UniqueSequence.prototype.each = function(fn) {
-    var cache = [],
-        find  = contains,
+    var cache = new Set(),
         i     = 0;
     this.parent.each(function(e) {
-      if (!find(cache, e)) {
-        cache.push(e);
+      if (cache.add(e)) {
         return fn(e, i++);
       }
     });
@@ -2226,20 +2224,17 @@
   UniqueArrayWrapper.prototype.eachSetCache = UniqueSequence.prototype.each;
 
   /**
-   * So, this is kinda shocking.
-   * Soon I'll write a whole blog post about this; but for now suffice it to say
-   * that going w/ a no-cache approach is the fastest solution until around 200
-   * elements, at which point using an array-based cache is still faster than
-   * using a set-based cache. Not until somewhere around 800 elements does a set-
-   * based approach start to outpace the others.
+   * My latest findings here...
    *
-   * UPDATE: Scratch that. The array-based cache outperforms the no-cache approach
-   * after 40 elements or so. I'm scratching my head over this one now...
+   * So I hadn't really given the set-based approach enough credit. The main issue
+   * was that my Set implementation was totally not optimized at all. After pretty
+   * heavily optimizing it (just take a look; it's a monstrosity now!), it now
+   * becomes the fastest option for much smaller values of N.
    */
   function getEachForSource(source) {
     if (source.length < 40) {
       return UniqueArrayWrapper.prototype.eachNoCache;
-    } else if (source.length < 800) {
+    } else if (source.length < 100) {
       return UniqueArrayWrapper.prototype.eachArrayCache;
     } else {
       return UniqueSequence.prototype.each;
@@ -3243,19 +3238,53 @@
    *     value was not already present), or else false.
    */
   Set.prototype.add = function(value) {
-    var table  = this.table,
-        key    = typeof value,
-        values = table[key];
+    var table = this.table,
+        type  = typeof value,
 
-    if (!values) {
-      values = table[key] = [value];
-      return true;
+        // only applies for strings
+        firstChar,
+
+        // only applies for objects
+        objects;
+
+    switch (type) {
+      case "number":
+      case "boolean":
+      case "undefined":
+        if (!table[value]) {
+          table[value] = true;
+          return true;
+        }
+        return false;
+
+      case "string":
+        // Essentially, escape the first character if it could possibly collide
+        // with a number, boolean, or undefined (or a string that happens to start
+        // with the escape character!), OR if it could override a special property
+        // such as '__proto__' or 'constructor'.
+        firstChar = value.charAt(0);
+        if ("_ftc@".indexOf(firstChar) >= 0 || (firstChar >= "0" && firstChar <= "9")) {
+          value = "@" + value;
+        }
+        if (!table[value]) {
+          table[value] = true;
+          return true;
+        }
+        return false;
+
+      default:
+        // For objects and functions, we can't really do anything other than store
+        // them in an array and do a linear search for reference equality.
+        objects = this.objects;
+        if (!objects) {
+          objects = this.objects = [];
+        }
+        if (!contains(objects, value)) {
+          objects.push(value);
+          return true;
+        }
+        return false;
     }
-    if (contains(values, value)) {
-      return false;
-    }
-    values.push(value);
-    return true;
   };
 
   /**
@@ -3265,9 +3294,33 @@
    * @return {boolean} True if the set contains the value, or else false.
    */
   Set.prototype.contains = function(value) {
-    var key = typeof value,
-        values = this.table[key];
-    return values && contains(values, value);
+    var type = typeof value,
+
+        // only applies for strings
+        firstChar;
+
+    switch (type) {
+      case "number":
+      case "boolean":
+      case "undefined":
+        return !!this.table[value];
+
+      case "string":
+        // Essentially, escape the first character if it could possibly collide
+        // with a number, boolean, or undefined (or a string that happens to start
+        // with the escape character!), OR if it could override a special property
+        // such as '__proto__' or 'constructor'.
+        firstChar = value.charAt(0);
+        if ("_ftc@".indexOf(firstChar) >= 0 || (firstChar >= "0" && firstChar <= "9")) {
+          value = "@" + value;
+        }
+        return !!this.table[value];
+
+      default:
+        // For objects and functions, we can't really do anything other than store
+        // them in an array and do a linear search for reference equality.
+        return this.objects && contains(this.objects, value);
+    }
   };
 
   /*** Exposing Lazy to the world ***/
