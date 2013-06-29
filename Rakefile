@@ -137,8 +137,21 @@ namespace :compile do
     syntax_highlight!(fragment)
 
     # Inject README into Mustache template.
-    template = File.read("index.html.mustache")
-    final_html = Mustache.render(template, { :readme => fragment.inner_html })
+    Mustache.template_path = "site/templates"
+
+    class IndexTemplate < Mustache; end
+    final_html = IndexTemplate.render({
+      :readme => fragment.inner_html,
+      :benchmark_sections => [
+        { :id => "common-10", :label => "Common (10)", :selected => true },
+        { :id => "chained-10", :label => "Chained (10)" },
+        { :id => "shorted-10", :label => "Short-circuited (10)" },
+        { :id => "common-100", :label => "Common (100)" },
+        { :id => "chained-100", :label => "Chained (100)" },
+        { :id => "shorted-100", :label => "Short-circuited (100)" },
+        { :id => "other", :label => "Other" }
+      ]
+    })
 
     # Finally, write the rendered result to index.html.
     File.open("index.html", "w") do |f|
