@@ -88,9 +88,10 @@
    *
    * Defining your own type of sequence is relatively simple:
    *
-   * 1. Pass a constructor function to {@link Sequence.inherit}. By convention,
-   *    this function should *at least* accept a `parent` parameter, which will be
-   *    set to the underlying sequence.
+   * 1. Pass a *method name* and an *initialization function* to
+   *    {@link Sequence.define}. By convention, this function should at least
+   *    accept a `parent` parameter as its first argument, which will be set to
+   *    the underlying sequence.
    * 2. Define an `each` method on this new function's prototype, which accepts
    *    a function as a parameter and calls `this.parent.each` to fetch elements
    *    one by one from the underlying sequence.
@@ -99,9 +100,7 @@
    * called `SampleSequence` which randomly may or may not include each element
    * from its parent.
    *
-   *     var SampleSequence = Sequence.inherit(function(parent) {
-   *       this.parent = parent;
-   *     });
+   *     var SampleSequence = Lazy.Sequence.define("sample");
    *
    *     SampleSequence.prototype.each = function(fn) {
    *       this.parent.each(function(e) {
@@ -116,6 +115,16 @@
    * {@link #filter} instead of creating a custom sequence. But I *did* say this
    * was a trivial example, to be fair.)
    *
+   * Now it will be possible to create this type of sequence from any parent
+   * sequence by calling the method name you specified. In other words, you can
+   * now do this:
+   *
+   *     Lazy(arr).sample();
+   *     Lazy(arr).map(func).sample();
+   *     Lazy(arr).map(func).filter(pred).sample();
+   *
+   * Etc., etc.
+   *
    * @constructor
    */
   function Sequence() {}
@@ -123,18 +132,58 @@
   /**
    * Create a new constructor function for a type inheriting from `Sequence`.
    *
-   * @param {Function} ctor The constructor function.
+   * @param {string} methodName The name of the method to be used for constructing
+   *     the new sequence. The method will be attached to the `Sequence` prototype
+   *     so that it can be chained with any other sequence methods, like
+   *     {@link #map}, {@link #filter}, etc.
+   * @param {Function} init Any initialization logic for the sequence type.
    * @return {Function} A constructor for a new type inheriting from `Sequence`.
+   *
+   * @example
+   * var VerboseSequence = Sequence.define("verbose");
+   *
+   * // This sequence type logs every element to the console
+   * // as it iterates over it.
+   * VerboseSequence.prototype.each = function(fn) {
+   *   this.parent.each(function(e, i) {
+   *     console.log(e);
+   *     return fn(e, i);
+   *   });
+   * };
+   *
+   * Lazy([1, 2, 3]).verbose().toArray();
+   * // (logs the numbers 1, 2, and 3 to the console)
    */
-  Sequence.inherit = function(ctor) {
-    ctor = ctor || function() {};
+  Sequence.define = function(methodName, init) {
+    // Define a constructor that sets this sequence's parent to the first argument
+    // and (optionally) applies any additional initialization logic.
+
+    /** @constructor */
+    var ctor = init ? function(var_args) {
+                        this.parent = arguments[0];
+                        init.apply(this, arguments);
+                      } :
+                      function(var_args) {
+                        this.parent = arguments[0];
+                      };
+
+    // Make this type inherit from Sequence.
     ctor.prototype = new Sequence();
+
+    // Expose the constructor as a chainable method so that we can do:
+    // Lazy(...).map(...).filter(...).blah(...);
+    /** @skip
+      * @suppress {checkTypes} */
+    Sequence.prototype[methodName] = function(x, y, z) {
+      return new ctor(this, x, y, z);
+    };
+
     return ctor;
   };
 
   /**
    * For debug purposes only.
-   * @debug
+   * @skip
    */
   Sequence.prototype.depth = function() {
     return this.parent ? this.parent.depth() + 1 : 0;
@@ -142,7 +191,7 @@
 
   /**
    * For debug purposes only.
-   * @debug
+   * @skip
    */
   Sequence.prototype.log = function(msg) {
     console.log(indent(this.depth()) + msg);
@@ -757,7 +806,11 @@
    * // => sequence: ("bar")
    */
   Sequence.prototype.intersection = function(var_args) {
-    return new IntersectionSequence(this, Array.prototype.slice.call(arguments, 0));
+    if (arguments.length === 1 && arguments[0] instanceof Array) {
+      return new SimpleIntersectionSequence(this, (/** @type {Array} */ var_args));
+    } else {
+      return new IntersectionSequence(this, Array.prototype.slice.call(arguments, 0));
+    }
   };
 
   /**
@@ -1273,10 +1326,15 @@
     return this.cache().length;
   };
 
-  var MappedSequence = Sequence.inherit(function(parent, mapFn) {
+  /**
+   * @constructor
+   */
+  function MappedSequence(parent, mapFn) {
     this.parent = parent;
     this.mapFn  = mapFn;
-  });
+  }
+
+  MappedSequence.prototype = new Sequence();
 
   MappedSequence.prototype.each = function(fn) {
     var mapFn = this.mapFn;
@@ -1318,10 +1376,15 @@
     }
   };
 
-  var ConcatenatedSequence = Sequence.inherit(function(parent, arrays) {
+  /**
+   * @constructor
+   */
+  function ConcatenatedSequence(parent, arrays) {
     this.parent = parent;
     this.arrays = arrays;
-  });
+  }
+
+  ConcatenatedSequence.prototype = new Sequence();
 
   ConcatenatedSequence.prototype.each = function(fn) {
     var done = false,
@@ -1451,12 +1514,10 @@
   });
 
   UniqueSequence.prototype.each = function(fn) {
-    var cache = [],
-        find  = contains,
+    var cache = new Set(),
         i     = 0;
     this.parent.each(function(e) {
-      if (!find(cache, e)) {
-        cache.push(e);
+      if (cache.add(e)) {
         return fn(e, i++);
       }
     });
@@ -1495,27 +1556,52 @@
     });
   };
 
+  /**
+   * @constructor
+   */
+  function SimpleIntersectionSequence(parent, array) {
+    this.parent = parent;
+    this.array  = array;
+  }
+
+  SimpleIntersectionSequence.prototype = new Sequence();
+
+  SimpleIntersectionSequence.prototype.each = function(fn) {
+    var iterator = new UniqueMemoizer(Lazy(this.array).getIterator()),
+        i = 0;
+
+    this.parent.each(function(e) {
+      if (iterator.contains(e)) {
+        return fn(e, i++);
+      }
+    });
+  };
+
   var IntersectionSequence = CachingSequence.inherit(function(parent, arrays) {
     this.parent = parent;
     this.arrays = arrays;
   });
 
   IntersectionSequence.prototype.each = function(fn) {
-    var sets = Lazy(this.arrays)
-      .map(function(values) { return Lazy(values).uniq().toArray(); })
-      .toArray();
+    var sets = Lazy(this.arrays).map(function(values) {
+      return new UniqueMemoizer(Lazy(values).getIterator());
+    });
 
-    var find = contains,
+    var setIterator = new UniqueMemoizer(sets.getIterator()),
         i = 0;
 
     this.parent.each(function(e) {
-      var j = -1;
-      while (++j < sets.length) {
-        if (!find(sets[j], e)) {
-          return;
+      var includedInAll = true;
+      setIterator.each(function(set) {
+        if (!set.contains(e)) {
+          includedInAll = false;
+          return false;
         }
+      });
+
+      if (includedInAll) {
+        return fn(e, i++);
       }
-      return fn(e, i++);
     });
   };
 
@@ -1729,6 +1815,71 @@
   };
 
   /**
+   * @constructor
+   */
+  function UniqueMemoizer(iterator) {
+    this.iterator     = iterator;
+    this.set          = new Set();
+    this.memo         = [];
+    this.currentValue = undefined;
+  }
+
+  UniqueMemoizer.prototype = new Iterator();
+
+  UniqueMemoizer.prototype.current = function() {
+    return this.currentValue;
+  };
+
+  UniqueMemoizer.prototype.moveNext = function() {
+    var iterator = this.iterator,
+        set = this.set,
+        memo = this.memo,
+        current;
+
+    while (iterator.moveNext()) {
+      current = iterator.current();
+      if (set.add(current)) {
+        memo.push(current);
+        this.currentValue = current;
+        return true;
+      }
+    }
+    return false;
+  };
+
+  UniqueMemoizer.prototype.each = function(fn) {
+    var memo = this.memo,
+        length = memo.length,
+        i = -1;
+
+    while (++i < length) {
+      if (fn(memo[i], i) === false) {
+        return false;
+      }
+    }
+
+    while (this.moveNext()) {
+      if (fn(this.currentValue, i++) === false) {
+        break;
+      }
+    }
+  };
+
+  UniqueMemoizer.prototype.contains = function(e) {
+    if (this.set.contains(e)) {
+      return true;
+    }
+
+    while (this.moveNext()) {
+      if (this.currentValue === e) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  /**
    * An `ArrayLikeSequence` is a {@link Sequence} that provides random access to
    * its elements. This extends the API for iterating with the additional methods
    * {@link #get} and {@link #length}, allowing a sequence to act as a "view" into
@@ -1883,6 +2034,19 @@
   ArrayLikeSequence.prototype.tail =
   ArrayLikeSequence.prototype.drop = ArrayLikeSequence.prototype.rest;
 
+  /**
+   * An optimized version of {@Sequence#concat}.
+   *
+   * @param {...*} var_args
+   */
+  ArrayLikeSequence.prototype.concat = function(var_args) {
+    if (arguments.length === 1 && arguments[0] instanceof Array) {
+      return new IndexedConcatenatedSequence(this, (/** @type {Array} */ var_args));
+    } else {
+      return Sequence.prototype.concat.apply(this, arguments);
+    }
+  }
+
   var IndexedMappedSequence = ArrayLikeSequence.inherit(function(parent, mapFn) {
     this.parent = parent;
     this.mapFn  = mapFn;
@@ -1947,6 +2111,24 @@
   IndexedDropSequence.prototype.length = function() {
     var parentLength = this.parent.length();
     return this.count <= parentLength ? parentLength - this.count : 0;
+  };
+
+  var IndexedConcatenatedSequence = ArrayLikeSequence.inherit(function(parent, other) {
+    this.parent = parent;
+    this.other  = other;
+  });
+
+  IndexedConcatenatedSequence.prototype.get = function(i) {
+    var parentLength = this.parent.length();
+    if (i < parentLength) {
+      return this.parent.get(i);
+    } else {
+      return this.other[i - parentLength];
+    }
+  };
+
+  IndexedConcatenatedSequence.prototype.length = function() {
+    return this.parent.length() + this.other.length;
   };
 
   /**
@@ -2015,6 +2197,19 @@
   ArrayWrapper.prototype.uniq =
   ArrayWrapper.prototype.unique = function() {
     return new UniqueArrayWrapper(this);
+  };
+
+  /**
+   * An optimized version of {@link ArrayLikeSequence#concat}.
+   *
+   * @param {...*} var_args
+   */
+  ArrayWrapper.prototype.concat = function(var_args) {
+    if (arguments.length === 1 && arguments[0] instanceof Array) {
+      return new ConcatArrayWrapper(this.source, (/** @type {Array} */ var_args));
+    } else {
+      return ArrayLikeSequence.prototype.concat.apply(this, arguments);
+    }
   };
 
   /**
@@ -2118,6 +2313,7 @@
         value,
         i = -1,
         j = 0;
+
     while (++i < length) {
       value = source[i];
       if (!find(cache, value)) {
@@ -2132,25 +2328,68 @@
   UniqueArrayWrapper.prototype.eachSetCache = UniqueSequence.prototype.each;
 
   /**
-   * So, this is kinda shocking.
-   * Soon I'll write a whole blog post about this; but for now suffice it to say
-   * that going w/ a no-cache approach is the fastest solution until around 200
-   * elements, at which point using an array-based cache is still faster than
-   * using a set-based cache. Not until somewhere around 800 elements does a set-
-   * based approach start to outpace the others.
+   * My latest findings here...
    *
-   * UPDATE: Scratch that. The array-based cache outperforms the no-cache approach
-   * after 40 elements or so. I'm scratching my head over this one now...
+   * So I hadn't really given the set-based approach enough credit. The main issue
+   * was that my Set implementation was totally not optimized at all. After pretty
+   * heavily optimizing it (just take a look; it's a monstrosity now!), it now
+   * becomes the fastest option for much smaller values of N.
    */
   function getEachForSource(source) {
     if (source.length < 40) {
       return UniqueArrayWrapper.prototype.eachNoCache;
-    } else if (source.length < 800) {
+    } else if (source.length < 100) {
       return UniqueArrayWrapper.prototype.eachArrayCache;
     } else {
       return UniqueSequence.prototype.each;
     }
   }
+
+  /**
+   * @constructor
+   */
+  function ConcatArrayWrapper(source, other) {
+    this.source = source;
+    this.other  = other;
+  }
+
+  ConcatArrayWrapper.prototype = new ArrayLikeSequence();
+
+  ConcatArrayWrapper.prototype.get = function(i) {
+    var sourceLength = this.source.length;
+
+    if (i < sourceLength) {
+      return this.source[i];
+    } else {
+      return this.other[i - sourceLength];
+    }
+  };
+
+  ConcatArrayWrapper.prototype.length = function() {
+    return this.source.length + this.other.length;
+  };
+
+  ConcatArrayWrapper.prototype.each = function(fn) {
+    var source = this.source,
+        sourceLength = source.length,
+        other = this.other,
+        otherLength = other.length,
+        i = 0,
+        j = -1;
+
+    while (++j < sourceLength) {
+      if (fn(source[j], i++) === false) {
+        return false;
+      }
+    }
+
+    j = -1;
+    while (++j < otherLength) {
+      if (fn(other[j], i++) === false) {
+        return false;
+      }
+    }
+  };
 
   /**
    * An `ObjectLikeSequence` object represents a sequence of key/value pairs.
@@ -2637,10 +2876,15 @@
     return new SplitStringSequence(this.source, delimiter);
   };
 
-  var StringMatchSequence = Sequence.inherit(function(source, pattern) {
+  /**
+   * @constructor
+   */
+  function StringMatchSequence(source, pattern) {
     this.source = source;
     this.pattern = pattern;
-  });
+  }
+
+  StringMatchSequence.prototype = new Sequence();
 
   StringMatchSequence.prototype.each = function(fn) {
     var iterator = this.getIterator();
@@ -2655,10 +2899,15 @@
     return new StringMatchIterator(this.source, this.pattern);
   };
 
-  var SplitStringSequence = Sequence.inherit(function(source, pattern) {
+  /**
+   * @constructor
+   */
+  function SplitStringSequence(source, pattern) {
     this.source = source;
     this.pattern = pattern;
-  });
+  }
+
+  SplitStringSequence.prototype = new Sequence();
 
   SplitStringSequence.prototype.each = function(fn) {
     var iterator = this.getIterator();
@@ -3149,19 +3398,53 @@
    *     value was not already present), or else false.
    */
   Set.prototype.add = function(value) {
-    var table  = this.table,
-        key    = typeof value,
-        values = table[key];
+    var table = this.table,
+        type  = typeof value,
 
-    if (!values) {
-      values = table[key] = [value];
-      return true;
+        // only applies for strings
+        firstChar,
+
+        // only applies for objects
+        objects;
+
+    switch (type) {
+      case "number":
+      case "boolean":
+      case "undefined":
+        if (!table[value]) {
+          table[value] = true;
+          return true;
+        }
+        return false;
+
+      case "string":
+        // Essentially, escape the first character if it could possibly collide
+        // with a number, boolean, or undefined (or a string that happens to start
+        // with the escape character!), OR if it could override a special property
+        // such as '__proto__' or 'constructor'.
+        firstChar = value.charAt(0);
+        if ("_ftc@".indexOf(firstChar) >= 0 || (firstChar >= "0" && firstChar <= "9")) {
+          value = "@" + value;
+        }
+        if (!table[value]) {
+          table[value] = true;
+          return true;
+        }
+        return false;
+
+      default:
+        // For objects and functions, we can't really do anything other than store
+        // them in an array and do a linear search for reference equality.
+        objects = this.objects;
+        if (!objects) {
+          objects = this.objects = [];
+        }
+        if (!contains(objects, value)) {
+          objects.push(value);
+          return true;
+        }
+        return false;
     }
-    if (contains(values, value)) {
-      return false;
-    }
-    values.push(value);
-    return true;
   };
 
   /**
@@ -3171,9 +3454,33 @@
    * @return {boolean} True if the set contains the value, or else false.
    */
   Set.prototype.contains = function(value) {
-    var key = typeof value,
-        values = this.table[key];
-    return values && contains(values, value);
+    var type = typeof value,
+
+        // only applies for strings
+        firstChar;
+
+    switch (type) {
+      case "number":
+      case "boolean":
+      case "undefined":
+        return !!this.table[value];
+
+      case "string":
+        // Essentially, escape the first character if it could possibly collide
+        // with a number, boolean, or undefined (or a string that happens to start
+        // with the escape character!), OR if it could override a special property
+        // such as '__proto__' or 'constructor'.
+        firstChar = value.charAt(0);
+        if ("_ftc@".indexOf(firstChar) >= 0 || (firstChar >= "0" && firstChar <= "9")) {
+          value = "@" + value;
+        }
+        return !!this.table[value];
+
+      default:
+        // For objects and functions, we can't really do anything other than store
+        // them in an array and do a linear search for reference equality.
+        return this.objects && contains(this.objects, value);
+    }
   };
 
   /*** Exposing Lazy to the world ***/

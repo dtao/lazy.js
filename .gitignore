@@ -3,6 +3,7 @@ Rakefile
 LICENSE*
 README*
 
+lazy.min.js
 *.json
 *.mustache
 *.node.js
