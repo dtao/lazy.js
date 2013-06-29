@@ -43,3 +43,8 @@ $(document).ready(function() {
     return false;
   });
 });
+
+// This is a totally unnecessary bit of fanciness that I just felt like writing.
+$(window).on("scroll", function() {
+  $("nav.doc-list").css("top", Math.max(171 - window.pageYOffset, 0) + "px");
+});
