@@ -1962,21 +1962,6 @@
 
   ArrayLikeSequence.prototype = new Sequence();
 
-  /**
-   * Create a new constructor function for a type inheriting from
-   * `ArrayLikeSequence`.
-   *
-   * @deprecated Use {@link ArrayLikeSequence#define} instead.
-   *
-   * @param {Function} ctor The constructor function.
-   * @return {Function} A constructor for a new type inheriting from
-   *     `ArrayLikeSequence`.
-   */
-  ArrayLikeSequence.inherit = function(ctor) {
-    ctor.prototype = new ArrayLikeSequence();
-    return ctor;
-  };
-
   ArrayLikeSequence.define = function(methodName, init) {
     // Define a constructor that sets this sequence's parent to the first argument
     // and (optionally) applies any additional initialization logic.
@@ -2116,10 +2101,15 @@
     return new IndexedUniqueSequence(this);
   };
 
-  var IndexedMappedSequence = ArrayLikeSequence.inherit(function(parent, mapFn) {
+  /**
+   * @constructor
+   */
+  function IndexedMappedSequence(parent, mapFn) {
     this.parent = parent;
     this.mapFn  = mapFn;
-  });
+  }
+
+  IndexedMappedSequence.prototype = new ArrayLikeSequence();
 
   IndexedMappedSequence.prototype.get = function(i) {
     return this.mapFn(this.parent.get(i), i);
@@ -2150,28 +2140,43 @@
     }
   };
 
-  var IndexedReversedSequence = ArrayLikeSequence.inherit(function(parent) {
+  /**
+   * @constructor
+   */
+  function IndexedReversedSequence(parent) {
     this.parent = parent;
-  });
+  }
+
+  IndexedReversedSequence.prototype = new ArrayLikeSequence();
 
   IndexedReversedSequence.prototype.get = function(i) {
     return this.parent.get(this.length() - i - 1);
   };
 
-  var IndexedTakeSequence = ArrayLikeSequence.inherit(function(parent, count) {
+  /**
+   * @constructor
+   */
+  function IndexedTakeSequence(parent, count) {
     this.parent = parent;
     this.count  = count;
-  });
+  }
+
+  IndexedTakeSequence.prototype = new ArrayLikeSequence();
 
   IndexedTakeSequence.prototype.length = function() {
     var parentLength = this.parent.length();
     return this.count <= parentLength ? this.count : parentLength;
   };
 
-  var IndexedDropSequence = ArrayLikeSequence.inherit(function(parent, count) {
+  /**
+   * @constructor
+   */
+  function IndexedDropSequence(parent, count) {
     this.parent = parent;
     this.count  = typeof count === "number" ? count : 1;
-  });
+  }
+
+  IndexedDropSequence.prototype = new ArrayLikeSequence();
 
   IndexedDropSequence.prototype.get = function(i) {
     return this.parent.get(this.count + i);
@@ -2182,10 +2187,15 @@
     return this.count <= parentLength ? parentLength - this.count : 0;
   };
 
-  var IndexedConcatenatedSequence = ArrayLikeSequence.inherit(function(parent, other) {
+  /**
+   * @constructor
+   */
+  function IndexedConcatenatedSequence(parent, other) {
     this.parent = parent;
     this.other  = other;
-  });
+  }
+
+  IndexedConcatenatedSequence.prototype = new ArrayLikeSequence();
 
   IndexedConcatenatedSequence.prototype.get = function(i) {
     var parentLength = this.parent.length();
