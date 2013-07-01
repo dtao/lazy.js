@@ -1915,10 +1915,11 @@
    *
    * Here's an example. Let's define a sequence type called `OffsetSequence` that
    * offsets each of its parent's elements by a set distance, and circles back to
-   * the beginning after reaching the end.
+   * the beginning after reaching the end. **Remember**: the initialization
+   * function you pass to {@link #define} should always accept a `parent` as its
+   * first parameter.
    *
-   *     var OffsetSequence = ArrayLikeSequence.inherit(function(parent, offset) {
-   *       this.parent = parent;
+   *     var OffsetSequence = ArrayLikeSequence.define("offset", function(parent, offset) {
    *       this.offset = offset;
    *     });
    *
@@ -1928,7 +1929,7 @@
    *
    * It's worth noting a couple of things here.
    *
-   * First, the default implementation of `length` simply returns the parent's
+   * First, Lazy's default implementation of `length` simply returns the parent's
    * length. In this case, since an `OffsetSequence` will always have the same
    * number of elements as its parent, that implementation is fine; so we don't
    * need to override it.
@@ -1939,6 +1940,17 @@
    * probably just stick with the default.
    *
    * So we're already done, after only implementing `get`! Pretty slick, huh?
+   *
+   * Now the `offset` method will be chainable from any `ArrayLikeSequence`. So
+   * for example:
+   *
+   *     Lazy([1, 2, 3]).map(trans).offset(3);
+   *
+   * ...will work, but:
+   *
+   *     Lazy([1, 2, 3]).filter(pred).offset(3);
+   *
+   * ...will not.
    *
    * (Also, as with the example provided for defining custom {@link Sequence}
    * types, this example really could have been implemented using a function
@@ -1954,12 +1966,41 @@
    * Create a new constructor function for a type inheriting from
    * `ArrayLikeSequence`.
    *
+   * @deprecated Use {@link ArrayLikeSequence#define} instead.
+   *
    * @param {Function} ctor The constructor function.
    * @return {Function} A constructor for a new type inheriting from
    *     `ArrayLikeSequence`.
    */
   ArrayLikeSequence.inherit = function(ctor) {
     ctor.prototype = new ArrayLikeSequence();
+    return ctor;
+  };
+
+  ArrayLikeSequence.define = function(methodName, init) {
+    // Define a constructor that sets this sequence's parent to the first argument
+    // and (optionally) applies any additional initialization logic.
+
+    /** @constructor */
+    var ctor = init ? function(var_args) {
+                        this.parent = arguments[0];
+                        init.apply(this, arguments);
+                      } :
+                      function(var_args) {
+                        this.parent = arguments[0];
+                      };
+
+    // Make this type inherit from ArrayLikeSequence.
+    ctor.prototype = new ArrayLikeSequence();
+
+    // Expose the constructor as a chainable method so that we can do:
+    // Lazy(...).map(...).blah(...);
+    /** @skip
+      * @suppress {checkTypes} */
+    ArrayLikeSequence.prototype[methodName] = function(x, y, z) {
+      return new ctor(this, x, y, z);
+    };
+
     return ctor;
   };
 
