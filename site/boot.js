@@ -531,6 +531,11 @@
       return false;
     });
 
+    $("#why-to-array-vs-each").on("click", function() {
+      // Clicking on the panel itself shouldn't dismiss it.
+      return false;
+    });
+
     $(".select-all").on("click", function() {
       $(this).closest("section").find(".benchmark-result").addClass("selected");
     });
