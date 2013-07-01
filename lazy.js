@@ -2238,9 +2238,12 @@
    * An optimized version of {@link Sequence#each}.
    */
   ArrayWrapper.prototype.each = function(fn) {
-    var i = -1;
-    while (++i < this.source.length) {
-      if (fn(this.source[i], i) === false) {
+    var source = this.source,
+        length = source.length,
+        i = -1;
+
+    while (++i < length) {
+      if (fn(source[i], i) === false) {
         break;
       }
     }
