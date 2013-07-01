@@ -647,6 +647,12 @@ describe("Lazy", function() {
       expect(intersection).toEqual([5, 6, 7, 8, 9, 10]);
     });
 
+    // TODO: figure out a smart way to fix this without seriously hurting performance.
+    xit("returns unique elements", function() {
+      var intersection = Lazy([1, 1, 2, 3]).intersection([1, 2]).toArray();
+      expect(intersection).toEqual([1, 2]);
+    });
+
     it("passes an index along with each element", function() {
       expect(Lazy(["foo", "bar", "baz"]).intersection(["bar", "baz", "blah"])).toPassToEach(1, [0, 1]);
     });
