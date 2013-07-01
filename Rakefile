@@ -143,10 +143,9 @@ namespace :compile do
     final_html = IndexTemplate.render({
       :readme => fragment.inner_html,
       :benchmark_sections => [
-        { :id => "common", :label => "Common ops", :sizes => [10, 100], :selected => true },
-        { :id => "shorted", :label => "Short-circuited ops", :sizes => [10, 100] },
-        { :id => "chained", :label => "Chained ops", :sizes => [10, 100] },
-        { :id => "other", :label => "Other", :sizes => [100] }
+        { :id => "10", :label => "10 elements", :selected => true },
+        { :id => "100", :label => "100 elements" },
+        { :id => "other", :label => "Other" }
       ]
     })
 

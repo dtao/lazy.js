@@ -346,9 +346,8 @@
   <section id="benchmark-results" class="top-level-section" style="display: none;">
     <nav class="subnav" data-sections=".benchmark-results-section">
       <ul>
-        <li class="selected"><a href="#benchmark-results-common">Common ops</a></li>
-        <li><a href="#benchmark-results-shorted">Short-circuited ops</a></li>
-        <li><a href="#benchmark-results-chained">Chained ops</a></li>
+        <li class="selected"><a href="#benchmark-results-10">10 elements</a></li>
+        <li><a href="#benchmark-results-100">100 elements</a></li>
         <li><a href="#benchmark-results-other">Other</a></li>
       </ul>
     </nav>
@@ -388,431 +387,89 @@
       </p>
     </div>
 
-      <section id="benchmark-results-common"
+      <section id="benchmark-results-10"
         
         class="benchmark-results-section">
       
-          <h3>10 elements</h3>
+        <div id="benchmark-results-chart-10" class="column-chart"
+          data-title="Ops/second - 10 elements"
+          data-source="#benchmark-results-table-10"
+          data-transpose="true"
+          data-row-filter="benchmarkChartRowFilter"
+          data-options="benchmarkChartOptions">
+        </div>
       
-          <div id="benchmark-results-chart-common-10" class="column-chart"
-            data-title="Ops/second - Common ops"
-            data-source="#benchmark-results-table-common-10"
-            data-transpose="true"
-            data-row-filter="benchmarkChartRowFilter"
-            data-options="benchmarkChartOptions">
-          </div>
+        <p>
+          Select:
+          <button class="select-all">All</button>
+          <button class="select-none">None</button>
+          <button class="clear-selected">Clear</button>
+        </p>
       
-          <p>
-            Select:
-            <button class="select-all">All</button>
-            <button class="select-none">None</button>
-            <button class="clear-selected">Clear</button>
-          </p>
-      
-          <form>
-            <div class="field">
-              <label>Method:</label>
-              <div class="values">
-                <label>
-                  <input name="method" type="radio" checked="checked" />
-                  <code>each</code>
-                </label>
-                <label>
-                  <input name="method" type="radio" />
-                  <code>toArray</code>
-                </label>
-              </div>
-            </div>
-            <div class="field">
-              <label>Display:</label>
-              <div class="values">
-                <label>
-                  <input name="display" type="radio" checked="checked" />
-                  Absolute ops/second
-                </label>
-                <label>
-                  <input name="display" type="radio" />
-                  In comparison to fastest method
-                </label>
-                <label>
-                  <input name="display" type="radio" />
-                  In comparison to Lo-Dash
-                </label>
-              </div>
-            </div>
-          </form>
-      
-          <table id="benchmark-results-table-common-10" class="benchmark-results-table">
-            <tr>
-              <th>Test</th>
-              <th>Underscore</th>
-              <th>Lo-Dash</th>
-              <th>Lazy.js</th>
-            </tr>
-          </table>
-          <h3>100 elements</h3>
-      
-          <div id="benchmark-results-chart-common-100" class="column-chart"
-            data-title="Ops/second - Common ops"
-            data-source="#benchmark-results-table-common-100"
-            data-transpose="true"
-            data-row-filter="benchmarkChartRowFilter"
-            data-options="benchmarkChartOptions">
-          </div>
-      
-          <p>
-            Select:
-            <button class="select-all">All</button>
-            <button class="select-none">None</button>
-            <button class="clear-selected">Clear</button>
-          </p>
-      
-          <form>
-            <div class="field">
-              <label>Method:</label>
-              <div class="values">
-                <label>
-                  <input name="method" type="radio" checked="checked" />
-                  <code>each</code>
-                </label>
-                <label>
-                  <input name="method" type="radio" />
-                  <code>toArray</code>
-                </label>
-              </div>
-            </div>
-            <div class="field">
-              <label>Display:</label>
-              <div class="values">
-                <label>
-                  <input name="display" type="radio" checked="checked" />
-                  Absolute ops/second
-                </label>
-                <label>
-                  <input name="display" type="radio" />
-                  In comparison to fastest method
-                </label>
-                <label>
-                  <input name="display" type="radio" />
-                  In comparison to Lo-Dash
-                </label>
-              </div>
-            </div>
-          </form>
-      
-          <table id="benchmark-results-table-common-100" class="benchmark-results-table">
-            <tr>
-              <th>Test</th>
-              <th>Underscore</th>
-              <th>Lo-Dash</th>
-              <th>Lazy.js</th>
-            </tr>
-          </table>
+        <table id="benchmark-results-table-10" class="benchmark-results-table">
+          <tr>
+            <th>Test</th>
+            <th>Underscore</th>
+            <th>Lo-Dash</th>
+            <th>Lazy.js</th>
+          </tr>
+        </table>
       </section>
-      <section id="benchmark-results-shorted"
+      <section id="benchmark-results-100"
         style="display: none;"
         class="benchmark-results-section">
       
-          <h3>10 elements</h3>
+        <div id="benchmark-results-chart-100" class="column-chart"
+          data-title="Ops/second - 100 elements"
+          data-source="#benchmark-results-table-100"
+          data-transpose="true"
+          data-row-filter="benchmarkChartRowFilter"
+          data-options="benchmarkChartOptions">
+        </div>
       
-          <div id="benchmark-results-chart-shorted-10" class="column-chart"
-            data-title="Ops/second - Short-circuited ops"
-            data-source="#benchmark-results-table-shorted-10"
-            data-transpose="true"
-            data-row-filter="benchmarkChartRowFilter"
-            data-options="benchmarkChartOptions">
-          </div>
+        <p>
+          Select:
+          <button class="select-all">All</button>
+          <button class="select-none">None</button>
+          <button class="clear-selected">Clear</button>
+        </p>
       
-          <p>
-            Select:
-            <button class="select-all">All</button>
-            <button class="select-none">None</button>
-            <button class="clear-selected">Clear</button>
-          </p>
-      
-          <form>
-            <div class="field">
-              <label>Method:</label>
-              <div class="values">
-                <label>
-                  <input name="method" type="radio" checked="checked" />
-                  <code>each</code>
-                </label>
-                <label>
-                  <input name="method" type="radio" />
-                  <code>toArray</code>
-                </label>
-              </div>
-            </div>
-            <div class="field">
-              <label>Display:</label>
-              <div class="values">
-                <label>
-                  <input name="display" type="radio" checked="checked" />
-                  Absolute ops/second
-                </label>
-                <label>
-                  <input name="display" type="radio" />
-                  In comparison to fastest method
-                </label>
-                <label>
-                  <input name="display" type="radio" />
-                  In comparison to Lo-Dash
-                </label>
-              </div>
-            </div>
-          </form>
-      
-          <table id="benchmark-results-table-shorted-10" class="benchmark-results-table">
-            <tr>
-              <th>Test</th>
-              <th>Underscore</th>
-              <th>Lo-Dash</th>
-              <th>Lazy.js</th>
-            </tr>
-          </table>
-          <h3>100 elements</h3>
-      
-          <div id="benchmark-results-chart-shorted-100" class="column-chart"
-            data-title="Ops/second - Short-circuited ops"
-            data-source="#benchmark-results-table-shorted-100"
-            data-transpose="true"
-            data-row-filter="benchmarkChartRowFilter"
-            data-options="benchmarkChartOptions">
-          </div>
-      
-          <p>
-            Select:
-            <button class="select-all">All</button>
-            <button class="select-none">None</button>
-            <button class="clear-selected">Clear</button>
-          </p>
-      
-          <form>
-            <div class="field">
-              <label>Method:</label>
-              <div class="values">
-                <label>
-                  <input name="method" type="radio" checked="checked" />
-                  <code>each</code>
-                </label>
-                <label>
-                  <input name="method" type="radio" />
-                  <code>toArray</code>
-                </label>
-              </div>
-            </div>
-            <div class="field">
-              <label>Display:</label>
-              <div class="values">
-                <label>
-                  <input name="display" type="radio" checked="checked" />
-                  Absolute ops/second
-                </label>
-                <label>
-                  <input name="display" type="radio" />
-                  In comparison to fastest method
-                </label>
-                <label>
-                  <input name="display" type="radio" />
-                  In comparison to Lo-Dash
-                </label>
-              </div>
-            </div>
-          </form>
-      
-          <table id="benchmark-results-table-shorted-100" class="benchmark-results-table">
-            <tr>
-              <th>Test</th>
-              <th>Underscore</th>
-              <th>Lo-Dash</th>
-              <th>Lazy.js</th>
-            </tr>
-          </table>
-      </section>
-      <section id="benchmark-results-chained"
-        style="display: none;"
-        class="benchmark-results-section">
-      
-          <h3>10 elements</h3>
-      
-          <div id="benchmark-results-chart-chained-10" class="column-chart"
-            data-title="Ops/second - Chained ops"
-            data-source="#benchmark-results-table-chained-10"
-            data-transpose="true"
-            data-row-filter="benchmarkChartRowFilter"
-            data-options="benchmarkChartOptions">
-          </div>
-      
-          <p>
-            Select:
-            <button class="select-all">All</button>
-            <button class="select-none">None</button>
-            <button class="clear-selected">Clear</button>
-          </p>
-      
-          <form>
-            <div class="field">
-              <label>Method:</label>
-              <div class="values">
-                <label>
-                  <input name="method" type="radio" checked="checked" />
-                  <code>each</code>
-                </label>
-                <label>
-                  <input name="method" type="radio" />
-                  <code>toArray</code>
-                </label>
-              </div>
-            </div>
-            <div class="field">
-              <label>Display:</label>
-              <div class="values">
-                <label>
-                  <input name="display" type="radio" checked="checked" />
-                  Absolute ops/second
-                </label>
-                <label>
-                  <input name="display" type="radio" />
-                  In comparison to fastest method
-                </label>
-                <label>
-                  <input name="display" type="radio" />
-                  In comparison to Lo-Dash
-                </label>
-              </div>
-            </div>
-          </form>
-      
-          <table id="benchmark-results-table-chained-10" class="benchmark-results-table">
-            <tr>
-              <th>Test</th>
-              <th>Underscore</th>
-              <th>Lo-Dash</th>
-              <th>Lazy.js</th>
-            </tr>
-          </table>
-          <h3>100 elements</h3>
-      
-          <div id="benchmark-results-chart-chained-100" class="column-chart"
-            data-title="Ops/second - Chained ops"
-            data-source="#benchmark-results-table-chained-100"
-            data-transpose="true"
-            data-row-filter="benchmarkChartRowFilter"
-            data-options="benchmarkChartOptions">
-          </div>
-      
-          <p>
-            Select:
-            <button class="select-all">All</button>
-            <button class="select-none">None</button>
-            <button class="clear-selected">Clear</button>
-          </p>
-      
-          <form>
-            <div class="field">
-              <label>Method:</label>
-              <div class="values">
-                <label>
-                  <input name="method" type="radio" checked="checked" />
-                  <code>each</code>
-                </label>
-                <label>
-                  <input name="method" type="radio" />
-                  <code>toArray</code>
-                </label>
-              </div>
-            </div>
-            <div class="field">
-              <label>Display:</label>
-              <div class="values">
-                <label>
-                  <input name="display" type="radio" checked="checked" />
-                  Absolute ops/second
-                </label>
-                <label>
-                  <input name="display" type="radio" />
-                  In comparison to fastest method
-                </label>
-                <label>
-                  <input name="display" type="radio" />
-                  In comparison to Lo-Dash
-                </label>
-              </div>
-            </div>
-          </form>
-      
-          <table id="benchmark-results-table-chained-100" class="benchmark-results-table">
-            <tr>
-              <th>Test</th>
-              <th>Underscore</th>
-              <th>Lo-Dash</th>
-              <th>Lazy.js</th>
-            </tr>
-          </table>
+        <table id="benchmark-results-table-100" class="benchmark-results-table">
+          <tr>
+            <th>Test</th>
+            <th>Underscore</th>
+            <th>Lo-Dash</th>
+            <th>Lazy.js</th>
+          </tr>
+        </table>
       </section>
       <section id="benchmark-results-other"
         style="display: none;"
         class="benchmark-results-section">
       
-          <h3>100 elements</h3>
+        <div id="benchmark-results-chart-other" class="column-chart"
+          data-title="Ops/second - Other"
+          data-source="#benchmark-results-table-other"
+          data-transpose="true"
+          data-row-filter="benchmarkChartRowFilter"
+          data-options="benchmarkChartOptions">
+        </div>
       
-          <div id="benchmark-results-chart-other-100" class="column-chart"
-            data-title="Ops/second - Other"
-            data-source="#benchmark-results-table-other-100"
-            data-transpose="true"
-            data-row-filter="benchmarkChartRowFilter"
-            data-options="benchmarkChartOptions">
-          </div>
+        <p>
+          Select:
+          <button class="select-all">All</button>
+          <button class="select-none">None</button>
+          <button class="clear-selected">Clear</button>
+        </p>
       
-          <p>
-            Select:
-            <button class="select-all">All</button>
-            <button class="select-none">None</button>
-            <button class="clear-selected">Clear</button>
-          </p>
-      
-          <form>
-            <div class="field">
-              <label>Method:</label>
-              <div class="values">
-                <label>
-                  <input name="method" type="radio" checked="checked" />
-                  <code>each</code>
-                </label>
-                <label>
-                  <input name="method" type="radio" />
-                  <code>toArray</code>
-                </label>
-              </div>
-            </div>
-            <div class="field">
-              <label>Display:</label>
-              <div class="values">
-                <label>
-                  <input name="display" type="radio" checked="checked" />
-                  Absolute ops/second
-                </label>
-                <label>
-                  <input name="display" type="radio" />
-                  In comparison to fastest method
-                </label>
-                <label>
-                  <input name="display" type="radio" />
-                  In comparison to Lo-Dash
-                </label>
-              </div>
-            </div>
-          </form>
-      
-          <table id="benchmark-results-table-other-100" class="benchmark-results-table">
-            <tr>
-              <th>Test</th>
-              <th>Underscore</th>
-              <th>Lo-Dash</th>
-              <th>Lazy.js</th>
-            </tr>
-          </table>
+        <table id="benchmark-results-table-other" class="benchmark-results-table">
+          <tr>
+            <th>Test</th>
+            <th>Underscore</th>
+            <th>Lo-Dash</th>
+            <th>Lazy.js</th>
+          </tr>
+        </table>
       </section>
   </section>
 

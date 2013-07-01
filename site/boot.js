@@ -486,9 +486,8 @@
       // Add a row to the appropriate table for this benchmark
       // once the document's loaded.
       $(document).ready(function() {
-        var inputType = input[0] instanceof Array ? input[0].length : "other";
-        var category = options.category || "common";
-        addBenchmarkToTable(description, benchmarkSetId, category + "-" + inputType);
+        var inputSize = input[0] instanceof Array ? input[0].length : "other";
+        addBenchmarkToTable(description, benchmarkSetId, inputSize);
       });
     });
   };
