@@ -1562,11 +1562,12 @@
   function SimpleIntersectionSequence(parent, array) {
     this.parent = parent;
     this.array  = array;
+    this.each   = getEachForIntersection(array);
   }
 
   SimpleIntersectionSequence.prototype = new Sequence();
 
-  SimpleIntersectionSequence.prototype.each = function(fn) {
+  SimpleIntersectionSequence.prototype.eachMemoizerCache = function(fn) {
     var iterator = new UniqueMemoizer(Lazy(this.array).getIterator()),
         i = 0;
 
@@ -1576,6 +1577,26 @@
       }
     });
   };
+
+  SimpleIntersectionSequence.prototype.eachArrayCache = function(fn) {
+    var array = this.array,
+        find  = contains,
+        i = 0;
+
+    this.parent.each(function(e) {
+      if (find(array, e)) {
+        return fn(e, i++);
+      }
+    });
+  };
+
+  function getEachForIntersection(source) {
+    if (source.length < 40) {
+      return SimpleIntersectionSequence.prototype.eachArrayCache;
+    } else {
+      return SimpleIntersectionSequence.prototype.eachMemoizerCache;
+    }
+  }
 
   var IntersectionSequence = CachingSequence.inherit(function(parent, arrays) {
     this.parent = parent;
