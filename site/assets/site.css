@@ -167,6 +167,24 @@ a.why-to-array-vs-each:hover {
   color: #48f;
 }
 
+.field {
+  margin-bottom: 20px;
+}
+
+.field > label {
+  display: inline-block;
+  width: 200px;
+  vertical-align: top;
+}
+
+.field .values {
+  display: inline-block;
+}
+
+.field .values label {
+  display: block;
+}
+
 .column-chart {
   position: relative;
 }

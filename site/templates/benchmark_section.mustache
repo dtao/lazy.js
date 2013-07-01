@@ -2,27 +2,64 @@
   {{^selected}}style="display: none;"{{/selected}}
   class="benchmark-results-section">
 
-  <div id="benchmark-results-chart-{{id}}" class="column-chart"
-    data-title="Ops/second - {{label}}"
-    data-source="#benchmark-results-table-{{id}}"
-    data-transpose="true"
-    data-row-filter="benchmarkChartRowFilter"
-    data-options="benchmarkChartOptions">
-  </div>
+  {{#sizes}}
+    <h3>{{.}} elements</h3>
 
-  <p>
-    Select:
-    <button class="select-all">All</button>
-    <button class="select-none">None</button>
-    <button class="clear-selected">Clear</button>
-  </p>
+    <div id="benchmark-results-chart-{{id}}-{{.}}" class="column-chart"
+      data-title="Ops/second - {{label}}"
+      data-source="#benchmark-results-table-{{id}}-{{.}}"
+      data-transpose="true"
+      data-row-filter="benchmarkChartRowFilter"
+      data-options="benchmarkChartOptions">
+    </div>
 
-  <table id="benchmark-results-table-{{id}}" class="benchmark-results-table">
-    <tr>
-      <th>Test</th>
-      <th>Underscore</th>
-      <th>Lo-Dash</th>
-      <th>Lazy.js</th>
-    </tr>
-  </table>
+    <p>
+      Select:
+      <button class="select-all">All</button>
+      <button class="select-none">None</button>
+      <button class="clear-selected">Clear</button>
+    </p>
+
+    <form>
+      <div class="field">
+        <label>Method:</label>
+        <div class="values">
+          <label>
+            <input name="method" type="radio" checked="checked" />
+            <code>each</code>
+          </label>
+          <label>
+            <input name="method" type="radio" />
+            <code>toArray</code>
+          </label>
+        </div>
+      </div>
+      <div class="field">
+        <label>Display:</label>
+        <div class="values">
+          <label>
+            <input name="display" type="radio" checked="checked" />
+            Absolute ops/second
+          </label>
+          <label>
+            <input name="display" type="radio" />
+            In comparison to fastest method
+          </label>
+          <label>
+            <input name="display" type="radio" />
+            In comparison to Lo-Dash
+          </label>
+        </div>
+      </div>
+    </form>
+
+    <table id="benchmark-results-table-{{id}}-{{.}}" class="benchmark-results-table">
+      <tr>
+        <th>Test</th>
+        <th>Underscore</th>
+        <th>Lo-Dash</th>
+        <th>Lazy.js</th>
+      </tr>
+    </table>
+  {{/sizes}}
 </section>
