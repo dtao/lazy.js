@@ -54,11 +54,13 @@ article > header h1 {
 }
 
 nav.doc-list {
-  position: absolute;
-  top: 170px;
+  position: fixed;
+  top: 171px;
+  bottom: 0;
   left: 0;
-  width: 284px;
+  width: 264px;
   padding: 0 20px;
+  overflow: auto;
 }
 
 nav.doc-list ul li {

@@ -28,6 +28,7 @@
   <script type="text/javascript" src="site/common.js"></script>
   <script type="text/javascript" src="site/boot.js"></script>
   <script type="text/javascript" src="site/specs.js"></script>
+  <script type="text/javascript" src="site/ga.js"></script>
 
   <!-- source files -->
   <script type="text/javascript" src="lazy.js"></script>
@@ -117,7 +118,7 @@
 <div class="highlight"><pre>npm install lazy.js
 </pre></div>
 
-<p>Now let's look at what you can do with Lazy.js.</p>
+<p>Now let's look at what you can do with Lazy.js. (For more thorough information, take a look at the <a href="http://dtao.github.io/lazy.js/docs/">API Docs</a>.)</p>
 
 <h2 id="introduction">Introduction</h2>
 
@@ -392,91 +393,90 @@
       </p>
     </div>
 
-    <section id="benchmark-results-10"
-      class="benchmark-results-section">
-
-      <div id="benchmark-results-chart-10" class="column-chart"
-        data-title="Ops/second - 10 elements"
-        data-source="#benchmark-results-table-10"
-        data-transpose="true"
-        data-row-filter="benchmarkChartRowFilter"
-        data-options="benchmarkChartOptions">
-      </div>
-
-      <p>
-        Select:
-        <button class="select-all">All</button>
-        <button class="select-none">None</button>
-        <button class="clear-selected">Clear</button>
-      </p>
-
-      <table id="benchmark-results-table-10" class="benchmark-results-table">
-        <tr>
-          <th>Test</th>
-          <th>Underscore</th>
-          <th>Lo-Dash</th>
-          <th>Lazy.js</th>
-        </tr>
-      </table>
-    </section>
-
-    <section id="benchmark-results-100"
-      class="benchmark-results-section"
-      style="display: none;">
-
-      <div id="benchmark-results-chart-100" class="column-chart"
-        data-title="Ops/second - 100 elements"
-        data-source="#benchmark-results-table-100"
-        data-transpose="true"
-        data-row-filter="benchmarkChartRowFilter"
-        data-options="benchmarkChartOptions">
-      </div>
-
-      <p>
-        Select:
-        <button class="select-all">All</button>
-        <button class="select-none">None</button>
-        <button class="clear-selected">Clear</button>
-      </p>
-
-      <table id="benchmark-results-table-100" class="benchmark-results-table">
-        <tr>
-          <th>Test</th>
-          <th>Underscore</th>
-          <th>Lo-Dash</th>
-          <th>Lazy.js</th>
-        </tr>
-      </table>
-    </section>
-
-    <section id="benchmark-results-other"
-      class="benchmark-results-section"
-      style="display: none;">
-
-      <div id="benchmark-results-chart-other" class="column-chart"
-        data-title="Ops/second - other"
-        data-source="#benchmark-results-table-other"
-        data-transpose="true"
-        data-row-filter="benchmarkChartRowFilter"
-        data-options="benchmarkChartOptions">
-      </div>
-
-      <p>
-        Select:
-        <button class="select-all">All</button>
-        <button class="select-none">None</button>
-        <button class="clear-selected">Clear</button>
-      </p>
-
-      <table id="benchmark-results-table-other" class="benchmark-results-table">
-        <tr>
-          <th>Test</th>
-          <th>Underscore</th>
-          <th>Lo-Dash</th>
-          <th>Lazy.js</th>
-        </tr>
-      </table>
-    </section>
+      <section id="benchmark-results-10"
+        
+        class="benchmark-results-section">
+      
+        <div id="benchmark-results-chart-10" class="column-chart"
+          data-title="Ops/second - 10 elements"
+          data-source="#benchmark-results-table-10"
+          data-transpose="true"
+          data-row-filter="benchmarkChartRowFilter"
+          data-options="benchmarkChartOptions">
+        </div>
+      
+        <p>
+          Select:
+          <button class="select-all">All</button>
+          <button class="select-none">None</button>
+          <button class="clear-selected">Clear</button>
+        </p>
+      
+        <table id="benchmark-results-table-10" class="benchmark-results-table">
+          <tr>
+            <th>Test</th>
+            <th>Underscore</th>
+            <th>Lo-Dash</th>
+            <th>Lazy.js</th>
+          </tr>
+        </table>
+      </section>
+      <section id="benchmark-results-100"
+        style="display: none;"
+        class="benchmark-results-section">
+      
+        <div id="benchmark-results-chart-100" class="column-chart"
+          data-title="Ops/second - 100 elements"
+          data-source="#benchmark-results-table-100"
+          data-transpose="true"
+          data-row-filter="benchmarkChartRowFilter"
+          data-options="benchmarkChartOptions">
+        </div>
+      
+        <p>
+          Select:
+          <button class="select-all">All</button>
+          <button class="select-none">None</button>
+          <button class="clear-selected">Clear</button>
+        </p>
+      
+        <table id="benchmark-results-table-100" class="benchmark-results-table">
+          <tr>
+            <th>Test</th>
+            <th>Underscore</th>
+            <th>Lo-Dash</th>
+            <th>Lazy.js</th>
+          </tr>
+        </table>
+      </section>
+      <section id="benchmark-results-other"
+        style="display: none;"
+        class="benchmark-results-section">
+      
+        <div id="benchmark-results-chart-other" class="column-chart"
+          data-title="Ops/second - Other"
+          data-source="#benchmark-results-table-other"
+          data-transpose="true"
+          data-row-filter="benchmarkChartRowFilter"
+          data-options="benchmarkChartOptions">
+        </div>
+      
+        <p>
+          Select:
+          <button class="select-all">All</button>
+          <button class="select-none">None</button>
+          <button class="clear-selected">Clear</button>
+        </p>
+      
+        <table id="benchmark-results-table-other" class="benchmark-results-table">
+          <tr>
+            <th>Test</th>
+            <th>Underscore</th>
+            <th>Lo-Dash</th>
+            <th>Lazy.js</th>
+          </tr>
+        </table>
+      </section>
   </section>
 
   <section id="test-results" class="top-level-section" style="display: none;">

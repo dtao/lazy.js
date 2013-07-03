@@ -1562,11 +1562,12 @@
   function SimpleIntersectionSequence(parent, array) {
     this.parent = parent;
     this.array  = array;
+    this.each   = getEachForIntersection(array);
   }
 
   SimpleIntersectionSequence.prototype = new Sequence();
 
-  SimpleIntersectionSequence.prototype.each = function(fn) {
+  SimpleIntersectionSequence.prototype.eachMemoizerCache = function(fn) {
     var iterator = new UniqueMemoizer(Lazy(this.array).getIterator()),
         i = 0;
 
@@ -1576,6 +1577,26 @@
       }
     });
   };
+
+  SimpleIntersectionSequence.prototype.eachArrayCache = function(fn) {
+    var array = this.array,
+        find  = contains,
+        i = 0;
+
+    this.parent.each(function(e) {
+      if (find(array, e)) {
+        return fn(e, i++);
+      }
+    });
+  };
+
+  function getEachForIntersection(source) {
+    if (source.length < 40) {
+      return SimpleIntersectionSequence.prototype.eachArrayCache;
+    } else {
+      return SimpleIntersectionSequence.prototype.eachMemoizerCache;
+    }
+  }
 
   var IntersectionSequence = CachingSequence.inherit(function(parent, arrays) {
     this.parent = parent;
@@ -1894,10 +1915,11 @@
    *
    * Here's an example. Let's define a sequence type called `OffsetSequence` that
    * offsets each of its parent's elements by a set distance, and circles back to
-   * the beginning after reaching the end.
+   * the beginning after reaching the end. **Remember**: the initialization
+   * function you pass to {@link #define} should always accept a `parent` as its
+   * first parameter.
    *
-   *     var OffsetSequence = ArrayLikeSequence.inherit(function(parent, offset) {
-   *       this.parent = parent;
+   *     var OffsetSequence = ArrayLikeSequence.define("offset", function(parent, offset) {
    *       this.offset = offset;
    *     });
    *
@@ -1907,7 +1929,7 @@
    *
    * It's worth noting a couple of things here.
    *
-   * First, the default implementation of `length` simply returns the parent's
+   * First, Lazy's default implementation of `length` simply returns the parent's
    * length. In this case, since an `OffsetSequence` will always have the same
    * number of elements as its parent, that implementation is fine; so we don't
    * need to override it.
@@ -1919,6 +1941,17 @@
    *
    * So we're already done, after only implementing `get`! Pretty slick, huh?
    *
+   * Now the `offset` method will be chainable from any `ArrayLikeSequence`. So
+   * for example:
+   *
+   *     Lazy([1, 2, 3]).map(trans).offset(3);
+   *
+   * ...will work, but:
+   *
+   *     Lazy([1, 2, 3]).filter(pred).offset(3);
+   *
+   * ...will not.
+   *
    * (Also, as with the example provided for defining custom {@link Sequence}
    * types, this example really could have been implemented using a function
    * already available as part of Lazy.js: in this case, {@link Sequence#map}.)
@@ -1929,16 +1962,30 @@
 
   ArrayLikeSequence.prototype = new Sequence();
 
-  /**
-   * Create a new constructor function for a type inheriting from
-   * `ArrayLikeSequence`.
-   *
-   * @param {Function} ctor The constructor function.
-   * @return {Function} A constructor for a new type inheriting from
-   *     `ArrayLikeSequence`.
-   */
-  ArrayLikeSequence.inherit = function(ctor) {
+  ArrayLikeSequence.define = function(methodName, init) {
+    // Define a constructor that sets this sequence's parent to the first argument
+    // and (optionally) applies any additional initialization logic.
+
+    /** @constructor */
+    var ctor = init ? function(var_args) {
+                        this.parent = arguments[0];
+                        init.apply(this, arguments);
+                      } :
+                      function(var_args) {
+                        this.parent = arguments[0];
+                      };
+
+    // Make this type inherit from ArrayLikeSequence.
     ctor.prototype = new ArrayLikeSequence();
+
+    // Expose the constructor as a chainable method so that we can do:
+    // Lazy(...).map(...).blah(...);
+    /** @skip
+      * @suppress {checkTypes} */
+    ArrayLikeSequence.prototype[methodName] = function(x, y, z) {
+      return new ctor(this, x, y, z);
+    };
+
     return ctor;
   };
 
@@ -2035,7 +2082,7 @@
   ArrayLikeSequence.prototype.drop = ArrayLikeSequence.prototype.rest;
 
   /**
-   * An optimized version of {@Sequence#concat}.
+   * An optimized version of {@link Sequence#concat}.
    *
    * @param {...*} var_args
    */
@@ -2047,10 +2094,22 @@
     }
   }
 
-  var IndexedMappedSequence = ArrayLikeSequence.inherit(function(parent, mapFn) {
+  /**
+   * An optimized version of {@link Sequence#uniq}.
+   */
+  ArrayLikeSequence.prototype.uniq = function() {
+    return new IndexedUniqueSequence(this);
+  };
+
+  /**
+   * @constructor
+   */
+  function IndexedMappedSequence(parent, mapFn) {
     this.parent = parent;
     this.mapFn  = mapFn;
-  });
+  }
+
+  IndexedMappedSequence.prototype = new ArrayLikeSequence();
 
   IndexedMappedSequence.prototype.get = function(i) {
     return this.mapFn(this.parent.get(i), i);
@@ -2081,28 +2140,43 @@
     }
   };
 
-  var IndexedReversedSequence = ArrayLikeSequence.inherit(function(parent) {
+  /**
+   * @constructor
+   */
+  function IndexedReversedSequence(parent) {
     this.parent = parent;
-  });
+  }
+
+  IndexedReversedSequence.prototype = new ArrayLikeSequence();
 
   IndexedReversedSequence.prototype.get = function(i) {
     return this.parent.get(this.length() - i - 1);
   };
 
-  var IndexedTakeSequence = ArrayLikeSequence.inherit(function(parent, count) {
+  /**
+   * @constructor
+   */
+  function IndexedTakeSequence(parent, count) {
     this.parent = parent;
     this.count  = count;
-  });
+  }
+
+  IndexedTakeSequence.prototype = new ArrayLikeSequence();
 
   IndexedTakeSequence.prototype.length = function() {
     var parentLength = this.parent.length();
     return this.count <= parentLength ? this.count : parentLength;
   };
 
-  var IndexedDropSequence = ArrayLikeSequence.inherit(function(parent, count) {
+  /**
+   * @constructor
+   */
+  function IndexedDropSequence(parent, count) {
     this.parent = parent;
     this.count  = typeof count === "number" ? count : 1;
-  });
+  }
+
+  IndexedDropSequence.prototype = new ArrayLikeSequence();
 
   IndexedDropSequence.prototype.get = function(i) {
     return this.parent.get(this.count + i);
@@ -2113,10 +2187,15 @@
     return this.count <= parentLength ? parentLength - this.count : 0;
   };
 
-  var IndexedConcatenatedSequence = ArrayLikeSequence.inherit(function(parent, other) {
+  /**
+   * @constructor
+   */
+  function IndexedConcatenatedSequence(parent, other) {
     this.parent = parent;
     this.other  = other;
-  });
+  }
+
+  IndexedConcatenatedSequence.prototype = new ArrayLikeSequence();
 
   IndexedConcatenatedSequence.prototype.get = function(i) {
     var parentLength = this.parent.length();
@@ -2130,6 +2209,49 @@
   IndexedConcatenatedSequence.prototype.length = function() {
     return this.parent.length() + this.other.length;
   };
+
+  /**
+   * @param {ArrayLikeSequence} parent
+   * @constructor
+   */
+  function IndexedUniqueSequence(parent) {
+    this.parent = parent;
+    this.each   = getEachForParent(parent);
+  }
+
+  IndexedUniqueSequence.prototype = new Sequence();
+
+  IndexedUniqueSequence.prototype.eachArrayCache = function(fn) {
+    // Basically the same implementation as w/ the set, but using an array because
+    // it's cheaper for smaller sequences.
+    var parent = this.parent,
+        length = parent.length(),
+        cache  = [],
+        find   = contains,
+        value,
+        i = -1,
+        j = 0;
+
+    while (++i < length) {
+      value = parent.get(i);
+      if (!find(cache, value)) {
+        cache.push(value);
+        if (fn(value, j++) === false) {
+          return false;
+        }
+      }
+    }
+  };
+
+  IndexedUniqueSequence.prototype.eachSetCache = UniqueSequence.prototype.each;
+
+  function getEachForParent(parent) {
+    if (parent.length() < 100) {
+      return IndexedUniqueSequence.prototype.eachArrayCache;
+    } else {
+      return UniqueSequence.prototype.each;
+    }
+  }
 
   /**
    * ArrayWrapper is the most basic {@link Sequence}. It directly wraps an array
@@ -2167,9 +2289,12 @@
    * An optimized version of {@link Sequence#each}.
    */
   ArrayWrapper.prototype.each = function(fn) {
-    var i = -1;
-    while (++i < this.source.length) {
-      if (fn(this.source[i], i) === false) {
+    var source = this.source,
+        length = source.length,
+        i = -1;
+
+    while (++i < length) {
+      if (fn(source[i], i) === false) {
         break;
       }
     }

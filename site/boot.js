@@ -486,8 +486,8 @@
       // Add a row to the appropriate table for this benchmark
       // once the document's loaded.
       $(document).ready(function() {
-        var category = input[0] instanceof Array ? input[0].length : "other";
-        addBenchmarkToTable(description, benchmarkSetId, category);
+        var inputSize = input[0] instanceof Array ? input[0].length : "other";
+        addBenchmarkToTable(description, benchmarkSetId, inputSize);
       });
     });
   };
@@ -527,6 +527,11 @@
 
       // Prevent this click from propagating to the document node, which would
       // immediately dismiss the panel via the handler above.
+      return false;
+    });
+
+    $("#why-to-array-vs-each").on("click", function() {
+      // Clicking on the panel itself shouldn't dismiss it.
       return false;
     });
 

@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Lazy.js API Docs - ArrayLikeSequence</title>
 <link rel="stylesheet" type="text/css" href="docs.css">
-<script type="text/javascript" src="../site/lib/jquery.js"></script><script type="text/javascript" src="../site/common.js"></script><script type="text/javascript" src="docs.js"></script>
+<script type="text/javascript" src="../site/lib/jquery.js"></script><script type="text/javascript" src="../site/common.js"></script><script type="text/javascript" src="../site/ga.js"></script><script type="text/javascript" src="docs.js"></script>
 </head>
 <body id="top">
   <header><h1><a href="../index.html">lazy.js</a></h1>
@@ -18,10 +18,11 @@
 
         <li class="nav-header">Static methods</li>
 
-        <li><a href="#inherit">inherit</a></li>
+        <li><a href="#define">define</a></li>
 
         <li class="nav-header">Instance methods</li>
 
+        <li><a href="#concat">concat</a></li>
         <li><a href="#each">each</a></li>
         <li><a href="#first">first</a></li>
         <li><a href="#get">get</a></li>
@@ -30,6 +31,7 @@
         <li><a href="#rest">rest</a></li>
         <li><a href="#reverse">reverse</a></li>
         <li><a href="#select">select</a></li>
+        <li><a href="#uniq">uniq</a></li>
       </ul></nav><section class="methods"><section id="ArrayLikeSequence" class="constructor method"><header><h2>
             ArrayLikeSequence
             <small>ArrayLikeSequence</small>
@@ -48,10 +50,11 @@ implement: <code>get</code> and (optionally) <code>length</code>.</p>
 
 <p>Here's an example. Let's define a sequence type called <code>OffsetSequence</code> that
 offsets each of its parent's elements by a set distance, and circles back to
-the beginning after reaching the end.</p>
+the beginning after reaching the end. <strong>Remember</strong>: the initialization
+function you pass to <a class="internal-link" href="#define"><code>#define</code></a> should always accept a <code>parent</code> as its
+first parameter.</p>
 
-<div class="highlight"><pre><span class="kd">var</span> <span class="nx">OffsetSequence</span> <span class="o">=</span> <span class="nx">ArrayLikeSequence</span><span class="p">.</span><span class="nx">inherit</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">parent</span><span class="p">,</span> <span class="nx">offset</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">parent</span> <span class="o">=</span> <span class="nx">parent</span><span class="p">;</span>
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">OffsetSequence</span> <span class="o">=</span> <span class="nx">ArrayLikeSequence</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s2">"offset"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">parent</span><span class="p">,</span> <span class="nx">offset</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">offset</span> <span class="o">=</span> <span class="nx">offset</span><span class="p">;</span>
 <span class="p">});</span>
 
@@ -62,7 +65,7 @@ the beginning after reaching the end.</p>
 
 <p>It's worth noting a couple of things here.</p>
 
-<p>First, the default implementation of <code>length</code> simply returns the parent's
+<p>First, Lazy's default implementation of <code>length</code> simply returns the parent's
 length. In this case, since an <code>OffsetSequence</code> will always have the same
 number of elements as its parent, that implementation is fine; so we don't
 need to override it.</p>
@@ -74,16 +77,33 @@ probably just stick with the default.</p>
 
 <p>So we're already done, after only implementing <code>get</code>! Pretty slick, huh?</p>
 
+<p>Now the <code>offset</code> method will be chainable from any <code>ArrayLikeSequence</code>. So
+for example:</p>
+
+<div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]).</span><span class="nx">map</span><span class="p">(</span><span class="nx">trans</span><span class="p">).</span><span class="nx">offset</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+</pre></div>
+
+<p>...will work, but:</p>
+
+<div class="highlight"><pre><span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]).</span><span class="nx">filter</span><span class="p">(</span><span class="nx">pred</span><span class="p">).</span><span class="nx">offset</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+</pre></div>
+
+<p>...will not.</p>
+
 <p>(Also, as with the example provided for defining custom <a class="internal-link" href="Sequence.html"><code>Sequence</code></a>
 types, this example really could have been implemented using a function
 already available as part of Lazy.js: in this case, <a class="internal-link" href="Sequence.html#map"><code>Sequence#map</code></a>.)</p>
 </div>
-        </header></section><section id="inherit" class="method" style="display: none;"><header><h2>
-            inherit
-            <small>ArrayLikeSequence.inherit</small>
+        </header></section><section id="define" class="method" style="display: none;"><header><h2>
+            define
+            <small>ArrayLikeSequence.define</small>
           </h2>
-          <div class="description">Create a new constructor function for a type inheriting from
-<code>ArrayLikeSequence</code>.</div>
+          <div class="description"></div>
+        </header></section><section id="concat" class="method" style="display: none;"><header><h2>
+            concat
+            <small>ArrayLikeSequence#concat</small>
+          </h2>
+          <div class="description">An optimized version of <a class="internal-link" href="Sequence.html#concat"><code>Sequence#concat</code></a>.</div>
         </header><h3>Parameters</h3>
         <table class="params">
 <tr>
@@ -92,21 +112,9 @@ already available as part of Lazy.js: in this case, <a class="internal-link" hre
             <th>Description</th>
           </tr>
 <tr>
-<td>ctor</td>
-            <td>Function</td>
-            <td>The constructor function.</td>
-          </tr>
-</table>
-<h3>Returns</h3>
-        <table class="returns">
-<tr>
-<th>Type</th>
-            <th>Description</th>
-          </tr>
-<tr>
-<td>Function</td>
-            <td>A constructor for a new type inheriting from
-    <code>ArrayLikeSequence</code>.</td>
+<td>var_args</td>
+            <td>*</td>
+            <td></td>
           </tr>
 </table></section><section id="each" class="method" style="display: none;"><header><h2>
             each
@@ -219,6 +227,11 @@ already available as part of Lazy.js: in this case, <a class="internal-link" hre
             <small>ArrayLikeSequence#select</small>
           </h2>
           <div class="description">An optimized version of <a class="internal-link" href="Sequence.html#select"><code>Sequence#select</code></a>.</div>
+        </header></section><section id="uniq" class="method" style="display: none;"><header><h2>
+            uniq
+            <small>ArrayLikeSequence#uniq</small>
+          </h2>
+          <div class="description">An optimized version of <a class="internal-link" href="Sequence.html#uniq"><code>Sequence#uniq</code></a>.</div>
         </header></section></section></article>
 </body>
 </html>

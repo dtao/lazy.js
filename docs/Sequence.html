@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Lazy.js API Docs - Sequence</title>
 <link rel="stylesheet" type="text/css" href="docs.css">
-<script type="text/javascript" src="../site/lib/jquery.js"></script><script type="text/javascript" src="../site/common.js"></script><script type="text/javascript" src="docs.js"></script>
+<script type="text/javascript" src="../site/lib/jquery.js"></script><script type="text/javascript" src="../site/common.js"></script><script type="text/javascript" src="../site/ga.js"></script><script type="text/javascript" src="docs.js"></script>
 </head>
 <body id="top">
   <header><h1><a href="../index.html">lazy.js</a></h1>
@@ -18,7 +18,7 @@
 
         <li class="nav-header">Static methods</li>
 
-        <li><a href="#inherit">inherit</a></li>
+        <li><a href="#define">define</a></li>
 
         <li class="nav-header">Instance methods</li>
 
@@ -117,9 +117,10 @@ iterating an underlying data source multiple times.</p>
 <p>Defining your own type of sequence is relatively simple:</p>
 
 <ol>
-<li>Pass a constructor function to <a class="internal-link" href="Sequence.html#inherit"><code>Sequence.inherit</code></a>. By convention,
-this function should <em>at least</em> accept a <code>parent</code> parameter, which will be
-set to the underlying sequence.</li>
+<li>Pass a <em>method name</em> and an <em>initialization function</em> to
+<a class="internal-link" href="Sequence.html#define"><code>Sequence.define</code></a>. By convention, this function should at least
+accept a <code>parent</code> parameter as its first argument, which will be set to
+the underlying sequence.</li>
 <li>Define an <code>each</code> method on this new function's prototype, which accepts
 a function as a parameter and calls <code>this.parent.each</code> to fetch elements
 one by one from the underlying sequence.</li>
@@ -128,9 +129,7 @@ one by one from the underlying sequence.</li>
 called <code>SampleSequence</code> which randomly may or may not include each element
 from its parent.</p>
 
-<div class="highlight"><pre><span class="kd">var</span> <span class="nx">SampleSequence</span> <span class="o">=</span> <span class="nx">Sequence</span><span class="p">.</span><span class="nx">inherit</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">parent</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">this</span><span class="p">.</span><span class="nx">parent</span> <span class="o">=</span> <span class="nx">parent</span><span class="p">;</span>
-<span class="p">});</span>
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">SampleSequence</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">Sequence</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s2">"sample"</span><span class="p">);</span>
 
 <span class="nx">SampleSequence</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">each</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">fn</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">parent</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
@@ -145,13 +144,40 @@ from its parent.</p>
 <p>(Of course, the above could also easily have been implemented using
 <a class="internal-link" href="#filter"><code>#filter</code></a> instead of creating a custom sequence. But I <em>did</em> say this
 was a trivial example, to be fair.)</p>
+
+<p>Now it will be possible to create this type of sequence from any parent
+sequence by calling the method name you specified. In other words, you can
+now do this:</p>
+
+<div class="highlight"><pre><span class="nx">Lazy</span><span class="p">(</span><span class="nx">arr</span><span class="p">).</span><span class="nx">sample</span><span class="p">();</span>
+<span class="nx">Lazy</span><span class="p">(</span><span class="nx">arr</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="nx">func</span><span class="p">).</span><span class="nx">sample</span><span class="p">();</span>
+<span class="nx">Lazy</span><span class="p">(</span><span class="nx">arr</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="nx">func</span><span class="p">).</span><span class="nx">filter</span><span class="p">(</span><span class="nx">pred</span><span class="p">).</span><span class="nx">sample</span><span class="p">();</span>
+</pre></div>
+
+<p>Etc., etc.</p>
 </div>
-        </header></section><section id="inherit" class="method" style="display: none;"><header><h2>
-            inherit
-            <small>Sequence.inherit</small>
+        </header></section><section id="define" class="method" style="display: none;"><header><h2>
+            define
+            <small>Sequence.define</small>
           </h2>
           <div class="description">Create a new constructor function for a type inheriting from <code>Sequence</code>.</div>
-        </header><h3>Parameters</h3>
+        </header><h3>Example</h3>
+        <div class="highlight"><pre><span class="kd">var</span> <span class="nx">VerboseSequence</span> <span class="o">=</span> <span class="nx">Sequence</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s2">"verbose"</span><span class="p">);</span>
+
+<span class="c1">// This sequence type logs every element to the console</span>
+<span class="c1">// as it iterates over it.</span>
+<span class="nx">VerboseSequence</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">each</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">fn</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">parent</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nx">fn</span><span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">i</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">};</span>
+
+<span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]).</span><span class="nx">verbose</span><span class="p">().</span><span class="nx">toArray</span><span class="p">();</span>
+<span class="c1">// (logs the numbers 1, 2, and 3 to the console)</span>
+</pre></div>
+        
+        <h3>Parameters</h3>
         <table class="params">
 <tr>
 <th>Name</th>
@@ -159,9 +185,17 @@ was a trivial example, to be fair.)</p>
             <th>Description</th>
           </tr>
 <tr>
-<td>ctor</td>
+<td>methodName</td>
+            <td>string</td>
+            <td>The name of the method to be used for constructing
+    the new sequence. The method will be attached to the <code>Sequence</code> prototype
+    so that it can be chained with any other sequence methods, like
+    <a class="internal-link" href="#map"><code>#map</code></a>, <a class="internal-link" href="#filter"><code>#filter</code></a>, etc.</td>
+          </tr>
+<tr>
+<td>init</td>
             <td>Function</td>
-            <td>The constructor function.</td>
+            <td>Any initialization logic for the sequence type.</td>
           </tr>
 </table>
 <h3>Returns</h3>
