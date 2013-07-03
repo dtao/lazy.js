@@ -139,8 +139,8 @@ namespace :compile do
     # Inject README into Mustache template.
     Mustache.template_path = "site/templates"
 
-    class IndexTemplate < Mustache; end
-    final_html = IndexTemplate.render({
+    class SiteTemplate < Mustache; end
+    final_html = SiteTemplate.render({
       :readme => fragment.inner_html,
       :benchmark_sections => [
         { :id => "10", :label => "10 elements", :selected => true },
@@ -185,8 +185,8 @@ namespace :compile do
     preamble = File.read("lib/preamble.js").gsub(/^[\/ ]\*[\/ ]?/, "")
     preamble_html = simple_markdown(preamble)
 
-    class IndexTemplate < Mustache; end
-    docs_index_html = IndexTemplate.render({
+    class DocsTemplate < Mustache; end
+    docs_index_html = DocsTemplate.render({
       :classes  => classes,
       :preamble => preamble_html
     })

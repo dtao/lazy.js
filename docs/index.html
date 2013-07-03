@@ -1,142 +1,97 @@
 <!DOCTYPE HTML>
 <html>
+
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>Lazy.js</title>
-
-  <link rel="stylesheet" type="text/css" href="site/assets/site.css" />
-
-  <script type="text/javascript" src="site/lib/jasmine.js"></script>
-  <script type="text/javascript" src="site/lib/benchmark.js"></script>
-  <script type="text/javascript" src="site/lib/underscore.js"></script>
-  <script type="text/javascript" src="site/lib/lodash.js"></script>
-  <script type="text/javascript" src="site/lib/wu.js"></script>
-  <script type="text/javascript" src="site/lib/sugar.js"></script>
-  <script type="text/javascript" src="site/lib/linq.js"></script>
-  <script type="text/javascript" src="site/lib/jslinq.js"></script>
-  <script type="text/javascript" src="site/lib/from.js"></script>
-  <script type="text/javascript" src="site/lib/i2o.js"></script>
-  <script type="text/javascript" src="site/lib/ix.js"></script>
-  <script type="text/javascript" src="site/lib/boiler.js"></script>
-  <script type="text/javascript" src="site/lib/sloth.js"></script>
-  <script type="text/javascript" src="site/lib/jquery.js"></script>
-  <script type="text/javascript" src="site/lib/highcharts.js"></script>
-  <script type="text/javascript" src="site/lib/hightables.js"></script>
-  <script type="text/javascript" src="site/lib/jquery.treetable.js"></script>
-  <script type="text/javascript" src="site/spec_reporter.js"></script>
-  <script type="text/javascript" src="site/dom_example.js"></script>
-  <script type="text/javascript" src="site/common.js"></script>
-  <script type="text/javascript" src="site/boot.js"></script>
-  <script type="text/javascript" src="site/specs.js"></script>
-  <script type="text/javascript" src="site/ga.js"></script>
-
-  <!-- source files -->
-  <script type="text/javascript" src="lazy.js"></script>
-  <script type="text/javascript" src="lazy.dom.js"></script>
-
-  <!-- spec files -->
-  <script type="text/javascript" src="spec/support/person.js"></script>
-  <script type="text/javascript" src="spec/lazy_spec.js"></script>
-  <script type="text/javascript" src="site/comparisons.js"></script>
+  <title>Lazy.js API Docs</title>
+  <link rel="stylesheet" type="text/css" href="docs.css" />
+  <script type="text/javascript" src="../site/lib/jquery.js"></script>
+  <script type="text/javascript" src="../site/common.js"></script>
+  <script type="text/javascript" src="../site/ga.js"></script>
+  <script type="text/javascript" src="docs.js"></script>
 </head>
 
 <body>
   <header>
-    <h1><a href="index.html">lazy.js</a></h1>
-    <a href="https://github.com/dtao/lazy.js" class="github-ribbon"></a>
+    <h1><a href="../index.html">lazy.js</a></h1>
   </header>
 
-  <nav data-sections=".top-level-section">
-    <ul>
-      <li class="selected"><a href="#about">About</a></li>
-      <li><a href="#dom-example">DOM Example</a></li>
-      <li><a href="#benchmark-results">Benchmark Results</a></li>
-      <li><a href="#test-results">Spec Results</a></li>
-      <li><a href="docs/index.html">API Docs</a></li>
-    </ul>
-  </nav>
+  <article>
+    <header>
+      <h1>API Docs</h1>
+    </header>
 
-  <section id="about" class="top-level-section">
-    
-  </section>
-
-  <section id="dom-example" class="top-level-section" style="display: none;">
-    <div id="dom-event-source">
-      <p>
-        Move the mouse over this element.<br />
-        (See the documentation for an explanation of this section.)
-      </p>
-    </div>
-
-    <div id="dom-event-output">
-      <div class="left"><p></p></div>
-      <div class="right"><p></p></div>
-    </div>
-  </section>
-
-  <section id="benchmark-results" class="top-level-section" style="display: none;">
-    <nav class="subnav" data-sections=".benchmark-results-section">
+    <nav class="doc-list">
       <ul>
+        <li><a href="Lazy.html">Lazy</a></li>
+        <li><a href="Sequence.html">Sequence</a></li>
+        <li><a href="ArrayLikeSequence.html">ArrayLikeSequence</a></li>
+        <li><a href="ObjectLikeSequence.html">ObjectLikeSequence</a></li>
+        <li><a href="StringLikeSequence.html">StringLikeSequence</a></li>
+        <li><a href="GeneratedSequence.html">GeneratedSequence</a></li>
+        <li><a href="AsyncSequence.html">AsyncSequence</a></li>
+        <li><a href="StreamLikeSequence.html">StreamLikeSequence</a></li>
+        <li><a href="Iterator.html">Iterator</a></li>
       </ul>
     </nav>
 
-    <form>
-      <p>
-        Select the tests you want to run below, choose either
-        <label><input id="test-each" type="radio" checked="checked"><code>each</code></input></label> or
-        <label><input id="test-to-array" type="radio"><code>toArray</code></input></label>
-        <a class="why-to-array-vs-each" href="javascript:void(0);">(why?)</a>, and
-        <button class="start-benchmarking">start benchmarking</button>
-        to compare Lazy.js, Underscore, and Lo-Dash. For a more comprehensive comparison of several
-        more libraries that accomplish similar goals, see the
-        <a href="comparisons.html">comparisons</a> page.
-      </p>
+    <section class="preamble">
+      <p>Lazy.js is a lazy evaluation library for JavaScript.</p>
 
-      <p>
-        You can also choose to display results in
-        <label><input id="test-absolute" type="radio" checked="checked">absolute ops/second</input></label>,
-        <label><input id="test-proportional" type="radio">in proportion to the fastest method</input></label>, or
-        <label><input id="test-proportional-lodash" type="radio">in proportion to Lo-Dash</input></label>
-        (which is generally the fastest of the popular JS utility libraries). Proportional results
-        will likely be easier to read when you've selected many benchmarks.
-      </p>
-    </form>
+<p>This has been done before. For examples see:</p>
 
-    <div id="why-to-array-vs-each">
-      <p>
-        Comparing the performance of Lazy.js to other libraries like Underscore and Lo-Dash is
-        unfortunately not black and white. On the one hand, calling <code>toArray</code> on the
-        result of a Lazy sequence will give you an actual JavaScript array, which you might need if,
-        e.g., you're passing the result to a function from an external library. However, in most
-        cases when you use methods like <code>map</code> or <code>filter</code>, you are probably
-        just going to do something while iterating over the result. In this case, you don't need an
-        array at all; calling <code>each</code> on a <code>Lazy.Sequence</code> will be functionally
-        indistinguishable from calling <code>_.each</code> on an array.
-      </p>
-      <p>
-        Generally speaking, Lazy.js performs best (and "wins" more performance races) when you
-        <em>don't</em> have to call <code>toArray</code>. However, when chaining methods together
-        it's often still the fastest solution regardless.
-      </p>
-    </div>
+<ul>
+<li><a href="http://fitzgen.github.io/wu.js/">wu.js</a></li>
+<li><a href="http://linqjs.codeplex.com/">Linq.js</a></li>
+<li><a href="https://github.com/suckgamoni/fromjs/">from.js</a></li>
+<li><a href="http://rx.codeplex.com/">IxJS</a></li>
+<li><a href="http://rfw.name/sloth.js/">sloth.js</a></li>
+</ul><p>However, at least at present, Lazy.js is faster (on average) than any of
+those libraries. It is also more complete, with nearly all of the
+functionality of <a href="http://underscorejs.org/">Underscore</a> and
+<a href="http://lodash.com/">Lo-Dash</a>.</p>
 
-  </section>
+<h2>Finding your way around the code</h2>
 
-  <section id="test-results" class="top-level-section" style="display: none;">
-    <nav class="subnav">
-      <ul>
-        <li class="selected"><a class="show-all-specs nav-link" href="javascript:void(0);">All</a></li>
-        <li><a class="show-failing-specs nav-link" href="javascript:void(0);">Failures</a></li>
-      </ul>
-    </nav>
+<p>At the heart of Lazy.js is the <a class='internal-link' href='Sequence.html'><code>Sequence</code></a> object. You create an initial
+sequence using <a class='internal-link' href='Lazy.html'><code>Lazy</code></a>, which can accept an array, object, or string.
+You can then "chain" together methods from this sequence, creating a new
+sequence with each call.</p>
 
-    <table id="test-results-table" class="empty">
-      <tr>
-        <th>Test</th>
-        <th>Success</th>
-      </tr>
-    </table>
-  </section>
+<p>Here's an example:</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">getReallyBigArray</span><span class="p">();</span>
+
+<span class="kd">var</span> <span class="nx">statistics</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">transform</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">validate</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">reduce</span><span class="p">(</span><span class="nx">aggregate</span><span class="p">);</span>
+</pre></div>
+
+<p><a class='internal-link' href='Sequence.html'><code>Sequence</code></a> is the foundation of other, more specific sequence types.</p>
+
+<p>An <a class='internal-link' href='ArrayLikeSequence.html'><code>ArrayLikeSequence</code></a> provides indexed access to its elements.</p>
+
+<p>An <a class='internal-link' href='ObjectLikeSequence.html'><code>ObjectLikeSequence</code></a> consists of key/value pairs.</p>
+
+<p>A <a class='internal-link' href='StringLikeSequence.html'><code>StringLikeSequence</code></a> is like a string (duh): actually, it is an
+<a class='internal-link' href='ArrayLikeSequence.html'><code>ArrayLikeSequence</code></a> whose elements happen to be characters.</p>
+
+<p>An <a class='internal-link' href='AsyncSequence.html'><code>AsyncSequence</code></a> is special: it iterates over its elements
+asynchronously (so calling <code>each</code> generally begins an asynchronous loop and
+returns immediately).</p>
+
+<h2>For more information</h2>
+
+<p>I wrote a blog post that explains a little bit more about Lazy.js, which you
+can read <a href="http://philosopherdeveloper.com/posts/introducing-lazy-js.html">here</a>.</p>
+
+<p>You can also <a href="https://github.com/dtao/lazy.js/issues">create an issue on GitHub</a>
+if you have any issues with the library. I work through them eventually.</p>
+
+<p><a href="https://github.com/dtao">@dtao</a></p>
+    </section>
+  </article>
 </body>
 
 </html>
