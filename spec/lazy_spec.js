@@ -705,6 +705,19 @@ describe("Lazy", function() {
       expect(flattened).toEqual([david, mary, lauren, adam, daniel, happy]);
     });
 
+    it("flattens nested sequences along with arrays", function() {
+      var nestedSequences = [
+        Lazy([david, mary,
+          Lazy([lauren, adam,
+            Lazy([daniel, happy])
+          ])
+        ])
+      ];
+
+      var flattened = Lazy(nestedSequences).flatten().toArray();
+      expect(flattened).toEqual([david, mary, lauren, adam, daniel, happy]);
+    });
+
     it("passes an index along with each element", function() {
       var nested = [[david], [mary], [lauren, adam], [[daniel], happy]];
       expect(Lazy(nested).flatten()).toPassToEach(1, [0, 1, 2, 3, 4, 5]);
