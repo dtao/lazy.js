@@ -718,6 +718,26 @@ describe("Lazy", function() {
       expect(flattened).toEqual([david, mary, lauren, adam, daniel, happy]);
     });
 
+    it("supports early exiting", function() {
+      var nestedSequences = [
+        Lazy([david, mary,
+          Lazy([lauren, adam,
+            Lazy([daniel, happy])
+          ])
+        ])
+      ];
+
+      var iterated = [];
+      Lazy(nestedSequences).flatten().each(function(p) {
+        iterated.push(p);
+        if (p === lauren) {
+          return false;
+        }
+      });
+
+      expect(iterated).toEqual([david, mary, lauren]);
+    });
+
     it("passes an index along with each element", function() {
       var nested = [[david], [mary], [lauren, adam], [[daniel], happy]];
       expect(Lazy(nested).flatten()).toPassToEach(1, [0, 1, 2, 3, 4, 5]);

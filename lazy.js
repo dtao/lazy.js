@@ -1528,17 +1528,21 @@
   });
 
   FlattenedSequence.prototype.each = function(fn) {
-    // Hack: store the index in a tiny array so we can increment it from outside
-    // this function.
-    var index = [0];
+    var index = 0;
 
-    this.parent.each(function(e) {
-      if (e instanceof Array) {
-        return recursiveForEach(e, fn, index);
+    var recurseVisitor = function(e) {
+      if (e instanceof Sequence) {
+        e.each(recurseVisitor);
+
+      } else if (e instanceof Array) {
+        forEach(e, recurseVisitor);
+
       } else {
-        return fn(e, index[0]++);
+        return fn(e,index++);
       }
-    });
+    };
+
+    this.parent.each(recurseVisitor);
   };
 
   var WithoutSequence = CachingSequence.inherit(function(parent, values) {
@@ -3431,6 +3435,28 @@
     }
 
     return x > y ? 1 : -1;
+  }
+
+  /**
+   * Iterates over every element in an array.
+   *
+   * @param {Array} array The array.
+   * @param {Function} fn The function to call on every element, which can return
+   *     false to stop the iteration early.
+   * @return {boolean} True if every element in the entire sequence was iterated,
+   *     otherwise false.
+   */
+  function forEach(array, fn) {
+    var i = -1,
+        len = array.length;
+
+    while (++i < len) {
+      if (fn(array[i]) === false) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /**
