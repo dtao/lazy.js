@@ -1528,17 +1528,27 @@
   });
 
   FlattenedSequence.prototype.each = function(fn) {
-    var index = 0;
+    var index = 0,
+        done  = false;
 
     var recurseVisitor = function(e) {
+      if (done) {
+        return false;
+      }
+
       if (e instanceof Sequence) {
-        e.each(recurseVisitor);
+        e.each(function(seq) {
+          if (recurseVisitor(seq) === false) {
+            done = true;
+            return false;
+          }
+        });
 
       } else if (e instanceof Array) {
-        forEach(e, recurseVisitor);
+        return forEach(e, recurseVisitor);
 
       } else {
-        return fn(e,index++);
+        return fn(e, index++);
       }
     };
 

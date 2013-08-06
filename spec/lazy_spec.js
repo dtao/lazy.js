@@ -738,6 +738,18 @@ describe("Lazy", function() {
       expect(iterated).toEqual([david, mary, lauren]);
     });
 
+    it("doesn't over-collect on early exit for multiple 'top-level' arrays", function() {
+      var arrays = [[1, 2, 3], [4, 5, 6]];
+      var flattened = Lazy(arrays).flatten().take(2).toArray();
+      expect(flattened).toEqual([1, 2]);
+    });
+
+    it("doesn't over-collect on early exit for multiple 'top-level' sequences", function() {
+      var sequences = [Lazy([1, 2, 3]), Lazy([4, 5, 6])];
+      var flattened = Lazy(sequences).flatten().take(2).toArray();
+      expect(flattened).toEqual([1, 2]);
+    });
+
     it("passes an index along with each element", function() {
       var nested = [[david], [mary], [lauren, adam], [[daniel], happy]];
       expect(Lazy(nested).flatten()).toPassToEach(1, [0, 1, 2, 3, 4, 5]);
