@@ -2,35 +2,26 @@
 
   var Lazy = window.Lazy;
 
-  function NodeSequence(node) {
-    this.node = node;
+  function NodeSequence(source) {
+    this.source = source;
   }
 
-  NodeSequence.prototype = new Lazy.Sequence();
+  NodeSequence.prototype = new Lazy.ArrayLikeSequence();
 
-  /**
-   * Iterates over a DOM node's children and executes a function for each child.
-   *
-   * @param {function(Node):*} fn The function to call on each child.
-   */
-  NodeSequence.prototype.each = function(fn) {
-    var children = this.node.childNodes,
-        length   = children.length,
-        i        = -1;
+  NodeSequence.prototype.get = function(i) {
+    return this.source[i];
+  };
 
-    while (++i < length) {
-      if (fn(children[i], i) === false) {
-        break;
-      }
-    }
+  NodeSequence.prototype.length = function() {
+    return this.source.length;
   };
 
   NodeSequence.prototype.flatten = function() {
-    return new FlattenedNodeSequence(this.node);
+    return new FlattenedNodeSequence(this.source);
   };
 
-  function FlattenedNodeSequence(node) {
-    this.node = node;
+  function FlattenedNodeSequence(source) {
+    this.source = source;
   }
 
   FlattenedNodeSequence.prototype = new Lazy.Sequence();
@@ -42,15 +33,16 @@
    * @param {function(Node):*} fn The function to call on each descendent.
    */
   FlattenedNodeSequence.prototype.each = function(fn) {
-    var done = false;
+    var i    = 0,
+        done = false;
 
-    Lazy(this.node).each(function(child) {
-      if (fn(child) === false) {
+    Lazy(this.source).each(function(child) {
+      if (fn(child, i++) === false) {
         return false;
       }
 
-      Lazy(child).flatten().each(function(descendent) {
-        if (fn(descendent) === false) {
+      Lazy(child.children).flatten().each(function(descendent) {
+        if (fn(descendent, i++) === false) {
           done = true;
           return false;
         }
@@ -116,13 +108,13 @@
    * - Array
    * - Object
    * - String
-   * - Node
+   * - NodeList or HTMLCollection
    *
    * This function provides the last one, and then falls back to the original
    * 'Lazy' which provides the first three.
    */
   Lazy = function(source) {
-    if (source instanceof Node) {
+    if (source instanceof NodeList || source instanceof HTMLCollection) {
       return new NodeSequence(source);
     } else {
       return OriginalLazy(source);
