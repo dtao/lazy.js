@@ -169,7 +169,7 @@
     var init = overrides.init;
     var ctor = init ? function(var_args) {
                         this.parent = arguments[0];
-                        init.apply(this, Array.prototype.slice.call(arguments, 1));
+                        init.apply(this, arguments);
                       } :
                       function(var_args) {
                         this.parent = arguments[0];
@@ -279,13 +279,13 @@
    * // => sequence: (2, 4, 6)
    */
   var MappedSequence = Sequence.define("map", {
-    init: function(mapFn) {
+    init: function(parent, mapFn) {
       this.mapFn  = mapFn;
     },
 
     each: function(fn) {
       var mapFn = this.mapFn;
-      this.parent.each(function(e, i) {
+      return this.parent.each(function(e, i) {
         return fn(mapFn(e, i), i);
       });
     }
@@ -365,7 +365,7 @@
    * // => sequence: (2, 4, 6)
    */
   var FilteredSequence = Sequence.define("select", {
-    init: function(filterFn) {
+    init: function(parent, filterFn) {
       this.filterFn = filterFn;
     },
 
