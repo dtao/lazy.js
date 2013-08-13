@@ -278,7 +278,7 @@
    * var evens = Lazy(odds).map(function(x) { return x + 1; });
    * // => sequence: (2, 4, 6)
    */
-  Sequence.define("map", {
+  var MappedSequence = Sequence.define("map", {
     init: function(mapFn) {
       this.mapFn  = mapFn;
     },
@@ -364,9 +364,25 @@
    * var evens = Lazy(numbers).select(function(x) { return x % 2 === 0; });
    * // => sequence: (2, 4, 6)
    */
-  Sequence.prototype.select = function(filterFn) {
-    return new FilteredSequence(this, filterFn);
-  };
+  var FilteredSequence = Sequence.define("select", {
+    init: function(filterFn) {
+      this.filterFn = filterFn;
+    },
+
+    getIterator: function() {
+      return new FilteringIterator(this.parent, this.filterFn);
+    },
+
+    each: function(fn) {
+      var filterFn = this.filterFn;
+
+      this.parent.each(function(e, i) {
+        if (filterFn(e, i)) {
+          return fn(e, i);
+        }
+      });
+    }
+  });
 
   /**
    * Alias for {@link Sequence#select}.
@@ -1331,25 +1347,6 @@
    */
   CachingSequence.prototype.length = function() {
     return this.cache().length;
-  };
-
-  var FilteredSequence = CachingSequence.inherit(function(parent, filterFn) {
-    this.parent   = parent;
-    this.filterFn = filterFn;
-  });
-
-  FilteredSequence.prototype.getIterator = function() {
-    return new FilteringIterator(this.parent, this.filterFn);
-  };
-
-  FilteredSequence.prototype.each = function(fn) {
-    var filterFn = this.filterFn;
-
-    this.parent.each(function(e, i) {
-      if (filterFn(e, i)) {
-        return fn(e, i);
-      }
-    });
   };
 
   var ReversedSequence = CachingSequence.inherit(function(parent) {
