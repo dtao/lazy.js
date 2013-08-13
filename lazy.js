@@ -91,8 +91,8 @@
    * 1. Pass a *method name* and an object containing *function overrides* to
    *    {@link Sequence.define}. If the object includes a function called `init`,
    *    this function will be called upon initialization of a sequence of this
-   *    type. The function should at least accept a `parent` parameter as its
-   *    first argument, which will be set to the underlying parent sequence.
+   *    type. The function **must at least accept a `parent` parameter as its
+   *    first argument**, which will be set to the underlying parent sequence.
    * 2. The object should include at least either a `getIterator` method or an
    *    `each` method. The former supports both asynchronous and synchronous
    *    iteration, but is slightly more cumbersome to implement. The latter
@@ -129,6 +129,12 @@
    *
    * Etc., etc.
    *
+   * Note: The reason the `init` function needs to accept a `parent` parameter as
+   * its first argument (as opposed to Lazy handling that by default) has to do
+   * with performance, which is a top priority for this library. While the logic
+   * to do this automatically is possible to implement, it is not as efficient as
+   * requiring custom sequence types to do it themselves.
+   *
    * @constructor
    */
   function Sequence() {}
@@ -136,10 +142,10 @@
   /**
    * Create a new constructor function for a type inheriting from `Sequence`.
    *
-   * @param {string} methodName The name of the method to be used for constructing
-   *     the new sequence. The method will be attached to the `Sequence` prototype
-   *     so that it can be chained with any other sequence methods, like
-   *     {@link #map}, {@link #filter}, etc.
+   * @param {string|Array.<string>} methodName The name(s) of the method(s) to be
+   *     used for constructing the new sequence. The method will be attached to
+   *     the `Sequence` prototype so that it can be chained with any other
+   *     sequence methods, like {@link #map}, {@link #filter}, etc.
    * @param {Object} overrides An object containing function overrides for this
    *     new sequence type.
    * @return {Function} A constructor for a new type inheriting from `Sequence`.
@@ -186,11 +192,13 @@
 
     // Expose the constructor as a chainable method so that we can do:
     // Lazy(...).map(...).filter(...).blah(...);
-    /** @skip
-      * @suppress {checkTypes} */
-    Sequence.prototype[methodName] = function(x, y, z) {
-      return new ctor(this, x, y, z);
-    };
+    var methodNames = typeof methodName === 'string' ? [methodName] : methodName;
+    for (var i = 0; i < methodNames.length; ++i) {
+      /** @suppress {checkTypes} */
+      Sequence.prototype[methodNames[i]] = function(x, y, z) {
+        return new ctor(this, x, y, z);
+      };
+    }
 
     return ctor;
   };
@@ -266,6 +274,10 @@
   };
 
   /**
+   * @function map
+   * @function collect
+   * @instance @memberOf Sequence
+   *
    * Creates a new sequence whose values are calculated by passing this sequence's
    * elements through some mapping function.
    *
@@ -278,7 +290,7 @@
    * var evens = Lazy(odds).map(function(x) { return x + 1; });
    * // => sequence: (2, 4, 6)
    */
-  var MappedSequence = Sequence.define("map", {
+  var MappedSequence = Sequence.define(["map", "collect"], {
     init: function(parent, mapFn) {
       this.mapFn  = mapFn;
     },
@@ -290,15 +302,6 @@
       });
     }
   });
-
-  /**
-   * Alias for {@link Sequence#map}.
-   *
-   * @function collect
-   * @memberOf Sequence
-   * @instance
-   */
-  Sequence.prototype.collect = Sequence.prototype.map;
 
   /**
    * Creates a new sequence whose values are calculated by accessing the specified
@@ -2124,6 +2127,7 @@
     this.filterFn = filterFn;
   }
 
+  /** @suppress {checkTypes} */
   IndexedFilteredSequence.prototype = new FilteredSequence();
 
   IndexedFilteredSequence.prototype.each = function(fn) {
@@ -2383,6 +2387,7 @@
     this.filterFn = filterFn;
   }
 
+  /** @suppress {checkTypes} */
   FilteredArrayWrapper.prototype = new FilteredSequence();
 
   FilteredArrayWrapper.prototype.each = function(fn) {
