@@ -166,7 +166,9 @@
    * // (logs the numbers 1, 2, and 3 to the console)
    */
   Sequence.define = function(methodName, overrides) {
-    overrides = overrides || {};
+    if (!overrides || (!overrides.getIterator && !overrides.each)) {
+      throw "A custom sequence must implement *at least* getIterator or each!";
+    }
 
     // Define a constructor that sets this sequence's parent to the first argument
     // and (optionally) applies any additional initialization logic.
@@ -273,7 +275,7 @@
    * Alias for {@link Sequence#each}.
    */
   Sequence.prototype.forEach = function(fn) {
-    this.each(fn);
+    return this.each(fn);
   };
 
   /**
@@ -388,7 +390,7 @@
     each: function(fn) {
       var filterFn = this.filterFn;
 
-      this.parent.each(function(e, i) {
+      return this.parent.each(function(e, i) {
         if (filterFn(e, i)) {
           return fn(e, i);
         }

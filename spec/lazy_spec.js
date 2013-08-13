@@ -90,6 +90,24 @@ describe("Lazy", function() {
     expect(doubleWrapped.toArray()).toEqual(people);
   });
 
+  describe("define", function() {
+    it("requires custom sequences to implement at least getIterator or each", function() {
+      expect(function() { Lazy.Sequence.define("blah", {}); }).toThrow();
+    });
+
+    it("assigns functionality to the Sequence prototype", function() {
+      var HodorSequence = Lazy.Sequence.define("hodor", {
+        each: function(fn) {
+          return this.parent.each(function(e) {
+            return fn("hodor");
+          });
+        }
+      });
+
+      expect(Lazy([1, 2, 3]).hodor().toArray()).toEqual(["hodor", "hodor", "hodor"]);
+    });
+  });
+
   describe("generate", function() {
     it("allows generation of arbitrary sequences", function() {
       var sequence = Lazy.generate(function(i) { return i; })
