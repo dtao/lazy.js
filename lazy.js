@@ -88,28 +88,32 @@
    *
    * Defining your own type of sequence is relatively simple:
    *
-   * 1. Pass a *method name* and an *initialization function* to
-   *    {@link Sequence.define}. By convention, this function should at least
-   *    accept a `parent` parameter as its first argument, which will be set to
-   *    the underlying sequence.
-   * 2. Define an `each` method on this new function's prototype, which accepts
-   *    a function as a parameter and calls `this.parent.each` to fetch elements
-   *    one by one from the underlying sequence.
+   * 1. Pass a *method name* and an object containing *function overrides* to
+   *    {@link Sequence.define}. If the object includes a function called `init`,
+   *    this function will be called upon initialization of a sequence of this
+   *    type. The function should at least accept a `parent` parameter as its
+   *    first argument, which will be set to the underlying parent sequence.
+   * 2. The object should include at least either a `getIterator` method or an
+   *    `each` method. The former supports both asynchronous and synchronous
+   *    iteration, but is slightly more cumbersome to implement. The latter
+   *    supports synchronous iteration and can be automatically implemented in
+   *    terms of the former. You can also implement both to optimize performance.
+   *    For more info, see {@link Iterator} and {@link AsyncSequence}.
    *
    * As a trivial example, the following code defines a new type of sequence
    * called `SampleSequence` which randomly may or may not include each element
    * from its parent.
    *
-   *     var SampleSequence = Lazy.Sequence.define("sample");
-   *
-   *     SampleSequence.prototype.each = function(fn) {
-   *       this.parent.each(function(e) {
-   *         // 50/50 chance of including this element.
-   *         if (Math.random() > 0.5) {
-   *           return fn(e);
-   *         }
-   *       });
-   *     };
+   *     var SampleSequence = Lazy.Sequence.define("sample", {
+   *       each: function(fn) {
+   *         return this.parent.each(function(e) {
+   *           // 50/50 chance of including this element.
+   *           if (Math.random() > 0.5) {
+   *             return fn(e);
+   *           }
+   *         });
+   *       }
+   *     });
    *
    * (Of course, the above could also easily have been implemented using
    * {@link #filter} instead of creating a custom sequence. But I *did* say this
@@ -136,32 +140,36 @@
    *     the new sequence. The method will be attached to the `Sequence` prototype
    *     so that it can be chained with any other sequence methods, like
    *     {@link #map}, {@link #filter}, etc.
-   * @param {Function} init Any initialization logic for the sequence type.
+   * @param {Object} overrides An object containing function overrides for this
+   *     new sequence type.
    * @return {Function} A constructor for a new type inheriting from `Sequence`.
    *
    * @example
-   * var VerboseSequence = Sequence.define("verbose");
-   *
    * // This sequence type logs every element to the console
    * // as it iterates over it.
-   * VerboseSequence.prototype.each = function(fn) {
-   *   this.parent.each(function(e, i) {
-   *     console.log(e);
-   *     return fn(e, i);
-   *   });
-   * };
+   * var VerboseSequence = Sequence.define("verbose", {
+   *   each: function(fn) {
+   *     return this.parent.each(function(e, i) {
+   *       console.log(e);
+   *       return fn(e, i);
+   *     });
+   *   }
+   * });
    *
    * Lazy([1, 2, 3]).verbose().toArray();
    * // (logs the numbers 1, 2, and 3 to the console)
    */
-  Sequence.define = function(methodName, init) {
+  Sequence.define = function(methodName, overrides) {
+    overrides = overrides || {};
+
     // Define a constructor that sets this sequence's parent to the first argument
     // and (optionally) applies any additional initialization logic.
 
     /** @constructor */
+    var init = overrides.init;
     var ctor = init ? function(var_args) {
                         this.parent = arguments[0];
-                        init.apply(this, arguments);
+                        init.apply(this, Array.prototype.slice.call(arguments, 1));
                       } :
                       function(var_args) {
                         this.parent = arguments[0];
@@ -169,6 +177,12 @@
 
     // Make this type inherit from Sequence.
     ctor.prototype = new Sequence();
+
+    // Attach overrides to the new Sequence type's prototype.
+    delete overrides.init;
+    for (var name in overrides) {
+      ctor.prototype[name] = overrides[name];
+    }
 
     // Expose the constructor as a chainable method so that we can do:
     // Lazy(...).map(...).filter(...).blah(...);
@@ -179,22 +193,6 @@
     };
 
     return ctor;
-  };
-
-  /**
-   * For debug purposes only.
-   * @skip
-   */
-  Sequence.prototype.depth = function() {
-    return this.parent ? this.parent.depth() + 1 : 0;
-  };
-
-  /**
-   * For debug purposes only.
-   * @skip
-   */
-  Sequence.prototype.log = function(msg) {
-    console.log(indent(this.depth()) + msg);
   };
 
   /**
@@ -280,9 +278,18 @@
    * var evens = Lazy(odds).map(function(x) { return x + 1; });
    * // => sequence: (2, 4, 6)
    */
-  Sequence.prototype.map = function(mapFn) {
-    return new MappedSequence(this, mapFn);
-  };
+  Sequence.define("map", {
+    init: function(mapFn) {
+      this.mapFn  = mapFn;
+    },
+
+    each: function(fn) {
+      var mapFn = this.mapFn;
+      this.parent.each(function(e, i) {
+        return fn(mapFn(e, i), i);
+      });
+    }
+  });
 
   /**
    * Alias for {@link Sequence#map}.
@@ -1324,23 +1331,6 @@
    */
   CachingSequence.prototype.length = function() {
     return this.cache().length;
-  };
-
-  /**
-   * @constructor
-   */
-  function MappedSequence(parent, mapFn) {
-    this.parent = parent;
-    this.mapFn  = mapFn;
-  }
-
-  MappedSequence.prototype = new Sequence();
-
-  MappedSequence.prototype.each = function(fn) {
-    var mapFn = this.mapFn;
-    this.parent.each(function(e, i) {
-      return fn(mapFn(e, i), i);
-    });
   };
 
   var FilteredSequence = CachingSequence.inherit(function(parent, filterFn) {
