@@ -268,7 +268,16 @@
    * Lazy(subordinates).each(function(s) { s.reprimand(); });
    */
   Sequence.prototype.each = function(fn) {
-    // Calling each on an empty sequence does nothing.
+    var iterator = this.getIterator(),
+        i = -1;
+
+    while (iterator.moveNext()) {
+      if (fn(iterator.current(), ++i) === false) {
+        return false;
+      }
+    }
+
+    return true;
   };
 
   /**
@@ -1247,38 +1256,6 @@
   Sequence.prototype.toString = Sequence.prototype.join;
 
   /**
-   * Creates an iterator object with two methods, `moveNext` -- returning true or
-   * false -- and `current` -- returning the current value.
-   *
-   * This method is used when asynchronously iterating over sequences. Any type
-   * inheriting from `Sequence` must implement this method or it can't support
-   * asynchronous iteration.
-   *
-   * @return {Iterator} An iterator object.
-   *
-   * @example
-   * var iterator = Lazy([1, 2]).getIterator();
-   *
-   * iterator.moveNext();
-   * // => true
-   *
-   * iterator.current();
-   * // => 1
-   *
-   * iterator.moveNext();
-   * // => true
-   *
-   * iterator.current();
-   * // => 2
-   *
-   * iterator.moveNext();
-   * // => false
-   */
-  Sequence.prototype.getIterator = function() {
-    return new Iterator(this);
-  };
-
-  /**
    * Creates a sequence, with the same elements as this one, that will be iterated
    * over asynchronously when calling `each`.
    *
@@ -1352,6 +1329,15 @@
    */
   CachingSequence.prototype.length = function() {
     return this.cache().length;
+  };
+
+  /*
+   * Fully evaluates the sequence and returns an iterator.
+   *
+   * @return {Iterator} An iterator to iterate over the fully-evaluated sequence.
+   */
+  CachingSequence.prototype.getIterator = function() {
+    return Lazy(this.cache()).getIterator();
   };
 
   var ReversedSequence = CachingSequence.inherit(function(parent) {
@@ -1676,7 +1662,7 @@
   /**
    * The Iterator object provides an API for iterating over a sequence.
    *
-   * @param {Sequence=} sequence The sequence to iterate over.
+   * @param {ArrayLikeSequence=} sequence The sequence to iterate over.
    * @constructor
    */
   function Iterator(sequence) {
@@ -2012,6 +1998,38 @@
    */
   ArrayLikeSequence.prototype.length = function() {
     return this.parent.length();
+  };
+
+  /**
+   * Creates an iterator object with two methods, `moveNext` -- returning true or
+   * false -- and `current` -- returning the current value.
+   *
+   * This method is used when asynchronously iterating over sequences. Any type
+   * inheriting from `Sequence` must implement this method or it can't support
+   * asynchronous iteration.
+   *
+   * @return {Iterator} An iterator object.
+   *
+   * @example
+   * var iterator = Lazy([1, 2]).getIterator();
+   *
+   * iterator.moveNext();
+   * // => true
+   *
+   * iterator.current();
+   * // => 1
+   *
+   * iterator.moveNext();
+   * // => true
+   *
+   * iterator.current();
+   * // => 2
+   *
+   * iterator.moveNext();
+   * // => false
+   */
+  ArrayLikeSequence.prototype.getIterator = function() {
+    return new Iterator(this);
   };
 
   /**
