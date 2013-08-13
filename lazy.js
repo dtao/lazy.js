@@ -194,7 +194,10 @@
     // Lazy(...).map(...).filter(...).blah(...);
     var methodNames = typeof methodName === 'string' ? [methodName] : methodName;
     for (var i = 0; i < methodNames.length; ++i) {
-      /** @suppress {checkTypes} */
+      /**
+       * @skip
+       * @suppress {checkTypes}
+       */
       Sequence.prototype[methodNames[i]] = function(x, y, z) {
         return new ctor(this, x, y, z);
       };
@@ -275,8 +278,9 @@
 
   /**
    * @function map
-   * @function collect
-   * @instance @memberOf Sequence
+   * @memberOf Sequence
+   * @instance
+   * @aka collect
    *
    * Creates a new sequence whose values are calculated by passing this sequence's
    * elements through some mapping function.
@@ -355,6 +359,11 @@
   };
 
   /**
+   * @function filter
+   * @memberOf Sequence
+   * @instance
+   * @aka select
+   *
    * Creates a new sequence whose values are the elements of this sequence which
    * satisfy the specified predicate.
    *
@@ -367,7 +376,7 @@
    * var evens = Lazy(numbers).select(function(x) { return x % 2 === 0; });
    * // => sequence: (2, 4, 6)
    */
-  var FilteredSequence = Sequence.define("select", {
+  var FilteredSequence = Sequence.define(["filter", "select"], {
     init: function(parent, filterFn) {
       this.filterFn = filterFn;
     },
@@ -386,15 +395,6 @@
       });
     }
   });
-
-  /**
-   * Alias for {@link Sequence#select}.
-   *
-   * @function filter
-   * @memberOf Sequence
-   * @instance
-   */
-  Sequence.prototype.filter = Sequence.prototype.select;
 
   /**
    * Creates a new sequence whose values exclude the elements of this sequence
@@ -2127,7 +2127,6 @@
     this.filterFn = filterFn;
   }
 
-  /** @suppress {checkTypes} */
   IndexedFilteredSequence.prototype = new FilteredSequence();
 
   IndexedFilteredSequence.prototype.each = function(fn) {
@@ -2387,7 +2386,6 @@
     this.filterFn = filterFn;
   }
 
-  /** @suppress {checkTypes} */
   FilteredArrayWrapper.prototype = new FilteredSequence();
 
   FilteredArrayWrapper.prototype.each = function(fn) {
