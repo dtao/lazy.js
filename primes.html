@@ -90,40 +90,39 @@
       div.appendChild(span);
 
       // Scroll down, if necessary
-      if (div.scrollTop < div.scrollHeight) {
-        div.scrollTop = div.scrollHeight;
-      }
+      span.scrollIntoView()
     }
 
-    var primes = Lazy.generate(function() {
-      var knownPrimes = [2, 3];
+    var knownPrimes = [];
 
-      function isPrime(value) {
-        var possibleFactors = Lazy(knownPrimes).filter(function(x) { return x * x <= value; });
-        return !possibleFactors.any(function(factor) { value % factor === 0; });
-      }
-
-      function findNextPrime() {
-        var lastKnownPrime = knownPrimes[knownPrimes.length - 1],
-            nextPrime      = lastKnownPrime + 2;
-
-        while (!isPrime(nextPrime)) {
-          nextPrime += 2;
-        }
-
-        knownPrimes.push(nextPrime);
-      }
-
-      return function(i) {
-        while (i >= knownPrimes.length) {
-          findNextPrime();
-        }
-
-        return knownPrimes[i];
+    function isPossibleFactor(value) {
+      return function(x) {
+        return x * x <= value;
       };
-    }());
+    }
 
-    primes.async().each(addValue);
+    function isDivisibleBy(value) {
+      return function(x) {
+        return value % x === 0;
+      };
+    }
+
+    function isPrime(value) {
+      var prime = !Lazy(knownPrimes)
+        .filter(isPossibleFactor(value))
+        .any(isDivisibleBy(value));
+
+      if (prime) {
+        knownPrimes.push(value);
+      }
+
+      return prime;
+    }
+
+    Lazy.generate(function(i) { return 2 + i; })
+      .filter(isPrime)
+      .async()
+      .each(addValue);
   </script>
 </head>
 
