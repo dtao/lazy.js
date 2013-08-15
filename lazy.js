@@ -88,28 +88,32 @@
    *
    * Defining your own type of sequence is relatively simple:
    *
-   * 1. Pass a *method name* and an *initialization function* to
-   *    {@link Sequence.define}. By convention, this function should at least
-   *    accept a `parent` parameter as its first argument, which will be set to
-   *    the underlying sequence.
-   * 2. Define an `each` method on this new function's prototype, which accepts
-   *    a function as a parameter and calls `this.parent.each` to fetch elements
-   *    one by one from the underlying sequence.
+   * 1. Pass a *method name* and an object containing *function overrides* to
+   *    {@link Sequence.define}. If the object includes a function called `init`,
+   *    this function will be called upon initialization of a sequence of this
+   *    type. The function **must at least accept a `parent` parameter as its
+   *    first argument**, which will be set to the underlying parent sequence.
+   * 2. The object should include at least either a `getIterator` method or an
+   *    `each` method. The former supports both asynchronous and synchronous
+   *    iteration, but is slightly more cumbersome to implement. The latter
+   *    supports synchronous iteration and can be automatically implemented in
+   *    terms of the former. You can also implement both to optimize performance.
+   *    For more info, see {@link Iterator} and {@link AsyncSequence}.
    *
    * As a trivial example, the following code defines a new type of sequence
    * called `SampleSequence` which randomly may or may not include each element
    * from its parent.
    *
-   *     var SampleSequence = Lazy.Sequence.define("sample");
-   *
-   *     SampleSequence.prototype.each = function(fn) {
-   *       this.parent.each(function(e) {
-   *         // 50/50 chance of including this element.
-   *         if (Math.random() > 0.5) {
-   *           return fn(e);
-   *         }
-   *       });
-   *     };
+   *     var SampleSequence = Lazy.Sequence.define("sample", {
+   *       each: function(fn) {
+   *         return this.parent.each(function(e) {
+   *           // 50/50 chance of including this element.
+   *           if (Math.random() > 0.5) {
+   *             return fn(e);
+   *           }
+   *         });
+   *       }
+   *     });
    *
    * (Of course, the above could also easily have been implemented using
    * {@link #filter} instead of creating a custom sequence. But I *did* say this
@@ -125,6 +129,12 @@
    *
    * Etc., etc.
    *
+   * Note: The reason the `init` function needs to accept a `parent` parameter as
+   * its first argument (as opposed to Lazy handling that by default) has to do
+   * with performance, which is a top priority for this library. While the logic
+   * to do this automatically is possible to implement, it is not as efficient as
+   * requiring custom sequence types to do it themselves.
+   *
    * @constructor
    */
   function Sequence() {}
@@ -132,33 +142,39 @@
   /**
    * Create a new constructor function for a type inheriting from `Sequence`.
    *
-   * @param {string} methodName The name of the method to be used for constructing
-   *     the new sequence. The method will be attached to the `Sequence` prototype
-   *     so that it can be chained with any other sequence methods, like
-   *     {@link #map}, {@link #filter}, etc.
-   * @param {Function} init Any initialization logic for the sequence type.
+   * @param {string|Array.<string>} methodName The name(s) of the method(s) to be
+   *     used for constructing the new sequence. The method will be attached to
+   *     the `Sequence` prototype so that it can be chained with any other
+   *     sequence methods, like {@link #map}, {@link #filter}, etc.
+   * @param {Object} overrides An object containing function overrides for this
+   *     new sequence type.
    * @return {Function} A constructor for a new type inheriting from `Sequence`.
    *
    * @example
-   * var VerboseSequence = Sequence.define("verbose");
-   *
    * // This sequence type logs every element to the console
    * // as it iterates over it.
-   * VerboseSequence.prototype.each = function(fn) {
-   *   this.parent.each(function(e, i) {
-   *     console.log(e);
-   *     return fn(e, i);
-   *   });
-   * };
+   * var VerboseSequence = Sequence.define("verbose", {
+   *   each: function(fn) {
+   *     return this.parent.each(function(e, i) {
+   *       console.log(e);
+   *       return fn(e, i);
+   *     });
+   *   }
+   * });
    *
    * Lazy([1, 2, 3]).verbose().toArray();
    * // (logs the numbers 1, 2, and 3 to the console)
    */
-  Sequence.define = function(methodName, init) {
+  Sequence.define = function(methodName, overrides) {
+    if (!overrides || (!overrides.getIterator && !overrides.each)) {
+      throw "A custom sequence must implement *at least* getIterator or each!";
+    }
+
     // Define a constructor that sets this sequence's parent to the first argument
     // and (optionally) applies any additional initialization logic.
 
     /** @constructor */
+    var init = overrides.init;
     var ctor = init ? function(var_args) {
                         this.parent = arguments[0];
                         init.apply(this, arguments);
@@ -170,31 +186,26 @@
     // Make this type inherit from Sequence.
     ctor.prototype = new Sequence();
 
+    // Attach overrides to the new Sequence type's prototype.
+    delete overrides.init;
+    for (var name in overrides) {
+      ctor.prototype[name] = overrides[name];
+    }
+
     // Expose the constructor as a chainable method so that we can do:
     // Lazy(...).map(...).filter(...).blah(...);
-    /** @skip
-      * @suppress {checkTypes} */
-    Sequence.prototype[methodName] = function(x, y, z) {
-      return new ctor(this, x, y, z);
-    };
+    var methodNames = typeof methodName === 'string' ? [methodName] : methodName;
+    for (var i = 0; i < methodNames.length; ++i) {
+      /**
+       * @skip
+       * @suppress {checkTypes}
+       */
+      Sequence.prototype[methodNames[i]] = function(x, y, z) {
+        return new ctor(this, x, y, z);
+      };
+    }
 
     return ctor;
-  };
-
-  /**
-   * For debug purposes only.
-   * @skip
-   */
-  Sequence.prototype.depth = function() {
-    return this.parent ? this.parent.depth() + 1 : 0;
-  };
-
-  /**
-   * For debug purposes only.
-   * @skip
-   */
-  Sequence.prototype.log = function(msg) {
-    console.log(indent(this.depth()) + msg);
   };
 
   /**
@@ -257,17 +268,31 @@
    * Lazy(subordinates).each(function(s) { s.reprimand(); });
    */
   Sequence.prototype.each = function(fn) {
-    // Calling each on an empty sequence does nothing.
+    var iterator = this.getIterator(),
+        i = -1;
+
+    while (iterator.moveNext()) {
+      if (fn(iterator.current(), ++i) === false) {
+        return false;
+      }
+    }
+
+    return true;
   };
 
   /**
    * Alias for {@link Sequence#each}.
    */
   Sequence.prototype.forEach = function(fn) {
-    this.each(fn);
+    return this.each(fn);
   };
 
   /**
+   * @function map
+   * @memberOf Sequence
+   * @instance
+   * @aka collect
+   *
    * Creates a new sequence whose values are calculated by passing this sequence's
    * elements through some mapping function.
    *
@@ -280,18 +305,18 @@
    * var evens = Lazy(odds).map(function(x) { return x + 1; });
    * // => sequence: (2, 4, 6)
    */
-  Sequence.prototype.map = function(mapFn) {
-    return new MappedSequence(this, mapFn);
-  };
+  var MappedSequence = Sequence.define(["map", "collect"], {
+    init: function(parent, mapFn) {
+      this.mapFn  = mapFn;
+    },
 
-  /**
-   * Alias for {@link Sequence#map}.
-   *
-   * @function collect
-   * @memberOf Sequence
-   * @instance
-   */
-  Sequence.prototype.collect = Sequence.prototype.map;
+    each: function(fn) {
+      var mapFn = this.mapFn;
+      return this.parent.each(function(e, i) {
+        return fn(mapFn(e, i), i);
+      });
+    }
+  });
 
   /**
    * Creates a new sequence whose values are calculated by accessing the specified
@@ -345,6 +370,11 @@
   };
 
   /**
+   * @function filter
+   * @memberOf Sequence
+   * @instance
+   * @aka select
+   *
    * Creates a new sequence whose values are the elements of this sequence which
    * satisfy the specified predicate.
    *
@@ -357,18 +387,25 @@
    * var evens = Lazy(numbers).select(function(x) { return x % 2 === 0; });
    * // => sequence: (2, 4, 6)
    */
-  Sequence.prototype.select = function(filterFn) {
-    return new FilteredSequence(this, filterFn);
-  };
+  var FilteredSequence = Sequence.define(["filter", "select"], {
+    init: function(parent, filterFn) {
+      this.filterFn = filterFn;
+    },
 
-  /**
-   * Alias for {@link Sequence#select}.
-   *
-   * @function filter
-   * @memberOf Sequence
-   * @instance
-   */
-  Sequence.prototype.filter = Sequence.prototype.select;
+    getIterator: function() {
+      return new FilteringIterator(this.parent, this.filterFn);
+    },
+
+    each: function(fn) {
+      var filterFn = this.filterFn;
+
+      return this.parent.each(function(e, i) {
+        if (filterFn(e, i)) {
+          return fn(e, i);
+        }
+      });
+    }
+  });
 
   /**
    * Creates a new sequence whose values exclude the elements of this sequence
@@ -1219,38 +1256,6 @@
   Sequence.prototype.toString = Sequence.prototype.join;
 
   /**
-   * Creates an iterator object with two methods, `moveNext` -- returning true or
-   * false -- and `current` -- returning the current value.
-   *
-   * This method is used when asynchronously iterating over sequences. Any type
-   * inheriting from `Sequence` must implement this method or it can't support
-   * asynchronous iteration.
-   *
-   * @return {Iterator} An iterator object.
-   *
-   * @example
-   * var iterator = Lazy([1, 2]).getIterator();
-   *
-   * iterator.moveNext();
-   * // => true
-   *
-   * iterator.current();
-   * // => 1
-   *
-   * iterator.moveNext();
-   * // => true
-   *
-   * iterator.current();
-   * // => 2
-   *
-   * iterator.moveNext();
-   * // => false
-   */
-  Sequence.prototype.getIterator = function() {
-    return new Iterator(this);
-  };
-
-  /**
    * Creates a sequence, with the same elements as this one, that will be iterated
    * over asynchronously when calling `each`.
    *
@@ -1326,40 +1331,13 @@
     return this.cache().length;
   };
 
-  /**
-   * @constructor
+  /*
+   * Fully evaluates the sequence and returns an iterator.
+   *
+   * @return {Iterator} An iterator to iterate over the fully-evaluated sequence.
    */
-  function MappedSequence(parent, mapFn) {
-    this.parent = parent;
-    this.mapFn  = mapFn;
-  }
-
-  MappedSequence.prototype = new Sequence();
-
-  MappedSequence.prototype.each = function(fn) {
-    var mapFn = this.mapFn;
-    this.parent.each(function(e, i) {
-      return fn(mapFn(e, i), i);
-    });
-  };
-
-  var FilteredSequence = CachingSequence.inherit(function(parent, filterFn) {
-    this.parent   = parent;
-    this.filterFn = filterFn;
-  });
-
-  FilteredSequence.prototype.getIterator = function() {
-    return new FilteringIterator(this.parent, this.filterFn);
-  };
-
-  FilteredSequence.prototype.each = function(fn) {
-    var filterFn = this.filterFn;
-
-    this.parent.each(function(e, i) {
-      if (filterFn(e, i)) {
-        return fn(e, i);
-      }
-    });
+  CachingSequence.prototype.getIterator = function() {
+    return Lazy(this.cache()).getIterator();
   };
 
   var ReversedSequence = CachingSequence.inherit(function(parent) {
@@ -1528,17 +1506,31 @@
   });
 
   FlattenedSequence.prototype.each = function(fn) {
-    // Hack: store the index in a tiny array so we can increment it from outside
-    // this function.
-    var index = [0];
+    var index = 0,
+        done  = false;
 
-    this.parent.each(function(e) {
-      if (e instanceof Array) {
-        return recursiveForEach(e, fn, index);
-      } else {
-        return fn(e, index[0]++);
+    var recurseVisitor = function(e) {
+      if (done) {
+        return false;
       }
-    });
+
+      if (e instanceof Sequence) {
+        e.each(function(seq) {
+          if (recurseVisitor(seq) === false) {
+            done = true;
+            return false;
+          }
+        });
+
+      } else if (e instanceof Array) {
+        return forEach(e, recurseVisitor);
+
+      } else {
+        return fn(e, index++);
+      }
+    };
+
+    this.parent.each(recurseVisitor);
   };
 
   var WithoutSequence = CachingSequence.inherit(function(parent, values) {
@@ -1670,7 +1662,7 @@
   /**
    * The Iterator object provides an API for iterating over a sequence.
    *
-   * @param {Sequence=} sequence The sequence to iterate over.
+   * @param {ArrayLikeSequence=} sequence The sequence to iterate over.
    * @constructor
    */
   function Iterator(sequence) {
@@ -2006,6 +1998,38 @@
    */
   ArrayLikeSequence.prototype.length = function() {
     return this.parent.length();
+  };
+
+  /**
+   * Creates an iterator object with two methods, `moveNext` -- returning true or
+   * false -- and `current` -- returning the current value.
+   *
+   * This method is used when asynchronously iterating over sequences. Any type
+   * inheriting from `Sequence` must implement this method or it can't support
+   * asynchronous iteration.
+   *
+   * @return {Iterator} An iterator object.
+   *
+   * @example
+   * var iterator = Lazy([1, 2]).getIterator();
+   *
+   * iterator.moveNext();
+   * // => true
+   *
+   * iterator.current();
+   * // => 1
+   *
+   * iterator.moveNext();
+   * // => true
+   *
+   * iterator.current();
+   * // => 2
+   *
+   * iterator.moveNext();
+   * // => false
+   */
+  ArrayLikeSequence.prototype.getIterator = function() {
+    return new Iterator(this);
   };
 
   /**
@@ -3086,7 +3110,7 @@
    * function.
    *
    * @constructor
-   * @param {function(number, *):*} generatorFn A function which accepts an index
+   * @param {function(number):*} generatorFn A function which accepts an index
    *     and returns a value for the element at that position in the sequence.
    * @param {number=} length The length of the sequence. If this argument is
    *     omitted, the sequence will go on forever.
@@ -3120,6 +3144,41 @@
         break;
       }
     }
+  };
+
+  /**
+   * See {@link Sequence#getIterator}
+   */
+  GeneratedSequence.prototype.getIterator = function() {
+    return new GeneratedIterator(this);
+  };
+
+  /**
+   * Iterates over a generated sequence. (This allows generated sequences to be
+   * iterated asynchronously.)
+   *
+   * @param {GeneratedSequence} sequence The generated sequence to iterate over.
+   * @constructor
+   */
+  function GeneratedIterator(sequence) {
+    this.sequence     = sequence;
+    this.index        = 0;
+    this.currentValue = null;
+  }
+
+  GeneratedIterator.prototype.current = function() {
+    return this.currentValue;
+  };
+
+  GeneratedIterator.prototype.moveNext = function() {
+    var sequence = this.sequence;
+
+    if (typeof sequence.fixedLength === "number" && this.index >= sequence.fixedLength) {
+      return false;
+    }
+
+    this.currentValue = sequence.get(this.index++);
+    return true;
   };
 
   /**
@@ -3431,6 +3490,28 @@
     }
 
     return x > y ? 1 : -1;
+  }
+
+  /**
+   * Iterates over every element in an array.
+   *
+   * @param {Array} array The array.
+   * @param {Function} fn The function to call on every element, which can return
+   *     false to stop the iteration early.
+   * @return {boolean} True if every element in the entire sequence was iterated,
+   *     otherwise false.
+   */
+  function forEach(array, fn) {
+    var i = -1,
+        len = array.length;
+
+    while (++i < len) {
+      if (fn(array[i]) === false) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /**

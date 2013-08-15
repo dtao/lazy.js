@@ -1,0 +1,144 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Lazy Primes</title>
+
+  <!-- source files -->
+  <script type="text/javascript" src="lazy.js"></script>
+  <script type="text/javascript" src="lazy.dom.js"></script>
+
+  <style type="text/css">
+    @import url(http://fonts.googleapis.com/css?family=Source+Code+Pro:400,700);
+
+    span {
+      display: inline-block;
+      margin: 0;
+      font-family: "Source Code Pro", monospace;
+      font-size: 24pt;
+      font-weight: bold;
+      letter-spacing: -1px;
+    }
+
+    span:nth-child(odd) {
+      color: #bbb;
+    }
+
+    span:nth-child(even) {
+      color: #888;
+    }
+
+    p {
+      position: fixed;
+      top: 30%;
+      left: 0;
+      right: 0;
+      min-height: 100px;
+      margin: 0;
+      padding: 2ex 2em;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 24pt;
+      color: #fff;
+      /*text-align: center;*/
+      z-index: 1;
+    }
+
+    p:before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: #000;
+      opacity: 0.75;
+      filter: alpha(opacity=75);
+      z-index: -1;
+    }
+
+    p code {
+      font-family: "Source Code Pro", monospace;
+      color: #def;
+    }
+
+    p strong {
+      color: #efd;
+    }
+
+    @media all and (max-height: 600px) {
+      p {
+        top: auto;
+        bottom: 0;
+      }
+    }
+
+    @media all and (max-width: 600px) {
+      p {
+        font-size: 12pt;
+      }
+    }
+  </style>
+
+  <script>
+    function addValue(value) {
+      // Create a <span> element containing the value
+      var span = document.createElement('span');
+      span.textContent = value;
+
+      // Append it to the <div>
+      var div = document.querySelector('div');
+      div.appendChild(span);
+
+      // Scroll down, if necessary
+      if (div.scrollTop < div.scrollHeight) {
+        div.scrollTop = div.scrollHeight;
+      }
+    }
+
+    var primes = Lazy.generate(function() {
+      var knownPrimes = [2, 3];
+
+      function isPrime(value) {
+        var possibleFactors = Lazy(knownPrimes).filter(function(x) { return x * x <= value; });
+        return !possibleFactors.any(function(factor) { value % factor === 0; });
+      }
+
+      function findNextPrime() {
+        var lastKnownPrime = knownPrimes[knownPrimes.length - 1],
+            nextPrime      = lastKnownPrime + 2;
+
+        while (!isPrime(nextPrime)) {
+          nextPrime += 2;
+        }
+
+        knownPrimes.push(nextPrime);
+      }
+
+      return function(i) {
+        while (i >= knownPrimes.length) {
+          findNextPrime();
+        }
+
+        return knownPrimes[i];
+      };
+    }());
+
+    primes.async().each(addValue);
+  </script>
+</head>
+
+<body>
+  <div></div>
+
+  <p>
+    There is a <code>&lt;script&gt;</code> tag on this page that uses <code>Lazy.generate</code> to
+    define a <code>Lazy.GeneratedSequence</code> that computes prime numbers. It is currently
+    iterating over this sequence <strong>asynchronously</strong> using <code>#async()</code>.
+
+    <br /><br />
+
+    Pretty neat, right?
+  </p>
+</body>
+
+</html>
