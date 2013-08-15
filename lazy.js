@@ -3110,7 +3110,7 @@
    * function.
    *
    * @constructor
-   * @param {function(number, *):*} generatorFn A function which accepts an index
+   * @param {function(number):*} generatorFn A function which accepts an index
    *     and returns a value for the element at that position in the sequence.
    * @param {number=} length The length of the sequence. If this argument is
    *     omitted, the sequence will go on forever.
@@ -3144,6 +3144,41 @@
         break;
       }
     }
+  };
+
+  /**
+   * See {@link Sequence#getIterator}
+   */
+  GeneratedSequence.prototype.getIterator = function() {
+    return new GeneratedIterator(this);
+  };
+
+  /**
+   * Iterates over a generated sequence. (This allows generated sequences to be
+   * iterated asynchronously.)
+   *
+   * @param {GeneratedSequence} sequence The generated sequence to iterate over.
+   * @constructor
+   */
+  function GeneratedIterator(sequence) {
+    this.sequence     = sequence;
+    this.index        = 0;
+    this.currentValue = null;
+  }
+
+  GeneratedIterator.prototype.current = function() {
+    return this.currentValue;
+  };
+
+  GeneratedIterator.prototype.moveNext = function() {
+    var sequence = this.sequence;
+
+    if (typeof sequence.fixedLength === "number" && this.index >= sequence.fixedLength) {
+      return false;
+    }
+
+    this.currentValue = sequence.get(this.index++);
+    return true;
   };
 
   /**
