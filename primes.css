@@ -1,0 +1,77 @@
+@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro:400,700);
+
+div {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: auto;
+}
+
+span {
+  margin: 0;
+  font-family: "Source Code Pro", monospace;
+  font-size: 24pt;
+  font-weight: bold;
+  letter-spacing: -1px;
+  word-break: break-all;;
+}
+
+span:nth-child(odd) {
+  color: #bbb;
+}
+
+span:nth-child(even) {
+  color: #888;
+}
+
+p {
+  position: fixed;
+  top: 30%;
+  left: 0;
+  right: 0;
+  min-height: 100px;
+  margin: 0;
+  padding: 2ex 2em;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 24pt;
+  color: #fff;
+  /*text-align: center;*/
+  z-index: 1;
+}
+
+p:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #000;
+  opacity: 0.75;
+  filter: alpha(opacity=75);
+  z-index: -1;
+}
+
+p code {
+  font-family: "Source Code Pro", monospace;
+  color: #def;
+}
+
+p strong {
+  color: #efd;
+}
+
+@media all and (max-height: 600px) {
+  p {
+    top: auto;
+    bottom: 0;
+  }
+}
+
+@media all and (max-width: 600px) {
+  p {
+    font-size: 12pt;
+  }
+}
