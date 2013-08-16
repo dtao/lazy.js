@@ -157,6 +157,10 @@ describe("Lazy", function() {
     it("returns a sequence from start to stop, incremented by step", function() {
       expect(Lazy.range(0, 30, 5).toArray()).toEqual([0, 5, 10, 15, 20, 25]);
     });
+
+    it("returns an empty sequence when start is equal to or greater than stop", function() {
+      expect(Lazy.range(0).toArray()).toEqual([]);
+    });
   });
 
   describe("async", function() {
@@ -524,6 +528,10 @@ describe("Lazy", function() {
     it("passes an index along with each element", function() {
       expect(Lazy(people).take(2)).toPassToEach(1, [0, 1]);
     });
+
+    it("doesn't prematurely get the first element when given 0", function() {
+      expect(Lazy.generate(function (i) {return i;}).take(0).toArray()).toEqual([]);
+    })
   });
 
   describe("initial", function() {
