@@ -1393,7 +1393,8 @@
     var self = this,
         i = 0;
     self.parent.each(function(e) {
-      var result = fn(e, i);
+      var result;
+      if (i < self.count) { result = fn(e, i); }
       if (++i >= self.count) { return false; }
       return result;
     });
