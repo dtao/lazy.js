@@ -1,6 +1,5 @@
 var fs = require("fs");
 
-require("./support/person.js");
 require("./lazy_spec.js");
 require("./map_spec.js");
 require("./filter_spec.js");

@@ -4,6 +4,7 @@
   // first (so we need to require Lazy right here right now).
   if (typeof require === 'function') {
     context.Lazy = require('../../lazy.node.js');
+    require('./person.js');
   }
 
   context.people        = null;
