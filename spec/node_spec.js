@@ -11,6 +11,7 @@ require("./take_spec.js");
 require("./drop_spec.js");
 require("./sort_by_spec.js");
 require("./group_by_spec.js");
+require("./count_by_spec.js");
 
 describe("working with streams", function() {
 
