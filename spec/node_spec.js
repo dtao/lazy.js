@@ -1,9 +1,11 @@
-var fs   = require("fs");
+var fs = require("fs");
 
 global.Lazy = require("../lazy.node.js");
 
 require("./support/person.js");
+require("./support/spec_common.js");
 require("./lazy_spec.js");
+require("./map_spec.js");
 
 describe("working with streams", function() {
 

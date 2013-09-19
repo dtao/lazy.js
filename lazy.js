@@ -2137,6 +2137,10 @@
   IndexedMappedSequence.prototype = new ArrayLikeSequence();
 
   IndexedMappedSequence.prototype.get = function(i) {
+    if (i < 0 || i >= this.parent.length()) {
+      return undefined;
+    }
+
     return this.mapFn(this.parent.get(i), i);
   };
 
@@ -2380,6 +2384,10 @@
   MappedArrayWrapper.prototype = new ArrayLikeSequence();
 
   MappedArrayWrapper.prototype.get = function(i) {
+    if (i < 0 || i >= this.source.length) {
+      return undefined;
+    }
+
     return this.mapFn(this.source[i]);
   };
 
