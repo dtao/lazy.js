@@ -200,9 +200,34 @@
        * @skip
        * @suppress {checkTypes}
        */
-      Sequence.prototype[methodNames[i]] = function(x, y, z) {
-        return new ctor(this, x, y, z);
-      };
+      switch ((init && init.length) || 0) {
+        case 0:
+          Sequence.prototype[methodNames[i]] = function() {
+            return new ctor(this);
+          };
+          break;
+
+        case 1:
+          Sequence.prototype[methodNames[i]] = function(arg1) {
+            return new ctor(this, arg1);
+          };
+          break;
+
+        case 2:
+          Sequence.prototype[methodNames[i]] = function(arg1, arg2) {
+            return new ctor(this, arg1, arg2);
+          };
+          break;
+
+        case 3:
+          Sequence.prototype[methodNames[i]] = function(arg1, arg2, arg3) {
+            return new ctor(this, arg1, arg2, arg3);
+          };
+          break;
+
+        default:
+          throw 'Shit!';
+      }
     }
 
     return ctor;
