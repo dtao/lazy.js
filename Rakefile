@@ -58,8 +58,28 @@ def normalize_methods!(methods)
   methods.sort! { |x, y| x["name"] <=> y["name"] }
 end
 
+def update_json(file_path, updates)
+  json = JSON.parse(File.read(file_path))
+  json.merge!(updates)
+  File.write(file_path, JSON.pretty_generate(json))
+end
+
+desc "Update the library version in package.json, bower.json, and component.json"
+task :update_version do
+  require "json"
+
+  if (version = ENV['VERSION']).nil?
+    puts "Set the VERSION environment variable for this Rake task."
+    exit
+  end
+
+  update_json('package.json', { 'version' => version })
+  update_json('bower.json', { 'version' => version })
+  update_json('component.json', { 'version' => version })
+end
+
 namespace :compile do
-  desc "Compile everything (the library, the site, and the API docs)"
+  desc "Compile everything (the site and the API docs)"
   task :all => [:site, :docs]
 
   desc "Compile the homepage (currently hosted on GitHub pages)"
