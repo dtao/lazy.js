@@ -38,4 +38,13 @@ describe("Lazy", function() {
       additionalExpectations: function() { expect(Person.accesses).toBe(1); }
     });
   });
+
+  describe("reject", function() {
+    ensureLaziness(function() { Lazy(people).reject(Person.isMale); });
+
+    it("does the opposite of filter", function() {
+      var girls = Lazy(people).reject(Person.isMale).toArray();
+      expect(girls).toEqual([mary, lauren, happy]);
+    });
+  });
 });
