@@ -1,0 +1,20 @@
+{
+  "name": "lazy.js",
+  "repo": "dtao/lazy.js",
+  "description": "Like Underscore, but lazier",
+  "demo": "http://danieltao.com/lazy.js/",
+  "version": "0.1.0",
+  "main": "lazy.js",
+  "license": "MIT",
+  "keywords": [
+    "lazy",
+    "functional",
+    "performance",
+    "speed",
+    "util"
+  ],
+  "scripts": [
+    "lazy.js",
+    "lazy.dom.js"
+  ]
+}
