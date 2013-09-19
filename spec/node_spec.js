@@ -18,6 +18,7 @@ require("./union_spec.js");
 require("./intersection_spec.js");
 require("./uniq_spec.js");
 require("./zip_spec.js");
+require("./find_spec.js");
 
 describe("working with streams", function() {
 
