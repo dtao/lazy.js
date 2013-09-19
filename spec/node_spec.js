@@ -5,6 +5,7 @@ require("./lazy_spec.js");
 require("./map_spec.js");
 require("./filter_spec.js");
 require("./reverse_spec.js");
+require("./shuffle_spec.js");
 require("./concat_spec.js");
 require("./flatten_spec.js");
 require("./take_spec.js");
@@ -13,6 +14,10 @@ require("./sort_by_spec.js");
 require("./group_by_spec.js");
 require("./count_by_spec.js");
 require("./without_spec.js");
+require("./union_spec.js");
+require("./intersection_spec.js");
+require("./uniq_spec.js");
+require("./zip_spec.js");
 
 describe("working with streams", function() {
 
