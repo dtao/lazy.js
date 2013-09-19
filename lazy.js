@@ -638,27 +638,20 @@
    * var lastFive = Lazy(numbers).rest(5);
    * // #=> sequence: (6, 7, 8, 9, 10)
    */
-  Sequence.prototype.rest = function(count) {
-    return new DropSequence(this, count);
-  };
+  var DropSequence = Sequence.define(["drop", "tail", "rest"], {
+    init: function(parent, count) {
+      this.count = typeof count === "number" ? count : 1;
+    },
 
-  /**
-   * Alias for {@link Sequence#rest}.
-   *
-   * @function tail
-   * @memberOf Sequence
-   * @instance
-   */
-  Sequence.prototype.tail = Sequence.prototype.rest;
-
-  /**
-   * Alias for {@link Sequence#rest}.
-   *
-   * @function drop
-   * @memberOf Sequence
-   * @instance
-   */
-  Sequence.prototype.drop = Sequence.prototype.rest;
+    each: function(fn) {
+      var self = this,
+          i = 0;
+      self.parent.each(function(e) {
+        if (i++ < self.count) { return; }
+        return fn(e);
+      });
+    }
+  })
 
   /**
    * Creates a new sequence with the same elements as this one, but ordered
@@ -1419,24 +1412,10 @@
     });
   };
 
-  var DropSequence = CachingSequence.inherit(function(parent, count) {
+  var SortedSequence = CachingSequence.inherit(function(parent, sortFn) {
     this.parent = parent;
-    this.count  = typeof count === "number" ? count : 1;
+    this.sortFn = sortFn;
   });
-
-  DropSequence.prototype.each = function(fn) {
-    var self = this,
-        i = 0;
-    self.parent.each(function(e) {
-      if (i++ < self.count) { return; }
-      return fn(e);
-    });
-  };
-
-    var SortedSequence = CachingSequence.inherit(function(parent, sortFn) {
-      this.parent = parent;
-      this.sortFn = sortFn;
-    });
 
   SortedSequence.prototype.each = function(fn) {
     var sortFn = this.sortFn,
