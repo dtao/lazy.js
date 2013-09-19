@@ -1,41 +1,3 @@
-def compile_file(output)
-  source_files = %w(
-    sequence
-    iterator
-    array_like_sequence
-    object_like_sequence
-    string_like_sequence
-    generated_sequence
-    async_sequence
-    stream_like_sequence
-    main
-  )
-
-  preamble = File.read("lib/preamble.js")
-
-  contents = source_files.map do |f|
-    File.read("lib/#{f}.js").gsub(/^([^\n])/, '  \1')
-  end
-
-  javascript = [
-    preamble,
-    '(function(context) {',
-    *contents,
-    '}(typeof global !== "undefined" ? global : window));'
-  ].join("\n")
-
-  File.open(output, "w") { |f| f.write(javascript) }
-
-  require "closure-compiler"
-  compiler = Closure::Compiler.new({
-    :js_output_file => "#{output.chomp('.js')}.min.js",
-    :externs        => File.join("lib", "externs.js"),
-    :warning_level  => "VERBOSE"
-  })
-
-  puts compiler.compile_file(output)
-end
-
 # Take a Nokogiri HTML fragment and run its code blocks through Pygments.
 def syntax_highlight!(fragment)
   fragment.css("pre > code").each do |node|
@@ -98,12 +60,7 @@ end
 
 namespace :compile do
   desc "Compile everything (the library, the site, and the API docs)"
-  task :all => [:lib, :site, :docs]
-
-  desc "Compile lazy.js"
-  task :lib do
-    compile_file("lazy.js")
-  end
+  task :all => [:site, :docs]
 
   desc "Compile the homepage (currently hosted on GitHub pages)"
   task :site do
