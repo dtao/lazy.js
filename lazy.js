@@ -467,9 +467,17 @@
    * var alphabetBackwards = Lazy(alphabet).reverse();
    * // => sequence: ("z", "y", "x", ..., "a")
    */
-  Sequence.prototype.reverse = function() {
-    return new ReversedSequence(this);
-  };
+  var ReversedSequence = Sequence.define("reverse", {
+    each: function(fn) {
+      var parentArray = this.parent.toArray(),
+          i = parentArray.length;
+      while (--i >= 0) {
+        if (fn(parentArray[i]) === false) {
+          break;
+        }
+      }
+    }
+  });
 
   /**
    * Creates a new sequence with all of the elements of this one, plus those of
@@ -1338,20 +1346,6 @@
    */
   CachingSequence.prototype.getIterator = function() {
     return Lazy(this.cache()).getIterator();
-  };
-
-  var ReversedSequence = CachingSequence.inherit(function(parent) {
-    this.parent = parent;
-  });
-
-  ReversedSequence.prototype.each = function(fn) {
-    var parentArray = this.parent.toArray(),
-        i = parentArray.length;
-    while (--i >= 0) {
-      if (fn(parentArray[i]) === false) {
-        break;
-      }
-    }
   };
 
   /**

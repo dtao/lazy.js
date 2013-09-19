@@ -39,6 +39,13 @@ describe("Lazy", function() {
     });
   });
 
+  describe("filter -> reverse", function() {
+    it("iterates over the filtered elements in reverse order", function() {
+      var evensBackwards = Lazy([1, 2, 3, 4]).filter(isEven).reverse().toArray();
+      expect(evensBackwards).toEqual([4, 2]);
+    });
+  });
+
   describe("reject", function() {
     ensureLaziness(function() { Lazy(people).reject(Person.isMale); });
 
