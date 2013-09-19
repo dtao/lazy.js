@@ -3709,4 +3709,4 @@
     context.Lazy = Lazy;
   }
 
-}(typeof global !== "undefined" ? global : window));
+}(typeof global !== "undefined" ? global : this));
