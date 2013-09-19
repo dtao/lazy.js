@@ -5,6 +5,7 @@ require("./lazy_spec.js");
 require("./map_spec.js");
 require("./filter_spec.js");
 require("./reverse_spec.js");
+require("./concat_spec.js");
 require("./flatten_spec.js");
 
 describe("working with streams", function() {
