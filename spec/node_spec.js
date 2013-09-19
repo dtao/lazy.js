@@ -8,6 +8,7 @@ require("./reverse_spec.js");
 require("./concat_spec.js");
 require("./flatten_spec.js");
 require("./take_spec.js");
+require("./drop_spec.js");
 
 describe("working with streams", function() {
 
