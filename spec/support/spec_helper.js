@@ -1,4 +1,11 @@
 (function(context) {
+
+  // If this is Node, then we're running jasmine-node, which will load this file
+  // first (so we need to require Lazy right here right now).
+  if (typeof require === 'function') {
+    context.Lazy = require('../../lazy.node.js');
+  }
+
   context.people        = null;
   context.david         = null;
   context.mary          = null;
