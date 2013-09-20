@@ -417,14 +417,7 @@
    * // => sequence: (2, 4, 6)
    */
   Sequence.prototype.select = function(filterFn) {
-    if (typeof filterFn === "string") {
-      var propertyName = filterFn;
-      filterFn = function(e) {
-        return !!e[propertyName];
-      };
-    }
-
-    return new FilteredSequence(this, filterFn);
+    return new FilteredSequence(this, createCallback(filterFn));
   };
 
   /**
@@ -900,8 +893,8 @@
    */
   Sequence.prototype.every = function(predicate) {
     var success = true;
-    this.each(function(e) {
-      if (!predicate(e)) {
+    this.each(function(e, i) {
+      if (!predicate(e, i)) {
         success = false;
         return false;
       }
@@ -2109,14 +2102,7 @@
    * An optimized version of {@link Sequence#select}.
    */
   ArrayLikeSequence.prototype.select = function(filterFn) {
-    if (typeof filterFn === "string") {
-      var propertyName = filterFn;
-      filterFn = function(e) {
-        return !!e[propertyName];
-      };
-    }
-
-    return new IndexedFilteredSequence(this, filterFn);
+    return new IndexedFilteredSequence(this, createCallback(filterFn));
   };
 
   ArrayLikeSequence.prototype.filter = ArrayLikeSequence.prototype.select;
@@ -2400,14 +2386,7 @@
    */
   ArrayWrapper.prototype.filter =
   ArrayWrapper.prototype.select = function(filterFn) {
-    if (typeof filterFn === "string") {
-      var propertyName = filterFn;
-      filterFn = function(e) {
-        return !!e[propertyName];
-      };
-    }
-
-    return new FilteredArrayWrapper(this, filterFn);
+    return new FilteredArrayWrapper(this, createCallback(filterFn));
   };
 
   /**
@@ -3529,6 +3508,38 @@
   Lazy.AsyncSequence = AsyncSequence;
 
   /*** Useful utility methods ***/
+
+  /**
+   * Creates a callback... you know, Lo-Dash style.
+   *
+   * - for functions, just returns the function
+   * - for strings, returns a pluck-style callback
+   * - for objects, returns a where-style callback
+   *
+   * @param {Function|string|Object} A function, string, or object to convert to a callback.
+   * @return {Function} The callback function.
+   */
+  function createCallback(callback) {
+    switch (typeof callback) {
+      case "function":
+        return callback;
+
+      case "string":
+        return function(e) {
+          return e[callback];
+        };
+
+      case "object":
+        return function(e) {
+          return Lazy(callback).all(function(value, key) {
+            return e[key] === value;
+          });
+        };
+
+      default:
+        throw "Don't know how to make a callback from a " + typeof callback + "!";
+    }
+  }
 
   /**
    * Creates a Set containing the specified values.

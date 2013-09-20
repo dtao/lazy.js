@@ -51,6 +51,16 @@ describe("Lazy", function() {
         expect(sequence.filter('foo')).toComprise([{ foo: true, bar: 1 }]);
       }
     );
+
+    testAllSequenceTypes(
+      "acts like 'where' when an object is passed instead of a function",
+
+      [{ foo: 'blub', bar: 1 }, { foo: 'glub', bar: 2 }],
+
+      function(sequence) {
+        expect(sequence.filter({ foo: 'blub' })).toComprise([{ foo: 'blub', bar: 1 }]);
+      }
+    );
   });
 
   describe("filter -> reverse", function() {
