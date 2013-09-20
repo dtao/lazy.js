@@ -2,6 +2,10 @@ describe("Lazy", function() {
   describe("map", function() {
     ensureLaziness(function() { Lazy(people).map(Person.getName); });
 
+    testAllSequenceTypes("can also be called as 'collect'", [1, 2, 3], function(result) {
+      expect(result.collect(increment).toArray()).toEqual([2, 3, 4]);
+    });
+
     it("maps the collection using a mapper function", function() {
       var names = Lazy(people).map(Person.getName).toArray();
 
@@ -37,29 +41,8 @@ describe("Lazy", function() {
       expect(indices).toEqual([0, 1, 2, 3, 4, 5]);
     });
 
-    describe("acts like 'pluck' when a string is passed instead of a function", function() {
-      it("for a wrapped array", function() {
-        var foos = Lazy([{ foo: 1 }, { foo: 2 }])
-          .map('foo')
-          .toArray();
-        expect(foos).toEqual([1, 2]);
-      });
-
-      it("for an indexed sequence", function() {
-        var foos = Lazy([{ foo: 1 }, { foo: 2 }])
-          .map(identity)
-          .map('foo')
-          .toArray();
-        expect(foos).toEqual([1, 2]);
-      });
-
-      it('for a non-indexed sequence', function() {
-        var foos = Lazy([{ foo: 1 }, { foo: 2 }])
-          .compact()
-          .map('foo')
-          .toArray();
-        expect(foos).toEqual([1, 2]);
-      });
+    testAllSequenceTypes("acts like 'pluck' when a string is passed instead of a function", [{ foo: 1 }, { foo: 2 }], function(sequence) {
+      expect(sequence.pluck('foo').toArray()).toEqual([1, 2]);
     });
 
     describe("map -> min", function() {

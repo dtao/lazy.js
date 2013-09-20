@@ -88,10 +88,28 @@
     });
   };
 
+  context.testAllSequenceTypes = function(description, array, expectation) {
+    it(description + " for a wrapped array", function() {
+      var arrayWrapper = Lazy(array);
+      expectation(arrayWrapper);
+    });
+
+    it(description + " for an indexed sequence", function() {
+      var indexedSequence = Lazy(array).map(identity);
+      expectation(indexedSequence);
+    });
+
+    it(description + " for a non-indexed sequence", function() {
+      var nonIndexedSequence = Lazy(array).filter(alwaysTrue);
+      expectation(nonIndexedSequence);
+    });
+  };
+
   // ----- Helpers, to make specs more concise -----
 
-  context.increment = function(x) { return x + 1; }
-  context.isEven    = function(x) { return x % 2 === 0; }
-  context.identity  = function(x) { return x; }
+  context.increment  = function(x) { return x + 1; }
+  context.isEven     = function(x) { return x % 2 === 0; }
+  context.identity   = function(x) { return x; }
+  context.alwaysTrue = function(x) { return true; }
 
 }(typeof global !== 'undefined' ? global : window));

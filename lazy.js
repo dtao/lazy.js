@@ -330,18 +330,22 @@
    * var evens = Lazy(odds).map(function(x) { return x + 1; });
    * // => sequence: (2, 4, 6)
    */
-  var MappedSequence = Sequence.define(["map", "collect"], {
-    init: function(parent, mapFn) {
-      this.mapFn  = mapFn;
-    },
-
-    each: function(fn) {
-      var mapFn = this.mapFn;
-      return this.parent.each(function(e, i) {
-        return fn(mapFn(e, i), i);
-      });
+  Sequence.prototype.map = function(mapFn) {
+    if (typeof mapFn === "string") {
+      return this.pluck(mapFn);
     }
-  });
+
+    return new MappedSequence(this, mapFn);
+  };
+
+  /**
+   * Alias for {@link Sequence#map}.
+   *
+   * @function collect
+   * @memberOf Sequence
+   * @instance
+   */
+  Sequence.prototype.collect = Sequence.prototype.map;
 
   /**
    * Creates a new sequence whose values are calculated by accessing the specified
@@ -1298,6 +1302,23 @@
    */
   Sequence.prototype.async = function(interval) {
     return new AsyncSequence(this, interval);
+  };
+
+  /**
+   * @constructor
+   */
+  function MappedSequence(parent, mapFn) {
+    this.parent = parent;
+    this.mapFn  = mapFn;
+  }
+
+  MappedSequence.prototype = new Sequence();
+
+  MappedSequence.prototype.each = function(fn) {
+    var mapFn = this.mapFn;
+    return this.parent.each(function(e, i) {
+      return fn(mapFn(e, i), i);
+    });
   };
 
   /**
