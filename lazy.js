@@ -736,8 +736,8 @@
    * Lazy([1, 2, 2, 3, 3, 3]).uniq();
    * // => sequence: (1, 2, 3)
    */
-  Sequence.prototype.uniq = function() {
-    return new UniqueSequence(this);
+  Sequence.prototype.uniq = function(keyFn) {
+    return new UniqueSequence(this, createCallback(keyFn));
   };
 
   /**
@@ -1524,15 +1524,18 @@
     };
   });
 
-  var UniqueSequence = CachingSequence.inherit(function(parent) {
+  var UniqueSequence = CachingSequence.inherit(function(parent, keyFn) {
     this.parent = parent;
+    this.keyFn  = keyFn;
   });
 
   UniqueSequence.prototype.each = function(fn) {
     var cache = new Set(),
+        keyFn = this.keyFn,
         i     = 0;
+
     this.parent.each(function(e) {
-      if (cache.add(e)) {
+      if (cache.add(keyFn(e))) {
         return fn(e, i++);
       }
     });
@@ -2162,8 +2165,8 @@
   /**
    * An optimized version of {@link Sequence#uniq}.
    */
-  ArrayLikeSequence.prototype.uniq = function() {
-    return new IndexedUniqueSequence(this);
+  ArrayLikeSequence.prototype.uniq = function(keyFn) {
+    return new IndexedUniqueSequence(this, createCallback(keyFn));
   };
 
   /**
@@ -2283,9 +2286,10 @@
    * @param {ArrayLikeSequence} parent
    * @constructor
    */
-  function IndexedUniqueSequence(parent) {
+  function IndexedUniqueSequence(parent, keyFn) {
     this.parent = parent;
     this.each   = getEachForParent(parent);
+    this.keyFn  = keyFn;
   }
 
   IndexedUniqueSequence.prototype = new Sequence();
@@ -2294,17 +2298,19 @@
     // Basically the same implementation as w/ the set, but using an array because
     // it's cheaper for smaller sequences.
     var parent = this.parent,
+        keyFn  = this.keyFn,
         length = parent.length(),
         cache  = [],
         find   = contains,
-        value,
+        key, value,
         i = -1,
         j = 0;
 
     while (++i < length) {
       value = parent.get(i);
-      if (!find(cache, value)) {
-        cache.push(value);
+      key = keyFn(value);
+      if (!find(cache, key)) {
+        cache.push(key);
         if (fn(value, j++) === false) {
           return false;
         }
@@ -2393,8 +2399,8 @@
    * An optimized version of {@link Sequence#uniq}.
    */
   ArrayWrapper.prototype.uniq =
-  ArrayWrapper.prototype.unique = function() {
-    return new UniqueArrayWrapper(this);
+  ArrayWrapper.prototype.unique = function(keyFn) {
+    return new UniqueArrayWrapper(this, createCallback(keyFn));
   };
 
   /**
@@ -2479,15 +2485,17 @@
   /**
    * @constructor
    */
-  function UniqueArrayWrapper(parent) {
+  function UniqueArrayWrapper(parent, keyFn) {
     this.parent = parent;
-    this.each = getEachForSource(parent.source);
+    this.each   = getEachForSource(parent.source);
+    this.keyFn  = createCallback(keyFn);
   }
 
   UniqueArrayWrapper.prototype = new CachingSequence();
 
   UniqueArrayWrapper.prototype.eachNoCache = function(fn) {
     var source = this.parent.source,
+        keyFn  = this.keyFn,
         length = source.length,
         find   = containsBefore,
         value,
@@ -2499,7 +2507,7 @@
 
     while (++i < length) {
       value = source[i];
-      if (!find(source, value, i) && fn(value, k++) === false) {
+      if (!find(source, value, i, keyFn) && fn(value, k++) === false) {
         return false;
       }
     }
@@ -2509,17 +2517,19 @@
     // Basically the same implementation as w/ the set, but using an array because
     // it's cheaper for smaller sequences.
     var source = this.parent.source,
+        keyFn  = this.keyFn,
         length = source.length,
         cache  = [],
         find   = contains,
-        value,
+        key, value,
         i = -1,
         j = 0;
 
     while (++i < length) {
       value = source[i];
-      if (!find(cache, value)) {
-        cache.push(value);
+      key = keyFn(value);
+      if (!find(cache, key)) {
+        cache.push(key);
         if (fn(value, j++) === false) {
           return false;
         }
@@ -3536,6 +3546,11 @@
           });
         };
 
+      case "undefined":
+        return function(e) {
+          return e;
+        };
+
       default:
         throw "Don't know how to make a callback from a " + typeof callback + "!";
     }
@@ -3651,11 +3666,13 @@
     return false;
   }
 
-  function containsBefore(array, element, index) {
+  function containsBefore(array, element, index, keyFn) {
+    keyFn = keyFn || function(x) { return x; };
+
     var i = -1;
 
     while (++i < index) {
-      if (array[i] === element) {
+      if (keyFn(array[i]) === keyFn(element)) {
         return true;
       }
     }

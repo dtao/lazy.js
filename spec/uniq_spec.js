@@ -58,5 +58,16 @@ describe("Lazy", function() {
       var result = Lazy(large.concat(large)).uniq().toArray();
       expect(result).toEqual(large);
     });
+
+    testAllSequenceTypes(
+      "accepts an optional key function to perform equality comparisons by key",
+
+      [{ x: 1, y: 2 }, { x: 1, y: 2 }],
+
+      function(sequence) {
+        var selector = function(obj) { return obj.x; };
+        expect(sequence.uniq(selector)).toComprise([{ x: 1, y: 2 }]);
+      }
+    );
   });
 });
