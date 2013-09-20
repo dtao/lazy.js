@@ -2051,6 +2051,10 @@
    * @return {ArrayLikeSequence} The new array-like sequence.
    */
   ArrayLikeSequence.prototype.map = function(mapFn) {
+    if (typeof mapFn === 'string') {
+      return this.pluck(mapFn);
+    }
+
     return new IndexedMappedSequence(this, mapFn);
   };
 
@@ -2332,6 +2336,10 @@
    */
   ArrayWrapper.prototype.map =
   ArrayWrapper.prototype.collect = function(mapFn) {
+    if (typeof mapFn === 'string') {
+      return this.pluck(mapFn);
+    }
+
     return new MappedArrayWrapper(this.source, mapFn);
   };
 

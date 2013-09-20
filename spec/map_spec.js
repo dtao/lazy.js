@@ -37,6 +37,31 @@ describe("Lazy", function() {
       expect(indices).toEqual([0, 1, 2, 3, 4, 5]);
     });
 
+    describe("acts like 'pluck' when a string is passed instead of a function", function() {
+      it("for a wrapped array", function() {
+        var foos = Lazy([{ foo: 1 }, { foo: 2 }])
+          .map('foo')
+          .toArray();
+        expect(foos).toEqual([1, 2]);
+      });
+
+      it("for an indexed sequence", function() {
+        var foos = Lazy([{ foo: 1 }, { foo: 2 }])
+          .map(identity)
+          .map('foo')
+          .toArray();
+        expect(foos).toEqual([1, 2]);
+      });
+
+      it('for a non-indexed sequence', function() {
+        var foos = Lazy([{ foo: 1 }, { foo: 2 }])
+          .compact()
+          .map('foo')
+          .toArray();
+        expect(foos).toEqual([1, 2]);
+      });
+    });
+
     describe("map -> min", function() {
       it("works as expected", function() {
         var min = Lazy([1, 2, 3]).map(increment).min();

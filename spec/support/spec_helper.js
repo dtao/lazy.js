@@ -92,5 +92,6 @@
 
   context.increment = function(x) { return x + 1; }
   context.isEven    = function(x) { return x % 2 === 0; }
+  context.identity  = function(x) { return x; }
 
 }(typeof global !== 'undefined' ? global : window));
