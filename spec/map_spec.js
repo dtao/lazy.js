@@ -2,8 +2,8 @@ describe("Lazy", function() {
   describe("map", function() {
     ensureLaziness(function() { Lazy(people).map(Person.getName); });
 
-    testAllSequenceTypes("can also be called as 'collect'", [1, 2, 3], function(result) {
-      expect(result.collect(increment)).toComprise([2, 3, 4]);
+    testAllSequenceTypes("can also be called as 'collect'", [1, 2, 3], function(sequence) {
+      expect(sequence.collect(increment)).toComprise([2, 3, 4]);
     });
 
     it("maps the collection using a mapper function", function() {

@@ -2,6 +2,10 @@ describe("Lazy", function() {
   describe("filter", function() {
     ensureLaziness(function() { Lazy(people).filter(Person.isMale); });
 
+    testAllSequenceTypes("can also be called as 'select'", [1, 2, 3, 4], function(sequence) {
+      expect(sequence.select(isEven)).toComprise([2, 4]);
+    });
+
     it("selects values from the collection using a selector function", function() {
       var boys = Lazy(people).filter(Person.isMale).toArray();
       expect(boys).toEqual([david, adam, daniel]);
@@ -37,6 +41,16 @@ describe("Lazy", function() {
       expected: function() { return [david]; },
       additionalExpectations: function() { expect(Person.accesses).toBe(1); }
     });
+
+    testAllSequenceTypes(
+      "acts like 'pluck' when a string is passed instead of a function",
+
+      [{ foo: true, bar: 1 }, { foo: false, bar: 2 }],
+
+      function(sequence) {
+        expect(sequence.filter('foo')).toComprise([{ foo: true, bar: 1 }]);
+      }
+    );
   });
 
   describe("filter -> reverse", function() {

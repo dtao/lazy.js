@@ -416,25 +416,25 @@
    * var evens = Lazy(numbers).select(function(x) { return x % 2 === 0; });
    * // => sequence: (2, 4, 6)
    */
-  var FilteredSequence = Sequence.define(["filter", "select"], {
-    init: function(parent, filterFn) {
-      this.filterFn = filterFn;
-    },
-
-    getIterator: function() {
-      return new FilteringIterator(this.parent, this.filterFn);
-    },
-
-    each: function(fn) {
-      var filterFn = this.filterFn;
-
-      return this.parent.each(function(e, i) {
-        if (filterFn(e, i)) {
-          return fn(e, i);
-        }
-      });
+  Sequence.prototype.select = function(filterFn) {
+    if (typeof filterFn === "string") {
+      var propertyName = filterFn;
+      filterFn = function(e) {
+        return !!e[propertyName];
+      };
     }
-  });
+
+    return new FilteredSequence(this, filterFn);
+  };
+
+  /**
+   * Alias for {@link Sequence#select}.
+   *
+   * @function filter
+   * @memberOf Sequence
+   * @instance
+   */
+  Sequence.prototype.filter = Sequence.prototype.select;
 
   /**
    * Creates a new sequence whose values exclude the elements of this sequence
@@ -1390,6 +1390,30 @@
   /**
    * @constructor
    */
+  function FilteredSequence(parent, filterFn) {
+    this.parent   = parent;
+    this.filterFn = filterFn;
+  }
+
+  FilteredSequence.prototype = new Sequence();
+
+  FilteredSequence.prototype.getIterator = function() {
+    return new FilteringIterator(this.parent, this.filterFn);
+  };
+
+  FilteredSequence.prototype.each = function(fn) {
+    var filterFn = this.filterFn;
+
+    return this.parent.each(function(e, i) {
+      if (filterFn(e, i)) {
+        return fn(e, i);
+      }
+    });
+  };
+
+  /**
+   * @constructor
+   */
   function ConcatenatedSequence(parent, arrays) {
     this.parent = parent;
     this.arrays = arrays;
@@ -2085,6 +2109,13 @@
    * An optimized version of {@link Sequence#select}.
    */
   ArrayLikeSequence.prototype.select = function(filterFn) {
+    if (typeof filterFn === "string") {
+      var propertyName = filterFn;
+      filterFn = function(e) {
+        return !!e[propertyName];
+      };
+    }
+
     return new IndexedFilteredSequence(this, filterFn);
   };
 
@@ -2369,6 +2400,13 @@
    */
   ArrayWrapper.prototype.filter =
   ArrayWrapper.prototype.select = function(filterFn) {
+    if (typeof filterFn === "string") {
+      var propertyName = filterFn;
+      filterFn = function(e) {
+        return !!e[propertyName];
+      };
+    }
+
     return new FilteredArrayWrapper(this, filterFn);
   };
 
