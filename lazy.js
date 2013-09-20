@@ -3274,7 +3274,7 @@
    *
    * The default implementation for {@link #each} on an `AsyncSequence` is to
    * create an iterator and then asynchronously call {@link Iterator#moveNext}
-   * (using the most efficient mechanism for the platform) until the iterator
+   * (using `setImmediate`, if available, otherwise `setTimeout`) until the iterator
    * can't move ahead any more.
    *
    * @param {Sequence} parent A {@link Sequence} to wrap, to expose asynchronous
@@ -3298,6 +3298,12 @@
 
   /**
    * An asynchronous version of {@link Sequence#each}.
+   *
+   * @param {Function} fn The function to invoke asynchronously on each element in
+   *     the sequence one by one.
+   * @return {{cancel: Function, onError: Function}} An object providing the
+   *     ability to cancel the asynchronous iteration (by calling `cancel()`) as
+   *     well as handle any errors with a callback (set with `onError()`).
    */
   AsyncSequence.prototype.each = function(fn) {
     var iterator = this.parent.getIterator(),
