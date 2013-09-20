@@ -226,7 +226,7 @@
           break;
 
         default:
-          throw 'Shit!';
+          throw 'Really need more than three arguments? https://github.com/dtao/lazy.js/issues/new';
       }
     }
 
