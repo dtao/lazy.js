@@ -3291,6 +3291,7 @@
 
     this.parent = parent;
     this.onNextCallback = getOnNextCallback(interval);
+    this.cancelCallback = getCancelCallback();
   }
 
   AsyncSequence.prototype = new Sequence();
@@ -3300,15 +3301,39 @@
    */
   AsyncSequence.prototype.each = function(fn) {
     var iterator = this.parent.getIterator(),
-        onNextCallback = this.onNextCallback;
+        onNextCallback = this.onNextCallback,
+        cancelCallback = this.cancelCallback;
+
+    var handle = {
+      id: null,
+
+      cancel: function() {
+        if (handle.id) {
+          cancelCallback(handle.id);
+          handle.id = null;
+        }
+      },
+
+      onError: function(callback) {
+        handle.errorCallback = callback;
+      },
+
+      errorCallback: function(error) {}
+    };
 
     if (iterator.moveNext()) {
-      onNextCallback(function iterate() {
-        if (fn(iterator.current()) !== false && iterator.moveNext()) {
-          onNextCallback(iterate);
+      handle.id = onNextCallback(function iterate() {
+        try {
+          if (fn(iterator.current()) !== false && iterator.moveNext()) {
+            handle.id = onNextCallback(iterate);
+          }
+        } catch (e) {
+          handle.errorCallback(e);
         }
       });
     }
+
+    return handle;
   };
 
   function getOnNextCallback(interval) {
@@ -3316,15 +3341,22 @@
       if (typeof context.setImmediate === "function") {
         return context.setImmediate;
       }
-      if (typeof process !== "undefined" && typeof process.nextTick === "function") {
-        return process.nextTick;
-      }
     }
 
     interval = interval || 0;
     return function(fn) {
-      setTimeout(fn, interval);
+      return setTimeout(fn, interval);
     };
+  }
+
+  function getCancelCallback(interval) {
+    if (typeof interval === "undefined") {
+      if (typeof context.clearImmediate === "function") {
+        return context.clearImmediate;
+      }
+    }
+
+    return context.clearTimeout;
   }
 
   /**

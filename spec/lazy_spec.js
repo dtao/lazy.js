@@ -93,66 +93,90 @@ describe("Lazy", function() {
     });
 
     describe("when interval is undefined", function() {
-      if (typeof global !== "undefined" && typeof global.setImmediate === "function") {
-        it("in Node.js, uses setImmediate if available", function() {
-          var personCount = 0;
-          runs(function() {
-            spyOn(global, "setImmediate").andCallThrough();
-            Lazy(people).async().each(function() { ++personCount; });
-          });
-          waitsFor(function() {
-            return personCount === people.length;
-          });
-          runs(function() {
-            expect(global.setImmediate).toHaveBeenCalled();
-            expect(global.setImmediate.callCount).toBe(6);
-          });
-        });
+      var context = typeof global !== "undefined" ? global : window;
 
-      } else if (typeof process !== "undefined" && typeof process.nextTick === "function") {
-        it("in Node.js, uses process.nextTick if setImmediate is not available", function() {
+      if (typeof setImmediate === "function") {
+        it("uses setImmediate if available", function() {
           var personCount = 0;
           runs(function() {
-            spyOn(process, "nextTick").andCallThrough();
+            spyOn(context, "setImmediate").andCallThrough();
             Lazy(people).async().each(function() { ++personCount; });
           });
           waitsFor(function() {
             return personCount === people.length;
           });
           runs(function() {
-            expect(process.nextTick).toHaveBeenCalled();
-            expect(process.nextTick.callCount).toBe(6);
+            expect(context.setImmediate).toHaveBeenCalled();
+            expect(context.setImmediate.callCount).toBe(6);
           });
         });
 
       } else {
-        var originalSetImmediate = window.setImmediate;
-
-        beforeEach(function() {
-          window.setImmediate = window.setImmediate || function(fn) {
-            window.setTimeout(fn, 0);
-          };
-        });
-
-        afterEach(function() {
-          window.setImmediate = originalSetImmediate;
-        });
-
-        it("in a browser environment, uses window.setImmediate (if available)", function() {
+        it("otherwise, uses setTimeout", function() {
           var personCount = 0;
           runs(function() {
-            spyOn(window, "setImmediate").andCallThrough();
+            spyOn(context, "setTimeout").andCallThrough();
             Lazy(people).async().each(function() { ++personCount; });
           });
           waitsFor(function() {
             return personCount === people.length;
           });
           runs(function() {
-            expect(window.setImmediate).toHaveBeenCalled();
-            expect(window.setImmediate.callCount).toBe(6);
+            expect(context.setTimeout).toHaveBeenCalled();
+            expect(context.setTimeout.callCount).toBe(6);
           });
         });
       }
+    });
+
+    describe("the object returned by each()", function() {
+      it("provides a cancel() method, which will stop iteration", function() {
+        var evens = Lazy([1, 3, 5]).map(increment).async(50),
+            result = [],
+            handle;
+
+        runs(function() {
+          handle = evens.each(function(even) {
+            result.push(even);
+          });
+        });
+
+        waitsFor(function() {
+          return result.length > 0;
+        });
+
+        runs(function() {
+          handle.cancel();
+        });
+
+        waits(150);
+
+        runs(function() {
+          expect(result).toEqual([2])
+        });
+      });
+
+      it("provides an error callback via onError", function() {
+        var rebelSequence = Lazy([1, 2, 3]).async(50),
+            errorCallback = jasmine.createSpy(),
+            handle;
+
+        runs(function() {
+          handle = rebelSequence.each(function(x) {
+            throw "Oh no, I'm throwing an exception!";
+          });
+
+          handle.onError(errorCallback);
+        })
+
+        waitsFor(function() {
+          return errorCallback.callCount > 0;
+        });
+
+        runs(function() {
+          expect(errorCallback).toHaveBeenCalled();
+        });
+      });
     });
   });
 
