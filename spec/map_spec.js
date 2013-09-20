@@ -3,13 +3,13 @@ describe("Lazy", function() {
     ensureLaziness(function() { Lazy(people).map(Person.getName); });
 
     testAllSequenceTypes("can also be called as 'collect'", [1, 2, 3], function(result) {
-      expect(result.collect(increment).toArray()).toEqual([2, 3, 4]);
+      expect(result.collect(increment)).toComprise([2, 3, 4]);
     });
 
     it("maps the collection using a mapper function", function() {
-      var names = Lazy(people).map(Person.getName).toArray();
+      var names = Lazy(people).map(Person.getName);
 
-      expect(names).toEqual([
+      expect(names).toComprise([
         "David",
         "Mary",
         "Lauren",
@@ -31,18 +31,17 @@ describe("Lazy", function() {
 
     it("can also map objects", function() {
       var keyValuePairs = Lazy({ foo: "FOO", bar: "BAR" })
-        .map(function(v, k) { return [k, v]; })
-        .toArray();
-      expect(keyValuePairs).toEqual([["foo", "FOO"], ["bar", "BAR"]]);
+        .map(function(v, k) { return [k, v]; });
+      expect(keyValuePairs).toComprise([["foo", "FOO"], ["bar", "BAR"]]);
     });
 
     it("passes an index along with each element", function() {
-      var indices = Lazy(people).map(function(x, i) { return i; }).toArray();
-      expect(indices).toEqual([0, 1, 2, 3, 4, 5]);
+      var indices = Lazy(people).map(function(x, i) { return i; });
+      expect(indices).toComprise([0, 1, 2, 3, 4, 5]);
     });
 
     testAllSequenceTypes("acts like 'pluck' when a string is passed instead of a function", [{ foo: 1 }, { foo: 2 }], function(sequence) {
-      expect(sequence.pluck('foo').toArray()).toEqual([1, 2]);
+      expect(sequence.pluck('foo')).toComprise([1, 2]);
     });
 
     describe("map -> min", function() {
@@ -79,8 +78,8 @@ describe("Lazy", function() {
     });
 
     it("extracts the specified property from every element in the collection", function() {
-      var names = Lazy(peopleDtos).pluck("name").toArray();
-      expect(names).toEqual(["David", "Mary", "Lauren", "Adam", "Daniel", "Happy"]);
+      var names = Lazy(peopleDtos).pluck("name");
+      expect(names).toComprise(["David", "Mary", "Lauren", "Adam", "Daniel", "Happy"]);
     });
   });
 
@@ -88,8 +87,8 @@ describe("Lazy", function() {
     ensureLaziness(function() { Lazy(people).invoke("getName"); });
 
     it("invokes the named method on every element in the collection", function() {
-      var names = Lazy(people).invoke("getName").toArray();
-      expect(names).toEqual(["David", "Mary", "Lauren", "Adam", "Daniel", "Happy"]);
+      var names = Lazy(people).invoke("getName");
+      expect(names).toComprise(["David", "Mary", "Lauren", "Adam", "Daniel", "Happy"]);
     });
   });
 });

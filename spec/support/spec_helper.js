@@ -40,6 +40,11 @@
 
   beforeEach(function() {
     this.addMatchers({
+      toComprise: function(elements) {
+        expect(this.actual.toArray()).toEqual(elements);
+        return true;
+      },
+
       toPassToEach: function(argumentIndex, expectedValues) {
         var i = 0;
         this.actual.each(function() {
