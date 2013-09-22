@@ -25,6 +25,29 @@ function isEven(x) {
   return x % 2 === 0;
 }
 
+function lastLetter(str) {
+  return str.charAt(str.length - 1);
+}
+
+var alphabet = 'abcdefghijklmnopqrstuvwxyz';
+function randomWord(length) {
+  length = length || (3 + Math.floor(Math.random() * 7));
+
+  var word = '';
+  while (word.length < length) {
+    word += alphabet[Math.floor(Math.random() * alphabet.length)];
+  }
+  return word;
+}
+
+function randomWords(count) {
+  var words = [];
+  while (words.length < count) {
+    words.push(randomWord());
+  }
+  return words;
+}
+
 function numbersInput(fn) {
   return [
     {
@@ -40,6 +63,28 @@ function numbersInput(fn) {
     {
       name: '100-element array',
       values: [Race.integers(100), fn],
+      size: 100
+    }
+  ];
+}
+
+function wordsInput(fn) {
+  var words = randomWords(100);
+
+  return [
+    {
+      name: '5-element array',
+      values: [words.slice(0, 5), fn],
+      size: 5
+    },
+    {
+      name: '10-element array',
+      values: [words.slice(0, 10), fn],
+      size: 10
+    },
+    {
+      name: '100-element array',
+      values: [words.slice(0, 100), fn],
       size: 100
     }
   ];
@@ -100,6 +145,48 @@ addRace('filter', numbersInput(isEven), {
 
   lodash: function(array, fn) {
     var array = lodash.filter(array, fn);
+    lodash.each(array, function(x) {});
+    return array;
+  }
+});
+
+addRace('sortBy', wordsInput(lastLetter), {
+  lazy: function(array, fn) {
+    var sequence = Lazy(array).sortBy(fn);
+    sequence.each(function(x) {});
+    return sequence;
+  },
+
+  lodash: function(array, fn) {
+    var array = lodash.sortBy(array, fn);
+    lodash.each(array, function(x) {});
+    return array;
+  }
+});
+
+addRace('groupBy', wordsInput(lastLetter), {
+  lazy: function(array, fn) {
+    var sequence = Lazy(array).groupBy(fn);
+    sequence.each(function(x) {});
+    return sequence;
+  },
+
+  lodash: function(array, fn) {
+    var array = lodash.groupBy(array, fn);
+    lodash.each(array, function(x) {});
+    return array;
+  }
+});
+
+addRace('countBy', wordsInput(lastLetter), {
+  lazy: function(array, fn) {
+    var sequence = Lazy(array).countBy(fn);
+    sequence.each(function(x) {});
+    return sequence;
+  },
+
+  lodash: function(array, fn) {
+    var array = lodash.countBy(array, fn);
     lodash.each(array, function(x) {});
     return array;
   }
