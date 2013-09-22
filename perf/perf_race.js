@@ -109,6 +109,26 @@ function formatWinner(winner) {
   return winner.impl + ' (by ' + (winner.margin * 100).toFixed(2) + '%)';
 }
 
+function formatOverallWinner(resultGroups) {
+  var winners = Lazy(resultGroups)
+    .countBy(function(resultGroup) {
+      return resultGroup.winner.impl;
+    })
+    .toObject();
+
+  if (Object.keys(winners).length === 1) {
+    return Lazy(winners).keys().first();
+  }
+
+  var breakdown = Lazy(winners)
+    .map(function(count, winner) {
+      return winner + ' - ' + count
+    })
+    .join(', ');
+
+  return 'mixed (' + breakdown + ')';
+}
+
 marathon.start({
   start: function(race) {
     console.log('Starting "' + race.description + '" race...');
@@ -126,10 +146,18 @@ marathon.start({
     console.log(' * mismatch for the "' + outputs.input.name + '" case!');
   },
 
+  complete: function(resultGroups) {
+    console.log(' * WINNER: ' + formatOverallWinner(resultGroups));
+    console.log('');
+  },
+
   marathonComplete: function(resultGroups) {
     var dataObjects = Lazy(resultGroups)
       .map(function(resultGroup) {
-        var dataObject = { 'input size': resultGroup.input.size };
+        var dataObject = {
+          'race': resultGroup.race,
+          'input size': resultGroup.input.size
+        };
 
         Lazy(resultGroup.results).each(function(perf, impl) {
           dataObject[impl] = perf;
