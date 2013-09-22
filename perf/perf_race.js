@@ -210,8 +210,8 @@ function addRace(name, inputs, options) {
       description: name,
       inputs: inputs,
       impls: {
-        lazy: ensureLazyIteration(options.lazy),
-        lodash: ensureLodashIteration(options.lodash)
+        lazy: options.valueOnly ? options.lazy : ensureLazyIteration(options.lazy),
+        lodash: options.valueOnly ? options.lodash : ensureLodashIteration(options.lodash)
       },
       comparer: options.comparer || orderAwareComparer
     }));
@@ -277,6 +277,24 @@ addRace('union', doubleNumbersInput(), {
 addRace('intersection', doubleNumbersInput(), {
   lazy: function(array, other) { return Lazy(array).intersection(other); },
   lodash: function(array, other) { return lodash.intersection(array, other); }
+});
+
+addRace('max', numbersInput(), {
+  lazy: function(array) { return Lazy(array).max(); },
+  lodash: function(array) { return lodash.max(array); },
+  valueOnly: true
+});
+
+addRace('map-max', numbersInput(increment), {
+  lazy: function(array, fn) { return Lazy(array).map(fn).max(); },
+  lodash: function(array, fn) { return lodash.max(lodash.map(array, fn)); },
+  valueOnly: true
+});
+
+addRace('map-filter-max', numbersInput(increment), {
+  lazy: function(array, fn) { return Lazy(array).map(fn).filter(isEven).max(); },
+  lodash: function(array, fn) { return lodash.max(lodash.filter(lodash.map(array, fn), isEven)); },
+  valueOnly: true
 });
 
 function formatWinner(winner) {
