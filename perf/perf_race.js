@@ -178,9 +178,9 @@ addRace('map', numbersInput(increment), {
   },
 
   lodash: function(array, fn) {
-    var array = lodash.map(array, fn);
-    lodash.each(array, function(x) {});
-    return array;
+    var result = lodash.map(array, fn);
+    lodash.each(result, function(x) {});
+    return result;
   }
 });
 
@@ -192,9 +192,9 @@ addRace('filter', numbersInput(isEven), {
   },
 
   lodash: function(array, fn) {
-    var array = lodash.filter(array, fn);
-    lodash.each(array, function(x) {});
-    return array;
+    var result = lodash.filter(array, fn);
+    lodash.each(result, function(x) {});
+    return result;
   }
 });
 
@@ -206,9 +206,9 @@ addRace('sortBy', wordsInput(lastLetter), {
   },
 
   lodash: function(array, fn) {
-    var array = lodash.sortBy(array, fn);
-    lodash.each(array, function(x) {});
-    return array;
+    var result = lodash.sortBy(array, fn);
+    lodash.each(result, function(x) {});
+    return result;
   }
 });
 
@@ -220,9 +220,9 @@ addRace('groupBy', wordsInput(lastLetter), {
   },
 
   lodash: function(array, fn) {
-    var array = lodash.groupBy(array, fn);
-    lodash.each(array, function(x) {});
-    return array;
+    var result = lodash.groupBy(array, fn);
+    lodash.each(result, function(x) {});
+    return result;
   }
 });
 
@@ -234,9 +234,9 @@ addRace('countBy', wordsInput(lastLetter), {
   },
 
   lodash: function(array, fn) {
-    var array = lodash.countBy(array, fn);
-    lodash.each(array, function(x) {});
-    return array;
+    var result = lodash.countBy(array, fn);
+    lodash.each(result, function(x) {});
+    return result;
   }
 });
 
@@ -248,9 +248,11 @@ addRace('uniq', randomNumbersInput(), {
   },
 
   lodash: function(array) {
-    var array = lodash.uniq(array);
-    lodash.each(array, function(x) {});
-    return array;
+    var result = lodash.uniq(array);
+    lodash.each(result, function(x) {});
+    return result;
+  }
+});
 
 addRace('zip', doubleNumbersInput(), {
   lazy: function(array, other) {
