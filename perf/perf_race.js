@@ -27,11 +27,11 @@ function numbersInput(fn) {
       values: [Race.integers(100), fn],
       size: 100
     },
-    {
-      name: '1000-element array',
-      values: [Race.integers(1000), fn],
-      size: 1000
-    }
+    // {
+    //   name: '1000-element array',
+    //   values: [Race.integers(1000), fn],
+    //   size: 1000
+    // }
   ];
 }
 
@@ -65,11 +65,11 @@ marathon.add(new Race({
       return array;
     },
 
-    'underscore': function(array, fn) {
-      var array = underscore.map(array, fn);
-      underscore.each(array, function(x) {});
-      return array;
-    }
+    // 'underscore': function(array, fn) {
+    //   var array = underscore.map(array, fn);
+    //   underscore.each(array, function(x) {});
+    //   return array;
+    // }
   },
 
   inputs: numbersInput(increment),
@@ -93,11 +93,11 @@ marathon.add(new Race({
       return array;
     },
 
-    'underscore': function(array, fn) {
-      var array = underscore.filter(array, fn);
-      underscore.each(array, function(x) {});
-      return array;
-    }
+    // 'underscore': function(array, fn) {
+    //   var array = underscore.filter(array, fn);
+    //   underscore.each(array, function(x) {});
+    //   return array;
+    // }
   },
 
   inputs: numbersInput(isEven),
