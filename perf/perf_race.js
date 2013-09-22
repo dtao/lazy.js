@@ -103,17 +103,17 @@ function doubleNumbersInput() {
   return [
     {
       name: '2 5-element arrays',
-      values: [Race.integers(5), Race.integers(5)],
+      values: [Race.integers(5), Race.integers(5, 3)],
       size: 5
     },
     {
       name: '2 10-element arrays',
-      values: [Race.integers(10), Race.integers(10)],
+      values: [Race.integers(10), Race.integers(10, 5)],
       size: 10
     },
     {
       name: '2 100-element arrays',
-      values: [Race.integers(100), Race.integers(100)],
+      values: [Race.integers(100), Race.integers(100, 50)],
       size: 100
     }
   ];
@@ -262,6 +262,21 @@ addRace('shuffle', randomNumbersInput(), {
 addRace('flatten', nestedNumbersInput(), {
   lazy: function(array) { return Lazy(array).flatten(); },
   lodash: function(array) { return lodash.flatten(array); }
+});
+
+addRace('difference', doubleNumbersInput(), {
+  lazy: function(array, other) { return Lazy(array).difference(other); },
+  lodash: function(array, other) { return lodash.difference(array, other); }
+});
+
+addRace('union', doubleNumbersInput(), {
+  lazy: function(array, other) { return Lazy(array).union(other); },
+  lodash: function(array, other) { return lodash.union(array, other); }
+});
+
+addRace('intersection', doubleNumbersInput(), {
+  lazy: function(array, other) { return Lazy(array).intersection(other); },
+  lodash: function(array, other) { return lodash.intersection(array, other); }
 });
 
 function formatWinner(winner) {
