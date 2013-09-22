@@ -5,6 +5,8 @@ var Lazy        = require('../lazy.js'),
     Race        = require('race.js'),
     stringTable = require('string-table');
 
+Benchmark.options.maxTime = 0.5;
+
 function increment(x) {
   return x + 1;
 }
@@ -45,7 +47,9 @@ function sequenceComparer(x, y) {
   return Race.compare(x, y);
 }
 
-var race = new Race({
+var marathon = new Race.Marathon();
+
+marathon.add(new Race({
   description: 'map',
 
   impls: {
@@ -71,9 +75,41 @@ var race = new Race({
   inputs: numbersInput(increment),
 
   comparer: sequenceComparer
-});
+}));
 
-race.start({
+marathon.add(new Race({
+  description: 'filter',
+
+  impls: {
+    'lazy': function(array, fn) {
+      var sequence = Lazy(array).filter(fn);
+      sequence.each(function(x) {});
+      return sequence;
+    },
+
+    'lodash': function(array, fn) {
+      var array = lodash.filter(array, fn);
+      lodash.each(array, function(x) {});
+      return array;
+    },
+
+    'underscore': function(array, fn) {
+      var array = underscore.filter(array, fn);
+      underscore.each(array, function(x) {});
+      return array;
+    }
+  },
+
+  inputs: numbersInput(isEven),
+
+  comparer: sequenceComparer
+}));
+
+function formatWinner(winner) {
+  return winner.impl + ' (by ' + (winner.margin * 100).toFixed(2) + '%)';
+}
+
+marathon.start({
   start: function(race) {
     console.log('Starting "' + race.description + '" race...');
   },
@@ -90,17 +126,16 @@ race.start({
     console.log(' * mismatch for the "' + outputs.input.name + '" case!');
   },
 
-  complete: function(resultGroups) {
+  marathonComplete: function(resultGroups) {
     var dataObjects = Lazy(resultGroups)
       .map(function(resultGroup) {
-        var dataObject = {
-          'input': resultGroup.input.name,
-          'input size': resultGroup.input.size
-        };
+        var dataObject = { 'input size': resultGroup.input.size };
 
         Lazy(resultGroup.results).each(function(perf, impl) {
           dataObject[impl] = perf;
         });
+
+        dataObject.winner = formatWinner(resultGroup.winner);
 
         return dataObject;
       })
