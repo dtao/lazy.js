@@ -1262,18 +1262,26 @@
   /**
    * Gets the sum of the values in the sequence.
    *
-   * TODO: This should support a value selector.
-   *
+   * @param {Function=} valueFn The function used to select the values that will
+   *     be summed up.
    * @return {*} The sum.
    *
    * @example
    * Lazy([1, 2, 3, 4]).sum();
    * // => 10
    */
-  Sequence.prototype.sum = function() {
-    return this.reduce(function(sum, value) {
-      return sum += value;
-    }, 0);
+  Sequence.prototype.sum = function(valueFn) {
+    if (typeof valueFn !== "undefined") {
+      valueFn = createCallback(valueFn);
+      return this.reduce(function(sum, element) {
+        return sum += valueFn(element);
+      }, 0);
+
+    } else {
+      return this.reduce(function(sum, value) {
+        return sum += value;
+      }, 0);
+    }
   };
 
   /**

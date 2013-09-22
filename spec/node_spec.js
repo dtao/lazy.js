@@ -20,6 +20,7 @@ require("./zip_spec.js");
 require("./find_spec.js");
 require("./min_spec.js");
 require("./max_spec.js");
+require("./sum_spec.js");
 
 describe("working with streams", function() {
 
