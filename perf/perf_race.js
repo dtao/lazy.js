@@ -348,7 +348,8 @@ marathon.start({
         'number': function(value) {
           return Number(value.toFixed(3));
         }
-      }
+      },
+      capitalizeHeaders: true
     }));
     console.log('');
   }
