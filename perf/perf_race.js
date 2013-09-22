@@ -159,113 +159,69 @@ function sequenceComparer(x, y) {
 
 var marathon = new Race.Marathon();
 
+function ensureLazyIteration(impl) {
+  return function() {
+    var sequence = Race.fastApply(impl, arguments);
+    sequence.each(function(x, i) {});
+    return sequence;
+  };
+}
+
+function ensureLodashIteration(impl) {
+  return function() {
+    var result = Race.fastApply(impl, arguments);
+    lodash.each(result, function(x, i) {});
+    return result;
+  };
+}
+
 function addRace(name, inputs, impls) {
   if (!selectedRace || name === selectedRace) {
     marathon.add(new Race({
       description: name,
       inputs: inputs,
-      impls: impls,
+      impls: {
+        lazy: ensureLazyIteration(impls.lazy),
+        lodash: ensureLodashIteration(impls.lodash)
+      },
       comparer: sequenceComparer
     }));
   }
 }
 
 addRace('map', numbersInput(increment), {
-  lazy: function(array, fn) {
-    var sequence = Lazy(array).map(fn);
-    sequence.each(function(x) {});
-    return sequence;
-  },
-
-  lodash: function(array, fn) {
-    var result = lodash.map(array, fn);
-    lodash.each(result, function(x) {});
-    return result;
-  }
+  lazy: function(array, fn) { return Lazy(array).map(fn); },
+  lodash: function(array, fn) { return lodash.map(array, fn); }
 });
 
 addRace('filter', numbersInput(isEven), {
-  lazy: function(array, fn) {
-    var sequence = Lazy(array).filter(fn);
-    sequence.each(function(x) {});
-    return sequence;
-  },
-
-  lodash: function(array, fn) {
-    var result = lodash.filter(array, fn);
-    lodash.each(result, function(x) {});
-    return result;
-  }
+  lazy: function(array, fn) { return Lazy(array).filter(fn); },
+  lodash: function(array, fn) { return lodash.filter(array, fn); }
 });
 
 addRace('sortBy', wordsInput(lastLetter), {
-  lazy: function(array, fn) {
-    var sequence = Lazy(array).sortBy(fn);
-    sequence.each(function(x) {});
-    return sequence;
-  },
-
-  lodash: function(array, fn) {
-    var result = lodash.sortBy(array, fn);
-    lodash.each(result, function(x) {});
-    return result;
-  }
+  lazy: function(array, fn) { return Lazy(array).sortBy(fn); },
+  lodash: function(array, fn) { return lodash.sortBy(array, fn); }
 });
 
 addRace('groupBy', wordsInput(lastLetter), {
-  lazy: function(array, fn) {
-    var sequence = Lazy(array).groupBy(fn);
-    sequence.each(function(x) {});
-    return sequence;
-  },
-
-  lodash: function(array, fn) {
-    var result = lodash.groupBy(array, fn);
-    lodash.each(result, function(x) {});
-    return result;
-  }
+  lazy: function(array, fn) { return  Lazy(array).groupBy(fn); },
+  lodash: function(array, fn) { return lodash.groupBy(array, fn); }
 });
 
 addRace('countBy', wordsInput(lastLetter), {
-  lazy: function(array, fn) {
-    var sequence = Lazy(array).countBy(fn);
-    sequence.each(function(x) {});
-    return sequence;
-  },
-
-  lodash: function(array, fn) {
-    var result = lodash.countBy(array, fn);
-    lodash.each(result, function(x) {});
-    return result;
-  }
+  lazy: function(array, fn) { return Lazy(array).countBy(fn); },
+  lodash: function(array, fn) { return lodash.countBy(array, fn); }
 });
 
 addRace('uniq', randomNumbersInput(), {
-  lazy: function(array) {
-    var sequence = Lazy(array).uniq();
-    sequence.each(function(x) {});
-    return sequence;
-  },
-
-  lodash: function(array) {
-    var result = lodash.uniq(array);
-    lodash.each(result, function(x) {});
-    return result;
-  }
+  lazy: function(array) { return Lazy(array).uniq(); },
+  lodash: function(array) { return lodash.uniq(array); }
 });
 
 addRace('zip', doubleNumbersInput(), {
-  lazy: function(array, other) {
-    var sequence = Lazy(array).zip(other);
-    sequence.each(function(x) {});
-    return sequence;
-  },
-
-  lodash: function(array, other) {
-    var result = lodash.zip(array, other);
-    lodash.each(result, function(x) {});
-    return result;
-  }
+  lazy: function(array, other) { return Lazy(array).zip(other); },
+  lodash: function(array, other) { return lodash.zip(array, other); }
 });
 
 function formatWinner(winner) {
