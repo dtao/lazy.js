@@ -6,6 +6,16 @@ var Lazy        = require('../lazy.js'),
     stringTable = require('string-table');
 
 Benchmark.options.maxTime = 0.5;
+var selectedRace = null;
+
+if (process.argv.length > 2) {
+  selectedRace = process.argv[2];
+  console.log('Just going to run "' + selectedRace + '" race');
+
+} else {
+  console.log('Running all races...');
+}
+
 
 function increment(x) {
   return x + 1;
@@ -50,12 +60,14 @@ function sequenceComparer(x, y) {
 var marathon = new Race.Marathon();
 
 function addRace(name, inputs, impls) {
-  marathon.add(new Race({
-    description: name,
-    inputs: inputs,
-    impls: impls,
-    comparer: sequenceComparer
-  }));
+  if (!selectedRace || name === selectedRace) {
+    marathon.add(new Race({
+      description: name,
+      inputs: inputs,
+      impls: impls,
+      comparer: sequenceComparer
+    }));
+  }
 }
 
 addRace('map', numbersInput(increment), {
