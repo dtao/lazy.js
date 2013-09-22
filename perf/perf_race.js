@@ -45,14 +45,21 @@ function numbersInput(fn) {
   ];
 }
 
-function sequenceComparer(x, y) {
-  if (x.toArray) {
-    x = x.toArray();
+function evaluateSequence(value, other) {
+  if (value instanceof Lazy.Sequence) {
+    if (other instanceof Array) {
+      return value.toArray();
+    }
+
+    return value.toObject();
   }
 
-  if (y.toArray) {
-    y = y.toArray();
-  }
+  return value;
+}
+
+function sequenceComparer(x, y) {
+  x = evaluateSequence(x, y);
+  y = evaluateSequence(y, x);
 
   return Race.compare(x, y);
 }
