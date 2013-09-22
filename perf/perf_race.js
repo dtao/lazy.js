@@ -29,9 +29,21 @@ function lastLetter(str) {
   return str.charAt(str.length - 1);
 }
 
+function randomNumber(min, max) {
+  return min + Math.floor(Math.random() * (max - min));
+}
+
+function randomNumbers(count, min, max) {
+  var getRandomNumber = function() {
+    return randomNumber(min, max);
+  };
+
+  return Lazy.generate(getRandomNumber, count).toArray();
+}
+
 var alphabet = 'abcdefghijklmnopqrstuvwxyz';
-function randomWord(length) {
-  length = length || (3 + Math.floor(Math.random() * 7));
+function randomWord() {
+  var length = (3 + Math.floor(Math.random() * 7));
 
   var word = '';
   while (word.length < length) {
@@ -41,11 +53,7 @@ function randomWord(length) {
 }
 
 function randomWords(count) {
-  var words = [];
-  while (words.length < count) {
-    words.push(randomWord());
-  }
-  return words;
+  return Lazy.generate(randomWord, count).toArray();
 }
 
 function numbersInput(fn) {
@@ -66,6 +74,26 @@ function numbersInput(fn) {
       size: 100
     }
   ];
+}
+
+function randomNumbersInput() {
+  return [
+    {
+      name: '5 random numbers between 1-3',
+      values: [randomNumbers(5, 1, 3)],
+      size: 5
+    },
+    {
+      name: '10 random numbers between 1-5',
+      values: [randomNumbers(10, 1, 5)],
+      size: 10
+    },
+    {
+      name: '100 random numbers between 1-25',
+      values: [randomNumbers(100, 1, 25)],
+      size: 100
+    }
+  ]
 }
 
 function wordsInput(fn) {
@@ -187,6 +215,20 @@ addRace('countBy', wordsInput(lastLetter), {
 
   lodash: function(array, fn) {
     var array = lodash.countBy(array, fn);
+    lodash.each(array, function(x) {});
+    return array;
+  }
+});
+
+addRace('uniq', randomNumbersInput(), {
+  lazy: function(array) {
+    var sequence = Lazy(array).uniq();
+    sequence.each(function(x) {});
+    return sequence;
+  },
+
+  lodash: function(array) {
+    var array = lodash.uniq(array);
     lodash.each(array, function(x) {});
     return array;
   }
