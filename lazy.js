@@ -1196,35 +1196,67 @@
   /**
    * Gets the minimum value in the sequence.
    *
-   * TODO: This should support a value selector.
-   *
+   * @param {Function=} valueFn The function by which the value for comparison is
+   *     calculated for each element in the sequence.
    * @return {*} The element with the lowest value in the sequence.
    *
    * @example
    * Lazy([6, 18, 2, 49, 34]).min();
    * // => 2
    */
-  Sequence.prototype.min = function() {
-    return this.reduce(function(least, value) {
-      return value < least ? value : least;
-    });
+  Sequence.prototype.min = function(valueFn) {
+    if (typeof valueFn !== "undefined") {
+      valueFn = createCallback(valueFn);
+
+      var leastValue, least;
+      this.each(function(e, i) {
+        var value = valueFn(e);
+        if (value < leastValue || i === 0) {
+          leastValue = value;
+          least = e;
+        }
+      });
+
+      return least;
+
+    } else {
+      return this.reduce(function(least, value) {
+        return value < least ? value : least;
+      });
+    }
   };
 
   /**
    * Gets the maximum value in the sequence.
    *
-   * TODO: This should support a value selector.
-   *
+   * @param {Function=} valueFn The function by which the value for comparison is
+   *     calculated for each element in the sequence.
    * @return {*} The element with the highest value in the sequence.
    *
    * @example
    * Lazy([6, 18, 2, 49, 34]).max();
    * // => 49
    */
-  Sequence.prototype.max = function() {
-    return this.reduce(function(greatest, value) {
-      return value > greatest ? value : greatest;
-    });
+  Sequence.prototype.max = function(valueFn) {
+    if (typeof valueFn !== "undefined") {
+      valueFn = createCallback(valueFn);
+
+      var greatestValue, greatest;
+      this.each(function(e, i) {
+        var value = valueFn(e);
+        if (value > greatestValue || i === 0) {
+          greatestValue = value;
+          greatest = e;
+        }
+      });
+
+      return greatest;
+
+    } else {
+      return this.reduce(function(greatest, value) {
+        return value > greatest ? value : greatest;
+      });
+    }
   };
 
   /**

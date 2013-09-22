@@ -483,26 +483,6 @@ describe("Lazy", function() {
     });
   });
 
-  describe("min", function() {
-    it("returns undefined for an empty collection", function() {
-      expect(Lazy([]).min()).toBeUndefined();
-    });
-
-    it("returns the minimum value from the collection", function() {
-      expect(Lazy(people).map(Person.getAge).min()).toEqual(25);
-    });
-  });
-
-  describe("max", function() {
-    it("returns undefined for an empty collection", function() {
-      expect(Lazy([]).max()).toBeUndefined();
-    });
-
-    it("returns the maximum value from the collection", function() {
-      expect(Lazy(people).map(Person.getAge).max()).toEqual(63);
-    });
-  });
-
   describe("chaining methods together", function() {
     ensureLaziness(function() {
       Lazy(people)
