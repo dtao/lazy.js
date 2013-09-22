@@ -18,6 +18,11 @@ function isEven(x) {
 function numbersInput(fn) {
   return [
     {
+      name: '5-element array',
+      values: [Race.integers(5), fn],
+      size: 5
+    },
+    {
       name: '10-element array',
       values: [Race.integers(10), fn],
       size: 10
@@ -26,12 +31,7 @@ function numbersInput(fn) {
       name: '100-element array',
       values: [Race.integers(100), fn],
       size: 100
-    },
-    // {
-    //   name: '1000-element array',
-    //   values: [Race.integers(1000), fn],
-    //   size: 1000
-    // }
+    }
   ];
 }
 
