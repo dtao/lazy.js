@@ -16,6 +16,9 @@ if (process.argv.length > 2) {
   console.log('Running all races...');
 }
 
+function identity(x) {
+  return x;
+}
 
 function increment(x) {
   return x + 1;
@@ -116,6 +119,25 @@ function doubleNumbersInput() {
   ];
 }
 
+function nestedNumbersInput() {
+  return [
+    {
+      name: 'Small nested array',
+      values: [
+        [1, 2, [3, 4, [5, 6], 7, 8], 9, 10]
+      ],
+      size: 10
+    },
+    {
+      name: 'Medium nested array',
+      values: [
+        [1, 2, 3, [4, 5], [6, 7, [8, 9, 10, 11], 12], 13, 14, [15, 16], 17, [18, [19, [20]]]]
+      ],
+      size: 20
+    }
+  ];
+}
+
 function wordsInput(fn) {
   var words = randomWords(100);
 
@@ -150,9 +172,16 @@ function evaluateSequence(value, other) {
   return value;
 }
 
-function sequenceComparer(x, y) {
+function orderAwareComparer(x, y) {
   x = evaluateSequence(x, y);
   y = evaluateSequence(y, x);
+
+  return Race.compare(x, y);
+}
+
+function orderAgnosticComparer(x, y) {
+  x = Lazy(x).sortBy(identity).toArray();
+  y = Lazy(y).sortBy(identity).toArray();
 
   return Race.compare(x, y);
 }
@@ -175,16 +204,16 @@ function ensureLodashIteration(impl) {
   };
 }
 
-function addRace(name, inputs, impls) {
+function addRace(name, inputs, options) {
   if (!selectedRace || name === selectedRace) {
     marathon.add(new Race({
       description: name,
       inputs: inputs,
       impls: {
-        lazy: ensureLazyIteration(impls.lazy),
-        lodash: ensureLodashIteration(impls.lodash)
+        lazy: ensureLazyIteration(options.lazy),
+        lodash: ensureLodashIteration(options.lodash)
       },
-      comparer: sequenceComparer
+      comparer: options.comparer || orderAwareComparer
     }));
   }
 }
@@ -222,6 +251,17 @@ addRace('uniq', randomNumbersInput(), {
 addRace('zip', doubleNumbersInput(), {
   lazy: function(array, other) { return Lazy(array).zip(other); },
   lodash: function(array, other) { return lodash.zip(array, other); }
+});
+
+addRace('shuffle', randomNumbersInput(), {
+  lazy: function(array) { return Lazy(array).shuffle(); },
+  lodash: function(array) { return lodash.shuffle(array); },
+  comparer: orderAgnosticComparer
+});
+
+addRace('flatten', nestedNumbersInput(), {
+  lazy: function(array) { return Lazy(array).flatten(); },
+  lodash: function(array) { return lodash.flatten(array); }
 });
 
 function formatWinner(winner) {
