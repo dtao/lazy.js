@@ -49,61 +49,42 @@ function sequenceComparer(x, y) {
 
 var marathon = new Race.Marathon();
 
-marathon.add(new Race({
-  description: 'map',
+function addRace(name, inputs, impls) {
+  marathon.add(new Race({
+    description: name,
+    inputs: inputs,
+    impls: impls,
+    comparer: sequenceComparer
+  }));
+}
 
-  impls: {
-    'lazy': function(array, fn) {
-      var sequence = Lazy(array).map(fn);
-      sequence.each(function(x) {});
-      return sequence;
-    },
-
-    'lodash': function(array, fn) {
-      var array = lodash.map(array, fn);
-      lodash.each(array, function(x) {});
-      return array;
-    },
-
-    // 'underscore': function(array, fn) {
-    //   var array = underscore.map(array, fn);
-    //   underscore.each(array, function(x) {});
-    //   return array;
-    // }
+addRace('map', numbersInput(increment), {
+  lazy: function(array, fn) {
+    var sequence = Lazy(array).map(fn);
+    sequence.each(function(x) {});
+    return sequence;
   },
 
-  inputs: numbersInput(increment),
+  lodash: function(array, fn) {
+    var array = lodash.map(array, fn);
+    lodash.each(array, function(x) {});
+    return array;
+  }
+});
 
-  comparer: sequenceComparer
-}));
-
-marathon.add(new Race({
-  description: 'filter',
-
-  impls: {
-    'lazy': function(array, fn) {
-      var sequence = Lazy(array).filter(fn);
-      sequence.each(function(x) {});
-      return sequence;
-    },
-
-    'lodash': function(array, fn) {
-      var array = lodash.filter(array, fn);
-      lodash.each(array, function(x) {});
-      return array;
-    },
-
-    // 'underscore': function(array, fn) {
-    //   var array = underscore.filter(array, fn);
-    //   underscore.each(array, function(x) {});
-    //   return array;
-    // }
+addRace('filter', numbersInput(isEven), {
+  lazy: function(array, fn) {
+    var sequence = Lazy(array).filter(fn);
+    sequence.each(function(x) {});
+    return sequence;
   },
 
-  inputs: numbersInput(isEven),
-
-  comparer: sequenceComparer
-}));
+  lodash: function(array, fn) {
+    var array = lodash.filter(array, fn);
+    lodash.each(array, function(x) {});
+    return array;
+  }
+});
 
 function formatWinner(winner) {
   return winner.impl + ' (by ' + (winner.margin * 100).toFixed(2) + '%)';
@@ -176,5 +157,6 @@ marathon.start({
         }
       }
     }));
+    console.log('');
   }
 });
