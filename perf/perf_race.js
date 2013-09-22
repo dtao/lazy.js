@@ -96,6 +96,26 @@ function randomNumbersInput() {
   ]
 }
 
+function doubleNumbersInput() {
+  return [
+    {
+      name: '2 5-element arrays',
+      values: [Race.integers(5), Race.integers(5)],
+      size: 5
+    },
+    {
+      name: '2 10-element arrays',
+      values: [Race.integers(10), Race.integers(10)],
+      size: 10
+    },
+    {
+      name: '2 100-element arrays',
+      values: [Race.integers(100), Race.integers(100)],
+      size: 100
+    }
+  ];
+}
+
 function wordsInput(fn) {
   var words = randomWords(100);
 
@@ -231,6 +251,18 @@ addRace('uniq', randomNumbersInput(), {
     var array = lodash.uniq(array);
     lodash.each(array, function(x) {});
     return array;
+
+addRace('zip', doubleNumbersInput(), {
+  lazy: function(array, other) {
+    var sequence = Lazy(array).zip(other);
+    sequence.each(function(x) {});
+    return sequence;
+  },
+
+  lodash: function(array, other) {
+    var result = lodash.zip(array, other);
+    lodash.each(result, function(x) {});
+    return result;
   }
 });
 
