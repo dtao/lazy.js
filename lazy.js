@@ -1489,6 +1489,8 @@
   };
 
   var GroupedSequence = CachingSequence.inherit(function(parent, keyFn) {
+    keyFn = createCallback(keyFn);
+
     this.each = function(fn) {
       var grouped = {};
       parent.each(function(e) {
@@ -1508,6 +1510,8 @@
   });
 
   var CountedSequence = CachingSequence.inherit(function(parent, keyFn) {
+    keyFn = createCallback(keyFn);
+
     this.each = function(fn) {
       var grouped = {};
       parent.each(function(e) {

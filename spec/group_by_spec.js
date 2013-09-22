@@ -9,5 +9,27 @@ describe("Lazy", function() {
         ["F", [mary, lauren, happy]]
       ]);
     });
+
+    testAllSequenceTypes(
+      "uses a 'pluck'-style callback when a string is passed instead of a function",
+
+      [
+        { foo: 1, bar: 1 },
+        { foo: 2, bar: 2 },
+        { foo: 1, bar: 3 }
+      ],
+
+      function(sequence) {
+        expect(sequence.groupBy('foo').toObject()).toEqual({
+          '1': [
+            { foo: 1, bar: 1 },
+            { foo: 1, bar: 3 }
+          ],
+          '2': [
+            { foo: 2, bar: 2 }
+          ]
+        });
+      }
+    );
   });
 });
