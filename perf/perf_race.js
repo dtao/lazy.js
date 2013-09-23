@@ -4,12 +4,11 @@ global.Benchmark = require('benchmark');
 
 var Lazy        = require('../lazy.js'),
     lodash      = require('lodash'),
-    underscore  = require('underscore'),
-    Benchmark   = require('benchmark'),
     Race        = require('race.js'),
     stringTable = require('string-table');
 
 Benchmark.options.maxTime = 0.5;
+
 var selectedRace = null;
 
 if (process.argv.length > 2) {
