@@ -24,7 +24,7 @@
     "speed",
     "util"
   ],
-  "devDependecies": {
+  "devDependencies": {
     "jasmine-node": "1.7.x",
     "jsdoc": "3.2.x",
     "benchmark": "1.0.0",
