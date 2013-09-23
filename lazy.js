@@ -1205,13 +1205,14 @@
    * // => 2
    */
   Sequence.prototype.min = function(valueFn) {
+    var leastValue = Infinity, least;
+
     if (typeof valueFn !== "undefined") {
       valueFn = createCallback(valueFn);
 
-      var leastValue, least;
-      this.each(function(e, i) {
+      this.each(function(e) {
         var value = valueFn(e);
-        if (value < leastValue || i === 0) {
+        if (value < leastValue) {
           leastValue = value;
           least = e;
         }
@@ -1220,9 +1221,13 @@
       return least;
 
     } else {
-      return this.reduce(function(least, value) {
-        return value < least ? value : least;
+      this.each(function(e) {
+        if (e < leastValue) {
+          leastValue = e;
+        }
       });
+
+      return leastValue;
     }
   };
 
@@ -1238,13 +1243,14 @@
    * // => 49
    */
   Sequence.prototype.max = function(valueFn) {
+    var greatestValue = -Infinity, greatest;
+
     if (typeof valueFn !== "undefined") {
       valueFn = createCallback(valueFn);
 
-      var greatestValue, greatest;
-      this.each(function(e, i) {
+      this.each(function(e) {
         var value = valueFn(e);
-        if (value > greatestValue || i === 0) {
+        if (value > greatestValue) {
           greatestValue = value;
           greatest = e;
         }
@@ -1253,9 +1259,13 @@
       return greatest;
 
     } else {
-      return this.reduce(function(greatest, value) {
-        return value > greatest ? value : greatest;
+      this.each(function(e) {
+        if (e > greatestValue) {
+          greatestValue = e;
+        }
       });
+
+      return greatestValue;
     }
   };
 

@@ -1,7 +1,7 @@
 describe("Lazy", function() {
   describe("min", function() {
-    it("returns undefined for an empty collection", function() {
-      expect(Lazy([]).min()).toBeUndefined();
+    it("returns Infinity for an empty collection", function() {
+      expect(Lazy([]).min()).toBe(Infinity);
     });
 
     it("returns the minimum value from the collection", function() {

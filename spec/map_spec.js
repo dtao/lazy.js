@@ -50,9 +50,9 @@ describe("Lazy", function() {
         expect(min).toEqual(2);
       });
 
-      it("returns undefined for an empty sequence", function() {
+      it("returns Infinity for an empty sequence", function() {
         var min = Lazy([]).map(function(d) { return d.foo; }).min();
-        expect(min).toBeUndefined();
+        expect(min).toBe(Infinity);
       });
     });
 
@@ -62,9 +62,9 @@ describe("Lazy", function() {
         expect(max).toEqual(4);
       });
 
-      it("returns undefined for an empty sequence", function() {
+      it("returns -Infinity for an empty sequence", function() {
         var max = Lazy([]).map(function(d) { return d.foo; }).max();
-        expect(max).toBeUndefined();
+        expect(max).toBe(-Infinity);
       });
     });
   });

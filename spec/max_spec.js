@@ -1,7 +1,7 @@
 describe("Lazy", function() {
   describe("max", function() {
-    it("returns undefined for an empty collection", function() {
-      expect(Lazy([]).max()).toBeUndefined();
+    it("returns -Infinity for an empty collection", function() {
+      expect(Lazy([]).max()).toBe(-Infinity);
     });
 
     it("returns the maximum value from the collection", function() {
