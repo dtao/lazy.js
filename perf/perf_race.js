@@ -1,3 +1,7 @@
+// Exposing Benchmark to the global object so that we can make adjustments
+// (i.e., maxTime, below) that will affect race.js.
+global.Benchmark = require('benchmark');
+
 var Lazy        = require('../lazy.js'),
     lodash      = require('lodash'),
     underscore  = require('underscore'),
