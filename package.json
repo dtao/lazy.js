@@ -28,7 +28,7 @@
     "jasmine-node": "1.7.x",
     "jsdoc": "3.2.x",
     "benchmark": "1.0.0",
-    "race.js": "0.1.2",
+    "race.js": "0.1.3",
     "lodash": "2.0.0",
     "underscore": "1.5.2",
     "string-table": "0.1.2"

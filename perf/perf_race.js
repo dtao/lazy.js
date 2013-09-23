@@ -44,76 +44,29 @@ function randomNumbers(count, min, max) {
   return Lazy.generate(getRandomNumber, count).toArray();
 }
 
-var alphabet = 'abcdefghijklmnopqrstuvwxyz';
-function randomWord() {
-  var length = (3 + Math.floor(Math.random() * 7));
-
-  var word = '';
-  while (word.length < length) {
-    word += alphabet[Math.floor(Math.random() * alphabet.length)];
-  }
-  return word;
-}
-
-function randomWords(count) {
-  return Lazy.generate(randomWord, count).toArray();
-}
-
-function numbersInput(fn) {
-  return [
-    {
-      name: '5-element array',
-      values: [Race.integers(5), fn],
-      size: 5
-    },
-    {
-      name: '10-element array',
-      values: [Race.integers(10), fn],
-      size: 10
-    },
-    {
-      name: '100-element array',
-      values: [Race.integers(100), fn],
-      size: 100
-    }
-  ];
+function numbersInput() {
+  return Race.inputs.arraysOfIntegers([5, 10, 100]);
 }
 
 function randomNumbersInput() {
-  return [
-    {
-      name: '5 random numbers between 1-3',
-      values: [randomNumbers(5, 1, 3)],
-      size: 5
-    },
-    {
-      name: '10 random numbers between 1-5',
-      values: [randomNumbers(10, 1, 5)],
-      size: 10
-    },
-    {
-      name: '100 random numbers between 1-25',
-      values: [randomNumbers(100, 1, 25)],
-      size: 100
-    }
-  ]
+  return Race.inputs.arraysOfRandomIntegers([5, 10, 100]);
 }
 
 function doubleNumbersInput() {
   return [
     {
       name: '2 5-element arrays',
-      values: [Race.integers(5), Race.integers(5, 3)],
+      values: [Race.utils.integers(5), Race.utils.integers(5, 3)],
       size: 5
     },
     {
       name: '2 10-element arrays',
-      values: [Race.integers(10), Race.integers(10, 5)],
+      values: [Race.utils.integers(10), Race.utils.integers(10, 5)],
       size: 10
     },
     {
       name: '2 100-element arrays',
-      values: [Race.integers(100), Race.integers(100, 50)],
+      values: [Race.utils.integers(100), Race.utils.integers(100, 50)],
       size: 100
     }
   ];
@@ -122,14 +75,14 @@ function doubleNumbersInput() {
 function nestedNumbersInput() {
   return [
     {
-      name: 'Small nested array',
+      name: 'small nested array',
       values: [
         [1, 2, [3, 4, [5, 6], 7, 8], 9, 10]
       ],
       size: 10
     },
     {
-      name: 'Medium nested array',
+      name: 'medium nested array',
       values: [
         [1, 2, 3, [4, 5], [6, 7, [8, 9, 10, 11], 12], 13, 14, [15, 16], 17, [18, [19, [20]]]]
       ],
@@ -138,26 +91,8 @@ function nestedNumbersInput() {
   ];
 }
 
-function wordsInput(fn) {
-  var words = randomWords(100);
-
-  return [
-    {
-      name: '5-element array',
-      values: [words.slice(0, 5), fn],
-      size: 5
-    },
-    {
-      name: '10-element array',
-      values: [words.slice(0, 10), fn],
-      size: 10
-    },
-    {
-      name: '100-element array',
-      values: [words.slice(0, 100), fn],
-      size: 100
-    }
-  ];
+function wordsInput() {
+  return Race.inputs.arraysOfStrings([5, 10, 100]);
 }
 
 function evaluateSequence(value, other) {
@@ -218,29 +153,29 @@ function addRace(name, inputs, options) {
   }
 }
 
-addRace('map', numbersInput(increment), {
-  lazy: function(array, fn) { return Lazy(array).map(fn); },
-  lodash: function(array, fn) { return lodash.map(array, fn); }
+addRace('map', numbersInput(), {
+  lazy: function(array) { return Lazy(array).map(increment); },
+  lodash: function(array) { return lodash.map(array, increment); }
 });
 
-addRace('filter', numbersInput(isEven), {
-  lazy: function(array, fn) { return Lazy(array).filter(fn); },
-  lodash: function(array, fn) { return lodash.filter(array, fn); }
+addRace('filter', numbersInput(), {
+  lazy: function(array) { return Lazy(array).filter(isEven); },
+  lodash: function(array) { return lodash.filter(array, isEven); }
 });
 
-addRace('sortBy', wordsInput(lastLetter), {
-  lazy: function(array, fn) { return Lazy(array).sortBy(fn); },
-  lodash: function(array, fn) { return lodash.sortBy(array, fn); }
+addRace('sortBy', wordsInput(), {
+  lazy: function(array) { return Lazy(array).sortBy(lastLetter); },
+  lodash: function(array) { return lodash.sortBy(array, lastLetter); }
 });
 
-addRace('groupBy', wordsInput(lastLetter), {
-  lazy: function(array, fn) { return  Lazy(array).groupBy(fn); },
-  lodash: function(array, fn) { return lodash.groupBy(array, fn); }
+addRace('groupBy', wordsInput(), {
+  lazy: function(array) { return  Lazy(array).groupBy(lastLetter); },
+  lodash: function(array) { return lodash.groupBy(array, lastLetter); }
 });
 
-addRace('countBy', wordsInput(lastLetter), {
-  lazy: function(array, fn) { return Lazy(array).countBy(fn); },
-  lodash: function(array, fn) { return lodash.countBy(array, fn); }
+addRace('countBy', wordsInput(), {
+  lazy: function(array) { return Lazy(array).countBy(lastLetter); },
+  lodash: function(array) { return lodash.countBy(array, lastLetter); }
 });
 
 addRace('uniq', randomNumbersInput(), {
@@ -285,15 +220,15 @@ addRace('max', numbersInput(), {
   valueOnly: true
 });
 
-addRace('map-max', numbersInput(increment), {
-  lazy: function(array, fn) { return Lazy(array).map(fn).max(); },
-  lodash: function(array, fn) { return lodash.max(lodash.map(array, fn)); },
+addRace('map-max', numbersInput(), {
+  lazy: function(array) { return Lazy(array).map(increment).max(); },
+  lodash: function(array) { return lodash.max(lodash.map(array, increment)); },
   valueOnly: true
 });
 
-addRace('map-filter-max', numbersInput(increment), {
-  lazy: function(array, fn) { return Lazy(array).map(fn).filter(isEven).max(); },
-  lodash: function(array, fn) { return lodash.max(lodash.filter(lodash.map(array, fn), isEven)); },
+addRace('map-filter-max', numbersInput(), {
+  lazy: function(array) { return Lazy(array).map(increment).filter(isEven).max(); },
+  lodash: function(array) { return lodash.max(lodash.filter(lodash.map(array, increment), isEven)); },
   valueOnly: true
 });
 
