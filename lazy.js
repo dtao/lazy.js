@@ -3886,7 +3886,7 @@
   /*** Exposing Lazy to the world ***/
 
   // For Node.js
-  if (typeof module !== "undefined") {
+  if (typeof module === "object") {
     module.exports = Lazy;
 
   // For browsers
