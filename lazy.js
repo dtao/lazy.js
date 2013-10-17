@@ -691,8 +691,9 @@
    * of the form `[key, values]` where `values` is an array containing all of
    * the elements in this sequence with the same key.
    *
-   * @param {Function} keyFn The function to call on the elements in this
-   *     sequence to obtain a key by which to group them.
+   * @param {Function|string} keyFn The function to call on the elements in this
+   *     sequence to obtain a key by which to group them, or a string representing
+   *     a parameter to read from all the elements in this sequence.
    * @return {Sequence} The new sequence.
    *
    * @example
