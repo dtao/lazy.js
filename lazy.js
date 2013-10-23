@@ -526,7 +526,7 @@
    * @param {number=} count The number of elements to take from this sequence. If
    *     this value exceeds the length of the sequence, the resulting sequence
    *     will be essentially the same as this one.
-   * @result {*} The new sequence (or the first element from this sequence if
+   * @return {*} The new sequence (or the first element from this sequence if
    *     no count was given).
    *
    * @example
