@@ -647,7 +647,7 @@
    * var lastFive = Lazy(numbers).rest(5);
    * // #=> sequence: (6, 7, 8, 9, 10)
    */
-  var DropSequence = Sequence.define(["drop", "tail", "rest"], {
+  var DropSequence = Sequence.define(["drop", "skip", "tail", "rest"], {
     init: function(parent, count) {
       this.count = typeof count === "number" ? count : 1;
     },
