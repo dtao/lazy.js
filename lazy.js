@@ -564,6 +564,18 @@
   Sequence.prototype.take = Sequence.prototype.first;
 
   /**
+   * Creates a new sequence comprising the elements from the head of this sequence
+   * that satisfy some predicate. Once an element is encountered that doesn't
+   * satisfy the predicate, iteration will stop.
+   *
+   * @param {Function} predicate
+   * @return {Sequence} The new sequence
+   */
+  Sequence.prototype.takeWhile = function(predicate) {
+    return new TakeWhileSequence(this, predicate);
+  };
+
+  /**
    * Creates a new sequence comprising all but the last N elements of this
    * sequence.
    *
@@ -648,7 +660,19 @@
         return fn(e);
       });
     }
-  })
+  });
+
+  /**
+   * Creates a new sequence comprising the elements from this sequence *after*
+   * those that satisfy some predicate. The sequence starts with the first
+   * element that does not match the predicate.
+   *
+   * @param {Function} predicate
+   * @return {Sequence} The new sequence
+   */
+  Sequence.prototype.dropWhile = Sequence.prototype.skipWhile = function(predicate) {
+    return new DropWhileSequence(this, predicate);
+  };
 
   /**
    * Creates a new sequence with the same elements as this one, but ordered
@@ -1498,6 +1522,41 @@
       if (i < self.count) { result = fn(e, i); }
       if (++i >= self.count) { return false; }
       return result;
+    });
+  };
+
+  var TakeWhileSequence = CachingSequence.inherit(function(parent, predicate) {
+    this.parent    = parent;
+    this.predicate = predicate;
+  });
+
+  TakeWhileSequence.prototype.each = function(fn) {
+    var predicate = this.predicate;
+
+    this.parent.each(function(e) {
+      return predicate(e) && fn(e);
+    });
+  };
+
+  var DropWhileSequence = CachingSequence.inherit(function(parent, predicate) {
+    this.parent    = parent;
+    this.predicate = predicate;
+  });
+
+  DropWhileSequence.prototype.each = function(fn) {
+    var predicate = this.predicate,
+        done      = false;
+
+    this.parent.each(function(e) {
+      if (!done) {
+        if (predicate(e)) {
+          return;
+        }
+
+        done = true;
+      }
+
+      return fn(e);
     });
   };
 
