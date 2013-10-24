@@ -1,4 +1,7 @@
 /*
+ * @name Lazy.js
+ *
+ * @fileOverview
  * Lazy.js is a lazy evaluation library for JavaScript.
  *
  * This has been done before. For examples see:
@@ -148,7 +151,7 @@
    *     sequence methods, like {@link #map}, {@link #filter}, etc.
    * @param {Object} overrides An object containing function overrides for this
    *     new sequence type.
-   * @return {Function} A constructor for a new type inheriting from `Sequence`.
+   * @returns {Function} A constructor for a new type inheriting from `Sequence`.
    *
    * @example
    * // This sequence type logs every element to the console
@@ -239,7 +242,7 @@
    * Note that for indefinite sequences, this method may raise an exception or
    * (worse) cause the environment to hang.
    *
-   * @return {Array} An array containing the current contents of the sequence.
+   * @returns {Array} An array containing the current contents of the sequence.
    *
    * @example
    * var range = Lazy.range(1, 10);
@@ -260,7 +263,7 @@
   /**
    * Creates an object from a sequence of key/value pairs.
    *
-   * @return {Object} An object with keys and values corresponding to the pairs
+   * @returns {Object} An object with keys and values corresponding to the pairs
    *     of elements in the sequence.
    *
    * @example
@@ -313,22 +316,35 @@
   };
 
   /**
+   * Creates a new sequence whose values are calculated by passing this sequence's
+   * elements through some mapping function.
+   *
    * @function map
    * @memberOf Sequence
    * @instance
    * @aka collect
    *
-   * Creates a new sequence whose values are calculated by passing this sequence's
-   * elements through some mapping function.
-   *
    * @param {Function} mapFn The mapping function used to project this sequence's
    *     elements onto a new sequence.
-   * @return {Sequence} The new sequence.
+   * @returns {Sequence} The new sequence.
    *
-   * @example
-   * var odds = [1, 3, 5];
-   * var evens = Lazy(odds).map(function(x) { return x + 1; });
-   * // => sequence: (2, 4, 6)
+   * @examples
+   * function increment(x) { return x + 1; }
+   *
+   * Lazy([]).map(increment)        // => []
+   * Lazy([1, 2, 3]).map(increment) // => [2, 3, 4]
+   *
+   * @benchmarks
+   * function increment(x) { return x + 1; }
+   * function noop(e) {}
+   *
+   * var smArr = Lazy.range(10).toArray(),
+   *     lgArr = Lazy.range(100).toArray();
+   *
+   * Lazy(smArr).map(increment).each(noop) // lazy - 10 elements
+   * Lazy(lgArr).map(increment).each(noop) // lazy - 100 elements
+   * _.each(_.map(smArr, increment), noop) // lodash - 10 elements
+   * _.each(_.map(lgArr, increment), noop) // lodash - 100 elements
    */
   Sequence.prototype.map = function(mapFn) {
     if (typeof mapFn === "string") {
@@ -353,15 +369,15 @@
    *
    * @param {string} propertyName The name of the property to access for every
    *     element in this sequence.
-   * @return {Sequence} The new sequence.
+   * @returns {Sequence} The new sequence.
    *
-   * @example
+   * @examples
    * var people = [
    *   { first: "Dan", last: "Tao" },
    *   { first: "Bob", last: "Smith" }
    * ];
-   * var surnames = Lazy(people).pluck("last");
-   * // => sequence: ("Tao", "Smith")
+   *
+   * Lazy(people).pluck("last") // => ["Tao", "Smith"]
    */
   Sequence.prototype.pluck = function(propertyName) {
     return this.map(function(e) {
@@ -375,9 +391,9 @@
    *
    * @param {string} methodName The name of the method to invoke for every element
    *     in this sequence.
-   * @return {Sequence} The new sequence.
+   * @returns {Sequence} The new sequence.
    *
-   * @example
+   * @examples
    * function Person(first, last) {
    *   this.fullName = function() {
    *     return first + " " + last;
@@ -389,8 +405,7 @@
    *   new Person("Bob", "Smith")
    * ];
    *
-   * var fullNames = Lazy(people).invoke("fullName");
-   * // => sequence: ("Dan Tao", "Bob Smith")
+   * Lazy(people).invoke("fullName") // => ["Dan Tao", "Bob Smith"]
    */
   Sequence.prototype.invoke = function(methodName) {
     return this.map(function(e) {
@@ -399,22 +414,36 @@
   };
 
   /**
+   * Creates a new sequence whose values are the elements of this sequence which
+   * satisfy the specified predicate.
+   *
    * @function filter
    * @memberOf Sequence
    * @instance
    * @aka select
    *
-   * Creates a new sequence whose values are the elements of this sequence which
-   * satisfy the specified predicate.
-   *
    * @param {Function} filterFn The predicate to call on each element in this
    *     sequence, which returns true if the element should be included.
-   * @return {Sequence} The new sequence.
+   * @returns {Sequence} The new sequence.
    *
-   * @example
+   * @examples
+   * function isEven(x) { return x % 2 === 0; }
+   *
    * var numbers = [1, 2, 3, 4, 5, 6];
-   * var evens = Lazy(numbers).select(function(x) { return x % 2 === 0; });
-   * // => sequence: (2, 4, 6)
+   *
+   * Lazy(numbers).select(isEven) // => [2, 4, 6]
+   *
+   * @benchmarks
+   * function isEven(x) { return x % 2 === 0; }
+   * function noop(e) {}
+   *
+   * var smArr = Lazy.range(10).toArray(),
+   *     lgArr = Lazy.range(100).toArray();
+   *
+   * Lazy(smArr).select(isEven).each(noop) // lazy - 10 elements
+   * Lazy(lgArr).select(isEven).each(noop) // lazy - 100 elements
+   * _.each(_.select(smArr, isEven), noop) // lodash - 10 elements
+   * _.each(_.select(lgArr, isEven), noop) // lodash - 100 elements
    */
   Sequence.prototype.select = function(filterFn) {
     return new FilteredSequence(this, createCallback(filterFn));
@@ -435,7 +464,7 @@
    *
    * @param {Function} rejectFn The predicate to call on each element in this
    *     sequence, which returns true if the element should be omitted.
-   * @return {Sequence} The new sequence.
+   * @returns {Sequence} The new sequence.
    *
    * @example
    * var numbers = [1, 2, 3, 4, 5, 6];
@@ -454,7 +483,7 @@
    *
    * @param {Object} properties The properties that should be found on every
    *     element that is to be included in this sequence.
-   * @return {Sequence} The new sequence.
+   * @returns {Sequence} The new sequence.
    *
    * @example
    * var people = [
@@ -482,7 +511,7 @@
    * Note that in some (but not all) cases, the only way to create such a sequence
    * may require iterating the entire underlying source when `each` is called.
    *
-   * @return {Sequence} The new sequence.
+   * @returns {Sequence} The new sequence.
    *
    * @example
    * var alphabet = "abcdefghijklmnopqrstuvwxyz";
@@ -507,7 +536,7 @@
    *
    * @param {...*} var_args One or more values (or arrays of values) to use for
    *     additional items after this sequence.
-   * @return {Sequence} The new sequence.
+   * @returns {Sequence} The new sequence.
    *
    * @example
    * var left = [1, 2, 3];
@@ -526,7 +555,7 @@
    * @param {number=} count The number of elements to take from this sequence. If
    *     this value exceeds the length of the sequence, the resulting sequence
    *     will be essentially the same as this one.
-   * @return {*} The new sequence (or the first element from this sequence if
+   * @returns {*} The new sequence (or the first element from this sequence if
    *     no count was given).
    *
    * @example
@@ -569,7 +598,7 @@
    * satisfy the predicate, iteration will stop.
    *
    * @param {Function} predicate
-   * @return {Sequence} The new sequence
+   * @returns {Sequence} The new sequence
    */
   Sequence.prototype.takeWhile = function(predicate) {
     return new TakeWhileSequence(this, predicate);
@@ -581,7 +610,7 @@
    *
    * @param {number=} count The number of items to omit from the end of the
    *     sequence (defaults to 1).
-   * @return {Sequence} The new sequence.
+   * @returns {Sequence} The new sequence.
    *
    * @example
    * var produce = [apple, banana, carrot, durian];
@@ -601,7 +630,7 @@
    *
    * @param {number=} count The number of items to take from the end of the
    *     sequence.
-   * @return {*} The new sequence (or the last element from this sequence
+   * @returns {*} The new sequence (or the last element from this sequence
    *     if no count was given).
    *
    * @example
@@ -622,7 +651,7 @@
    *
    * @param {Object} properties The properties that should be found on some
    *     element in this sequence.
-   * @return {*} The found element, or `undefined` if none exists in this
+   * @returns {*} The found element, or `undefined` if none exists in this
    *     sequence.
    *
    * @example
@@ -640,7 +669,7 @@
    *
    * @param {number=} count The number of items to omit from the beginning of the
    *     sequence (defaults to 1).
-   * @return {Sequence} The new sequence.
+   * @returns {Sequence} The new sequence.
    *
    * @example
    * var numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -668,7 +697,7 @@
    * element that does not match the predicate.
    *
    * @param {Function} predicate
-   * @return {Sequence} The new sequence
+   * @returns {Sequence} The new sequence
    */
   Sequence.prototype.dropWhile = Sequence.prototype.skipWhile = function(predicate) {
     return new DropWhileSequence(this, predicate);
@@ -680,7 +709,7 @@
    *
    * @param {Function} sortFn The function to call on the elements in this
    *     sequence, in order to sort them.
-   * @return {Sequence} The new sequence.
+   * @returns {Sequence} The new sequence.
    *
    * function population(country) {
    *   return country.pop;
@@ -718,7 +747,7 @@
    * @param {Function|string} keyFn The function to call on the elements in this
    *     sequence to obtain a key by which to group them, or a string representing
    *     a parameter to read from all the elements in this sequence.
-   * @return {Sequence} The new sequence.
+   * @returns {Sequence} The new sequence.
    *
    * @example
    * var numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -738,7 +767,7 @@
    *
    * @param {Function} keyFn The function to call on the elements in this
    *     sequence to obtain a key by which to count them.
-   * @return {Sequence} The new sequence.
+   * @returns {Sequence} The new sequence.
    *
    * @example
    * var numbers = [1, 2, 3, 4, 5];
@@ -755,7 +784,7 @@
    * Creates a new sequence with every unique element from this one appearing
    * exactly once (i.e., with duplicates removed).
    *
-   * @return {Sequence} The new sequence.
+   * @returns {Sequence} The new sequence.
    *
    * @example
    * Lazy([1, 2, 2, 3, 3, 3]).uniq();
@@ -780,7 +809,7 @@
    *
    * @param {...Array} var_args One or more arrays of elements to combine with
    *     those of this sequence.
-   * @return {Sequence} The new sequence.
+   * @returns {Sequence} The new sequence.
    *
    * @example
    * Lazy([1, 2]).zip([3, 4]);
@@ -798,7 +827,7 @@
    * Creates a new sequence with the same elements as this one, in a randomized
    * order.
    *
-   * @return {Sequence} The new sequence.
+   * @returns {Sequence} The new sequence.
    *
    * @example
    * Lazy([1, 2, 3, 4, 5]).shuffle();
@@ -813,7 +842,7 @@
    * exploded so that a sequence of arrays (of arrays) becomes a flat sequence of
    * values.
    *
-   * @return {Sequence} The new sequence.
+   * @returns {Sequence} The new sequence.
    *
    * @example
    * Lazy([1, [2, 3], [4, [5]]]).flatten();
@@ -827,7 +856,7 @@
    * Creates a new sequence with the same elements as this one, except for all
    * falsy values (`false`, `0`, `""`, `null`, and `undefined`).
    *
-   * @return {Sequence} The new sequence.
+   * @returns {Sequence} The new sequence.
    *
    * @example
    * Lazy(["foo", null, "bar", undefined]).compact();
@@ -843,7 +872,7 @@
    *
    * @param {...*} var_args The values, or array(s) of values, to be excluded from the
    *     resulting sequence.
-   * @return {Sequence} The new sequence.
+   * @returns {Sequence} The new sequence.
    *
    * @example
    * Lazy([1, 2, 3, 4, 5]).without(2, 3);
@@ -868,7 +897,7 @@
    *
    * @param {...*} var_args The values, or array(s) of values, to be additionally
    *     included in the resulting sequence.
-   * @return {Sequence} The new sequence.
+   * @returns {Sequence} The new sequence.
    *
    * @example
    * Lazy(["foo", "bar"]).union(["bar", "baz"]);
@@ -884,7 +913,7 @@
    *
    * @param {...*} var_args The values, or array(s) of values, in which elements
    *     from this sequence must also be included to end up in the resulting sequence.
-   * @return {Sequence} The new sequence.
+   * @returns {Sequence} The new sequence.
    *
    * @example
    * Lazy(["foo", "bar"]).intersection(["bar", "baz"]);
@@ -903,7 +932,7 @@
    *
    * @param {Function} predicate A function to call on (potentially) every element
    *     in this sequence.
-   * @return {boolean} True if `predicate` returns true for every element in the
+   * @returns {boolean} True if `predicate` returns true for every element in the
    *     sequence (or the sequence is empty). False if `predicate` returns false
    *     for at least one element.
    *
@@ -943,7 +972,7 @@
    *
    * @param {Function=} predicate A function to call on (potentially) every element
    *     in this sequence.
-   * @return {boolean} True if `predicate` returns true for at least one element
+   * @returns {boolean} True if `predicate` returns true for at least one element
    *     in the sequence. False if `predicate` returns false for every element (or
    *     the sequence is empty).
    *
@@ -983,7 +1012,7 @@
   /**
    * Checks whether the sequence has no elements.
    *
-   * @return {boolean} True if the sequence is empty, false if it contains at
+   * @returns {boolean} True if the sequence is empty, false if it contains at
    *     least one element.
    *
    * @example
@@ -1002,7 +1031,7 @@
    * returning the first index at which the specified value is found.
    *
    * @param {*} value The element to search for in the sequence.
-   * @return {number} The index within this sequence where the given value is
+   * @returns {number} The index within this sequence where the given value is
    *     located, or -1 if the sequence doesn't contain the value.
    *
    * @example
@@ -1033,7 +1062,7 @@
    * returning the last index at which the specified value is found.
    *
    * @param {*} value The element to search for in the sequence.
-   * @return {number} The last index within this sequence where the given value
+   * @returns {number} The last index within this sequence where the given value
    *     is located, or -1 if the sequence doesn't contain the value.
    *
    * @example
@@ -1060,7 +1089,7 @@
    * otherwise.
    *
    * @param {*} value The element to search for in the sequence.
-   * @return {number} An index within this sequence where the given value is
+   * @returns {number} An index within this sequence where the given value is
    *     located, or where it belongs in sorted order.
    *
    * @example
@@ -1087,7 +1116,7 @@
    * Checks whether the given value is in this sequence.
    *
    * @param {*} value The element to search for in the sequence.
-   * @return {boolean} True if the sequence contains the value, false if not.
+   * @returns {boolean} True if the sequence contains the value, false if not.
    *
    * @example
    * var numbers = [5, 10, 15, 20];
@@ -1112,7 +1141,7 @@
    *     new aggregated result.
    * @param {*=} memo The starting value to use for the aggregated result
    *     (defaults to the first element in the sequence).
-   * @return {*} The result of the aggregation.
+   * @returns {*} The result of the aggregation.
    *
    * @example
    * var numbers = [5, 10, 15, 20];
@@ -1158,7 +1187,7 @@
    *     aggregated result thus far and the element itself, and should return a
    *     new aggregated result.
    * @param {*} memo The starting value to use for the aggregated result.
-   * @return {*} The result of the aggregation.
+   * @returns {*} The result of the aggregation.
    *
    * @example
    * var letters = "abcde";
@@ -1193,7 +1222,7 @@
    *
    * @param {Function} predicate A function to call on (potentially) every element
    *     in the sequence.
-   * @return {*} The first element in the sequence for which `predicate` returns
+   * @returns {*} The first element in the sequence for which `predicate` returns
    *     `true`, or `undefined` if no such element is found.
    *
    * @example
@@ -1223,7 +1252,7 @@
    *
    * @param {Function=} valueFn The function by which the value for comparison is
    *     calculated for each element in the sequence.
-   * @return {*} The element with the lowest value in the sequence.
+   * @returns {*} The element with the lowest value in the sequence.
    *
    * @example
    * Lazy([6, 18, 2, 49, 34]).min();
@@ -1261,7 +1290,7 @@
    *
    * @param {Function=} valueFn The function by which the value for comparison is
    *     calculated for each element in the sequence.
-   * @return {*} The element with the highest value in the sequence.
+   * @returns {*} The element with the highest value in the sequence.
    *
    * @example
    * Lazy([6, 18, 2, 49, 34]).max();
@@ -1299,7 +1328,7 @@
    *
    * @param {Function=} valueFn The function used to select the values that will
    *     be summed up.
-   * @return {*} The sum.
+   * @returns {*} The sum.
    *
    * @example
    * Lazy([1, 2, 3, 4]).sum();
@@ -1325,7 +1354,7 @@
    *
    * @param {string=} delimiter The separator to insert between every element from
    *     this sequence in the resulting string (defaults to `","`).
-   * @return {string} The delimited string.
+   * @returns {string} The delimited string.
    *
    * @example
    * Lazy([6, 29, 1984]).join("/");
@@ -1360,7 +1389,7 @@
    * @param {number=} interval The approximate period, in milliseconds, that
    *     should elapse between each element in the resulting sequence. Omitting
    *     this argument will result in the fastest possible asynchronous iteration.
-   * @return {AsyncSequence} The new asynchronous sequence.
+   * @returns {AsyncSequence} The new asynchronous sequence.
    *
    * @example
    * Lazy([1, 2, 3]).async(1000).each(function(x) {
@@ -1411,7 +1440,7 @@
    * `CachingSequence`.
    *
    * @param {Function} ctor The constructor function.
-   * @return {Function} A constructor for a new type inheriting from
+   * @returns {Function} A constructor for a new type inheriting from
    *     `CachingSequence`.
    */
   CachingSequence.inherit = function(ctor) {
@@ -1422,7 +1451,7 @@
   /**
    * Fully evaluates the sequence and returns a cached result.
    *
-   * @return {Array} The cached array, fully populated with the elements in this
+   * @returns {Array} The cached array, fully populated with the elements in this
    *     sequence.
    */
   CachingSequence.prototype.cache = function() {
@@ -1449,7 +1478,7 @@
   /*
    * Fully evaluates the sequence and returns an iterator.
    *
-   * @return {Iterator} An iterator to iterate over the fully-evaluated sequence.
+   * @returns {Iterator} An iterator to iterate over the fully-evaluated sequence.
    */
   CachingSequence.prototype.getIterator = function() {
     return Lazy(this.cache()).getIterator();
@@ -1827,7 +1856,7 @@
   /**
    * Gets the current item this iterator is pointing to.
    *
-   * @return {*} The current item.
+   * @returns {*} The current item.
    */
   Iterator.prototype.current = function() {
     return this.sequence.get(this.index);
@@ -1836,7 +1865,7 @@
   /**
    * Moves the iterator to the next item in a sequence, if possible.
    *
-   * @return {boolean} True if the iterator is able to move to a new item, or else
+   * @returns {boolean} True if the iterator is able to move to a new item, or else
    *     false.
    */
   Iterator.prototype.moveNext = function() {
@@ -2139,7 +2168,7 @@
    * Returns the element at the specified index.
    *
    * @param {number} i The index to access.
-   * @return {*} The element.
+   * @returns {*} The element.
    */
   ArrayLikeSequence.prototype.get = function(i) {
     return this.parent.get(i);
@@ -2148,7 +2177,7 @@
   /**
    * Returns the length of the sequence.
    *
-   * @return {number} The length.
+   * @returns {number} The length.
    */
   ArrayLikeSequence.prototype.length = function() {
     return this.parent.length();
@@ -2162,7 +2191,7 @@
    * inheriting from `Sequence` must implement this method or it can't support
    * asynchronous iteration.
    *
-   * @return {Iterator} An iterator object.
+   * @returns {Iterator} An iterator object.
    *
    * @example
    * var iterator = Lazy([1, 2]).getIterator();
@@ -2203,7 +2232,7 @@
    * An optimized version of {@link Sequence#map}, which creates an
    * `ArrayLikeSequence` so that the result still provides random access.
    *
-   * @return {ArrayLikeSequence} The new array-like sequence.
+   * @returns {ArrayLikeSequence} The new array-like sequence.
    */
   ArrayLikeSequence.prototype.map = function(mapFn) {
     if (typeof mapFn === 'string') {
@@ -2459,7 +2488,7 @@
    * Returns the element at the specified index in the source array.
    *
    * @param {number} i The index to access.
-   * @return {*} The element.
+   * @returns {*} The element.
    */
   ArrayWrapper.prototype.get = function(i) {
     return this.source[i];
@@ -2468,7 +2497,7 @@
   /**
    * Returns the length of the source array.
    *
-   * @return {number} The length.
+   * @returns {number} The length.
    */
   ArrayWrapper.prototype.length = function() {
     return this.source.length;
@@ -2752,7 +2781,7 @@
    * Gets the element at the specified key in this sequence.
    *
    * @param {string} key The key.
-   * @return {*} The element.
+   * @returns {*} The element.
    *
    * @example
    * Lazy({ foo: "bar" }).get("foo");
@@ -2766,7 +2795,7 @@
    * Returns a {@link Sequence} whose elements are the keys of this object-like
    * sequence.
    *
-   * @return {Sequence} The sequence based on this sequence's keys.
+   * @returns {Sequence} The sequence based on this sequence's keys.
    *
    * @example
    * Lazy({ hello: "hola", goodbye: "hasta luego" }).keys();
@@ -2780,7 +2809,7 @@
    * Returns a {@link Sequence} whose elements are the values of this object-like
    * sequence.
    *
-   * @return {Sequence} The sequence based on this sequence's values.
+   * @returns {Sequence} The sequence based on this sequence's values.
    *
    * @example
    * Lazy({ hello: "hola", goodbye: "hasta luego" }).values();
@@ -2797,7 +2826,7 @@
    * one in this sequence.
    *
    * @param {Object} other The other object to assign to this sequence.
-   * @return {ObjectLikeSequence} A new sequence comprising elements from this
+   * @returns {ObjectLikeSequence} A new sequence comprising elements from this
    *     sequence plus the contents of `other`.
    *
    * @example
@@ -2828,7 +2857,7 @@
    *
    * @param {Object} defaults The 'default' object to use for missing keys in this
    *     sequence.
-   * @return {ObjectLikeSequence} A new sequence comprising elements from this
+   * @returns {ObjectLikeSequence} A new sequence comprising elements from this
    *     sequence supplemented by the contents of `defaults`.
    *
    * @example
@@ -2843,7 +2872,7 @@
    * Returns an `ObjectLikeSequence` whose values are this sequence's keys, and
    * whose keys are this sequence's values.
    *
-   * @return {ObjectLikeSequence} A new sequence comprising the inverted keys and
+   * @returns {ObjectLikeSequence} A new sequence comprising the inverted keys and
    *     values from this sequence.
    *
    * @example
@@ -2858,7 +2887,7 @@
    * Creates a {@link Sequence} consisting of the keys from this sequence whose
    *     values are functions.
    *
-   * @return {Sequence} The new sequence.
+   * @returns {Sequence} The new sequence.
    *
    * @example
    * var dog = {
@@ -2892,7 +2921,7 @@
    *
    * @param {Array} properties An array of the properties to "pick" from this
    *     sequence.
-   * @return {ObjectLikeSequence} The new sequence.
+   * @returns {ObjectLikeSequence} The new sequence.
    *
    * @example
    * var players = {
@@ -2914,7 +2943,7 @@
    *
    * @param {Array} properties An array of the properties to *omit* from this
    *     sequence.
-   * @return {ObjectLikeSequence} The new sequence.
+   * @returns {ObjectLikeSequence} The new sequence.
    *
    * @example
    * var players = {
@@ -2933,7 +2962,7 @@
   /**
    * Creates an array from the key/value pairs in this sequence.
    *
-   * @return {Array} An array of `[key, value]` elements.
+   * @returns {Array} An array of `[key, value]` elements.
    *
    * @example
    * Lazy({ red: "#f00", green: "#0f0", blue: "#00f" }).toArray();
@@ -2955,7 +2984,7 @@
   /**
    * Creates an object with the key/value pairs from this sequence.
    *
-   * @return {Object} An object with the same key/value pairs as this sequence.
+   * @returns {Object} An object with the same key/value pairs as this sequence.
    *
    * @example
    * Lazy({ red: "#f00", green: "#0f0", blue: "#00f" }).toObject();
@@ -3130,7 +3159,7 @@
    * Returns an {@link Iterator} that will step over each character in this
    * sequence one by one.
    *
-   * @return {Iterator} The iterator.
+   * @returns {Iterator} The iterator.
    */
   StringLikeSequence.prototype.getIterator = function() {
     return new CharIterator(this.source);
@@ -3140,7 +3169,7 @@
    * Returns the character at the given index of this stream.
    *
    * @param {number} i The index of this sequence.
-   * @return {string} The character at the specified index.
+   * @returns {string} The character at the specified index.
    *
    * @example:
    * Lazy("foo")
@@ -3182,7 +3211,7 @@
    * pattern in the underlying string.
    *
    * @param {RegExp} pattern The pattern to match.
-   * @return {Sequence} A sequence of all the matches.
+   * @returns {Sequence} A sequence of all the matches.
    */
   StringLikeSequence.prototype.match = function(pattern) {
     return new StringMatchSequence(this.source, pattern);
@@ -3195,7 +3224,7 @@
    *
    * @param {string|RegExp} delimiter The delimiter to use for recognizing
    *     substrings.
-   * @return {Sequence} A sequence of all the substrings separated by the given
+   * @returns {Sequence} A sequence of all the substrings separated by the given
    *     delimiter.
    */
   StringLikeSequence.prototype.split = function(delimiter) {
@@ -3302,7 +3331,7 @@
   /**
    * Returns the length of this sequence.
    *
-   * @return {number} The length, or `undefined` if this is an indefinite
+   * @returns {number} The length, or `undefined` if this is an indefinite
    *     sequence.
    */
   GeneratedSequence.prototype.length = function() {
@@ -3415,7 +3444,7 @@
    *
    * @param {Function} fn The function to invoke asynchronously on each element in
    *     the sequence one by one.
-   * @return {{cancel: Function, onError: Function}} An object providing the
+   * @returns {{cancel: Function, onError: Function}} An object providing the
    *     ability to cancel the asynchronous iteration (by calling `cancel()`) as
    *     well as handle any errors with a callback (set with `onError()`).
    */
@@ -3567,7 +3596,7 @@
    *   {@link StringLikeSequence}).
    *
    * @param {Array|Object|string} source An array, object, or string to wrap.
-   * @return {Sequence} The wrapped lazy object.
+   * @returns {Sequence} The wrapped lazy object.
    *
    * @example
    * var fromArray = Lazy([1, 2, 4]);
@@ -3599,7 +3628,7 @@
    *     a value for that index in the resulting sequence.
    * @param {number=} length The length of the sequence, for sequences with a
    *     definite length.
-   * @return {GeneratedSequence} The generated sequence.
+   * @returns {GeneratedSequence} The generated sequence.
    *
    * @example
    * var randomNumbers = Lazy.generate(Math.random);
@@ -3622,7 +3651,7 @@
    * Creates a sequence from a given starting value, up to a specified stopping
    * value, incrementing by a given step.
    *
-   * @return {GeneratedSequence} The sequence defined by the given ranges.
+   * @returns {GeneratedSequence} The sequence defined by the given ranges.
    *
    * @example
    * var integers = Lazy.range(10);
@@ -3649,7 +3678,7 @@
    * @param {*} value The value to repeat.
    * @param {number=} count The number of times the value should be repeated in
    *     the sequence. If this argument is omitted, the value will repeat forever.
-   * @return {GeneratedSequence} The sequence containing the repeated value.
+   * @returns {GeneratedSequence} The sequence containing the repeated value.
    *
    * @example
    * var hihihi = Lazy.repeat("hi", 3);
@@ -3679,7 +3708,7 @@
    * - for objects, returns a where-style callback
    *
    * @param {Function|string|Object} A function, string, or object to convert to a callback.
-   * @return {Function} The callback function.
+   * @returns {Function} The callback function.
    */
   function createCallback(callback) {
     switch (typeof callback) {
@@ -3713,7 +3742,7 @@
    *
    * @param {...Array} values One or more array(s) of values used to populate the
    *     set.
-   * @return {Set} A new set containing the values passed in.
+   * @returns {Set} A new set containing the values passed in.
    */
   function createSet(values) {
     var set = new Set();
@@ -3730,7 +3759,7 @@
    * @param {*} y The right element to compare.
    * @param {Function=} fn An optional function to call on each element, to get
    *     the values to compare.
-   * @return {number} 1 if x > y, -1 if x < y, or 0 if x and y are equal.
+   * @returns {number} 1 if x > y, -1 if x < y, or 0 if x and y are equal.
    */
   function compare(x, y, fn) {
     if (typeof fn === "function") {
@@ -3750,7 +3779,7 @@
    * @param {Array} array The array.
    * @param {Function} fn The function to call on every element, which can return
    *     false to stop the iteration early.
-   * @return {boolean} True if every element in the entire sequence was iterated,
+   * @returns {boolean} True if every element in the entire sequence was iterated,
    *     otherwise false.
    */
   function forEach(array, fn) {
@@ -3774,7 +3803,7 @@
    *     false to stop the iteration early.
    * @param {Array=} index An optional counter container, to keep track of the
    *     current index.
-   * @return {boolean} True if every element in the entire sequence was iterated,
+   * @returns {boolean} True if every element in the entire sequence was iterated,
    *     otherwise false.
    */
   function recursiveForEach(array, fn, index) {
@@ -3854,7 +3883,7 @@
    * Attempts to add a unique value to the set.
    *
    * @param {*} value The value to add.
-   * @return {boolean} True if the value was added to the set (meaning an equal
+   * @returns {boolean} True if the value was added to the set (meaning an equal
    *     value was not already present), or else false.
    */
   Set.prototype.add = function(value) {
@@ -3911,7 +3940,7 @@
    * Checks whether the set contains a value.
    *
    * @param {*} value The value to check for.
-   * @return {boolean} True if the set contains the value, or else false.
+   * @returns {boolean} True if the set contains the value, or else false.
    */
   Set.prototype.contains = function(value) {
     var type = typeof value,
