@@ -244,12 +244,8 @@
    *
    * @returns {Array} An array containing the current contents of the sequence.
    *
-   * @example
-   * var range = Lazy.range(1, 10);
-   * // => sequence: (1, 2, ..., 9)
-   *
-   * var array = range.toArray();
-   * // => [1, 2, ..., 9]
+   * @examples
+   * Lazy([1, 2, 3]).toArray() // => [1, 2, 3]
    */
   Sequence.prototype.toArray = function() {
     var array = [];
@@ -266,15 +262,14 @@
    * @returns {Object} An object with keys and values corresponding to the pairs
    *     of elements in the sequence.
    *
-   * @example
+   * @examples
    * var details = [
    *   ["first", "Dan"],
    *   ["last", "Tao"],
    *   ["age", 29]
    * ];
    *
-   * var person = Lazy(details).toObject();
-   * // => { first: "Dan", last: "Tao", age: 29 }
+   * Lazy(details).toObject() // => { first: "Dan", last: "Tao", age: 29 }
    */
   Sequence.prototype.toObject = function() {
     var object = {};
@@ -291,9 +286,8 @@
    * @param {Function} fn The function to call on each element in the sequence.
    *     Return false from the function to end the iteration.
    *
-   * @example
-   * var subordinates = [joe, bill, wendy];
-   * Lazy(subordinates).each(function(s) { s.reprimand(); });
+   * @examples
+   * Lazy(['fizz', 'buzz']).each(function(str) { console.log(str); });
    */
   Sequence.prototype.each = function(fn) {
     var iterator = this.getIterator(),
@@ -466,10 +460,10 @@
    *     sequence, which returns true if the element should be omitted.
    * @returns {Sequence} The new sequence.
    *
-   * @example
-   * var numbers = [1, 2, 3, 4, 5, 6];
-   * var odds = Lazy(numbers).reject(function(x) { return x % 2 === 0; });
-   * // => sequence: (1, 3, 5)
+   * @examples
+   * function isEven(x) { return x % 2 === 0; }
+   *
+   * Lazy([1, 2, 3, 4, 5]).reject(isEven) // => [1, 3, 5]
    */
   Sequence.prototype.reject = function(rejectFn) {
     return this.filter(function(e) {
@@ -485,13 +479,13 @@
    *     element that is to be included in this sequence.
    * @returns {Sequence} The new sequence.
    *
-   * @example
+   * @examples
    * var people = [
    *   { first: "Dan", last: "Tao" },
    *   { first: "Bob", last: "Smith" }
    * ];
-   * var dans = Lazy(people).where({ first: "Dan" });
-   * // => sequence: ({ first: "Dan", last: "Tao" })
+   *
+   * Lazy(people).where({ first: "Dan" }) // => [{ first: "Dan", last: "Tao" }]
    */
   Sequence.prototype.where = function(properties) {
     return this.filter(function(e) {
@@ -513,10 +507,10 @@
    *
    * @returns {Sequence} The new sequence.
    *
-   * @example
+   * @examples
    * var alphabet = "abcdefghijklmnopqrstuvwxyz";
-   * var alphabetBackwards = Lazy(alphabet).reverse();
-   * // => sequence: ("z", "y", "x", ..., "a")
+   *
+   * Lazy(alphabet).reverse() // => "zxywvutsrqponmlkjihgfedcba".split("")
    */
   var ReversedSequence = Sequence.define("reverse", {
     each: function(fn) {
@@ -538,11 +532,11 @@
    *     additional items after this sequence.
    * @returns {Sequence} The new sequence.
    *
-   * @example
-   * var left = [1, 2, 3];
+   * @examples
+   * var left  = [1, 2, 3];
    * var right = [4, 5, 6];
-   * var both = Lazy(left).concat(right);
-   * // => sequence: (1, 2, 3, 4, 5, 6)
+   *
+   * Lazy(left).concat(right)  // => [1, 2, 3, 4, 5, 6]
    */
   Sequence.prototype.concat = function(var_args) {
     return new ConcatenatedSequence(this, Array.prototype.slice.call(arguments, 0));
@@ -3653,15 +3647,10 @@
    *
    * @returns {GeneratedSequence} The sequence defined by the given ranges.
    *
-   * @example
-   * var integers = Lazy.range(10);
-   * // => sequence: (0, 1, ..., 9)
-   *
-   * var countingNumbers = Lazy.range(1, 11);
-   * // => sequence: (1, 2, ..., 10)
-   *
-   * var evenNumbers = Lazy.range(2, 10, 2);
-   * // => sequence: (2, 4, 6, 8)
+   * @examples
+   * Lazy.range(10)       // => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+   * Lazy.range(1, 11)    // => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+   * Lazy.range(2, 10, 2) // => [2, 4, 6, 8]
    */
   Lazy.range = function() {
     var start = arguments.length > 1 ? arguments[0] : 0,
