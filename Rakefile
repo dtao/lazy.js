@@ -17,3 +17,10 @@ task :update_version do
   update_json('bower.json', { 'version' => version })
   update_json('component.json', { 'version' => version })
 end
+
+namespace :gen do
+  desc "Generate documentation using Breakneck"
+  task :docs do
+    sh "breakneck -j ../lazy.js lazy.js"
+  end
+end
