@@ -8,3 +8,8 @@ function assertEquality(actual, expected) {
   }
   expect(actual).toEqual(expected);
 }
+
+// This is a totally unnecessary bit of fanciness that I just felt like writing.
+$(window).on('scroll', function() {
+  $('.index nav').css('top', Math.max(110 - window.pageYOffset, 0) + 'px');
+});
