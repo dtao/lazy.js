@@ -21,6 +21,17 @@ end
 namespace :gen do
   desc "Generate documentation using Breakneck"
   task :docs do
-    sh "breakneck -j ../lazy.js lazy.js"
+    sequence_types = [
+      "Lazy",
+      "Sequence",
+      "Iterator",
+      "ArrayLikeSequence",
+      "ObjectLikeSequence",
+      "StringLikeSequence",
+      "GeneratedSequence",
+      "AsyncSequence"
+    ]
+
+    sh "breakneck -n #{sequence_types.join(',')} -j ../lazy.js lazy.js"
   end
 end
