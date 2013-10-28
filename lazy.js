@@ -486,6 +486,14 @@
    * ];
    *
    * Lazy(people).where({ first: "Dan" }) // => [{ first: "Dan", last: "Tao" }]
+   *
+   * @benchmarks
+   * function noop(e) {}
+   *
+   * var animals = ["dog", "cat", "mouse", "horse", "pig", "snake"];
+   *
+   * Lazy(animals).where({ length: 3 }).each(noop) // lazy
+   * _.each(_.where(animals, { length: 3 }), noop) // lodash
    */
   Sequence.prototype.where = function(properties) {
     return this.filter(function(e) {
@@ -736,6 +744,15 @@
    *
    * Lazy(countries).sortBy(population).last(3).pluck('name') // => ["Brazil", "USA", "China"]
    * Lazy(countries).sortBy(area).last(3).pluck('name')       // => ["USA", "China", "Russia"]
+   *
+   * @benchmarks
+   * function identity(x) { return x; }
+   * function noop(e) {}
+   *
+   * var randoms = Lazy.generate(Math.random).take(100).toArray();
+   *
+   * Lazy(randoms).sortBy(identity).each(noop) // lazy
+   * _.each(_.sortBy(randoms, identity), noop) // lodash
    */
   Sequence.prototype.sortBy = function(sortFn) {
     return new SortedSequence(this, sortFn);
@@ -795,6 +812,26 @@
    *
    * @examples
    * Lazy([1, 2, 2, 3, 3, 3]).uniq() // => [1, 2, 3]
+   *
+   * @benchmarks
+   * function randomOf(array) {
+   *   return function() {
+   *     return array[Math.floor(Math.random() * array.length)];
+   *   };
+   * }
+   *
+   * function noop(e) {}
+   *
+   * var mostUnique = Lazy.generate(randomOf(_.range(100)), 100).toArray(),
+   *     someUnique = Lazy.generate(randomOf(_.range(50)), 100).toArray(),
+   *     mostDupes  = Lazy.generate(randomOf(_.range(5)), 100).toArray();
+   *
+   * Lazy(mostUnique).uniq().each(noop) // lazy - mostly unique elements
+   * Lazy(someUnique).uniq().each(noop) // lazy - some unique elements
+   * Lazy(mostDupes).uniq().each(noop)  // lazy - mostly duplicate elements
+   * _.each(_.uniq(mostUnique), noop)   // lodash - mostly unique elements
+   * _.each(_.uniq(someUnique), noop)   // lodash - some unique elements
+   * _.each(_.uniq(mostDupes), noop)    // lodash - mostly duplicate elements
    */
   Sequence.prototype.uniq = function(keyFn) {
     return new UniqueSequence(this, createCallback(keyFn));
@@ -819,6 +856,19 @@
    *
    * @examples
    * Lazy([1, 2]).zip([3, 4]) // => [[1, 3], [2, 4]]
+   *
+   * @benchmarks
+   * function noop(e) {}
+   *
+   * var smArrL = Lazy.range(10).toArray(),
+   *     smArrR = Lazy.range(10, 20).toArray(),
+   *     lgArrL = Lazy.range(100).toArray(),
+   *     lgArrR = Lazy.range(100, 200).toArray();
+   *
+   * Lazy(smArrL).zip(smArrR).each(noop) // lazy - zipping 10-element arrays
+   * Lazy(lgArrL).zip(lgArrR).each(noop) // lazy - zipping 100-element arrays
+   * _.each(_.zip(smArrL, smArrR), noop) // lodash - zipping 10-element arrays
+   * _.each(_.zip(lgArrL, lgArrR), noop) // lodash - zipping 100-element arrays
    */
   Sequence.prototype.zip = function(var_args) {
     if (arguments.length === 1) {
