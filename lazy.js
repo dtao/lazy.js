@@ -330,15 +330,14 @@
    *
    * @benchmarks
    * function increment(x) { return x + 1; }
-   * function noop(e) {}
    *
    * var smArr = Lazy.range(10).toArray(),
    *     lgArr = Lazy.range(100).toArray();
    *
-   * Lazy(smArr).map(increment).each(noop) // lazy - 10 elements
-   * Lazy(lgArr).map(increment).each(noop) // lazy - 100 elements
-   * _.each(_.map(smArr, increment), noop) // lodash - 10 elements
-   * _.each(_.map(lgArr, increment), noop) // lodash - 100 elements
+   * Lazy(smArr).map(increment).each(Lazy.noop) // lazy - 10 elements
+   * Lazy(lgArr).map(increment).each(Lazy.noop) // lazy - 100 elements
+   * _.each(_.map(smArr, increment), Lazy.noop) // lodash - 10 elements
+   * _.each(_.map(lgArr, increment), Lazy.noop) // lodash - 100 elements
    */
   Sequence.prototype.map = function(mapFn) {
     if (typeof mapFn === "string") {
@@ -429,15 +428,14 @@
    *
    * @benchmarks
    * function isEven(x) { return x % 2 === 0; }
-   * function noop(e) {}
    *
    * var smArr = Lazy.range(10).toArray(),
    *     lgArr = Lazy.range(100).toArray();
    *
-   * Lazy(smArr).select(isEven).each(noop) // lazy - 10 elements
-   * Lazy(lgArr).select(isEven).each(noop) // lazy - 100 elements
-   * _.each(_.select(smArr, isEven), noop) // lodash - 10 elements
-   * _.each(_.select(lgArr, isEven), noop) // lodash - 100 elements
+   * Lazy(smArr).select(isEven).each(Lazy.noop) // lazy - 10 elements
+   * Lazy(lgArr).select(isEven).each(Lazy.noop) // lazy - 100 elements
+   * _.each(_.select(smArr, isEven), Lazy.noop) // lodash - 10 elements
+   * _.each(_.select(lgArr, isEven), Lazy.noop) // lodash - 100 elements
    */
   Sequence.prototype.select = function(filterFn) {
     return new FilteredSequence(this, createCallback(filterFn));
@@ -488,12 +486,10 @@
    * Lazy(people).where({ first: "Dan" }) // => [{ first: "Dan", last: "Tao" }]
    *
    * @benchmarks
-   * function noop(e) {}
-   *
    * var animals = ["dog", "cat", "mouse", "horse", "pig", "snake"];
    *
-   * Lazy(animals).where({ length: 3 }).each(noop) // lazy
-   * _.each(_.where(animals, { length: 3 }), noop) // lodash
+   * Lazy(animals).where({ length: 3 }).each(Lazy.noop) // lazy
+   * _.each(_.where(animals, { length: 3 }), Lazy.noop) // lodash
    */
   Sequence.prototype.where = function(properties) {
     return this.filter(function(e) {
@@ -746,13 +742,10 @@
    * Lazy(countries).sortBy(area).last(3).pluck('name')       // => ["USA", "China", "Russia"]
    *
    * @benchmarks
-   * function identity(x) { return x; }
-   * function noop(e) {}
-   *
    * var randoms = Lazy.generate(Math.random).take(100).toArray();
    *
-   * Lazy(randoms).sortBy(identity).each(noop) // lazy
-   * _.each(_.sortBy(randoms, identity), noop) // lodash
+   * Lazy(randoms).sortBy(Lazy.identity).each(Lazy.noop) // lazy
+   * _.each(_.sortBy(randoms, Lazy.identity), Lazy.noop) // lodash
    */
   Sequence.prototype.sortBy = function(sortFn) {
     return new SortedSequence(this, sortFn);
@@ -820,18 +813,16 @@
    *   };
    * }
    *
-   * function noop(e) {}
-   *
    * var mostUnique = Lazy.generate(randomOf(_.range(100)), 100).toArray(),
    *     someUnique = Lazy.generate(randomOf(_.range(50)), 100).toArray(),
    *     mostDupes  = Lazy.generate(randomOf(_.range(5)), 100).toArray();
    *
-   * Lazy(mostUnique).uniq().each(noop) // lazy - mostly unique elements
-   * Lazy(someUnique).uniq().each(noop) // lazy - some unique elements
-   * Lazy(mostDupes).uniq().each(noop)  // lazy - mostly duplicate elements
-   * _.each(_.uniq(mostUnique), noop)   // lodash - mostly unique elements
-   * _.each(_.uniq(someUnique), noop)   // lodash - some unique elements
-   * _.each(_.uniq(mostDupes), noop)    // lodash - mostly duplicate elements
+   * Lazy(mostUnique).uniq().each(Lazy.noop) // lazy - mostly unique elements
+   * Lazy(someUnique).uniq().each(Lazy.noop) // lazy - some unique elements
+   * Lazy(mostDupes).uniq().each(Lazy.noop)  // lazy - mostly duplicate elements
+   * _.each(_.uniq(mostUnique), Lazy.noop)   // lodash - mostly unique elements
+   * _.each(_.uniq(someUnique), Lazy.noop)   // lodash - some unique elements
+   * _.each(_.uniq(mostDupes), Lazy.noop)    // lodash - mostly duplicate elements
    */
   Sequence.prototype.uniq = function(keyFn) {
     return new UniqueSequence(this, createCallback(keyFn));
@@ -858,17 +849,15 @@
    * Lazy([1, 2]).zip([3, 4]) // => [[1, 3], [2, 4]]
    *
    * @benchmarks
-   * function noop(e) {}
-   *
    * var smArrL = Lazy.range(10).toArray(),
    *     smArrR = Lazy.range(10, 20).toArray(),
    *     lgArrL = Lazy.range(100).toArray(),
    *     lgArrR = Lazy.range(100, 200).toArray();
    *
-   * Lazy(smArrL).zip(smArrR).each(noop) // lazy - zipping 10-element arrays
-   * Lazy(lgArrL).zip(lgArrR).each(noop) // lazy - zipping 100-element arrays
-   * _.each(_.zip(smArrL, smArrR), noop) // lodash - zipping 10-element arrays
-   * _.each(_.zip(lgArrL, lgArrR), noop) // lodash - zipping 100-element arrays
+   * Lazy(smArrL).zip(smArrR).each(Lazy.noop) // lazy - zipping 10-element arrays
+   * Lazy(lgArrL).zip(lgArrR).each(Lazy.noop) // lazy - zipping 100-element arrays
+   * _.each(_.zip(smArrL, smArrR), Lazy.noop) // lodash - zipping 10-element arrays
+   * _.each(_.zip(lgArrL, lgArrR), Lazy.noop) // lodash - zipping 100-element arrays
    */
   Sequence.prototype.zip = function(var_args) {
     if (arguments.length === 1) {
@@ -3775,6 +3764,9 @@
   Lazy.AsyncSequence = AsyncSequence;
 
   /*** Useful utility methods ***/
+
+  Lazy.noop     = function(e) {};
+  Lazy.identity = function(x) { return x; };
 
   /**
    * Creates a callback... you know, Lo-Dash style.
