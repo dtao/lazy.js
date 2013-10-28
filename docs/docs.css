@@ -197,18 +197,18 @@ section.method table tbody tr:nth-child(odd) td {
   background-color: #eee;
 }
 
-section.method table.params th,
-section.method table.params td {
+.signature table th:nth-child(1),
+.signature table td:nth-child(1),
+.signature table th:nth-child(2),
+.signature table td:nth-child(2) {
   width: 25%;
 }
 
-section.method table.params td:first-child {
+.signature table td:nth-child(1),
+.signature table td:nth-child(2),
+.examples table td:nth-child(1),
+.examples table td:nth-child(2) {
   font-family: "Source Code Pro", monospace;
-}
-
-section.method table th:last-child,
-section.method table td:last-child {
-  width: 50%;
 }
 
 .signature, .examples, .perf {
