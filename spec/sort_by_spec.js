@@ -12,6 +12,10 @@ describe("Lazy", function() {
       expected: function() { return [adam, daniel, david, happy, lauren, mary]; }
     });
 
+    it("acts like 'pluck' when a string is passed instead of a function", function() {
+      expect(Lazy([{ foo: 2 }, { foo: 1 }]).sortBy('foo')).toComprise([{ foo: 1 }, { foo: 2 }]);
+    });
+
     it("passes an index along with each element", function() {
       expect(Lazy(people).sortBy(Person.getName)).toPassToEach(1, [0, 1, 2, 3, 4, 5]);
     });

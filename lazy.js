@@ -1667,7 +1667,7 @@
   SortedSequence.prototype = new Sequence();
 
   SortedSequence.prototype.each = function(fn) {
-    var sortFn = this.sortFn,
+    var sortFn = createCallback(this.sortFn),
         sorted = this.parent.toArray(),
         i = -1;
 
