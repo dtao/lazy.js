@@ -1184,17 +1184,22 @@
    *     located, or where it belongs in sorted order.
    *
    * @examples
-   * Lazy([1, 3, 6, 9]).sortedIndex(3) // => 1
-   * Lazy([1, 3, 6, 9]).sortedIndex(7) // => 3
+   * function isEven(x) { return x % 2 === 0; }
+   *
+   * Lazy([1, 3, 6, 9]).sortedIndex(3)                    // => 1
+   * Lazy([1, 3, 6, 9]).sortedIndex(7)                    // => 3
+   * Lazy([5, 10, 15, 20]).filter(isEven).sortedIndex(10) // => 0
+   * Lazy([5, 10, 15, 20]).filter(isEven).sortedIndex(12) // => 1
    */
   Sequence.prototype.sortedIndex = function(value) {
-    var lower = 0;
-    var upper = this.length();
-    var i;
+    var indexed = this.getIndex(),
+        lower   = 0,
+        upper   = indexed.length(),
+        i;
 
     while (lower < upper) {
       i = (lower + upper) >>> 1;
-      if (compare(this.get(i), value) === -1) {
+      if (compare(indexed.get(i), value) === -1) {
         lower = i + 1;
       } else {
         upper = i;
