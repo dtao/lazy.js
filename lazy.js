@@ -1619,12 +1619,13 @@
   DropSequence.prototype = new Sequence();
 
   DropSequence.prototype.each = function(fn) {
-    var count = this.count,
-        i     = 0;
+    var count   = this.count,
+        dropped = 0,
+        i       = 0;
 
     this.parent.each(function(e) {
-      if (i++ < count) { return; }
-      return fn(e, i - count);
+      if (dropped++ < count) { return; }
+      return fn(e, i++);
     });
   };
 
