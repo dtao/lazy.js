@@ -3427,6 +3427,63 @@
   };
 
   /**
+   * Finds the index of the first occurrence of the given substring within this
+   * sequence, starting from the specified index (or the beginning of the
+   * sequence).
+   *
+   * @param {string} substring The substring to search for.
+   * @param {number=} startIndex The index from which to start the search.
+   * @returns {number} The first index where the given substring is found, or
+   *     -1 if it isn't in the sequence.
+   *
+   * @examples
+   * Lazy('canal').indexOf('a')    // => 1
+   * Lazy('canal').indexOf('a', 2) // => 3
+   * Lazy('canal').indexOf('ana')  // => 1
+   * Lazy('canal').indexOf('andy') // => -1
+   * Lazy('canal').indexOf('x')    // => -1
+   */
+  StringLikeSequence.prototype.indexOf = function(substring, startIndex) {
+    return this.toString().indexOf(substring, startIndex);
+  };
+
+  /**
+   * Finds the index of the last occurrence of the given substring within this
+   * sequence, starting from the specified index (or the end of the sequence)
+   * and working backwards.
+   *
+   * @param {string} substring The substring to search for.
+   * @param {number=} startIndex The index from which to start the search.
+   * @returns {number} The last index where the given substring is found, or
+   *     -1 if it isn't in the sequence.
+   *
+   * @examples
+   * Lazy('canal').lastIndexOf('a')    // => 3
+   * Lazy('canal').lastIndexOf('a', 2) // => 1
+   * Lazy('canal').lastIndexOf('ana')  // => 1
+   * Lazy('canal').lastIndexOf('andy') // => -1
+   * Lazy('canal').lastIndexOf('x')    // => -1
+   */
+  StringLikeSequence.prototype.lastIndexOf = function(substring, startIndex) {
+    return this.toString().lastIndexOf(substring, startIndex);
+  };
+
+  /**
+   * Checks if this sequence contains a given substring.
+   *
+   * @param {string} substring The substring to check for.
+   * @returns {boolean} Whether or not this sequence contains `substring`.
+   *
+   * @examples
+   * Lazy('hello').contains('ell') // => true
+   * Lazy('hello').contains('')    // => true
+   * Lazy('hello').contains('abc') // => false
+   */
+  StringLikeSequence.prototype.contains = function(substring) {
+    return this.indexOf(substring) !== -1;
+  };
+
+  /**
    * Checks if this sequence ends with a given suffix.
    *
    * @param {string} suffix The suffix to check for.
