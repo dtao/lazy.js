@@ -257,6 +257,24 @@
   };
 
   /**
+   * Provides an indexed view into the sequence.
+   *
+   * For sequences that are already indexed, this will simply return the
+   * sequence. For non-indexed sequences, this will eagerly evaluate the
+   * sequence and cache the result (so subsequent calls will not create
+   * additional arrays).
+   *
+   * @returns {ArrayLikeSequence} A sequence containing the current contents of
+   *     the sequence.
+   */
+  Sequence.prototype.getIndex = function() {
+    if (!this.cachedIndex) {
+      this.cachedIndex = new ArrayWrapper(this.toArray());
+    }
+    return this.cachedIndex;
+  };
+
+  /**
    * Creates an object from a sequence of key/value pairs.
    *
    * @returns {Object} An object with keys and values corresponding to the pairs
@@ -1474,72 +1492,6 @@
   };
 
   /**
-   * A CachingSequence is a `Sequence` that (probably) must fully evaluate the
-   * underlying sequence when {@link #each} is called. For this reason, it
-   * provides a {@link #cache} method to fully populate an array that can then be
-   * referenced internally.
-   *
-   * Frankly, I question the wisdom in this sequence type and think I will
-   * probably refactor this out in the near future. Most likely I will replace it
-   * with something like an 'IteratingSequence' which must expose a 'getIterator'
-   * and not provide {@link #get} or {@link #length} at all. But we'll see.
-   *
-   * @constructor
-   */
-  function CachingSequence() {}
-
-  CachingSequence.prototype = new Sequence();
-
-  /**
-   * Create a new constructor function for a type inheriting from
-   * `CachingSequence`.
-   *
-   * @param {Function} ctor The constructor function.
-   * @returns {Function} A constructor for a new type inheriting from
-   *     `CachingSequence`.
-   */
-  CachingSequence.inherit = function(ctor) {
-    ctor.prototype = new CachingSequence();
-    return ctor;
-  };
-
-  /**
-   * Fully evaluates the sequence and returns a cached result.
-   *
-   * @returns {Array} The cached array, fully populated with the elements in this
-   *     sequence.
-   */
-  CachingSequence.prototype.cache = function() {
-    if (!this.cached) {
-      this.cached = this.toArray();
-    }
-    return this.cached;
-  };
-
-  /**
-   * For internal use only.
-   */
-  CachingSequence.prototype.get = function(i) {
-    return this.cache()[i];
-  };
-
-  /**
-   * For internal use only.
-   */
-  CachingSequence.prototype.length = function() {
-    return this.cache().length;
-  };
-
-  /**
-   * Fully evaluates the sequence and returns an iterator.
-   *
-   * @returns {Iterator} An iterator to iterate over the fully-evaluated sequence.
-   */
-  CachingSequence.prototype.getIterator = function() {
-    return Lazy(this.cache()).getIterator();
-  };
-
-  /**
    * @constructor
    */
   function FilteredSequence(parent, filterFn) {
@@ -1573,12 +1525,12 @@
   ReversedSequence.prototype = new Sequence();
 
   ReversedSequence.prototype.each = function(fn) {
-    var parentArray = this.parent.toArray(),
-        length      = parentArray.length,
-        i           = 0;
+    var indexed = this.parent.getIndex(),
+        length  = indexed.length(),
+        i       = 0;
 
     while (--length >= 0) {
-      if (fn(parentArray[length], i++) === false) {
+      if (fn(indexed.get(length), i++) === false) {
         break;
       }
     }
@@ -1614,26 +1566,37 @@
     }
   };
 
-  var TakeSequence = CachingSequence.inherit(function(parent, count) {
+  /**
+   * @constructor
+   */
+  function TakeSequence(parent, count) {
     this.parent = parent;
     this.count  = count;
-  });
+  }
+
+  TakeSequence.prototype = new Sequence();
 
   TakeSequence.prototype.each = function(fn) {
-    var self = this,
-        i = 0;
-    self.parent.each(function(e) {
+    var count = this.count,
+        i     = 0;
+
+    this.parent.each(function(e) {
       var result;
-      if (i < self.count) { result = fn(e, i); }
-      if (++i >= self.count) { return false; }
+      if (i < count) { result = fn(e, i); }
+      if (++i >= count) { return false; }
       return result;
     });
   };
 
-  var TakeWhileSequence = CachingSequence.inherit(function(parent, predicate) {
+  /**
+   * @constructor
+   */
+  function TakeWhileSequence(parent, predicate) {
     this.parent    = parent;
     this.predicate = predicate;
-  });
+  }
+
+  TakeWhileSequence.prototype = new Sequence();
 
   TakeWhileSequence.prototype.each = function(fn) {
     var predicate = this.predicate;
@@ -1643,10 +1606,15 @@
     });
   };
 
-  var DropSequence = CachingSequence.inherit(function(parent, count) {
+  /**
+   * @constructor
+   */
+  function DropSequence(parent, count) {
     this.parent = parent;
     this.count  = typeof count === "number" ? count : 1;
-  });
+  }
+
+  DropSequence.prototype = new Sequence();
 
   DropSequence.prototype.each = function(fn) {
     var count = this.count,
@@ -1658,10 +1626,15 @@
     });
   };
 
-  var DropWhileSequence = CachingSequence.inherit(function(parent, predicate) {
+  /**
+   * @constructor
+   */
+  function DropWhileSequence(parent, predicate) {
     this.parent    = parent;
     this.predicate = predicate;
-  });
+  }
+
+  DropWhileSequence.prototype = new Sequence();
 
   DropWhileSequence.prototype.each = function(fn) {
     var predicate = this.predicate,
@@ -1680,10 +1653,15 @@
     });
   };
 
-  var SortedSequence = CachingSequence.inherit(function(parent, sortFn) {
+  /**
+   * @constructor
+   */
+  function SortedSequence(parent, sortFn) {
     this.parent = parent;
     this.sortFn = sortFn;
-  });
+  }
+
+  SortedSequence.prototype = new Sequence();
 
   SortedSequence.prototype.each = function(fn) {
     var sortFn = this.sortFn,
@@ -1699,9 +1677,14 @@
     }
   };
 
-  var ShuffledSequence = CachingSequence.inherit(function(parent) {
+  /**
+   * @constructor
+   */
+  function ShuffledSequence(parent) {
     this.parent = parent;
-  });
+  }
+
+  ShuffledSequence.prototype = new Sequence();
 
   ShuffledSequence.prototype.each = function(fn) {
     var shuffled = this.parent.toArray(),
@@ -1718,50 +1701,71 @@
     fn(shuffled[0], j);
   };
 
-  var GroupedSequence = CachingSequence.inherit(function(parent, keyFn) {
-    keyFn = createCallback(keyFn);
+  /**
+   * @constructor
+   */
+  function GroupedSequence(parent, keyFn) {
+    this.parent = parent;
+    this.keyFn  = createCallback(keyFn);
+  }
 
-    this.each = function(fn) {
-      var grouped = {};
-      parent.each(function(e) {
-        var key = keyFn(e);
-        if (!grouped[key]) {
-          grouped[key] = [e];
-        } else {
-          grouped[key].push(e);
-        }
-      });
-      for (var key in grouped) {
-        if (fn([key, grouped[key]]) === false) {
-          break;
-        }
+  GroupedSequence.prototype = new Sequence();
+
+  GroupedSequence.prototype.each = function(fn) {
+    var keyFn   = this.keyFn,
+        grouped = {};
+
+    this.parent.each(function(e) {
+      var key = keyFn(e);
+      if (!grouped[key]) {
+        grouped[key] = [e];
+      } else {
+        grouped[key].push(e);
       }
-    };
-  });
-
-  var CountedSequence = CachingSequence.inherit(function(parent, keyFn) {
-    keyFn = createCallback(keyFn);
-
-    this.each = function(fn) {
-      var grouped = {};
-      parent.each(function(e) {
-        var key = keyFn(e);
-        if (!grouped[key]) {
-          grouped[key] = 1;
-        } else {
-          grouped[key] += 1;
-        }
-      });
-      for (var key in grouped) {
-        fn([key, grouped[key]]);
+    });
+    for (var key in grouped) {
+      if (fn([key, grouped[key]]) === false) {
+        break;
       }
-    };
-  });
+    }
+  };
 
-  var UniqueSequence = CachingSequence.inherit(function(parent, keyFn) {
+  /**
+   * @constructor
+   */
+  function CountedSequence(parent, keyFn) {
+    this.parent = parent;
+    this.keyFn  = createCallback(keyFn);
+  }
+
+  CountedSequence.prototype = new Sequence();
+
+  CountedSequence.prototype.each = function(fn) {
+    var keyFn   = this.keyFn,
+        counted = {};
+
+    this.parent.each(function(e) {
+      var key = keyFn(e);
+      if (!counted[key]) {
+        counted[key] = 1;
+      } else {
+        counted[key] += 1;
+      }
+    });
+    for (var key in counted) {
+      fn([key, counted[key]]);
+    }
+  };
+
+  /**
+   * @constructor
+   */
+  function UniqueSequence(parent, keyFn) {
     this.parent = parent;
     this.keyFn  = keyFn;
-  });
+  }
+
+  UniqueSequence.prototype = new Sequence();
 
   UniqueSequence.prototype.each = function(fn) {
     var cache = new Set(),
@@ -1775,9 +1779,14 @@
     });
   };
 
-  var FlattenedSequence = CachingSequence.inherit(function(parent) {
+  /**
+   * @constructor
+   */
+  function FlattenedSequence(parent) {
     this.parent = parent;
-  });
+  }
+
+  FlattenedSequence.prototype = new Sequence();
 
   FlattenedSequence.prototype.each = function(fn) {
     var index = 0,
@@ -1807,10 +1816,15 @@
     this.parent.each(recurseVisitor);
   };
 
-  var WithoutSequence = CachingSequence.inherit(function(parent, values) {
+  /**
+   * @constructor
+   */
+  function WithoutSequence(parent, values) {
     this.parent = parent;
     this.values = values;
-  });
+  }
+
+  WithoutSequence.prototype = new Sequence();
 
   WithoutSequence.prototype.each = function(fn) {
     var set = createSet(this.values),
@@ -1864,10 +1878,15 @@
     }
   }
 
-  var IntersectionSequence = CachingSequence.inherit(function(parent, arrays) {
+  /**
+   * @constructor
+   */
+  function IntersectionSequence(parent, arrays) {
     this.parent = parent;
     this.arrays = arrays;
-  });
+  }
+
+  IntersectionSequence.prototype = new Sequence();
 
   IntersectionSequence.prototype.each = function(fn) {
     var sets = Lazy(this.arrays).map(function(values) {
@@ -1914,10 +1933,15 @@
     });
   };
 
-  var ZippedSequence = CachingSequence.inherit(function(parent, arrays) {
+  /**
+   * @constructor
+   */
+  function ZippedSequence(parent, arrays) {
     this.parent = parent;
     this.arrays = arrays;
-  });
+  }
+
+  ZippedSequence.prototype = new Sequence();
 
   ZippedSequence.prototype.each = function(fn) {
     var arrays = this.arrays,
@@ -2286,6 +2310,13 @@
    */
   ArrayLikeSequence.prototype.length = function() {
     return this.parent.length();
+  };
+
+  /**
+   * Returns the current sequence (since it is already indexed).
+   */
+  ArrayLikeSequence.prototype.getIndex = function() {
+    return this;
   };
 
   /**
@@ -2739,7 +2770,7 @@
     this.keyFn  = createCallback(keyFn);
   }
 
-  UniqueArrayWrapper.prototype = new CachingSequence();
+  UniqueArrayWrapper.prototype = new Sequence();
 
   UniqueArrayWrapper.prototype.eachNoCache = function(fn) {
     var source = this.parent.source,
