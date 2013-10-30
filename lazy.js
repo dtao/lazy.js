@@ -4169,7 +4169,7 @@
 
   /*** Useful utility methods ***/
 
-  Lazy.noop     = function(e) {};
+  Lazy.noop     = function() {};
   Lazy.identity = function(x) { return x; };
 
   /**
