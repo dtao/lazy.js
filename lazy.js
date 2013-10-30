@@ -4200,9 +4200,7 @@
         };
 
       case "undefined":
-        return function(e) {
-          return e;
-        };
+        return Lazy.identity;
 
       default:
         throw "Don't know how to make a callback from a " + typeof callback + "!";
