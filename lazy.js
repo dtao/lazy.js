@@ -197,40 +197,40 @@
 
     // Expose the constructor as a chainable method so that we can do:
     // Lazy(...).map(...).filter(...).blah(...);
-    var methodNames = typeof methodName === 'string' ? [methodName] : methodName;
-    for (var i = 0; i < methodNames.length; ++i) {
+    var factory = (function() {
       /**
        * @skip
        * @suppress {checkTypes}
        */
       switch ((init && init.length) || 0) {
         case 0:
-          Sequence.prototype[methodNames[i]] = function() {
+          return function() {
             return new ctor(this);
           };
-          break;
 
         case 1:
-          Sequence.prototype[methodNames[i]] = function(arg1) {
+          return function(arg1) {
             return new ctor(this, arg1);
           };
-          break;
 
         case 2:
-          Sequence.prototype[methodNames[i]] = function(arg1, arg2) {
+          return function(arg1, arg2) {
             return new ctor(this, arg1, arg2);
           };
-          break;
 
         case 3:
-          Sequence.prototype[methodNames[i]] = function(arg1, arg2, arg3) {
+          return function(arg1, arg2, arg3) {
             return new ctor(this, arg1, arg2, arg3);
           };
-          break;
 
         default:
           throw 'Really need more than three arguments? https://github.com/dtao/lazy.js/issues/new';
       }
+    }());
+
+    var methodNames = typeof methodName === 'string' ? [methodName] : methodName;
+    for (var i = 0; i < methodNames.length; ++i) {
+      Sequence.prototype[methodNames[i]] = factory;
     }
 
     return ctor;
