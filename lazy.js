@@ -343,7 +343,13 @@
    *     Return false from the function to end the iteration.
    *
    * @examples
-   * Lazy(['fizz', 'buzz']).each(function(str) { console.log(str); });
+   * var average = 0;
+   *
+   * Lazy([1, 2, 3, 4]).each(function(value, i) {
+   *   average = ((average * i) + value) / (i + 1);
+   * });
+   *
+   * average // => 2.5
    */
   Sequence.prototype.each = function(fn) {
     var iterator = this.getIterator(),
