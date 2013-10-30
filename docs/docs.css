@@ -178,10 +178,21 @@ article {
   padding: 0 20px;
 }
 
+section.constructor {
+  border-top: 3px double #444;
+  margin-top: 20px;
+}
+
 section.method {
   border-top: 1px solid #444;
 }
 
+section.description h1,
+section.description h2,
+section.description h3,
+section.constructor h1,
+section.constructor h2,
+section.constructor h3,
 section.method h1,
 section.method h2,
 section.method h3 {
@@ -193,6 +204,7 @@ section.method h2 {
   font-size: 34px;
 }
 
+section.constructor table tbody tr:nth-child(odd) td,
 section.method table tbody tr:nth-child(odd) td {
   background-color: #eee;
 }
