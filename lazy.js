@@ -3746,6 +3746,46 @@
    *     and returns a value for the element at that position in the sequence.
    * @param {number=} length The length of the sequence. If this argument is
    *     omitted, the sequence will go on forever.
+   *
+   * @examples
+   * function primeGenerator() {
+   *   var knownPrimes = [];
+   *
+   *   function isFactorOf(x) {
+   *     return function(factor) {
+   *       return x % factor === 0;
+   *     };
+   *   }
+   *
+   *   function isPrime(x) {
+   *     if (Lazy(knownPrimes).any(isFactorOf(x))) {
+   *       return false;
+   *     }
+   *     knownPrimes.push(x);
+   *     return true;
+   *   }
+   *
+   *   function nextPrime() {
+   *     var lastPrime = Lazy(knownPrimes).last();
+   *
+   *     if (!lastPrime) {
+   *       knownPrimes.push(2);
+   *       return 2;
+   *     }
+   *
+   *     var candidate = lastPrime + 1;
+   *     while (!isPrime(candidate)) {
+   *       ++candidate;
+   *     }
+   *
+   *     return candidate;
+   *   }
+   *
+   *   return nextPrime;
+   * }
+   *
+   * Lazy.generate(primeGenerator()).take(5)         // => [2, 3, 5, 7, 11]
+   * Lazy.generate(primeGenerator()).drop(3).take(5) // => [7, 11, 13, 17, 19]
    */
   function GeneratedSequence(generatorFn, length) {
     this.get = generatorFn;
