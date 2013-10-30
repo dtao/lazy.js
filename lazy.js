@@ -2443,9 +2443,9 @@
 
   /**
    * An optimized version of {@link Sequence#map}, which creates an
-   * `ArrayLikeSequence` so that the result still provides random access.
+   * {@link ArrayLikeSequence} so that the result still provides random access.
    *
-   * @returns {ArrayLikeSequence} The new array-like sequence.
+   * @public
    */
   ArrayLikeSequence.prototype.map = function(mapFn) {
     if (typeof mapFn === 'string') {
@@ -2456,7 +2456,7 @@
   };
 
   /**
-   * An optimized version of {@link Sequence#select}.
+   * An optimized version of {@link Sequence#filter}.
    */
   ArrayLikeSequence.prototype.filter = function(filterFn) {
     return new IndexedFilteredSequence(this, createCallback(filterFn));
@@ -2464,7 +2464,9 @@
 
   /**
    * An optimized version of {@link Sequence#reverse}, which creates an
-   * `ArrayLikeSequence` so that the result still provides random access.
+   * {@link ArrayLikeSequence} so that the result still provides random access.
+   *
+   * @public
    */
   ArrayLikeSequence.prototype.reverse = function() {
     return new IndexedReversedSequence(this);
@@ -2472,9 +2474,9 @@
 
   /**
    * An optimized version of {@link Sequence#first}, which creates an
-   * `ArrayLikeSequence` so that the result still provides random access.
+   * {@link ArrayLikeSequence} so that the result still provides random access.
    *
-   * @param {number=} count
+   * @public
    */
   ArrayLikeSequence.prototype.first = function(count) {
     if (typeof count === "undefined") {
@@ -2486,9 +2488,9 @@
 
   /**
    * An optimized version of {@link Sequence#rest}, which creates an
-   * `ArrayLikeSequence` so that the result still provides random access.
+   * {@link ArrayLikeSequence} so that the result still provides random access.
    *
-   * @param {number=} count
+   * @public
    */
   ArrayLikeSequence.prototype.rest = function(count) {
     return new IndexedDropSequence(this, count);
@@ -3022,8 +3024,8 @@
   };
 
   /**
-   * Returns an `ObjectLikeSequence` whose elements are the combination of this
-   * sequence and another object. In the case of a key appearing in both this
+   * Returns an {@link ObjectLikeSequence} whose elements are the combination of
+   * this sequence and another object. In the case of a key appearing in both this
    * sequence and the given object, the other object's value will override the
    * one in this sequence.
    *
@@ -3046,9 +3048,9 @@
   };
 
   /**
-   * Returns an `ObjectLikeSequence` whose elements are the combination of this
-   * sequence and a 'default' object. In the case of a key appearing in both this
-   * sequence and the given object, this sequence's value will override the
+   * Returns an {@link ObjectLikeSequence} whose elements are the combination of
+   * this sequence and a 'default' object. In the case of a key appearing in both
+   * this sequence and the given object, this sequence's value will override the
    * default object's.
    *
    * @public
@@ -3065,8 +3067,8 @@
   };
 
   /**
-   * Returns an `ObjectLikeSequence` whose values are this sequence's keys, and
-   * whose keys are this sequence's values.
+   * Returns an {@link ObjectLikeSequence} whose values are this sequence's keys,
+   * and whose keys are this sequence's values.
    *
    * @public
    * @returns {ObjectLikeSequence} A new sequence comprising the inverted keys and
@@ -3108,8 +3110,8 @@
   };
 
   /**
-   * Creates an `ObjectLikeSequence` consisting of the key/value pairs from this
-   * sequence whose keys are included in the given array of property names.
+   * Creates an {@link ObjectLikeSequence} consisting of the key/value pairs from
+   * this sequence whose keys are included in the given array of property names.
    *
    * @public
    * @param {Array} properties An array of the properties to "pick" from this
@@ -3130,8 +3132,8 @@
   };
 
   /**
-   * Creates an `ObjectLikeSequence` consisting of the key/value pairs from this
-   * sequence excluding those with the specified keys.
+   * Creates an {@link ObjectLikeSequence} consisting of the key/value pairs from
+   * this sequence excluding those with the specified keys.
    *
    * @public
    * @param {Array} properties An array of the properties to *omit* from this
@@ -4063,6 +4065,7 @@
    * - For **strings**, Lazy will create a sequence of characters (a
    *   {@link StringLikeSequence}).
    *
+   * @public
    * @param {Array|Object|string} source An array, object, or string to wrap.
    * @returns {Sequence} The wrapped lazy object.
    *
