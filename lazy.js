@@ -237,6 +237,38 @@
   };
 
   /**
+   * Creates an {@link Iterator} object with two methods, `moveNext` -- returning
+   * true or false -- and `current` -- returning the current value.
+   *
+   * This method is used when asynchronously iterating over sequences. Any type
+   * inheriting from `Sequence` must implement this method or it can't support
+   * asynchronous iteration.
+   *
+   * @returns {Iterator} An iterator object.
+   *
+   * @example
+   * var iterator = Lazy([1, 2]).getIterator();
+   *
+   * iterator.moveNext();
+   * // => true
+   *
+   * iterator.current();
+   * // => 1
+   *
+   * iterator.moveNext();
+   * // => true
+   *
+   * iterator.current();
+   * // => 2
+   *
+   * iterator.moveNext();
+   * // => false
+   */
+  Sequence.prototype.getIterator = function() {
+    return new Iterator(this);
+  };
+
+  /**
    * Creates an array snapshot of a sequence.
    *
    * Note that for indefinite sequences, this method may raise an exception or
@@ -1960,12 +1992,12 @@
   /**
    * The Iterator object provides an API for iterating over a sequence.
    *
-   * @param {ArrayLikeSequence=} sequence The sequence to iterate over.
+   * @param {Sequence} sequence The sequence to iterate over.
    * @constructor
    */
   function Iterator(sequence) {
     this.sequence = sequence;
-    this.index = -1;
+    this.index    = -1;
   }
 
   /**
@@ -1974,7 +2006,7 @@
    * @returns {*} The current item.
    */
   Iterator.prototype.current = function() {
-    return this.sequence.get(this.index);
+    return this.cachedIndex && this.cachedIndex.get(this.index);
   };
 
   /**
@@ -1984,6 +2016,37 @@
    *     false.
    */
   Iterator.prototype.moveNext = function() {
+    var cachedIndex = this.cachedIndex;
+
+    if (!cachedIndex) {
+      cachedIndex = this.cachedIndex = this.sequence.getIndex();
+    }
+
+    if (this.index >= cachedIndex.length() - 1) {
+      return false;
+    }
+
+    ++this.index;
+    return true;
+  };
+
+  /**
+   * An optimized version of {@link Iterator} meant to work with already-indexed
+   * sequences.
+   *
+   * @param {ArrayLikeSequence} sequence The sequence to iterate over.
+   * @constructor
+   */
+  function IndexedIterator(sequence) {
+    this.sequence = sequence;
+    this.index    = -1;
+  }
+
+  IndexedIterator.prototype.current = function() {
+    return this.sequence.get(this.index);
+  };
+
+  IndexedIterator.prototype.moveNext = function() {
     if (this.index >= this.sequence.length() - 1) {
       return false;
     }
@@ -2029,8 +2092,6 @@
     this.source = source;
     this.index = -1;
   }
-
-  CharIterator.prototype = new Iterator();
 
   CharIterator.prototype.current = function() {
     return this.source.charAt(this.index);
@@ -2134,8 +2195,6 @@
     this.memo         = [];
     this.currentValue = undefined;
   }
-
-  UniqueMemoizer.prototype = new Iterator();
 
   UniqueMemoizer.prototype.current = function() {
     return this.currentValue;
@@ -2320,35 +2379,10 @@
   };
 
   /**
-   * Creates an iterator object with two methods, `moveNext` -- returning true or
-   * false -- and `current` -- returning the current value.
-   *
-   * This method is used when asynchronously iterating over sequences. Any type
-   * inheriting from `Sequence` must implement this method or it can't support
-   * asynchronous iteration.
-   *
-   * @returns {Iterator} An iterator object.
-   *
-   * @example
-   * var iterator = Lazy([1, 2]).getIterator();
-   *
-   * iterator.moveNext();
-   * // => true
-   *
-   * iterator.current();
-   * // => 1
-   *
-   * iterator.moveNext();
-   * // => true
-   *
-   * iterator.current();
-   * // => 2
-   *
-   * iterator.moveNext();
-   * // => false
+   * An optimized version of {@link Sequence#getIterator}.
    */
   ArrayLikeSequence.prototype.getIterator = function() {
-    return new Iterator(this);
+    return new IndexedIterator(this);
   };
 
   /**
@@ -3292,10 +3326,10 @@
   StringLikeSequence.prototype = new ArrayLikeSequence();
 
   /**
-   * Returns an {@link Iterator} that will step over each character in this
+   * Returns an {@link IndexedIterator} that will step over each character in this
    * sequence one by one.
    *
-   * @returns {Iterator} The iterator.
+   * @returns {IndexedIterator} The iterator.
    */
   StringLikeSequence.prototype.getIterator = function() {
     return new CharIterator(this.source);
