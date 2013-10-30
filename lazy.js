@@ -145,6 +145,7 @@
   /**
    * Create a new constructor function for a type inheriting from `Sequence`.
    *
+   * @public
    * @param {string|Array.<string>} methodName The name(s) of the method(s) to be
    *     used for constructing the new sequence. The method will be attached to
    *     the `Sequence` prototype so that it can be chained with any other
@@ -244,6 +245,7 @@
    * inheriting from `Sequence` must implement this method or it can't support
    * asynchronous iteration.
    *
+   * @public
    * @returns {Iterator} An iterator object.
    *
    * @example
@@ -274,6 +276,7 @@
    * Note that for indefinite sequences, this method may raise an exception or
    * (worse) cause the environment to hang.
    *
+   * @public
    * @returns {Array} An array containing the current contents of the sequence.
    *
    * @examples
@@ -309,6 +312,7 @@
   /**
    * Creates an object from a sequence of key/value pairs.
    *
+   * @public
    * @returns {Object} An object with keys and values corresponding to the pairs
    *     of elements in the sequence.
    *
@@ -333,6 +337,8 @@
   /**
    * Iterates over this sequence and executes a function for every element.
    *
+   * @public
+   * @aka forEach
    * @param {Function} fn The function to call on each element in the sequence.
    *     Return false from the function to end the iteration.
    *
@@ -352,9 +358,6 @@
     return true;
   };
 
-  /**
-   * Alias for {@link Sequence#each}.
-   */
   Sequence.prototype.forEach = function(fn) {
     return this.each(fn);
   };
@@ -363,11 +366,8 @@
    * Creates a new sequence whose values are calculated by passing this sequence's
    * elements through some mapping function.
    *
-   * @function map
-   * @memberOf Sequence
-   * @instance
+   * @public
    * @aka collect
-   *
    * @param {Function} mapFn The mapping function used to project this sequence's
    *     elements onto a new sequence.
    * @returns {Sequence} The new sequence.
@@ -397,19 +397,15 @@
     return new MappedSequence(this, mapFn);
   };
 
-  /**
-   * Alias for {@link Sequence#map}.
-   *
-   * @function collect
-   * @memberOf Sequence
-   * @instance
-   */
-  Sequence.prototype.collect = Sequence.prototype.map;
+  Sequence.prototype.collect = function(mapFn) {
+    return this.map(mapFn);
+  };
 
   /**
    * Creates a new sequence whose values are calculated by accessing the specified
    * property from each element in this sequence.
    *
+   * @public
    * @param {string} propertyName The name of the property to access for every
    *     element in this sequence.
    * @returns {Sequence} The new sequence.
@@ -432,6 +428,7 @@
    * Creates a new sequence whose values are calculated by invoking the specified
    * function on each element in this sequence.
    *
+   * @public
    * @param {string} methodName The name of the method to invoke for every element
    *     in this sequence.
    * @returns {Sequence} The new sequence.
@@ -460,11 +457,8 @@
    * Creates a new sequence whose values are the elements of this sequence which
    * satisfy the specified predicate.
    *
-   * @function filter
-   * @memberOf Sequence
-   * @instance
+   * @public
    * @aka select
-   *
    * @param {Function} filterFn The predicate to call on each element in this
    *     sequence, which returns true if the element should be included.
    * @returns {Sequence} The new sequence.
@@ -474,7 +468,7 @@
    *
    * var numbers = [1, 2, 3, 4, 5, 6];
    *
-   * Lazy(numbers).select(isEven) // => [2, 4, 6]
+   * Lazy(numbers).filter(isEven) // => [2, 4, 6]
    *
    * @benchmarks
    * function isEven(x) { return x % 2 === 0; }
@@ -482,28 +476,24 @@
    * var smArr = Lazy.range(10).toArray(),
    *     lgArr = Lazy.range(100).toArray();
    *
-   * Lazy(smArr).select(isEven).each(Lazy.noop) // lazy - 10 elements
-   * Lazy(lgArr).select(isEven).each(Lazy.noop) // lazy - 100 elements
-   * _.each(_.select(smArr, isEven), Lazy.noop) // lodash - 10 elements
-   * _.each(_.select(lgArr, isEven), Lazy.noop) // lodash - 100 elements
+   * Lazy(smArr).filter(isEven).each(Lazy.noop) // lazy - 10 elements
+   * Lazy(lgArr).filter(isEven).each(Lazy.noop) // lazy - 100 elements
+   * _.each(_.filter(smArr, isEven), Lazy.noop) // lodash - 10 elements
+   * _.each(_.filter(lgArr, isEven), Lazy.noop) // lodash - 100 elements
    */
-  Sequence.prototype.select = function(filterFn) {
+  Sequence.prototype.filter = function(filterFn) {
     return new FilteredSequence(this, createCallback(filterFn));
   };
 
-  /**
-   * Alias for {@link Sequence#select}.
-   *
-   * @function filter
-   * @memberOf Sequence
-   * @instance
-   */
-  Sequence.prototype.filter = Sequence.prototype.select;
+  Sequence.prototype.select = function(filterFn) {
+    return this.filter(filterFn);
+  };
 
   /**
    * Creates a new sequence whose values exclude the elements of this sequence
    * identified by the specified predicate.
    *
+   * @public
    * @param {Function} rejectFn The predicate to call on each element in this
    *     sequence, which returns true if the element should be omitted.
    * @returns {Sequence} The new sequence.
@@ -523,6 +513,7 @@
    * Creates a new sequence whose values are the elements of this sequence with
    * property names and values matching those of the specified object.
    *
+   * @public
    * @param {Object} properties The properties that should be found on every
    *     element that is to be included in this sequence.
    * @returns {Sequence} The new sequence.
@@ -559,6 +550,7 @@
    * Note that in some (but not all) cases, the only way to create such a sequence
    * may require iterating the entire underlying source when `each` is called.
    *
+   * @public
    * @returns {Sequence} The new sequence.
    *
    * @examples
@@ -574,6 +566,7 @@
    * Creates a new sequence with all of the elements of this one, plus those of
    * the given array(s).
    *
+   * @public
    * @param {...*} var_args One or more values (or arrays of values) to use for
    *     additional items after this sequence.
    * @returns {Sequence} The new sequence.
@@ -592,6 +585,8 @@
    * Creates a new sequence comprising the first N elements from this sequence, OR
    * (if N is `undefined`) simply returns the first element of this sequence.
    *
+   * @public
+   * @aka head, take
    * @param {number=} count The number of elements to take from this sequence. If
    *     this value exceeds the length of the sequence, the resulting sequence
    *     will be essentially the same as this one.
@@ -616,29 +611,17 @@
     return new TakeSequence(this, count);
   };
 
-  /**
-   * Alias for {@link Sequence#first}.
-   *
-   * @function head
-   * @memberOf Sequence
-   * @instance
-   */
-  Sequence.prototype.head = Sequence.prototype.first;
-
-  /**
-   * Alias for {@link Sequence#first}.
-   *
-   * @function take
-   * @memberOf Sequence
-   * @instance
-   */
-  Sequence.prototype.take = Sequence.prototype.first;
+  Sequence.prototype.head =
+  Sequence.prototype.take = function (count) {
+    return this.first(count);
+  };
 
   /**
    * Creates a new sequence comprising the elements from the head of this sequence
    * that satisfy some predicate. Once an element is encountered that doesn't
    * satisfy the predicate, iteration will stop.
    *
+   * @public
    * @param {Function} predicate
    * @returns {Sequence} The new sequence
    *
@@ -660,6 +643,7 @@
    * Creates a new sequence comprising all but the last N elements of this
    * sequence.
    *
+   * @public
    * @param {number=} count The number of items to omit from the end of the
    *     sequence (defaults to 1).
    * @returns {Sequence} The new sequence.
@@ -679,6 +663,7 @@
    * Creates a new sequence comprising the last N elements of this sequence, OR
    * (if N is `undefined`) simply returns the last element of this sequence.
    *
+   * @public
    * @param {number=} count The number of items to take from the end of the
    *     sequence.
    * @returns {*} The new sequence (or the last element from this sequence
@@ -699,6 +684,7 @@
    * Returns the first element in this sequence with property names and values
    * matching those of the specified object.
    *
+   * @public
    * @param {Object} properties The properties that should be found on some
    *     element in this sequence.
    * @returns {*} The found element, or `undefined` if none exists in this
@@ -718,6 +704,8 @@
    * Creates a new sequence comprising all but the first N elements of this
    * sequence.
    *
+   * @public
+   * @aka skip, tail, rest
    * @param {number=} count The number of items to omit from the beginning of the
    *     sequence (defaults to 1).
    * @returns {Sequence} The new sequence.
@@ -732,49 +720,35 @@
     return new DropSequence(this, count);
   };
 
-  /**
-   * Alias for {@link Sequence#drop}.
-   *
-   * @function skip
-   * @memberOf Sequence
-   * @instance
-   */
-  Sequence.prototype.skip = Sequence.prototype.drop;
-
-  /**
-   * Alias for {@link Sequence#drop}.
-   *
-   * @function tail
-   * @memberOf Sequence
-   * @instance
-   */
-  Sequence.prototype.tail = Sequence.prototype.drop;
-
-  /**
-   * Alias for {@link Sequence#drop}.
-   *
-   * @function rest
-   * @memberOf Sequence
-   * @instance
-   */
-  Sequence.prototype.rest = Sequence.prototype.drop;
+  Sequence.prototype.skip =
+  Sequence.prototype.tail =
+  Sequence.prototype.rest = function(count) {
+    return this.drop(count);
+  };
 
   /**
    * Creates a new sequence comprising the elements from this sequence *after*
    * those that satisfy some predicate. The sequence starts with the first
    * element that does not match the predicate.
    *
+   * @public
+   * @aka skipWhile
    * @param {Function} predicate
    * @returns {Sequence} The new sequence
    */
-  Sequence.prototype.dropWhile = Sequence.prototype.skipWhile = function(predicate) {
+  Sequence.prototype.dropWhile = function(predicate) {
     return new DropWhileSequence(this, predicate);
+  };
+
+  Sequence.prototype.skipWhile = function(predicate) {
+    return this.dropWhile(predicate);
   };
 
   /**
    * Creates a new sequence with the same elements as this one, but ordered
    * according to the values returned by the specified function.
    *
+   * @public
    * @param {Function} sortFn The function to call on the elements in this
    *     sequence, in order to sort them.
    * @returns {Sequence} The new sequence.
@@ -816,6 +790,7 @@
    * of the form `[key, values]` where `values` is an array containing all of
    * the elements in this sequence with the same key.
    *
+   * @public
    * @param {Function|string} keyFn The function to call on the elements in this
    *     sequence to obtain a key by which to group them, or a string representing
    *     a parameter to read from all the elements in this sequence.
@@ -839,6 +814,7 @@
    * this sequence, each paired with a number representing the number of times
    * that key appears in the sequence.
    *
+   * @public
    * @param {Function} keyFn The function to call on the elements in this
    *     sequence to obtain a key by which to count them.
    * @returns {Sequence} The new sequence.
@@ -860,6 +836,8 @@
    * Creates a new sequence with every unique element from this one appearing
    * exactly once (i.e., with duplicates removed).
    *
+   * @public
+   * @aka unique
    * @returns {Sequence} The new sequence.
    *
    * @examples
@@ -887,19 +865,15 @@
     return new UniqueSequence(this, createCallback(keyFn));
   };
 
-  /**
-   * Alias for {@link Sequence#uniq}.
-   *
-   * @function unique
-   * @memberOf Sequence
-   * @instance
-   */
-  Sequence.prototype.unique = Sequence.prototype.uniq;
+  Sequence.prototype.unique = function(keyFn) {
+    return this.uniq(keyFn);
+  };
 
   /**
    * Creates a new sequence by combining the elements from this sequence with
    * corresponding elements from the specified array(s).
    *
+   * @public
    * @param {...Array} var_args One or more arrays of elements to combine with
    *     those of this sequence.
    * @returns {Sequence} The new sequence.
@@ -930,6 +904,7 @@
    * Creates a new sequence with the same elements as this one, in a randomized
    * order.
    *
+   * @public
    * @returns {Sequence} The new sequence.
    *
    * @examples
@@ -944,6 +919,7 @@
    * exploded so that a sequence of arrays (of arrays) becomes a flat sequence of
    * values.
    *
+   * @public
    * @returns {Sequence} The new sequence.
    *
    * @examples
@@ -957,6 +933,7 @@
    * Creates a new sequence with the same elements as this one, except for all
    * falsy values (`false`, `0`, `""`, `null`, and `undefined`).
    *
+   * @public
    * @returns {Sequence} The new sequence.
    *
    * @examples
@@ -970,6 +947,8 @@
    * Creates a new sequence with all the elements of this sequence that are not
    * also among the specified arguments.
    *
+   * @public
+   * @aka difference
    * @param {...*} var_args The values, or array(s) of values, to be excluded from the
    *     resulting sequence.
    * @returns {Sequence} The new sequence.
@@ -982,19 +961,15 @@
     return new WithoutSequence(this, Array.prototype.slice.call(arguments, 0));
   };
 
-  /**
-   * Alias for {@link Sequence#without}.
-   *
-   * @function difference
-   * @memberOf Sequence
-   * @instance
-   */
-  Sequence.prototype.difference = Sequence.prototype.without;
+  Sequence.prototype.difference = function(var_args) {
+    return this.without.apply(this, arguments);
+  };
 
   /**
    * Creates a new sequence with all the unique elements either in this sequence
    * or among the specified arguments.
    *
+   * @public
    * @param {...*} var_args The values, or array(s) of values, to be additionally
    *     included in the resulting sequence.
    * @returns {Sequence} The new sequence.
@@ -1011,6 +986,7 @@
    * Creates a new sequence with all the elements of this sequence that also
    * appear among the specified arguments.
    *
+   * @public
    * @param {...*} var_args The values, or array(s) of values, in which elements
    *     from this sequence must also be included to end up in the resulting sequence.
    * @returns {Sequence} The new sequence.
@@ -1030,6 +1006,8 @@
   /**
    * Checks whether every element in this sequence satisfies a given predicate.
    *
+   * @public
+   * @aka all
    * @param {Function} predicate A function to call on (potentially) every element
    *     in this sequence.
    * @returns {boolean} True if `predicate` returns true for every element in the
@@ -1056,20 +1034,17 @@
     return success;
   };
 
-  /**
-   * Alias for {@link Sequence#every}.
-   *
-   * @function all
-   * @memberOf Sequence
-   * @instance
-   */
-  Sequence.prototype.all = Sequence.prototype.every;
+  Sequence.prototype.all = function(predicate) {
+    return this.every(predicate);
+  };
 
   /**
    * Checks whether at least one element in this sequence satisfies a given
    * predicate (or, if no predicate is specified, whether the sequence contains at
    * least one element).
    *
+   * @public
+   * @aka any
    * @param {Function=} predicate A function to call on (potentially) every element
    *     in this sequence.
    * @returns {boolean} True if `predicate` returns true for at least one element
@@ -1100,18 +1075,14 @@
     return success;
   };
 
-  /**
-   * Alias for {@link Sequence#some}.
-   *
-   * @function any
-   * @memberOf Sequence
-   * @instance
-   */
-  Sequence.prototype.any = Sequence.prototype.some;
+  Sequence.prototype.any = function(predicate) {
+    return this.some(predicate);
+  };
 
   /**
    * Checks whether the sequence has no elements.
    *
+   * @public
    * @returns {boolean} True if the sequence is empty, false if it contains at
    *     least one element.
    *
@@ -1127,6 +1098,7 @@
    * Performs (at worst) a linear search from the head of this sequence,
    * returning the first index at which the specified value is found.
    *
+   * @public
    * @param {*} value The element to search for in the sequence.
    * @returns {number} The index within this sequence where the given value is
    *     located, or -1 if the sequence doesn't contain the value.
@@ -1155,6 +1127,7 @@
    * Performs (at worst) a linear search from the tail of this sequence,
    * returning the last index at which the specified value is found.
    *
+   * @public
    * @param {*} value The element to search for in the sequence.
    * @returns {number} The last index within this sequence where the given value
    *     is located, or -1 if the sequence doesn't contain the value.
@@ -1176,9 +1149,9 @@
    * the given value is either found, or where it belongs (if it is not already
    * in the sequence).
    *
-   * This method assumes the sequence is in sorted order and will fail
-   * otherwise.
+   * This method assumes the sequence is in sorted order and will fail otherwise.
    *
+   * @public
    * @param {*} value The element to search for in the sequence.
    * @returns {number} An index within this sequence where the given value is
    *     located, or where it belongs in sorted order.
@@ -1211,6 +1184,7 @@
   /**
    * Checks whether the given value is in this sequence.
    *
+   * @public
    * @param {*} value The element to search for in the sequence.
    * @returns {boolean} True if the sequence contains the value, false if not.
    *
@@ -1228,6 +1202,8 @@
    * Aggregates a sequence into a single value according to some accumulator
    * function.
    *
+   * @public
+   * @aka inject, foldl
    * @param {Function} aggregator The function through which to pass every element
    *     in the sequence. For every element, the function will be passed the total
    *     aggregated result thus far and the element itself, and should return a
@@ -1255,28 +1231,17 @@
     return memo;
   };
 
-  /**
-   * Alias for {@link Sequence#reduce}.
-   *
-   * @function inject
-   * @memberOf Sequence
-   * @instance
-   */
-  Sequence.prototype.inject = Sequence.prototype.reduce;
-
-  /**
-   * Alias for {@link Sequence#reduce}.
-   *
-   * @function foldl
-   * @memberOf Sequence
-   * @instance
-   */
-  Sequence.prototype.foldl = Sequence.prototype.reduce;
+  Sequence.prototype.inject =
+  Sequence.prototype.foldl = function(aggregator, memo) {
+    return this.reduce(aggregator, memo);
+  };
 
   /**
    * Aggregates a sequence, from the tail, into a single value according to some
    * accumulator function.
    *
+   * @public
+   * @aka foldr
    * @param {Function} aggregator The function through which to pass every element
    *     in the sequence. For every element, the function will be passed the total
    *     aggregated result thus far and the element itself, and should return a
@@ -1304,18 +1269,15 @@
     }, memo);
   };
 
-  /**
-   * Alias for {@link Sequence#reduceRight}.
-   *
-   * @function foldr
-   * @memberOf Sequence
-   * @instance
-   */
-  Sequence.prototype.foldr = Sequence.prototype.reduceRight;
+  Sequence.prototype.foldr = function(aggregator, memo) {
+    return this.reduceRight(aggregator, memo);
+  };
 
   /**
    * Seaches for the first element in the sequence satisfying a given predicate.
    *
+   * @public
+   * @aka detect
    * @param {Function} predicate A function to call on (potentially) every element
    *     in the sequence.
    * @returns {*} The first element in the sequence for which `predicate` returns
@@ -1339,18 +1301,14 @@
     return this.filter(predicate).first();
   };
 
-  /**
-   * Alias for {@link Sequence#find}.
-   *
-   * @function detect
-   * @memberOf Sequence
-   * @instance
-   */
-  Sequence.prototype.detect = Sequence.prototype.find;
+  Sequence.prototype.detect = function(predicate) {
+    return this.find(predicate);
+  };
 
   /**
    * Gets the minimum value in the sequence.
    *
+   * @public
    * @param {Function=} valueFn The function by which the value for comparison is
    *     calculated for each element in the sequence.
    * @returns {*} The element with the lowest value in the sequence, or
@@ -1393,6 +1351,7 @@
   /**
    * Gets the maximum value in the sequence.
    *
+   * @public
    * @param {Function=} valueFn The function by which the value for comparison is
    *     calculated for each element in the sequence.
    * @returns {*} The element with the highest value in the sequence, or
@@ -1437,6 +1396,7 @@
   /**
    * Gets the sum of the values in the sequence.
    *
+   * @public
    * @param {Function=} valueFn The function used to select the values that will
    *     be summed up.
    * @returns {*} The sum.
@@ -1463,6 +1423,8 @@
    * Creates a string from joining together all of the elements in this sequence,
    * separated by the given delimiter.
    *
+   * @public
+   * @aka toString
    * @param {string=} delimiter The separator to insert between every element from
    *     this sequence in the resulting string (defaults to `","`).
    * @returns {string} The delimited string.
@@ -1484,19 +1446,15 @@
     return str;
   };
 
-  /**
-   * Alias for {@link Sequence#join}.
-   *
-   * @function toString
-   * @memberOf Sequence
-   * @instance
-   */
-  Sequence.prototype.toString = Sequence.prototype.join;
+  Sequence.prototype.toString = function(delimiter) {
+    return this.join(delimiter);
+  };
 
   /**
    * Creates a sequence, with the same elements as this one, that will be iterated
    * over asynchronously when calling `each`.
    *
+   * @public
    * @param {number=} interval The approximate period, in milliseconds, that
    *     should elapse between each element in the resulting sequence. Omitting
    *     this argument will result in the fastest possible asynchronous iteration.
@@ -1998,6 +1956,7 @@
   /**
    * The Iterator object provides an API for iterating over a sequence.
    *
+   * @public
    * @param {Sequence} sequence The sequence to iterate over.
    * @constructor
    */
@@ -2009,6 +1968,7 @@
   /**
    * Gets the current item this iterator is pointing to.
    *
+   * @public
    * @returns {*} The current item.
    */
   Iterator.prototype.current = function() {
@@ -2018,6 +1978,7 @@
   /**
    * Moves the iterator to the next item in a sequence, if possible.
    *
+   * @public
    * @returns {boolean} True if the iterator is able to move to a new item, or else
    *     false.
    */
@@ -2347,6 +2308,7 @@
   /**
    * Returns the element at the specified index.
    *
+   * @public
    * @param {number} i The index to access.
    * @returns {*} The element.
    *
@@ -2364,6 +2326,7 @@
   /**
    * Returns the length of the sequence.
    *
+   * @public
    * @returns {number} The length.
    *
    * @examples
@@ -2418,16 +2381,12 @@
     return new IndexedMappedSequence(this, mapFn);
   };
 
-  ArrayLikeSequence.prototype.collect = ArrayLikeSequence.prototype.map;
-
   /**
    * An optimized version of {@link Sequence#select}.
    */
-  ArrayLikeSequence.prototype.select = function(filterFn) {
+  ArrayLikeSequence.prototype.filter = function(filterFn) {
     return new IndexedFilteredSequence(this, createCallback(filterFn));
   };
-
-  ArrayLikeSequence.prototype.filter = ArrayLikeSequence.prototype.select;
 
   /**
    * An optimized version of {@link Sequence#reverse}, which creates an
@@ -2451,10 +2410,6 @@
     return new IndexedTakeSequence(this, count);
   };
 
-  ArrayLikeSequence.prototype.head =
-  ArrayLikeSequence.prototype.take =
-  ArrayLikeSequence.prototype.first;
-
   /**
    * An optimized version of {@link Sequence#rest}, which creates an
    * `ArrayLikeSequence` so that the result still provides random access.
@@ -2464,9 +2419,6 @@
   ArrayLikeSequence.prototype.rest = function(count) {
     return new IndexedDropSequence(this, count);
   };
-
-  ArrayLikeSequence.prototype.tail =
-  ArrayLikeSequence.prototype.drop = ArrayLikeSequence.prototype.rest;
 
   /**
    * An optimized version of {@link Sequence#concat}.
@@ -2956,12 +2908,12 @@
   /**
    * Gets the element at the specified key in this sequence.
    *
+   * @public
    * @param {string} key The key.
    * @returns {*} The element.
    *
-   * @example
-   * Lazy({ foo: "bar" }).get("foo");
-   * // => "bar"
+   * @examples
+   * Lazy({ foo: "bar" }).get("foo") // => "bar"
    */
   ObjectLikeSequence.prototype.get = function(key) {
     return this.parent.get(key);
@@ -2971,6 +2923,7 @@
    * Returns a {@link Sequence} whose elements are the keys of this object-like
    * sequence.
    *
+   * @public
    * @returns {Sequence} The sequence based on this sequence's keys.
    *
    * @examples
@@ -2984,6 +2937,7 @@
    * Returns a {@link Sequence} whose elements are the values of this object-like
    * sequence.
    *
+   * @public
    * @returns {Sequence} The sequence based on this sequence's values.
    *
    * @examples
@@ -2999,6 +2953,8 @@
    * sequence and the given object, the other object's value will override the
    * one in this sequence.
    *
+   * @public
+   * @aka extend
    * @param {Object} other The other object to assign to this sequence.
    * @returns {ObjectLikeSequence} A new sequence comprising elements from this
    *     sequence plus the contents of `other`.
@@ -3011,14 +2967,9 @@
     return new AssignSequence(this, other);
   };
 
-  /**
-   * Alias for {@link ObjectLikeSequence#assign}.
-   *
-   * @function extend
-   * @memberOf ObjectLikeSequence
-   * @instance
-   */
-  ObjectLikeSequence.prototype.extend = ObjectLikeSequence.prototype.assign;
+  ObjectLikeSequence.prototype.extend = function(other) {
+    return this.assign(other);
+  };
 
   /**
    * Returns an `ObjectLikeSequence` whose elements are the combination of this
@@ -3026,6 +2977,7 @@
    * sequence and the given object, this sequence's value will override the
    * default object's.
    *
+   * @public
    * @param {Object} defaults The 'default' object to use for missing keys in this
    *     sequence.
    * @returns {ObjectLikeSequence} A new sequence comprising elements from this
@@ -3042,6 +2994,7 @@
    * Returns an `ObjectLikeSequence` whose values are this sequence's keys, and
    * whose keys are this sequence's values.
    *
+   * @public
    * @returns {ObjectLikeSequence} A new sequence comprising the inverted keys and
    *     values from this sequence.
    *
@@ -3056,6 +3009,8 @@
    * Creates a {@link Sequence} consisting of the keys from this sequence whose
    *     values are functions.
    *
+   * @public
+   * @aka methods
    * @returns {Sequence} The new sequence.
    *
    * @examples
@@ -3074,19 +3029,15 @@
       .map(function(v, k) { return k; });
   };
 
-  /**
-   * Alias for {@link ObjectLikeSequence#functions}.
-   *
-   * @function methods
-   * @memberOf ObjectLikeSequence
-   * @instance
-   */
-  ObjectLikeSequence.prototype.methods = ObjectLikeSequence.prototype.functions;
+  ObjectLikeSequence.prototype.methods = function() {
+    return this.functions();
+  };
 
   /**
    * Creates an `ObjectLikeSequence` consisting of the key/value pairs from this
    * sequence whose keys are included in the given array of property names.
    *
+   * @public
    * @param {Array} properties An array of the properties to "pick" from this
    *     sequence.
    * @returns {ObjectLikeSequence} The new sequence.
@@ -3108,6 +3059,7 @@
    * Creates an `ObjectLikeSequence` consisting of the key/value pairs from this
    * sequence excluding those with the specified keys.
    *
+   * @public
    * @param {Array} properties An array of the properties to *omit* from this
    *     sequence.
    * @returns {ObjectLikeSequence} The new sequence.
@@ -3128,6 +3080,8 @@
   /**
    * Creates an array from the key/value pairs in this sequence.
    *
+   * @public
+   * @aka pairs
    * @returns {Array} An array of `[key, value]` elements.
    *
    * @examples
@@ -3143,18 +3097,14 @@
     return this.map(function(v, k) { return [k, v]; }).toArray();
   };
 
-  /**
-   * Alias for {@link ObjectLikeSequence#toArray}.
-   *
-   * @function pairs
-   * @memberOf ObjectLikeSequence
-   * @instance
-   */
-  ObjectLikeSequence.prototype.pairs = ObjectLikeSequence.prototype.toArray;
+  ObjectLikeSequence.prototype.pairs = function() {
+    return this.toArray();
+  };
 
   /**
    * Creates an object with the key/value pairs from this sequence.
    *
+   * @public
    * @returns {Object} An object with the same key/value pairs as this sequence.
    *
    * @examples
@@ -3340,6 +3290,7 @@
    * Returns the character at the given index of this sequence, or the empty
    * string if the specified index lies outside the bounds of the sequence.
    *
+   * @public
    * @param {number} i The index of this sequence.
    * @returns {string} The character at the specified index.
    *
@@ -3356,6 +3307,7 @@
    * Returns the character code at the given index of this sequence, or `NaN` if
    * the index lies outside the bounds of the sequence.
    *
+   * @public
    * @param {number} i The index of the character whose character code you want.
    * @returns {number} The character code.
    *
@@ -3376,6 +3328,7 @@
    * sequence starting at `start` and ending at `stop` (exclusive), or---if
    * `stop` is `undefined`, including the rest of the sequence.
    *
+   * @public
    * @param {number} start The index where this sequence should begin.
    * @param {number=} stop The index (exclusive) where this sequence should end.
    * @returns {StringLikeSequence} The new sequence.
@@ -3431,6 +3384,7 @@
    * sequence, starting from the specified index (or the beginning of the
    * sequence).
    *
+   * @public
    * @param {string} substring The substring to search for.
    * @param {number=} startIndex The index from which to start the search.
    * @returns {number} The first index where the given substring is found, or
@@ -3452,6 +3406,7 @@
    * sequence, starting from the specified index (or the end of the sequence)
    * and working backwards.
    *
+   * @public
    * @param {string} substring The substring to search for.
    * @param {number=} startIndex The index from which to start the search.
    * @returns {number} The last index where the given substring is found, or
@@ -3471,6 +3426,7 @@
   /**
    * Checks if this sequence contains a given substring.
    *
+   * @public
    * @param {string} substring The substring to check for.
    * @returns {boolean} Whether or not this sequence contains `substring`.
    *
@@ -3486,6 +3442,7 @@
   /**
    * Checks if this sequence ends with a given suffix.
    *
+   * @public
    * @param {string} suffix The suffix to check for.
    * @returns {boolean} Whether or not this sequence ends with `suffix`.
    *
@@ -3501,6 +3458,7 @@
   /**
    * Checks if this sequence starts with a given prefix.
    *
+   * @public
    * @param {string} prefix The prefix to check for.
    * @returns {boolean} Whether or not this sequence starts with `prefix`.
    *
@@ -3516,6 +3474,7 @@
   /**
    * Converts all of the characters in this string to uppercase.
    *
+   * @public
    * @returns {StringLikeSequence} A new sequence with the same characters as
    *     this sequence, all uppercase.
    *
@@ -3535,6 +3494,7 @@
   /**
    * Converts all of the characters in this string to lowercase.
    *
+   * @public
    * @returns {StringLikeSequence} A new sequence with the same characters as
    *     this sequence, all lowercase.
    *
@@ -3554,6 +3514,7 @@
   /**
    * Maps the characters of this sequence onto a new {@link StringLikeSequence}.
    *
+   * @public
    * @param {Function} mapFn The function used to map characters from this
    *     sequence onto the new sequence.
    * @returns {StringLikeSequence} The new sequence.
@@ -3590,6 +3551,7 @@
    * Creates a {@link Sequence} comprising all of the matches for the specified
    * pattern in the underlying string.
    *
+   * @public
    * @param {RegExp} pattern The pattern to match.
    * @returns {Sequence} A sequence of all the matches.
    *
@@ -3607,6 +3569,7 @@
    * separated by the given delimiter, which can be either a string or a regular
    * expression.
    *
+   * @public
    * @param {string|RegExp} delimiter The delimiter to use for recognizing
    *     substrings.
    * @returns {Sequence} A sequence of all the substrings separated by the given
@@ -3832,6 +3795,7 @@
   /**
    * An asynchronous version of {@link Sequence#each}.
    *
+   * @public
    * @param {Function} fn The function to invoke asynchronously on each element in
    *     the sequence one by one.
    * @returns {{cancel: Function, onError: Function}} An object providing the
@@ -4013,6 +3977,7 @@
    * Creates a {@link GeneratedSequence} using the specified generator function
    * and (optionally) length.
    *
+   * @public
    * @param {function(number):*} generatorFn The function used to generate the
    *     sequence. This function accepts an index as a parameter and should return
    *     a value for that index in the resulting sequence.
@@ -4041,6 +4006,7 @@
    * Creates a sequence from a given starting value, up to a specified stopping
    * value, incrementing by a given step.
    *
+   * @public
    * @returns {GeneratedSequence} The sequence defined by the given ranges.
    *
    * @examples
@@ -4060,6 +4026,7 @@
    * Creates a sequence consisting of the given value repeated a specified number
    * of times.
    *
+   * @public
    * @param {*} value The value to repeat.
    * @param {number=} count The number of times the value should be repeated in
    *     the sequence. If this argument is omitted, the value will repeat forever.

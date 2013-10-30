@@ -32,6 +32,6 @@ namespace :gen do
       "AsyncSequence"
     ]
 
-    sh "breakneck -n #{sequence_types.join(',')} -j ../lazy.js lazy.js"
+    sh "breakneck -n #{sequence_types.join(',')} --tagged public -j ../lazy.js lazy.js"
   end
 end
