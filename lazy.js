@@ -3457,6 +3457,44 @@
   };
 
   /**
+   * Converts all of the characters in this string to uppercase.
+   *
+   * @returns {StringLikeSequence} A new sequence with the same characters as
+   *     this sequence, all uppercase.
+   *
+   * @examples
+   * function nextLetter(a) {
+   *   return String.fromCharCode(a.charCodeAt(0) + 1);
+   * }
+   *
+   * Lazy('foo').toUpperCase()                 // => 'FOO'
+   * Lazy('foo').substring(1).toUpperCase()    // => 'OO'
+   * Lazy('abc').map(nextLetter).toUpperCase() // => 'BCD'
+   */
+  StringLikeSequence.prototype.toUpperCase = function() {
+    return this.map(function(char) { return char.toUpperCase(); });
+  };
+
+  /**
+   * Converts all of the characters in this string to lowercase.
+   *
+   * @returns {StringLikeSequence} A new sequence with the same characters as
+   *     this sequence, all lowercase.
+   *
+   * @examples
+   * function nextLetter(a) {
+   *   return String.fromCharCode(a.charCodeAt(0) + 1);
+   * }
+   *
+   * Lazy('FOO').toLowerCase()                 // => 'foo'
+   * Lazy('FOO').substring(1).toLowerCase()    // => 'oo'
+   * Lazy('ABC').map(nextLetter).toLowerCase() // => 'bcd'
+   */
+  StringLikeSequence.prototype.toLowerCase = function() {
+    return this.map(function(char) { return char.toLowerCase(); });
+  };
+
+  /**
    * Maps the characters of this sequence onto a new {@link StringLikeSequence}.
    *
    * @param {Function} mapFn The function used to map characters from this
