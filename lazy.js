@@ -512,21 +512,13 @@
    * @returns {Sequence} The new sequence.
    *
    * @examples
-   * var alphabet = "abcdefghijklmnopqrstuvwxyz";
-   *
-   * Lazy(alphabet).reverse() // => "zxywvutsrqponmlkjihgfedcba".split("")
+   * Lazy([1, 2, 3]).reverse() // => [3, 2, 1]
+   * Lazy("abcdefg").reverse() // => "gfedcba".split("")
+   * Lazy([]).reverse()        // => []
    */
-  var ReversedSequence = Sequence.define("reverse", {
-    each: function(fn) {
-      var parentArray = this.parent.toArray(),
-          i = parentArray.length;
-      while (--i >= 0) {
-        if (fn(parentArray[i]) === false) {
-          break;
-        }
-      }
-    }
-  });
+  Sequence.prototype.reverse = function() {
+    return new ReversedSequence(this);
+  };
 
   /**
    * Creates a new sequence with all of the elements of this one, plus those of
@@ -680,10 +672,11 @@
    *     sequence (defaults to 1).
    * @returns {Sequence} The new sequence.
    *
-   * @example
-   * var numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-   * var lastFive = Lazy(numbers).rest(5);
-   * // #=> sequence: (6, 7, 8, 9, 10)
+   * @examples
+   * Lazy([1, 2, 3, 4]).drop()  // => [2, 3, 4]
+   * Lazy([1, 2, 3, 4]).drop(0) // => [1, 2, 3, 4]
+   * Lazy([1, 2, 3, 4]).drop(2) // => [3, 4]
+   * Lazy([1, 2, 3, 4]).drop(5) // => []
    */
   Sequence.prototype.drop = function(count) {
     return new DropSequence(this, count);
@@ -1568,6 +1561,27 @@
         return fn(e, i);
       }
     });
+  };
+
+  /**
+   * @constructor
+   */
+  function ReversedSequence(parent) {
+    this.parent = parent;
+  }
+
+  ReversedSequence.prototype = new Sequence();
+
+  ReversedSequence.prototype.each = function(fn) {
+    var parentArray = this.parent.toArray(),
+        length      = parentArray.length,
+        i           = 0;
+
+    while (--length >= 0) {
+      if (fn(parentArray[length], i++) === false) {
+        break;
+      }
+    }
   };
 
   /**
