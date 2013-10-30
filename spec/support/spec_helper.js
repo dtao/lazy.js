@@ -45,6 +45,16 @@
         return true;
       },
 
+      toBeASequence: function(sequenceType) {
+        var actual = this.actual;
+
+        this.message = function() {
+          return 'Expeceted ' + actual + ' to be a ' + (sequenceType.name || sequenceType);
+        };
+
+        return actual instanceof sequenceType;
+      },
+
       toPassToEach: function(argumentIndex, expectedValues) {
         var i = 0;
         this.actual.each(function() {

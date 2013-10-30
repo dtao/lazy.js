@@ -22,6 +22,9 @@ require("./min_spec.js");
 require("./max_spec.js");
 require("./sum_spec.js");
 
+// Sequence types
+require("./string_like_sequence_spec.js");
+
 describe("working with streams", function() {
 
   // TODO: Figure out a smart way to test HTTP streams and other types of

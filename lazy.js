@@ -1468,7 +1468,8 @@
    * @returns {string} The delimited string.
    *
    * @examples
-   * Lazy([6, 29, 1984]).join("/") // => "6/29/1984"
+   * Lazy([6, 29, 1984]).join("/")  // => "6/29/1984"
+   * Lazy(["a", "b", "c"]).join("") // => "abc"
    */
   Sequence.prototype.join = function(delimiter) {
     delimiter = typeof delimiter === "string" ? delimiter : ",";
@@ -3319,11 +3320,6 @@
   /**
    * A `StringLikeSequence` represents a sequence of characters.
    *
-   * TODO: The idea for this prototype is to be able to do things like represent
-   * "substrings" without actually allocating new strings. Right now that
-   * isn't implemented at all, though (every method assumes an actual string as
-   * `source`).
-   *
    * @constructor
    */
   function StringLikeSequence() {}
@@ -3341,8 +3337,8 @@
   };
 
   /**
-   * Returns the character at the given index of this string, or the empty string
-   * if the specified index lies outside the bounds of the string.
+   * Returns the character at the given index of this sequence, or the empty
+   * string if the specified index lies outside the bounds of the sequence.
    *
    * @param {number} i The index of this sequence.
    * @returns {string} The character at the specified index.
@@ -3350,35 +3346,149 @@
    * @examples
    * Lazy("foo").charAt(0)  // => "f"
    * Lazy("foo").charAt(-1) // => ""
+   * Lazy("foo").charAt(10) // => ""
    */
   StringLikeSequence.prototype.charAt = function(i) {
     return this.get(i);
   };
 
   /**
-   * @name get
+   * Returns the character code at the given index of this sequence, or `NaN` if
+   * the index lies outside the bounds of the sequence.
    *
-   * Returns the character at the given index of this stream.
-   * @example:
-   * Lazy("foo")
-   *   .map(function(c) { return c.toUpperCase(); })
-   *   .get(0);
-   * // => "F"
+   * @param {number} i The index of the character whose character code you want.
+   * @returns {number} The character code.
+   *
+   * @examples
+   * Lazy("abc").charCodeAt(0)  // => 97
+   * Lazy("abc").charCodeAt(-1) // => NaN
+   * Lazy("abc").charCodeAt(10) // => NaN
    */
+  StringLikeSequence.prototype.charCodeAt = function(i) {
+    var char = this.charAt(i);
+    if (!char) { return NaN; }
+
+    return char.charCodeAt(0);
+  };
 
   /**
-   * See {@link Sequence#each}.
+   * Returns a {@link StringLikeSequence} comprising the characters from *this*
+   * sequence starting at `start` and ending at `stop` (exclusive), or---if
+   * `stop` is `undefined`, including the rest of the sequence.
+   *
+   * @param {number} start The index where this sequence should begin.
+   * @param {number=} stop The index (exclusive) where this sequence should end.
+   * @returns {StringLikeSequence} The new sequence.
+   *
+   * @examples
+   * Lazy("foo").substring(1)      // => "oo"
+   * Lazy("foo").substring(-1)     // => "foo"
+   * Lazy("hello").substring(1, 3) // => "el"
+   * Lazy("hello").substring(1, 9) // => "ello"
    */
-  StringLikeSequence.prototype.each = function(fn) {
-    var source = this.source,
-        length = source.length,
-        i = -1;
+  StringLikeSequence.prototype.substring = function(start, stop) {
+    return new StringSegment(this, start, stop);
+  };
 
-    while (++i < length) {
-      if (fn(source.charAt(i)) === false) {
-        break;
-      }
-    }
+  StringLikeSequence.prototype.take = function(count) {
+    return this.substring(0, count);
+  };
+
+  StringLikeSequence.prototype.head =
+  StringLikeSequence.prototype.first =
+  StringLikeSequence.prototype.take;
+
+  StringLikeSequence.prototype.drop = function(count) {
+    return this.substring(count);
+  };
+
+  StringLikeSequence.prototype.skip =
+  StringLikeSequence.prototype.tail =
+  StringLikeSequence.prototype.rest =
+  StringLikeSequence.prototype.drop;
+
+  /**
+   * @constructor
+   */
+  function StringSegment(parent, start, stop) {
+    this.parent = parent;
+    this.start  = Math.max(0, start);
+    this.stop   = stop;
+  }
+
+  StringSegment.prototype = new StringLikeSequence();
+
+  StringSegment.prototype.get = function(i) {
+    return this.parent.get(i + this.start);
+  };
+
+  StringSegment.prototype.length = function() {
+    return (typeof this.stop === "number" ? this.stop : this.parent.length()) - this.start;
+  };
+
+  /**
+   * Checks if this sequence ends with a given suffix.
+   *
+   * @param {string} suffix The suffix to check for.
+   * @returns {boolean} Whether or not this sequence ends with `suffix`.
+   *
+   * @examples
+   * Lazy('foo').endsWith('oo')  // => true
+   * Lazy('foo').endsWith('')    // => true
+   * Lazy('foo').endsWith('abc') // => false
+   */
+  StringLikeSequence.prototype.endsWith = function(suffix) {
+    return this.substring(this.length() - suffix.length).toString() === suffix;
+  };
+
+  /**
+   * Checks if this sequence starts with a given prefix.
+   *
+   * @param {string} prefix The prefix to check for.
+   * @returns {boolean} Whether or not this sequence starts with `prefix`.
+   *
+   * @examples
+   * Lazy('foo').startsWith('fo')  // => true
+   * Lazy('foo').startsWith('')    // => true
+   * Lazy('foo').startsWith('abc') // => false
+   */
+  StringLikeSequence.prototype.startsWith = function(prefix) {
+    return this.substring(0, prefix.length).toString() === prefix;
+  };
+
+  /**
+   * Maps the characters of this sequence onto a new {@link StringLikeSequence}.
+   *
+   * @param {Function} mapFn The function used to map characters from this
+   *     sequence onto the new sequence.
+   * @returns {StringLikeSequence} The new sequence.
+   *
+   * @examples
+   * function upcase(char) { return char.toUpperCase(); }
+   *
+   * Lazy("foo").map(upcase)               // => "FOO"
+   * Lazy("foo").map(upcase).charAt(0)     // => "F"
+   * Lazy("foo").map(upcase).charCodeAt(0) // => 70
+   * Lazy("foo").map(upcase).substring(1)  // => "OO"
+   */
+  StringLikeSequence.prototype.map = function(mapFn) {
+    return new MappedStringLikeSequence(this, mapFn);
+  };
+
+  /**
+   * @constructor
+   */
+  function MappedStringLikeSequence(parent, mapFn) {
+    this.parent = parent;
+    this.mapFn  = mapFn;
+  }
+
+  MappedStringLikeSequence.prototype = new StringLikeSequence();
+  MappedStringLikeSequence.prototype.get = IndexedMappedSequence.prototype.get;
+  MappedStringLikeSequence.prototype.length = IndexedMappedSequence.prototype.length;
+
+  StringLikeSequence.prototype.toString = function() {
+    return this.join("");
   };
 
   /**
