@@ -685,20 +685,36 @@
    * var lastFive = Lazy(numbers).rest(5);
    * // #=> sequence: (6, 7, 8, 9, 10)
    */
-  var DropSequence = Sequence.define(["drop", "skip", "tail", "rest"], {
-    init: function(parent, count) {
-      this.count = typeof count === "number" ? count : 1;
-    },
+  Sequence.prototype.drop = function(count) {
+    return new DropSequence(this, count);
+  };
 
-    each: function(fn) {
-      var self = this,
-          i = 0;
-      self.parent.each(function(e) {
-        if (i++ < self.count) { return; }
-        return fn(e);
-      });
-    }
-  });
+  /**
+   * Alias for {@link Sequence#drop}.
+   *
+   * @function skip
+   * @memberOf Sequence
+   * @instance
+   */
+  Sequence.prototype.skip = Sequence.prototype.drop;
+
+  /**
+   * Alias for {@link Sequence#drop}.
+   *
+   * @function tail
+   * @memberOf Sequence
+   * @instance
+   */
+  Sequence.prototype.tail = Sequence.prototype.drop;
+
+  /**
+   * Alias for {@link Sequence#drop}.
+   *
+   * @function rest
+   * @memberOf Sequence
+   * @instance
+   */
+  Sequence.prototype.rest = Sequence.prototype.drop;
 
   /**
    * Creates a new sequence comprising the elements from this sequence *after*
@@ -874,7 +890,7 @@
    * @returns {Sequence} The new sequence.
    *
    * @examples
-   * Lazy([1, 2, 3, 4, 5]).shuffle() // => [2, 3, 5, 4, 1]
+   * Lazy([1, 2, 3, 4, 5]).shuffle() // the values [1, 2, 3, 4, 5] in any order
    */
   Sequence.prototype.shuffle = function() {
     return new ShuffledSequence(this);
@@ -1610,6 +1626,21 @@
 
     this.parent.each(function(e) {
       return predicate(e) && fn(e);
+    });
+  };
+
+  var DropSequence = CachingSequence.inherit(function(parent, count) {
+    this.parent = parent;
+    this.count  = typeof count === "number" ? count : 1;
+  });
+
+  DropSequence.prototype.each = function(fn) {
+    var count = this.count,
+        i     = 0;
+
+    this.parent.each(function(e) {
+      if (i++ < count) { return; }
+      return fn(e, i - count);
     });
   };
 
