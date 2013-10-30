@@ -12,7 +12,7 @@ describe("Lazy", function() {
       expected: function() { return [adam, daniel, david, happy, lauren, mary]; }
     });
 
-    it("acts like 'pluck' when a string is passed instead of a function", function() {
+    it("supports a 'pluck'-style callback when a string is passed instead of a function", function() {
       expect(Lazy([{ foo: 2 }, { foo: 1 }]).sortBy('foo')).toComprise([{ foo: 1 }, { foo: 2 }]);
     });
 

@@ -69,5 +69,15 @@ describe("Lazy", function() {
         expect(sequence.uniq(selector)).toComprise([{ x: 1, y: 2 }]);
       }
     );
+
+    testAllSequenceTypes(
+      "supports a 'pluck'-style callback when a string is passed instead of a function",
+
+      [{ x: 1, y: 2 }, { x: 1, y: 2 }],
+
+      function(sequence) {
+        expect(sequence.uniq('x')).toComprise([{ x: 1, y: 2 }]);
+      }
+    );
   });
 });

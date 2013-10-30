@@ -1709,13 +1709,13 @@
    */
   function GroupedSequence(parent, keyFn) {
     this.parent = parent;
-    this.keyFn  = createCallback(keyFn);
+    this.keyFn  = keyFn;
   }
 
   GroupedSequence.prototype = new Sequence();
 
   GroupedSequence.prototype.each = function(fn) {
-    var keyFn   = this.keyFn,
+    var keyFn   = createCallback(this.keyFn),
         grouped = {};
 
     this.parent.each(function(e) {
@@ -1738,13 +1738,13 @@
    */
   function CountedSequence(parent, keyFn) {
     this.parent = parent;
-    this.keyFn  = createCallback(keyFn);
+    this.keyFn  = keyFn;
   }
 
   CountedSequence.prototype = new Sequence();
 
   CountedSequence.prototype.each = function(fn) {
-    var keyFn   = this.keyFn,
+    var keyFn   = createCallback(this.keyFn),
         counted = {};
 
     this.parent.each(function(e) {
