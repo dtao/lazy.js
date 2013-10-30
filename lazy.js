@@ -2374,6 +2374,73 @@
   };
 
   /**
+   * Returns a new sequence with the same elements as this one, minus the last
+   * element.
+   *
+   * @public
+   * @returns {ArrayLikeSequence} The new array-like sequence.
+   *
+   * @examples
+   * Lazy([1, 2, 3]).pop() // => [1, 2]
+   * Lazy([]).pop()        // => []
+   */
+  ArrayLikeSequence.prototype.pop = function() {
+    return this.initial();
+  };
+
+  /**
+   * Returns a new sequence with the same elements as this one, minus the first
+   * element.
+   *
+   * @public
+   * @returns {ArrayLikeSequence} The new array-like sequence.
+   *
+   * @examples
+   * Lazy([1, 2, 3]).shift() // => [2, 3]
+   * Lazy([]).shift()        // => []
+   */
+  ArrayLikeSequence.prototype.shift = function() {
+    return this.drop();
+  };
+
+  /**
+   * Returns a new sequence comprising the portion of this sequence starting
+   * from the specified starting index and continuing until the specified ending
+   * index or to the end of the sequence.
+   *
+   * @public
+   * @param {number} begin The index at which the new sequence should start.
+   * @param {number=} end The index at which the new sequence should end.
+   * @returns {ArrayLikeSequence} The new array-like sequence.
+   *
+   * @examples
+   * Lazy([1, 2, 3, 4, 5]).slice(0)     // => [1, 2, 3, 4, 5]
+   * Lazy([1, 2, 3, 4, 5]).slice(2)     // => [3, 4, 5]
+   * Lazy([1, 2, 3, 4, 5]).slice(2, 4)  // => [3, 4]
+   * Lazy([1, 2, 3, 4, 5]).slice(-1)    // => [5]
+   * Lazy([1, 2, 3, 4, 5]).slice(1, -1) // => [2, 3, 4]
+   * Lazy([1, 2, 3, 4, 5]).slice(0, 10) // => [1, 2, 3, 4, 5]
+   */
+  ArrayLikeSequence.prototype.slice = function(begin, end) {
+    var length = this.length();
+
+    if (begin < 0) {
+      begin = length + begin;
+    }
+
+    var result = this.drop(begin);
+
+    if (typeof end === "number") {
+      if (end < 0) {
+        end = length + end;
+      }
+      result = result.take(end - begin);
+    }
+
+    return result;
+  };
+
+  /**
    * An optimized version of {@link Sequence#map}, which creates an
    * `ArrayLikeSequence` so that the result still provides random access.
    *
