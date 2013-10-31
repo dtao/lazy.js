@@ -2508,7 +2508,7 @@
     } else {
       return Sequence.prototype.concat.apply(this, arguments);
     }
-  }
+  };
 
   /**
    * An optimized version of {@link Sequence#uniq}.
@@ -4030,7 +4030,7 @@
    */
   function LinesSequence(parent) {
     this.parent = parent;
-  };
+  }
 
   LinesSequence.prototype = new Sequence();
 
@@ -4057,7 +4057,7 @@
    */
   function StreamingHttpSequence(url) {
     this.url = url;
-  };
+  }
 
   StreamingHttpSequence.prototype = new StreamLikeSequence();
 
@@ -4252,7 +4252,7 @@
       set.add(e);
     });
     return set;
-  };
+  }
 
   /**
    * Compares two elements for sorting purposes.
