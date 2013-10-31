@@ -176,6 +176,7 @@ article {
   left: 300px;
   right: 0;
   padding: 0 20px;
+  max-width: 1600px;
 }
 
 section.constructor {
