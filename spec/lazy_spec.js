@@ -1034,8 +1034,8 @@ describe("Lazy", function() {
   });
 
   describe("min", function() {
-    it("returns undefined for an empty collection", function() {
-      expect(Lazy([]).min()).toBeUndefined();
+    it("returns Infinity for an empty collection", function() {
+      expect(Lazy([]).min()).toEqual(Infinity);
     });
 
     it("returns the minimum value from the collection", function() {
@@ -1044,8 +1044,8 @@ describe("Lazy", function() {
   });
 
   describe("max", function() {
-    it("returns undefined for an empty collection", function() {
-      expect(Lazy([]).max()).toBeUndefined();
+    it("returns -Infinity for an empty collection", function() {
+      expect(Lazy([]).max()).toEqual(-Infinity);
     });
 
     it("returns the maximum value from the collection", function() {
