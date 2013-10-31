@@ -3985,8 +3985,8 @@
 
   function getOnNextCallback(interval) {
     if (typeof interval === "undefined") {
-      if (typeof context.setImmediate === "function") {
-        return context.setImmediate;
+      if (typeof setImmediate === "function") {
+        return setImmediate;
       }
     }
 
@@ -3998,12 +3998,12 @@
 
   function getCancelCallback(interval) {
     if (typeof interval === "undefined") {
-      if (typeof context.clearImmediate === "function") {
-        return context.clearImmediate;
+      if (typeof clearImmediate === "function") {
+        return clearImmediate;
       }
     }
 
-    return context.clearTimeout;
+    return clearTimeout;
   }
 
   /**
@@ -4475,7 +4475,7 @@
   /*** Exposing Lazy to the world ***/
 
   // For Node.js
-  if (typeof module === "object") {
+  if (typeof module === "object" && module && module.exports === context) {
     module.exports = Lazy;
 
   // For browsers
@@ -4483,4 +4483,4 @@
     context.Lazy = Lazy;
   }
 
-}(typeof global !== "undefined" ? global : this));
+}(this));
