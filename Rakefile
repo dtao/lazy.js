@@ -31,5 +31,5 @@ task :generate_docs do
     "AsyncSequence"
   ]
 
-  sh "breakneck -n #{sequence_types.join(',')} --tagged public -j ../lazy.js lazy.js"
+  sh "breakneck --namespaces #{sequence_types.join(',')} --tags public --javascripts ../lazy.js lazy.js"
 end
