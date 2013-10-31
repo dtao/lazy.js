@@ -18,20 +18,18 @@ task :update_version do
   update_json('component.json', { 'version' => version })
 end
 
-namespace :gen do
-  desc "Generate documentation using Breakneck"
-  task :docs do
-    sequence_types = [
-      "Lazy",
-      "Sequence",
-      "Iterator",
-      "ArrayLikeSequence",
-      "ObjectLikeSequence",
-      "StringLikeSequence",
-      "GeneratedSequence",
-      "AsyncSequence"
-    ]
+desc "Generate documentation using Breakneck"
+task :generate_docs do
+  sequence_types = [
+    "Lazy",
+    "Sequence",
+    "Iterator",
+    "ArrayLikeSequence",
+    "ObjectLikeSequence",
+    "StringLikeSequence",
+    "GeneratedSequence",
+    "AsyncSequence"
+  ]
 
-    sh "breakneck -n #{sequence_types.join(',')} --tagged public -j ../lazy.js lazy.js"
-  end
+  sh "breakneck -n #{sequence_types.join(',')} --tagged public -j ../lazy.js lazy.js"
 end
