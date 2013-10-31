@@ -613,7 +613,6 @@
     if (typeof count === "undefined") {
       return getFirst(this);
     }
-
     return new TakeSequence(this, count);
   };
 
@@ -3419,22 +3418,51 @@
     return new StringSegment(this, start, stop);
   };
 
-  StringLikeSequence.prototype.take = function(count) {
+  /**
+   * An optimized version of {@link Sequence#first} that returns another
+   * {@link StringLikeSequence} (or just the first character, if `count` is
+   * undefined).
+   *
+   * @public
+   * @examples
+   * Lazy('foo').first()                // => 'f'
+   * Lazy('fo').first(2)                // => 'fo'
+   * Lazy('foo').first(10)              // => 'foo'
+   * Lazy('foo').toUpperCase().first()  // => 'F'
+   * Lazy('foo').toUpperCase().first(2) // => 'FO'
+   */
+  StringLikeSequence.prototype.first = function(count) {
+    if (typeof count === "undefined") {
+      return this.charAt(0);
+    }
+
     return this.substring(0, count);
   };
 
-  StringLikeSequence.prototype.head =
-  StringLikeSequence.prototype.first =
-  StringLikeSequence.prototype.take;
+  /**
+   * An optimized version of {@link Sequence#last} that returns another
+   * {@link StringLikeSequence} (or just the last character, if `count` is
+   * undefined).
+   *
+   * @public
+   * @examples
+   * Lazy('foo').last()                // => 'o'
+   * Lazy('foo').last(2)               // => 'oo'
+   * Lazy('foo').last(10)              // => 'foo'
+   * Lazy('foo').toUpperCase().last()  // => 'O'
+   * Lazy('foo').toUpperCase().last(2) // => 'OO'
+   */
+  StringLikeSequence.prototype.last = function(count) {
+    if (typeof count === "undefined") {
+      return this.charAt(this.length() - 1);
+    }
+
+    return this.substring(this.length() - count);
+  };
 
   StringLikeSequence.prototype.drop = function(count) {
     return this.substring(count);
   };
-
-  StringLikeSequence.prototype.skip =
-  StringLikeSequence.prototype.tail =
-  StringLikeSequence.prototype.rest =
-  StringLikeSequence.prototype.drop;
 
   /**
    * @constructor
