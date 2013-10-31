@@ -1,18 +1,105 @@
-@import url(../site/assets/pygments.css);
-@import url(../site/assets/common.css);
 @import url(http://fonts.googleapis.com/css?family=Chewy|Open+Sans:700,400,300|Oswald:400,300|Source+Code+Pro:700,400);
 
 body {
   margin: 0;
   padding: 20px;
 
+  font-family: "Open Sans", sans-serif;
+
   box-sizing: border-box;
   -moz-box-sizing: border-box;
 }
 
-article header h1 {
+body > main > header {
+  height: 60px;
+  margin-top: 12px;
+  background-color: #fff;
+  border-bottom: 12px solid #eee;
+}
+
+body > main > header h1 {
+  display: inline-block;
+  margin: 0 auto;
+  padding: 0;
+  font-family: "Chewy", cursive;
+  font-size: 72px;
+  line-height: 60px;
+  cursor: default;
+  text-transform: lowercase;
+}
+
+body > main > header h1 a {
+  color: #444;
+  text-decoration: none;
+}
+
+body > main > header h1 a:hover {
+  color: #000;
+}
+
+h1, h2, h3 {
+  color: #444;
+}
+
+nav ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+nav ul li {
+  padding: 10px;
+}
+
+nav ul li a {
+  color: #456;
+  text-decoration: none;
+}
+
+nav ul li.selected {
+  border-bottom: 3px solid black;
+}
+
+nav ul li:hover {
+  background-color: #eee;
+}
+
+nav ul li:hover a {
+  color: #789;
+}
+
+section > h1,
+section > h2,
+section > h3 {
+  font-weight: 300;
+}
+
+section > h1 {
   font-size: 40px;
   font-weight: 300;
+}
+
+section > h2 {
+  font-size: 32px;
+}
+
+section > h3 {
+  font-size: 24px;
+}
+
+pre, code {
+  font-family: "Source Code Pro", monospace;
+}
+
+pre {
+  font-size: 80%;
+}
+
+code {
+  color: #04b;
+}
+
+pre > code {
+  overflow-x: auto;
 }
 
 h1 small,
@@ -27,9 +114,10 @@ h1 small a {
 
 table {
   border-collapse: collapse;
+  width: 100%;
 }
 
-table tr:first-child {
+table thead tr:last-child {
   border-bottom: 1px solid black;
 }
 
@@ -40,22 +128,15 @@ table td {
   vertical-align: top;
 }
 
-article > header {
-  position: absolute;
-  top: 110px;
-  left: 20px;
-  right: 20px;
-  height: 60px;
-  border-bottom: 1px solid black;
-}
-
-article > header h1 {
+table td > p,
+table td > ul {
+  /* Prevent Markdown-rendered <p>s from screwing up spacing */
   margin: 0;
 }
 
-nav.doc-list {
+.index > nav {
   position: fixed;
-  top: 171px;
+  top: 110px;
   bottom: 0;
   left: 0;
   width: 264px;
@@ -63,42 +144,57 @@ nav.doc-list {
   overflow: auto;
 }
 
-nav.doc-list ul li {
+.index > nav ul li {
   display: block;
   padding-top: 0.5ex;
   padding-bottom: 0.5ex;
 }
 
-nav.doc-list ul li.nav-header {
+.index > nav ul li.nav-header {
   margin-top: 12px;
   border-top: 1px solid black;
   font-weight: bold;
 }
 
-nav.doc-list ul li.nav-header:hover {
+.index > nav ul li.nav-header:hover {
   background: none;
 }
 
-nav.doc-list ul li.selected {
+.index > nav ul li.selected {
   border-bottom: none;
   border-left: 3px solid #555;
 }
 
-nav.doc-list ul li.selected a {
+.index > nav ul li.selected a {
   position: relative;
   left: -3px;
 }
 
-section.preamble,
-section.methods {
+article {
   position: absolute;
-  top: 170px;
+  top: 110px;
   left: 300px;
   right: 0;
   padding: 0 20px;
+  max-width: 1600px;
 }
 
-section.preamble h2,
+section.constructor {
+  border-top: 3px double #444;
+  margin-top: 20px;
+}
+
+section.method {
+  border-top: 1px solid #444;
+}
+
+section.description h1,
+section.description h2,
+section.description h3,
+section.constructor h1,
+section.constructor h2,
+section.constructor h3,
+section.method h1,
 section.method h2,
 section.method h3 {
   font-family: Oswald, Helvetica, Arial, sans-serif;
@@ -109,28 +205,140 @@ section.method h2 {
   font-size: 34px;
 }
 
-section.method .description h2 {
-  font-size: 28px;
-}
-
-section.method table {
-  width: 50%;
-}
-
-section.method table tr:nth-child(odd) td {
+section.constructor table tbody tr:nth-child(odd) td,
+section.method table tbody tr:nth-child(odd) td {
   background-color: #eee;
 }
 
-section.method table.params th,
-section.method table.params td {
+.signature table th:nth-child(1),
+.signature table td:nth-child(1),
+.signature table th:nth-child(2),
+.signature table td:nth-child(2) {
   width: 25%;
 }
 
-section.method table.params td:first-child {
+.signature table td:nth-child(1),
+.signature table td:nth-child(2),
+.examples table td:nth-child(1),
+.examples table td:nth-child(2) {
   font-family: "Source Code Pro", monospace;
 }
 
-section.method table th:last-child,
-section.method table td:last-child {
-  width: 50%;
+.signature, .examples, .perf {
+  display: inline-block;
+  width: 45%;
+  min-width: 400px;
+  margin-right: 24px;
+  margin-bottom: 24px;
+
+  vertical-align: top;
+}
+
+.examples table tr td {
+  vertical-align: middle;
+
+  transition: background-color 0.5s;
+  -moz-transition: background-color 0.5s;
+  -o-transition: background-color 0.5s;
+  -webkit-transition: background-color 0.5s;
+}
+
+.examples table tr td ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.examples table tr.success td:last-child,
+.examples table tr.failure td:last-child {
+  background-position: right;
+  background-repeat: no-repeat;
+  background-size: 24px;
+  padding-right: 32px;
+}
+
+.examples table tr.success td:last-child {
+  background-image: url("success.png");
+}
+
+.examples table tr.failure td:last-child {
+  background-image: url("failure.png");
+}
+
+.examples table tr.highlight td {
+  color: #000;
+  background-color: #ff8 !important;
+}
+
+.perf {
+  position: relative;
+}
+
+.perf table {
+  display: none;
+}
+
+.perf.loading table, .perf.loaded table {
+  display: table;
+}
+
+.perf button {
+  border: 2px solid black;
+  border-radius: 8px;
+  background-color: #f0f0f0;
+  margin-top: 16px;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.perf button:hover {
+  background-color: #2f7ed8;
+  color: #fff;
+}
+
+.perf.loading:after {
+  display: block;
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white url("gears.gif") no-repeat center;
+  opacity: 0.5;
+}
+
+.examples table th:last-child,
+.examples table td:last-child,
+.perf table th:last-child,
+.perf table td:last-child {
+  text-align: right;
+}
+
+#spec-failures {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px;
+
+  background-color: #400;
+  color: #ffe;
+  z-index: 1;
+
+  opacity: 0.9;
+  filter: alpha(opacity=90);
+}
+
+#spec-failures a {
+  float: right;
+
+  color: #ff8;
+}
+
+#spec-failures a:hover {
+  color: #ff0;
+}
+
+#spec-failures:empty {
+  display: none;
 }
