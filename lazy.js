@@ -4090,6 +4090,8 @@
     return new ObjectWrapper(source);
   };
 
+  Lazy.VERSION = '0.1.2';
+
   /**
    * Creates a {@link GeneratedSequence} using the specified generator function
    * and (optionally) length.
