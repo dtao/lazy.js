@@ -1029,6 +1029,8 @@
    * Lazy(numbers).every(isPositive) // => true
    */
   Sequence.prototype.every = function(predicate) {
+    predicate = createCallback(predicate);
+
     var success = true;
     this.each(function(e, i) {
       if (!predicate(e, i)) {
@@ -1062,13 +1064,13 @@
    *
    * var numbers = [1, 2, 3, 4, 5];
    *
+   * Lazy(numbers).some()           // => true
    * Lazy(numbers).some(isEven)     // => true
    * Lazy(numbers).some(isNegative) // => false
+   * Lazy([]).some()                // => false
    */
   Sequence.prototype.some = function(predicate) {
-    if (!predicate) {
-      predicate = function() { return true; };
-    }
+    predicate = createCallback(predicate, true);
 
     var success = false;
     this.each(function(e) {
@@ -3779,46 +3781,6 @@
    *     and returns a value for the element at that position in the sequence.
    * @param {number=} length The length of the sequence. If this argument is
    *     omitted, the sequence will go on forever.
-   *
-   * @examples
-   * function primeGenerator() {
-   *   var knownPrimes = [];
-   *
-   *   function isFactorOf(x) {
-   *     return function(factor) {
-   *       return x % factor === 0;
-   *     };
-   *   }
-   *
-   *   function isPrime(x) {
-   *     if (Lazy(knownPrimes).any(isFactorOf(x))) {
-   *       return false;
-   *     }
-   *     knownPrimes.push(x);
-   *     return true;
-   *   }
-   *
-   *   function nextPrime() {
-   *     var lastPrime = Lazy(knownPrimes).last();
-   *
-   *     if (!lastPrime) {
-   *       knownPrimes.push(2);
-   *       return 2;
-   *     }
-   *
-   *     var candidate = lastPrime + 1;
-   *     while (!isPrime(candidate)) {
-   *       ++candidate;
-   *     }
-   *
-   *     return candidate;
-   *   }
-   *
-   *   return nextPrime;
-   * }
-   *
-   * Lazy.generate(primeGenerator()).take(5)         // => [2, 3, 5, 7, 11]
-   * Lazy.generate(primeGenerator()).drop(3).take(5) // => [7, 11, 13, 17, 19]
    */
   function GeneratedSequence(generatorFn, length) {
     this.get = generatorFn;
@@ -4157,11 +4119,6 @@
    *
    * @public
    * @returns {GeneratedSequence} The sequence defined by the given ranges.
-   *
-   * @examples
-   * Lazy.range(10)       // => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-   * Lazy.range(1, 11)    // => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-   * Lazy.range(2, 10, 2) // => [2, 4, 6, 8]
    */
   Lazy.range = function() {
     var start = arguments.length > 1 ? arguments[0] : 0,
@@ -4211,10 +4168,13 @@
    * - for strings, returns a pluck-style callback
    * - for objects, returns a where-style callback
    *
-   * @param {Function|string|Object} A function, string, or object to convert to a callback.
+   * @param {Function|string|Object} callback A function, string, or object to
+   *     convert to a callback.
+   * @param {*} defaultReturn If the callback is undefined, a default return
+   *     value to use for the function.
    * @returns {Function} The callback function.
    */
-  function createCallback(callback) {
+  function createCallback(callback, defaultValue) {
     switch (typeof callback) {
       case "function":
         return callback;
@@ -4232,7 +4192,9 @@
         };
 
       case "undefined":
-        return Lazy.identity;
+        return defaultValue ?
+          function() { return defaultValue; } :
+          Lazy.identity;
 
       default:
         throw "Don't know how to make a callback from a " + typeof callback + "!";
