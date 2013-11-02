@@ -25,7 +25,7 @@
     "util"
   ],
   "devDependencies": {
-    "breakneck.js": ">= 0.2.1",
+    "autodoc": ">= 0.2.3",
     "jasmine-node": "1.7.x",
     "jsdoc": "3.2.x",
     "benchmark": "1.0.0",
@@ -35,6 +35,6 @@
     "string-table": "0.1.2"
   },
   "scripts": {
-    "test": "breakneck -t --variable Lazy lazy.js && jasmine-node spec/node_spec.js"
+    "test": "autodoc -t --variable Lazy lazy.js && jasmine-node spec/node_spec.js"
   }
 }
