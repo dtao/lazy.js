@@ -1489,11 +1489,37 @@
 
   MappedSequence.prototype = new Sequence();
 
+  MappedSequence.prototype.getIterator = function() {
+    return new MappingIterator(this.parent, this.mapFn);
+  };
+
   MappedSequence.prototype.each = function(fn) {
     var mapFn = this.mapFn;
     return this.parent.each(function(e, i) {
       return fn(mapFn(e, i), i);
     });
+  };
+
+  /**
+   * @constructor
+   */
+  function MappingIterator(sequence, mapFn) {
+    this.iterator = sequence.getIterator();
+    this.mapFn    = mapFn;
+    this.index    = -1;
+  }
+
+  MappingIterator.prototype.current = function() {
+    return this.mapFn(this.iterator.current(), this.index);
+  };
+
+  MappingIterator.prototype.moveNext = function() {
+    if (this.iterator.moveNext()) {
+      ++this.index;
+      return true;
+    }
+
+    return false;
   };
 
   /**
@@ -1518,6 +1544,36 @@
         return fn(e, i);
       }
     });
+  };
+
+  /**
+   * @constructor
+   */
+  function FilteringIterator(sequence, filterFn) {
+    this.iterator = sequence.getIterator();
+    this.filterFn = filterFn;
+    this.index    = 0;
+  }
+
+  FilteringIterator.prototype.current = function() {
+    return this.value;
+  };
+
+  FilteringIterator.prototype.moveNext = function() {
+    var iterator = this.iterator,
+        filterFn = this.filterFn,
+        value;
+
+    while (iterator.moveNext()) {
+      value = iterator.current();
+      if (filterFn(value, this.index++)) {
+        this.value = value;
+        return true;
+      }
+    }
+
+    this.value = undefined;
+    return false;
   };
 
   /**
@@ -2035,34 +2091,6 @@
   /**
    * @constructor
    */
-  function FilteringIterator(sequence, filterFn) {
-    this.iterator = sequence.getIterator();
-    this.filterFn = filterFn;
-  }
-
-  FilteringIterator.prototype.current = function() {
-    return this.value;
-  };
-
-  FilteringIterator.prototype.moveNext = function() {
-    var iterator = this.iterator,
-        filterFn = this.filterFn,
-        value;
-
-    while (iterator.moveNext()) {
-      value = iterator.current();
-      if (filterFn(value)) {
-        this.value = value;
-        return true;
-      }
-    }
-
-    this.value = undefined;
-    return false;
-  };
-
-  /**
-   * @constructor
    * @param {string|StringLikeSequence} source
    */
   function CharIterator(source) {
