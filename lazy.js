@@ -3753,15 +3753,6 @@
 
   SplitStringSequence.prototype = new Sequence();
 
-  SplitStringSequence.prototype.each = function(fn) {
-    var iterator = this.getIterator();
-    while (iterator.moveNext()) {
-      if (fn(iterator.current()) === false) {
-        break;
-      }
-    }
-  };
-
   SplitStringSequence.prototype.getIterator = function() {
     if (this.pattern instanceof RegExp) {
       if (this.pattern.source === "" || this.pattern.source === "(?:)") {
