@@ -35,6 +35,6 @@
     "string-table": "0.1.2"
   },
   "scripts": {
-    "test": "autodoc -t --variable Lazy lazy.js && jasmine-node spec/node_spec.js"
+    "test": "autodoc -t lazy.js && jasmine-node spec/node_spec.js"
   }
 }
