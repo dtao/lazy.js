@@ -3932,7 +3932,8 @@
   AsyncSequence.prototype.each = function(fn) {
     var iterator = this.parent.getIterator(),
         onNextCallback = this.onNextCallback,
-        cancelCallback = this.cancelCallback;
+        cancelCallback = this.cancelCallback,
+        i = 0;
 
     var handle = {
       id: null,
@@ -3954,7 +3955,7 @@
     if (iterator.moveNext()) {
       handle.id = onNextCallback(function iterate() {
         try {
-          if (fn(iterator.current()) !== false && iterator.moveNext()) {
+          if (fn(iterator.current(), i++) !== false && iterator.moveNext()) {
             handle.id = onNextCallback(iterate);
           }
         } catch (e) {
