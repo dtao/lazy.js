@@ -4324,6 +4324,18 @@
     return result;
   }
 
+  /**
+   * Checks if an element exists in an array.
+   *
+   * @private
+   * @param {Array} array
+   * @param {*} element
+   * @returns {boolean} Whether or not the element exists in the array.
+   *
+   * @examples
+   * contains([1, 2], 2) // => true
+   * contains([1, 2], 3) // => false
+   */
   function contains(array, element) {
     var i = -1,
         length = array.length;
@@ -4336,8 +4348,22 @@
     return false;
   }
 
+  /**
+   * Checks if an element exists in an array before a given index.
+   *
+   * @private
+   * @param {Array} array
+   * @param {*} element
+   * @param {number} index
+   * @param {Function} keyFn
+   * @returns {boolean}
+   *
+   * @examples
+   * containsBefore([1, 2, 3], 3, 2) // => false
+   * containsBefore([1, 2, 3], 3, 3) // => true
+   */
   function containsBefore(array, element, index, keyFn) {
-    keyFn = keyFn || function(x) { return x; };
+    keyFn = keyFn || Lazy.identity;
 
     var i = -1;
 
@@ -4349,20 +4375,56 @@
     return false;
   }
 
+  /**
+   * Swaps the elements at two specified positions of an array.
+   *
+   * @private
+   * @param {Array} array
+   * @param {number} i
+   * @param {number} j
+   *
+   * @examples
+   * var array = [1, 2, 3, 4, 5];
+   *
+   * swap(array, 2, 3) // array == [1, 2, 4, 3, 5]
+   */
   function swap(array, i, j) {
     var temp = array[i];
     array[i] = array[j];
     array[j] = temp;
   }
 
-  function indent(depth) {
-    return new Array(depth).join("  ");
-  }
-
   /**
    * A collection of unique elements.
    *
+   * @private
    * @constructor
+   *
+   * @examples
+   * var set  = new Set(),
+   *     obj1 = {},
+   *     obj2 = {},
+   *     fn1  = function() {},
+   *     fn2  = function() {};
+   *
+   * set.add('foo')            // => true
+   * set.add('foo')            // => false
+   * set.add(1)                // => true
+   * set.add(1)                // => false
+   * set.add('1')              // => true
+   * set.add('1')              // => false
+   * set.add(obj1)             // => true
+   * set.add(obj1)             // => false
+   * set.add(obj2)             // => true
+   * set.add(fn1)              // => true
+   * set.add(fn2)              // => true
+   * set.add(fn2)              // => false
+   * set.contains('__proto__') // => false
+   * set.add('__proto__')      // => true
+   * set.add('__proto__')      // => false
+   * set.contains('add')       // => false
+   * set.add('add')            // => true
+   * set.add('add')            // => false
    */
   function Set() {
     this.table = {};
