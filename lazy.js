@@ -4074,15 +4074,10 @@
    * @param {Array|Object|string} source An array, object, or string to wrap.
    * @returns {Sequence} The wrapped lazy object.
    *
-   * @example
-   * var fromArray = Lazy([1, 2, 4]);
-   * // sequence: Lazy.ArrayLikeSequence
-   *
-   * var fromObject = Lazy({ foo: "bar" });
-   * // sequence: Lazy.ObjectLikeSequence
-   *
-   * var fromString = Lazy("hello, world!");
-   * // sequence: Lazy.StringLikeSequence
+   * @examples
+   * Lazy([1, 2, 4])       // instanceof Lazy.ArrayLikeSequence
+   * Lazy({ foo: "bar" })  // instanceof Lazy.ObjectLikeSequence
+   * Lazy("hello, world!") // instanceof Lazy.StringLikeSequence
    */
   var Lazy = function(source) {
     if (source instanceof Array) {
@@ -4109,18 +4104,14 @@
    *     definite length.
    * @returns {GeneratedSequence} The generated sequence.
    *
-   * @example
+   * @examples
    * var randomNumbers = Lazy.generate(Math.random);
-   * // sequence: sequence: (0.4838115070015192, 0.637410914292559, ...)
+   * var countingNumbers = Lazy.generate(function(i) { return i + 1; }, 5);
    *
-   * randomNumbers.length();
-   * // sequence: undefined
-   *
-   * var countingNumbers = Lazy.generate(function(i) { return i + 1; }, 10);
-   * // sequence: sequence: (1, 2, ..., 10)
-   *
-   * countingNumbers.length();
-   * // sequence: 10
+   * randomNumbers          // instanceof Lazy.GeneratedSequence
+   * randomNumbers.length() // => undefined
+   * countingNumbers          // sequence: [1, 2, 3, 4, 5]
+   * countingNumbers.length() // => 5
    */
   Lazy.generate = function(generatorFn, length) {
     return new GeneratedSequence(generatorFn, length);
@@ -4132,6 +4123,13 @@
    *
    * @public
    * @returns {GeneratedSequence} The sequence defined by the given ranges.
+   *
+   * @examples
+   * Lazy.range(3)         // sequence: [0, 1, 2]
+   * Lazy.range(1, 4)      // sequence: [1, 2, 3]
+   * Lazy.range(2, 10, 2)  // sequence: [2, 4, 6, 8]
+   * Lazy.range(5, 1, 2)   // sequence: []
+   * Lazy.range(5, 15, -2) // sequence: []
    */
   Lazy.range = function() {
     var start = arguments.length > 1 ? arguments[0] : 0,
@@ -4151,12 +4149,11 @@
    *     the sequence. If this argument is omitted, the value will repeat forever.
    * @returns {GeneratedSequence} The sequence containing the repeated value.
    *
-   * @example
-   * var hihihi = Lazy.repeat("hi", 3);
-   * // sequence: sequence: ["hi", "hi", "hi"]
-   *
-   * var foreverYoung = Lazy.repeat("young");
-   * // sequence: sequence: ["young", "young", ...]
+   * @examples
+   * Lazy.repeat("hi", 3)          // sequence: ["hi", "hi", "hi"]
+   * Lazy.repeat("young")          // instanceof Lazy.GeneratedSequence
+   * Lazy.repeat("young").length() // => undefined
+   * Lazy.repeat("young").take(3)  // sequence: ["young", "young", "young"]
    */
   Lazy.repeat = function(value, count) {
     return Lazy.generate(function() { return value; }, count);
@@ -4181,11 +4178,19 @@
    * - for strings, returns a pluck-style callback
    * - for objects, returns a where-style callback
    *
+   * @private
    * @param {Function|string|Object} callback A function, string, or object to
    *     convert to a callback.
    * @param {*} defaultReturn If the callback is undefined, a default return
    *     value to use for the function.
    * @returns {Function} The callback function.
+   *
+   * @examples
+   * createCallback(function() {})                  // instanceof Function
+   * createCallback('foo')                          // instanceof Function
+   * createCallback('foo')({ foo: 'bar'})           // => 'bar'
+   * createCallback({ foo: 'bar' })({ foo: 'bar' }) // => true
+   * createCallback({ foo: 'bar' })({ foo: 'baz' }) // => false
    */
   function createCallback(callback, defaultValue) {
     switch (typeof callback) {
@@ -4232,11 +4237,18 @@
   /**
    * Compares two elements for sorting purposes.
    *
+   * @private
    * @param {*} x The left element to compare.
    * @param {*} y The right element to compare.
    * @param {Function=} fn An optional function to call on each element, to get
    *     the values to compare.
    * @returns {number} 1 if x > y, -1 if x < y, or 0 if x and y are equal.
+   *
+   * @examples
+   * compare(1, 2)     // => -1
+   * compare(1, 1)     // => 0
+   * compare(2, 1)     // => 1
+   * compare('a', 'b') // => -1
    */
   function compare(x, y, fn) {
     if (typeof fn === "function") {
