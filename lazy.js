@@ -93,21 +93,19 @@
    *
    * 1. Pass a *method name* and an object containing *function overrides* to
    *    {@link Sequence.define}. If the object includes a function called `init`,
-   *    this function will be called upon initialization of a sequence of this
-   *    type. The function **must at least accept a `parent` parameter as its
-   *    first argument**, which will be set to the underlying parent sequence.
+   *    this function will be called upon initialization.
    * 2. The object should include at least either a `getIterator` method or an
    *    `each` method. The former supports both asynchronous and synchronous
    *    iteration, but is slightly more cumbersome to implement. The latter
    *    supports synchronous iteration and can be automatically implemented in
-   *    terms of the former. You can also implement both to optimize performance.
-   *    For more info, see {@link Iterator} and {@link AsyncSequence}.
+   *    terms of the former. You can also implement both if you want, e.g. to
+   *    optimize performance. For more info, see {@link Iterator} and
+   *    {@link AsyncSequence}.
    *
-   * As a trivial example, the following code defines a new type of sequence
-   * called `SampleSequence` which randomly may or may not include each element
-   * from its parent.
+   * As a trivial example, the following code defines a new method, `sample`,
+   * which randomly may or may not include each element from its parent.
    *
-   *     var SampleSequence = Lazy.Sequence.define("sample", {
+   *     Lazy.Sequence.define("sample", {
    *       each: function(fn) {
    *         return this.parent.each(function(e) {
    *           // 50/50 chance of including this element.
@@ -132,12 +130,7 @@
    *
    * Etc., etc.
    *
-   * Note: The reason the `init` function needs to accept a `parent` parameter as
-   * its first argument (as opposed to Lazy handling that by default) has to do
-   * with performance, which is a top priority for this library. While the logic
-   * to do this automatically is possible to implement, it is not as efficient as
-   * requiring custom sequence types to do it themselves.
-   *
+   * @public
    * @constructor
    */
   function Sequence() {}
@@ -151,90 +144,37 @@
    *     the `Sequence` prototype so that it can be chained with any other
    *     sequence methods, like {@link #map}, {@link #filter}, etc.
    * @param {Object} overrides An object containing function overrides for this
-   *     new sequence type.
+   *     new sequence type. **Must** include either `getIterator` or `each` (or
+   *     both). *May* include an `init` method as well. For these overrides,
+   *     `this` will be the new sequence, and `this.parent` will be the base
+   *     sequence from which the new sequence was constructed.
    * @returns {Function} A constructor for a new type inheriting from `Sequence`.
    *
-   * @example
-   * // This sequence type logs every element to the console
-   * // as it iterates over it.
-   * var VerboseSequence = Sequence.define("verbose", {
+   * @examples
+   * // This sequence type logs every element to the specified logger as it
+   * // iterates over it.
+   * Lazy.Sequence.define("verbose", {
+   *   init: function(logger) {
+   *     this.logger = logger;
+   *   },
+   *
    *   each: function(fn) {
+   *     var logger = this.logger;
    *     return this.parent.each(function(e, i) {
-   *       console.log(e);
+   *       logger(e);
    *       return fn(e, i);
    *     });
    *   }
    * });
    *
-   * Lazy([1, 2, 3]).verbose().toArray();
-   * // (logs the numbers 1, 2, and 3 to the console)
+   * Lazy([1, 2, 3]).verbose(logger).each(Lazy.noop) // calls logger 3 times
    */
   Sequence.define = function(methodName, overrides) {
     if (!overrides || (!overrides.getIterator && !overrides.each)) {
       throw "A custom sequence must implement *at least* getIterator or each!";
     }
 
-    // Define a constructor that sets this sequence's parent to the first argument
-    // and (optionally) applies any additional initialization logic.
-
-    /** @constructor */
-    var init = overrides.init;
-    var ctor = init ? function(var_args) {
-                        this.parent = arguments[0];
-                        init.apply(this, arguments);
-                      } :
-                      function(var_args) {
-                        this.parent = arguments[0];
-                      };
-
-    // Make this type inherit from Sequence.
-    ctor.prototype = new Sequence();
-
-    // Attach overrides to the new Sequence type's prototype.
-    delete overrides.init;
-    for (var name in overrides) {
-      ctor.prototype[name] = overrides[name];
-    }
-
-    // Expose the constructor as a chainable method so that we can do:
-    // Lazy(...).map(...).filter(...).blah(...);
-    var factory = (function() {
-      /**
-       * @skip
-       * @suppress {checkTypes}
-       */
-      switch ((init && init.length) || 0) {
-        case 0:
-          return function() {
-            return new ctor(this);
-          };
-
-        case 1:
-          return function(arg1) {
-            return new ctor(this, arg1);
-          };
-
-        case 2:
-          return function(arg1, arg2) {
-            return new ctor(this, arg1, arg2);
-          };
-
-        case 3:
-          return function(arg1, arg2, arg3) {
-            return new ctor(this, arg1, arg2, arg3);
-          };
-
-        default:
-          throw 'Really need more than three arguments? https://github.com/dtao/lazy.js/issues/new';
-      }
-    }());
-
-    var methodNames = typeof methodName === 'string' ? [methodName] : methodName;
-    for (var i = 0; i < methodNames.length; ++i) {
-      Sequence.prototype[methodNames[i]] = factory;
-    }
-
-    return ctor;
+    return defineSequenceType(Sequence, methodName, overrides);
   };
 
   /**
@@ -2281,13 +2221,15 @@
    * function you pass to {@link #define} should always accept a `parent` as its
    * first parameter.
    *
-   *     var OffsetSequence = ArrayLikeSequence.define("offset", function(parent, offset) {
-   *       this.offset = offset;
-   *     });
+   *     ArrayLikeSequence.define("offset", {
+   *       init: function(parent, offset) {
+   *         this.offset = offset;
+   *       },
    *
-   *     OffsetSequence.prototype.get = function(i) {
-   *       return this.parent.get((i + this.offset) % this.parent.length());
-   *     };
+   *       get: function(i) {
+   *         return this.parent.get((i + this.offset) % this.parent.length());
+   *       }
+   *     });
    *
    * It's worth noting a couple of things here.
    *
@@ -2301,54 +2243,65 @@
    * `each` your own way, you can do that; but in most cases (as here), you can
    * probably just stick with the default.
    *
-   * So we're already done, after only implementing `get`! Pretty slick, huh?
+   * So we're already done, after only implementing `get`! Pretty easy, huh?
    *
    * Now the `offset` method will be chainable from any `ArrayLikeSequence`. So
    * for example:
    *
-   *     Lazy([1, 2, 3]).map(trans).offset(3);
+   *     Lazy([1, 2, 3]).map(mapFn).offset(3);
    *
    * ...will work, but:
    *
-   *     Lazy([1, 2, 3]).filter(pred).offset(3);
+   *     Lazy([1, 2, 3]).filter(mapFn).offset(3);
    *
-   * ...will not.
+   * ...will not (because `filter` does not return an `ArrayLikeSequence`).
    *
    * (Also, as with the example provided for defining custom {@link Sequence}
    * types, this example really could have been implemented using a function
    * already available as part of Lazy.js: in this case, {@link Sequence#map}.)
    *
+   * @public
    * @constructor
    */
   function ArrayLikeSequence() {}
 
   ArrayLikeSequence.prototype = new Sequence();
 
-  ArrayLikeSequence.define = function(methodName, init) {
-    // Define a constructor that sets this sequence's parent to the first argument
-    // and (optionally) applies any additional initialization logic.
+  /**
+   * Create a new constructor function for a type inheriting from
+   * `ArrayLikeSequence`.
+   *
+   * @public
+   * @param {string|Array.<string>} methodName The name(s) of the method(s) to be
+   *     used for constructing the new sequence. The method will be attached to
+   *     the `ArrayLikeSequence` prototype so that it can be chained with any other
+   *     methods that return array-like sequences.
+   * @param {Object} overrides An object containing function overrides for this
+   *     new sequence type. **Must** include `get`. *May* include `init`,
+   *     `length`, `getIterator`, and `each`. For each function, `this` will be
+   *     the new sequence and `this.parent` will be the source sequence.
+   * @returns {Function} A constructor for a new type inheriting from
+   *     `ArrayLikeSequence`.
+   *
+   * @examples
+   * Lazy.ArrayLikeSequence.define("offset", {
+   *   init: function(offset) {
+   *     this.offset = offset;
+   *   },
+   *
+   *   get: function(i) {
+   *     return this.parent.get((i + this.offset) % this.parent.length());
+   *   }
+   * });
+   *
+   * Lazy([1, 2, 3]).offset(1) // sequence: [2, 3, 1]
+   */
+  ArrayLikeSequence.define = function(methodName, overrides) {
+    if (!overrides || typeof overrides.get !== 'function') {
+      throw "A custom array-like sequence must implement *at least* get!";
+    }
 
-    /** @constructor */
-    var ctor = init ? function(var_args) {
-                        this.parent = arguments[0];
-                        init.apply(this, arguments);
-                      } :
-                      function(var_args) {
-                        this.parent = arguments[0];
-                      };
-
-    // Make this type inherit from ArrayLikeSequence.
-    ctor.prototype = new ArrayLikeSequence();
-
-    // Expose the constructor as a chainable method so that we can do:
-    // Lazy(...).map(...).blah(...);
-    /** @skip
-      * @suppress {checkTypes} */
-    ArrayLikeSequence.prototype[methodName] = function(x, y, z) {
-      return new ctor(this, x, y, z);
-    };
-
-    return ctor;
+    return defineSequenceType(ArrayLikeSequence, methodName, overrides);
   };
 
   /**
@@ -4676,6 +4629,105 @@
   Queue.prototype.size = function() {
     return this.count;
   };
+
+  /**
+   * Shared base method for defining new sequence types.
+   */
+  function defineSequenceType(base, name, overrides) {
+    /** @constructor */
+    var ctor = function() {};
+
+    // Make this type inherit from the specified base.
+    ctor.prototype = new base();
+
+    // Attach overrides to the new sequence type's prototype.
+    for (var override in overrides) {
+      ctor.prototype[override] = overrides[override];
+    }
+
+    // Define a factory method that sets the new sequence's parent to the caller
+    // and (optionally) applies any additional initialization logic.
+    // Expose this as a chainable method so that we can do:
+    // Lazy(...).map(...).filter(...).blah(...);
+    var factory = function() {
+      var sequence = new ctor();
+
+      // Every sequence needs a reference to its parent in order to work.
+      sequence.parent = this;
+
+      // If a custom init function was supplied, call it now.
+      if (sequence.init) {
+        fastApply(sequence, 'init', arguments);
+      }
+
+      return sequence;
+    };
+
+    var methodNames = typeof name === 'string' ? [name] : name;
+    for (var i = 0; i < methodNames.length; ++i) {
+      base.prototype[methodNames[i]] = factory;
+    }
+
+    return ctor;
+  }
+
+  /**
+   * Calls a function with arguments. Faster than `Function.prototype.apply`.
+   *
+   * @private
+   * @param {Object} object The object to bind `this` to.
+   * @param {string} methodName The name of the method to invoke on `object`.
+   * @param {Arguments} args The arguments with which to invoke `methodName`.
+   * @returns {*} Whatever `methodName` returns.
+   *
+   * @examples
+   * var Calculator = {
+   *   add: function(x, y) {
+   *     this.results = this.results || [];
+   *
+   *     var result = x + y;
+   *     this.results.push(result);
+   *     return result;
+   *   }
+   * };
+   *
+   * fastApply(Calculator, 'add', [3, 8]) // 11
+   * fastApply(Calculator, 'add', [2, 6]) // Calculator.results == [11, 8]
+   *
+   * @benchmarks
+   * var Calculator = {
+   *   add: function(x, y) {
+   *     this.results = this.results || [];
+   *
+   *     var result = x + y;
+   *     this.results.push(result);
+   *     return result;
+   *   }
+   * };
+   *
+   * var func = Calculator.add;
+   *
+   * fastApply(Calculator, 'add', [3, 4]) // fastApply
+   * func.apply(Calculator, [3, 4])       // Function.prototype.apply
+   */
+  function fastApply(object, methodName, args) {
+    switch (args.length) {
+      case 0:
+        return object[methodName]();
+
+      case 1:
+        return object[methodName](args[0]);
+
+      case 2:
+        return object[methodName](args[0], args[1]);
+
+      case 3:
+        return object[methodName](args[0], args[1], args[2]);
+
+      default:
+        throw 'Really need more than three arguments? https://github.com/dtao/lazy.js/issues/new';
+    }
+  }
 
   /*** Exposing Lazy to the world ***/
 
