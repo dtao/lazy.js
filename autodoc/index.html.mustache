@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{{name}}</title>
+
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/codemirror/3.14.0/codemirror.css" />
+    <link rel="stylesheet" type="text/css" href="docs.css" />
+    <link rel="stylesheet" type="text/css" href="examples.css" />
+    <script src="//pivotal.github.io/jasmine/lib/jasmine-1.3.1/jasmine.js"></script>
+    <script src="//lodash.com/_js/lodash.js"></script>
+    <script src="//benchmarkjs.com/_js/benchmark.js"></script>
+    <script src="//code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="//code.highcharts.com/highcharts.js"></script>
+    <script src="//danieltao.com/HighTables/hightables.js"></script>
+    <script src="//cdn.jsdelivr.net/codemirror/3.14.0/codemirror.js"></script>
+    <script src="//cdn.jsdelivr.net/codemirror/3.14.0/mode/javascript/javascript.js"></script>
+    <script type="text/javascript" src="utils.js"></script>
+    <script type="text/javascript" src="docs.js"></script>
+
+    {{#javascripts}}
+    <script type="text/javascript" src="{{{.}}}"></script>
+    {{/javascripts}}
+
+    <script type="text/javascript" src="defaults.js"></script>
+
+    <script type="text/javascript">
+      var benchmarks = {};
+    </script>
+</head>
+
+<body>
+    <main>
+        <header>
+            <h1>{{name}}</h1>
+        </header>
+
+        <!-- Notification area for failing specs -->
+        <div id="spec-failures"></div>
+
+        <div class="layout">
+            <div class="index">
+                <nav>
+                    <ul>
+                        {{#namespaces}}
+                        {{^excludeFromDocs}}
+                        <li class="nav-header">
+                            {{#constructorMethod}}
+                            <a href="#{{identifier}}">{{name}}</a>
+                            {{/constructorMethod}}
+                            {{^constructorMethod}}
+                            {{namespace}}
+                            {{/constructorMethod}}
+                        </li>
+                        {{#members}}
+                        {{^excludeFromDocs}}
+                        <li><a href="#{{identifier}}">{{shortName}}</a></li>
+                        {{/excludeFromDocs}}
+                        {{/members}}
+                        {{/excludeFromDocs}}
+                        {{/namespaces}}
+                    </ul>
+                </nav>
+            </div>
+
+            <article>
+                <section class="description">
+                    {{{description}}}
+                </section>
+
+                {{#namespaces}}
+                {{#allMembers}}
+                {{^excludeFromDocs}}
+                <section class="{{sectionType}}" id="{{identifier}}">
+                    <h1>
+                        {{shortName}}
+                        <small>{{name}}</small>
+                    </h1>
+
+                    {{{description}}}
+
+                    {{#hasSignature}}
+                    <div class="signature">
+                        <h3>Signature</h3>
+
+                        <textarea>{{{signature}}}</textarea>
+
+                        <table id="{{name}}-parameters">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Type(s)</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {{#params}}
+                                <tr>
+                                    <td>{{name}}</td>
+                                    <td>{{type}}</td>
+                                    <td>{{{description}}}</td>
+                                </tr>
+                                {{/params}}
+
+                            </tbody>
+
+                            {{^isConstructor}}
+                            <tfoot>
+                                {{#returns}}
+                                <tr>
+                                    <td>returns</td>
+                                    <td>{{type}}</td>
+                                    <td>{{{description}}}</td>
+                                </tr>
+                                {{/returns}}
+                            </tfoot>
+                            {{/isConstructor}}
+                        </table>
+                    </div>
+                    {{/hasSignature}}
+
+                    {{#hasExamples}}
+                    <div class="examples">
+                        <h3>Examples</h3>
+
+                        {{#examples}}
+                        <textarea class="source-examples" id="source-{{identifier}}">{{{code}}}</textarea>
+                        {{/examples}}
+                    </div>
+                    {{/hasExamples}}
+
+                    {{#hasBenchmarks}}
+                    <div class="perf">
+                        <h3>Benchmarks</h3>
+
+                        {{#benchmarks}}
+                        <textarea>{{{code}}}</textarea>
+
+                        <table id="{{identifier}}-perf-tests">
+                            <tr>
+                                <th>Implementation</th>
+                                {{#cases}}
+                                <th>{{label}}</th>
+                                {{/cases}}
+                            </tr>
+
+                            {{#list}}
+                            <tr id="perf-test-{{identifier}}-{{id}}">
+                                <td>{{{name}}}</td>
+                                {{#cases}}
+                                <td data-case-id="{{caseId}}"></td>
+                                {{/cases}}
+                            </tr>
+                            {{/list}}
+                        </table>
+
+                        <button>Run performance benchmarks</button>
+                        {{/benchmarks}}
+                    </div>
+                    {{/hasBenchmarks}}
+
+                    <script type="text/javascript">
+                      {{> examples}}
+                      {{> benchmarks}}
+                    </script>
+                </section>
+                {{/excludeFromDocs}}
+                {{/allMembers}}
+                {{/namespaces}}
+            </article>
+        </div>
+    </main>
+</body>
+
+</html>

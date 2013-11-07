@@ -225,13 +225,7 @@ section.method table tbody tr:nth-child(odd) td {
 }
 
 .signature, .examples, .perf {
-  display: inline-block;
-  width: 45%;
-  min-width: 400px;
-  margin-right: 24px;
   margin-bottom: 24px;
-
-  vertical-align: top;
 }
 
 .examples table tr td {
@@ -341,4 +335,13 @@ section.method table tbody tr:nth-child(odd) td {
 
 #spec-failures:empty {
   display: none;
+}
+
+.CodeMirror {
+  height: auto;
+}
+
+.CodeMirror-scroll {
+  overflow-y: hidden;
+  overflow-x: auto;
 }
