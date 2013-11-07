@@ -321,11 +321,7 @@
    * _.each(_.map(lgArr, increment), Lazy.noop) // lodash - 100 elements
    */
   Sequence.prototype.map = function(mapFn) {
-    if (typeof mapFn === "string") {
-      return this.pluck(mapFn);
-    }
-
-    return new MappedSequence(this, mapFn);
+    return new MappedSequence(this, createCallback(mapFn));
   };
 
   Sequence.prototype.collect = function(mapFn) {
@@ -349,10 +345,8 @@
    *
    * Lazy(people).pluck("last") // sequence: ["Tao", "Smith"]
    */
-  Sequence.prototype.pluck = function(propertyName) {
-    return this.map(function(e) {
-      return e[propertyName];
-    });
+  Sequence.prototype.pluck = function(property) {
+    return this.map(property);
   };
 
   /**
@@ -2440,11 +2434,7 @@
    * @public
    */
   ArrayLikeSequence.prototype.map = function(mapFn) {
-    if (typeof mapFn === 'string') {
-      return this.pluck(mapFn);
-    }
-
-    return new IndexedMappedSequence(this, mapFn);
+    return new IndexedMappedSequence(this, createCallback(mapFn));
   };
 
   /**
@@ -2719,11 +2709,7 @@
    */
   ArrayWrapper.prototype.map =
   ArrayWrapper.prototype.collect = function(mapFn) {
-    if (typeof mapFn === 'string') {
-      return this.pluck(mapFn);
-    }
-
-    return new MappedArrayWrapper(this.source, mapFn);
+    return new MappedArrayWrapper(this.source, createCallback(mapFn));
   };
 
   /**
