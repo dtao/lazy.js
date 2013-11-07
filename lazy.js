@@ -334,13 +334,7 @@
    *     Return false from the function to end the iteration.
    *
    * @examples
-   * var average = 0;
-   *
-   * function updateAverage(value, index) {
-   *   average = ((average * index) + value) / (index + 1);
-   * }
-   *
-   * Lazy([1, 2, 3, 4]).each(updateAverage) // average == 2.5
+   * Lazy([1, 2, 3, 4]).each(fn) // calls fn 4 times
    */
   Sequence.prototype.each = function(fn) {
     var iterator = this.getIterator(),
@@ -1486,11 +1480,8 @@
    *     this argument will result in the fastest possible asynchronous iteration.
    * @returns {AsyncSequence} The new asynchronous sequence.
    *
-   * @example
-   * Lazy([1, 2, 3]).async(1000).each(function(x) {
-   *   console.log(x);
-   * });
-   * // (logs the numbers 1, 2, and 3 to the console, one second apart)
+   * @examples
+   * Lazy([1, 2, 3]).async(100).each(fn) // calls fn 3 times asynchronously
    */
   Sequence.prototype.async = function(interval) {
     return new AsyncSequence(this, interval);
