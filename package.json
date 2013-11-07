@@ -25,7 +25,7 @@
     "util"
   ],
   "devDependencies": {
-    "autodoc": "git://github.com/dtao/autodoc.git",
+    "autodoc": ">= 0.5.0",
     "jasmine-node": "1.7.x",
     "jsdoc": "3.2.x",
     "benchmark": "1.0.0",
