@@ -499,7 +499,8 @@
    * var left  = [1, 2, 3];
    * var right = [4, 5, 6];
    *
-   * Lazy(left).concat(right)  // sequence: [1, 2, 3, 4, 5, 6]
+   * Lazy(left).concat(right)       // sequence: [1, 2, 3, 4, 5, 6]
+   * Lazy(left).concat(Lazy(right)) // sequence: [1, 2, 3, 4, 5, 6]
    */
   Sequence.prototype.concat = function(var_args) {
     return new ConcatenatedSequence(this, Array.prototype.slice.call(arguments, 0));
@@ -2432,6 +2433,9 @@
    * {@link ArrayLikeSequence} so that the result still provides random access.
    *
    * @public
+   *
+   * @examples
+   * Lazy([1, 2, 3]).map(Lazy.identity) // instanceof Lazy.ArrayLikeSequence
    */
   ArrayLikeSequence.prototype.map = function(mapFn) {
     return new IndexedMappedSequence(this, createCallback(mapFn));
@@ -2449,6 +2453,9 @@
    * {@link ArrayLikeSequence} so that the result still provides random access.
    *
    * @public
+   *
+   * @examples
+   * Lazy([1, 2, 3]).reverse() // instanceof Lazy.ArrayLikeSequence
    */
   ArrayLikeSequence.prototype.reverse = function() {
     return new IndexedReversedSequence(this);
@@ -2459,6 +2466,9 @@
    * {@link ArrayLikeSequence} so that the result still provides random access.
    *
    * @public
+   *
+   * @examples
+   * Lazy([1, 2, 3]).first(2) // instanceof Lazy.ArrayLikeSequence
    */
   ArrayLikeSequence.prototype.first = function(count) {
     if (typeof count === "undefined") {
@@ -2473,15 +2483,24 @@
    * {@link ArrayLikeSequence} so that the result still provides random access.
    *
    * @public
+   *
+   * @examples
+   * Lazy([1, 2, 3]).rest() // instanceof Lazy.ArrayLikeSequence
    */
   ArrayLikeSequence.prototype.rest = function(count) {
     return new IndexedDropSequence(this, count);
   };
 
   /**
-   * An optimized version of {@link Sequence#concat}.
+   * An optimized version of {@link Sequence#concat} that returns another
+   * {@link ArrayLikeSequence} *if* the argument is an array.
    *
+   * @public
    * @param {...*} var_args
+   *
+   * @examples
+   * Lazy([1, 2]).concat([3, 4]) // instanceof Lazy.ArrayLikeSequence
+   * Lazy([1, 2]).concat([3, 4]) // sequence: [1, 2, 3, 4]
    */
   ArrayLikeSequence.prototype.concat = function(var_args) {
     if (arguments.length === 1 && arguments[0] instanceof Array) {
