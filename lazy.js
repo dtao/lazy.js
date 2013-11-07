@@ -1274,6 +1274,33 @@
   };
 
   /**
+   * Groups this sequence into consecutive (overlapping) segments of a specified
+   * length. If the underlying sequence has fewer elements than the specfied
+   * length, then this sequence will be empty.
+   *
+   * @public
+   * @param {number} length The length of each consecutive segment.
+   * @returns {Sequence} The resulting sequence of consecutive segments.
+   *
+   * @examples
+   * Lazy([]).consecutive(2)        // => sequence: []
+   * Lazy([1]).consecutive(2)       // => sequence: []
+   * Lazy([1, 2]).consecutive(2)    // => sequence: [[1, 2]]
+   * Lazy([1, 2, 3]).consecutive(2) // => sequence: [[1, 2], [2, 3]]
+   * Lazy([1, 2, 3]).consecutive(0) // => sequence: [[]]
+   * Lazy([1, 2, 3]).consecutive(1) // => sequence: [[1], [2], [3]]
+   */
+  Sequence.prototype.consecutive = function(count) {
+    var queue    = new Queue(count);
+    var segments = this.map(function(element) {
+      if (queue.add(element).count === count) {
+        return queue.toArray();
+      }
+    });
+    return segments.compact();
+  };
+
+  /**
    * Seaches for the first element in the sequence satisfying a given predicate.
    *
    * @public
@@ -4521,6 +4548,102 @@
         // them in an array and do a linear search for reference equality.
         return this.objects && contains(this.objects, value);
     }
+  };
+
+  /**
+   * A "rolling" queue, with a fixed capacity. As items are added to the head,
+   * excess items are dropped from the tail.
+   *
+   * @private
+   * @constructor
+   *
+   * @examples
+   * var queue = new Queue(3);
+   *
+   * queue.add(1).toArray()        // => [1]
+   * queue.add(2).toArray()        // => [1, 2]
+   * queue.add(3).toArray()        // => [1, 2, 3]
+   * queue.add(4).toArray()        // => [2, 3, 4]
+   * queue.add(5).add(6).toArray() // => [4, 5, 6]
+   * queue.add(7).add(8).toArray() // => [6, 7, 8]
+   *
+   * // also want to check corner cases
+   * new Queue(1).add('foo').add('bar').toArray() // => ['bar']
+   * new Queue(0).add('foo').toArray()            // => []
+   * new Queue(-1)                                // throws
+   *
+   * @benchmarks
+   * function populateQueue(count, capacity) {
+   *   var q = new Queue(capacity);
+   *   for (var i = 0; i < count; ++i) {
+   *     q.add(i);
+   *   }
+   * }
+   *
+   * function populateArray(count, capacity) {
+   *   var arr = [];
+   *   for (var i = 0; i < count; ++i) {
+   *     if (arr.length === capacity) { arr.shift(); }
+   *     arr.push(i);
+   *   }
+   * }
+   *
+   * populateQueue(100, 10); // populating a Queue
+   * populateArray(100, 10); // populating an Array
+   */
+  function Queue(capacity) {
+    this.contents = new Array(capacity);
+    this.start    = 0;
+    this.count    = 0;
+  }
+
+  /**
+   * Adds an item to the queue, and returns the queue.
+   */
+  Queue.prototype.add = function(element) {
+    var contents = this.contents,
+        capacity = contents.length,
+        start    = this.start;
+  
+    if (this.count === capacity) {
+      contents[start] = element;
+      this.start = (start + 1) % capacity;
+  
+    } else {
+      contents[this.count++] = element;
+    }
+
+    return this;
+  };
+
+  /**
+   * Returns an array containing snapshot of the queue's contents.
+   */
+  Queue.prototype.toArray = function() {
+    var contents = this.contents,
+        start    = this.start,
+        count    = this.count;
+
+    var snapshot = contents.slice(start, start + count);
+    if (snapshot.length < count) {
+      snapshot = snapshot.concat(contents.slice(0, count - snapshot.length));
+    }
+
+    return snapshot;
+  };
+
+  /**
+   * Returns the number of elements in the queue.
+   *
+   * @examples
+   * var queue = new Queue(2);
+   *
+   * queue.add(1); // queue.size() == 1
+   * queue.add(2); // queue.size() == 2
+   * queue.add(3); // queue.size() == 2
+   */
+  Queue.prototype.size = function() {
+    return this.count;
   };
 
   /*** Exposing Lazy to the world ***/
