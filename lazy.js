@@ -540,9 +540,6 @@
     });
   };
 
-  // TODO: Implement this example:
-  // Lazy("abcdefg").reverse() // sequence: "gfedcba"
-
   /**
    * Creates a new sequence with the same elements as this one, but to be iterated
    * in the opposite order.
@@ -3397,7 +3394,27 @@
   /**
    * A `StringLikeSequence` represents a sequence of characters.
    *
+   * All methods of `StringLikeSequence` that conceptually should return
+   * something like a string return another `StringLikeSequence`.
+   *
    * @constructor
+   *
+   * @examples
+   * function upcase(str) { return str.toUpperCase(); }
+   *
+   * Lazy('foo')               // instanceof Lazy.StringLikeSequence
+   * Lazy('foo').toUpperCase() // instanceof Lazy.StringLikeSequence
+   * Lazy('foo').reverse()     // instanceof Lazy.StringLikeSequence
+   * Lazy('foo').take(2)       // instanceof Lazy.StringLikeSequence
+   * Lazy('foo').drop(1)       // instanceof Lazy.StringLikeSequence
+   * Lazy('foo').substring(1)  // instanceof Lazy.StringLikeSequence
+   *
+   * // Note that `map` does not create a `StringLikeSequence` because there's
+   * // no guarantee the mapping function will return characters. In the event
+   * // you do want to map a string onto a string-like sequence, use
+   * // `mapString`:
+   * Lazy('foo').map(Lazy.identity)       // instanceof Lazy.ArrayLikeSequence
+   * Lazy('foo').mapString(Lazy.identity) // instanceof Lazy.StringLikeSequence
    */
   function StringLikeSequence() {}
 
@@ -3639,12 +3656,12 @@
    *   return String.fromCharCode(a.charCodeAt(0) + 1);
    * }
    *
-   * Lazy('foo').toUpperCase()                 // sequence: 'FOO'
-   * Lazy('foo').substring(1).toUpperCase()    // sequence: 'OO'
-   * Lazy('abc').map(nextLetter).toUpperCase() // sequence: 'BCD'
+   * Lazy('foo').toUpperCase()                       // sequence: 'FOO'
+   * Lazy('foo').substring(1).toUpperCase()          // sequence: 'OO'
+   * Lazy('abc').mapString(nextLetter).toUpperCase() // sequence: 'BCD'
    */
   StringLikeSequence.prototype.toUpperCase = function() {
-    return this.map(function(char) { return char.toUpperCase(); });
+    return this.mapString(function(char) { return char.toUpperCase(); });
   };
 
   /**
@@ -3659,12 +3676,12 @@
    *   return String.fromCharCode(a.charCodeAt(0) + 1);
    * }
    *
-   * Lazy('FOO').toLowerCase()                 // sequence: 'foo'
-   * Lazy('FOO').substring(1).toLowerCase()    // sequence: 'oo'
-   * Lazy('ABC').map(nextLetter).toLowerCase() // sequence: 'bcd'
+   * Lazy('FOO').toLowerCase()                       // sequence: 'foo'
+   * Lazy('FOO').substring(1).toLowerCase()          // sequence: 'oo'
+   * Lazy('ABC').mapString(nextLetter).toLowerCase() // sequence: 'bcd'
    */
   StringLikeSequence.prototype.toLowerCase = function() {
-    return this.map(function(char) { return char.toLowerCase(); });
+    return this.mapString(function(char) { return char.toLowerCase(); });
   };
 
   /**
@@ -3678,12 +3695,12 @@
    * @examples
    * function upcase(char) { return char.toUpperCase(); }
    *
-   * Lazy("foo").map(upcase)               // sequence: "FOO"
-   * Lazy("foo").map(upcase).charAt(0)     // => "F"
-   * Lazy("foo").map(upcase).charCodeAt(0) // => 70
-   * Lazy("foo").map(upcase).substring(1)  // sequence: "OO"
+   * Lazy("foo").mapString(upcase)               // sequence: "FOO"
+   * Lazy("foo").mapString(upcase).charAt(0)     // => "F"
+   * Lazy("foo").mapString(upcase).charCodeAt(0) // => 70
+   * Lazy("foo").mapString(upcase).substring(1)  // sequence: "OO"
    */
-  StringLikeSequence.prototype.map = function(mapFn) {
+  StringLikeSequence.prototype.mapString = function(mapFn) {
     return new MappedStringLikeSequence(this, mapFn);
   };
 
@@ -3698,6 +3715,29 @@
   MappedStringLikeSequence.prototype = new StringLikeSequence();
   MappedStringLikeSequence.prototype.get = IndexedMappedSequence.prototype.get;
   MappedStringLikeSequence.prototype.length = IndexedMappedSequence.prototype.length;
+
+  /**
+   * Returns a copy of this sequence that reads back to front.
+   *
+   * @public
+   *
+   * @examples
+   * Lazy("abcdefg").reverse() // sequence: "gfedcba"
+   */
+  StringLikeSequence.prototype.reverse = function() {
+    return new ReversedStringLikeSequence(this);
+  };
+
+  /**
+   * @constructor
+   */
+  function ReversedStringLikeSequence(parent) {
+    this.parent = parent;
+  }
+
+  ReversedStringLikeSequence.prototype = new StringLikeSequence();
+  ReversedStringLikeSequence.prototype.get = IndexedReversedSequence.prototype.get;
+  ReversedStringLikeSequence.prototype.length = IndexedReversedSequence.prototype.length;
 
   StringLikeSequence.prototype.toString = function() {
     return this.join("");
