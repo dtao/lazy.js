@@ -961,6 +961,26 @@
   };
 
   /**
+   * @constructor
+   */
+  function SortedSequence(parent, sortFn) {
+    this.parent = parent;
+    this.sortFn = sortFn;
+  }
+
+  SortedSequence.prototype = new Sequence();
+
+  SortedSequence.prototype.each = function(fn) {
+    var sortFn = createCallback(this.sortFn),
+        sorted = this.parent.toArray(),
+        i = -1;
+
+    sorted.sort(function(x, y) { return compare(x, y, sortFn); });
+
+    return forEach(sorted, fn);
+  };
+
+  /**
    * Creates a new sequence comprising the elements in this one, grouped
    * together according to some key. The elements of the new sequence are pairs
    * of the form `[key, values]` where `values` is an array containing all of
@@ -986,6 +1006,35 @@
   };
 
   /**
+   * @constructor
+   */
+  function GroupedSequence(parent, keyFn) {
+    this.parent = parent;
+    this.keyFn  = keyFn;
+  }
+
+  GroupedSequence.prototype = new Sequence();
+
+  GroupedSequence.prototype.each = function(fn) {
+    var keyFn   = createCallback(this.keyFn),
+        grouped = {};
+
+    this.parent.each(function(e) {
+      var key = keyFn(e);
+      if (!grouped[key]) {
+        grouped[key] = [e];
+      } else {
+        grouped[key].push(e);
+      }
+    });
+    for (var key in grouped) {
+      if (fn([key, grouped[key]]) === false) {
+        break;
+      }
+    }
+  };
+
+  /**
    * Creates a new sequence containing the unique keys of all the elements in
    * this sequence, each paired with a number representing the number of times
    * that key appears in the sequence.
@@ -1006,6 +1055,33 @@
    */
   Sequence.prototype.countBy = function(keyFn) {
     return new CountedSequence(this, keyFn);
+  };
+
+  /**
+   * @constructor
+   */
+  function CountedSequence(parent, keyFn) {
+    this.parent = parent;
+    this.keyFn  = keyFn;
+  }
+
+  CountedSequence.prototype = new Sequence();
+
+  CountedSequence.prototype.each = function(fn) {
+    var keyFn   = createCallback(this.keyFn),
+        counted = {};
+
+    this.parent.each(function(e) {
+      var key = keyFn(e);
+      if (!counted[key]) {
+        counted[key] = 1;
+      } else {
+        counted[key] += 1;
+      }
+    });
+    for (var key in counted) {
+      fn([key, counted[key]]);
+    }
   };
 
   /**
@@ -1046,6 +1122,38 @@
   };
 
   /**
+   * @constructor
+   */
+  function UniqueSequence(parent, keyFn) {
+    this.parent = parent;
+    this.keyFn  = keyFn;
+  }
+
+  UniqueSequence.prototype = new Sequence();
+
+  UniqueSequence.prototype.each = function(fn) {
+    var cache = new Set(),
+        keyFn = this.keyFn,
+        i     = 0;
+
+    if (keyFn) {
+      keyFn = createCallback(keyFn);
+      return this.parent.each(function(e) {
+        if (cache.add(keyFn(e))) {
+          return fn(e, i++);
+        }
+      });
+
+    } else {
+      return this.parent.each(function(e) {
+        if (cache.add(e)) {
+          return fn(e, i++);
+        }
+      });
+    }
+  };
+
+  /**
    * Creates a new sequence by combining the elements from this sequence with
    * corresponding elements from the specified array(s).
    *
@@ -1077,6 +1185,30 @@
   };
 
   /**
+   * @constructor
+   */
+  function ZippedSequence(parent, arrays) {
+    this.parent = parent;
+    this.arrays = arrays;
+  }
+
+  ZippedSequence.prototype = new Sequence();
+
+  ZippedSequence.prototype.each = function(fn) {
+    var arrays = this.arrays,
+        i = 0;
+    this.parent.each(function(e) {
+      var group = [e];
+      for (var j = 0; j < arrays.length; ++j) {
+        if (arrays[j].length > i) {
+          group.push(arrays[j][i]);
+        }
+      }
+      return fn(group, i++);
+    });
+  };
+
+  /**
    * Creates a new sequence with the same elements as this one, in a randomized
    * order.
    *
@@ -1088,6 +1220,30 @@
    */
   Sequence.prototype.shuffle = function() {
     return new ShuffledSequence(this);
+  };
+
+  /**
+   * @constructor
+   */
+  function ShuffledSequence(parent) {
+    this.parent = parent;
+  }
+
+  ShuffledSequence.prototype = new Sequence();
+
+  ShuffledSequence.prototype.each = function(fn) {
+    var shuffled = this.parent.toArray(),
+        floor = Math.floor,
+        random = Math.random,
+        j = 0;
+
+    for (var i = shuffled.length - 1; i > 0; --i) {
+      swap(shuffled, i, floor(random() * i) + 1);
+      if (fn(shuffled[i], j++) === false) {
+        return;
+      }
+    }
+    fn(shuffled[0], j);
   };
 
   /**
@@ -1103,6 +1259,43 @@
    */
   Sequence.prototype.flatten = function() {
     return new FlattenedSequence(this);
+  };
+
+  /**
+   * @constructor
+   */
+  function FlattenedSequence(parent) {
+    this.parent = parent;
+  }
+
+  FlattenedSequence.prototype = new Sequence();
+
+  FlattenedSequence.prototype.each = function(fn) {
+    var index = 0,
+        done  = false;
+
+    var recurseVisitor = function(e) {
+      if (done) {
+        return false;
+      }
+
+      if (e instanceof Sequence) {
+        e.each(function(seq) {
+          if (recurseVisitor(seq) === false) {
+            done = true;
+            return false;
+          }
+        });
+
+      } else if (e instanceof Array) {
+        return forEach(e, recurseVisitor);
+
+      } else {
+        return fn(e, index++);
+      }
+    };
+
+    this.parent.each(recurseVisitor);
   };
 
   /**
@@ -1142,6 +1335,26 @@
   };
 
   /**
+   * @constructor
+   */
+  function WithoutSequence(parent, values) {
+    this.parent = parent;
+    this.values = values;
+  }
+
+  WithoutSequence.prototype = new Sequence();
+
+  WithoutSequence.prototype.each = function(fn) {
+    var set = createSet(this.values),
+        i = 0;
+    this.parent.each(function(e) {
+      if (!set.contains(e)) {
+        return fn(e, i++);
+      }
+    });
+  };
+
+  /**
    * Creates a new sequence with all the unique elements either in this sequence
    * or among the specified arguments.
    *
@@ -1177,6 +1390,102 @@
     } else {
       return new IntersectionSequence(this, Array.prototype.slice.call(arguments, 0));
     }
+  };
+
+  /**
+   * @constructor
+   */
+  function IntersectionSequence(parent, arrays) {
+    this.parent = parent;
+    this.arrays = arrays;
+  }
+
+  IntersectionSequence.prototype = new Sequence();
+
+  IntersectionSequence.prototype.each = function(fn) {
+    var sets = Lazy(this.arrays).map(function(values) {
+      return new UniqueMemoizer(Lazy(values).getIterator());
+    });
+
+    var setIterator = new UniqueMemoizer(sets.getIterator()),
+        i = 0;
+
+    this.parent.each(function(e) {
+      var includedInAll = true;
+      setIterator.each(function(set) {
+        if (!set.contains(e)) {
+          includedInAll = false;
+          return false;
+        }
+      });
+
+      if (includedInAll) {
+        return fn(e, i++);
+      }
+    });
+  };
+
+  /**
+   * @constructor
+   */
+  function UniqueMemoizer(iterator) {
+    this.iterator     = iterator;
+    this.set          = new Set();
+    this.memo         = [];
+    this.currentValue = undefined;
+  }
+
+  UniqueMemoizer.prototype.current = function() {
+    return this.currentValue;
+  };
+
+  UniqueMemoizer.prototype.moveNext = function() {
+    var iterator = this.iterator,
+        set = this.set,
+        memo = this.memo,
+        current;
+
+    while (iterator.moveNext()) {
+      current = iterator.current();
+      if (set.add(current)) {
+        memo.push(current);
+        this.currentValue = current;
+        return true;
+      }
+    }
+    return false;
+  };
+
+  UniqueMemoizer.prototype.each = function(fn) {
+    var memo = this.memo,
+        length = memo.length,
+        i = -1;
+
+    while (++i < length) {
+      if (fn(memo[i], i) === false) {
+        return false;
+      }
+    }
+
+    while (this.moveNext()) {
+      if (fn(this.currentValue, i++) === false) {
+        break;
+      }
+    }
+  };
+
+  UniqueMemoizer.prototype.contains = function(e) {
+    if (this.set.contains(e)) {
+      return true;
+    }
+
+    while (this.moveNext()) {
+      if (this.currentValue === e) {
+        return true;
+      }
+    }
+
+    return false;
   };
 
   /**
@@ -1309,13 +1618,16 @@
    *     is located, or -1 if the sequence doesn't contain the value.
    *
    * @examples
-   * Lazy(["a", "b", "c", "b", "a"]).lastIndexOf("b") // => 3
-   * Lazy([1, 2, 3]).lastIndexOf(0)                   // => -1
+   * function isEven(x) { return x % 2 === 0; }
+   *
+   * Lazy(["a", "b", "c", "b", "a"]).lastIndexOf("b")    // => 3
+   * Lazy([1, 2, 3]).lastIndexOf(0)                      // => -1
+   * Lazy([2, 2, 1, 2, 4]).filter(isEven).lastIndexOf(2) // 2
    */
   Sequence.prototype.lastIndexOf = function(value) {
     var index = this.reverse().indexOf(value);
     if (index !== -1) {
-      index = this.length() - index - 1;
+      index = this.getIndex().length() - index - 1;
     }
     return index;
   };
@@ -1430,7 +1742,12 @@
    *   return s1 + s2;
    * }
    *
-   * Lazy("abcde").reduceRight(append) // => "edcba"
+   * function isVowel(str) {
+   *   return "aeiou".indexOf(str) !== -1;
+   * }
+   *
+   * Lazy("abcde").reduceRight(append)                 // => "edcba"
+   * Lazy("abcde").filter(isVowel).reduceRight(append) // => "ea"
    */
   Sequence.prototype.reduceRight = function(aggregator, memo) {
     if (arguments.length < 2) {
@@ -1439,7 +1756,7 @@
 
     // This bothers me... but frankly, calling reverse().reduce() is potentially
     // going to eagerly evaluate the sequence anyway; so it's really not an issue.
-    var i = this.length() - 1;
+    var i = this.getIndex().length() - 1;
     return this.reverse().reduce(function(m, e) {
       return aggregator(m, e, i--);
     }, memo);
@@ -1675,195 +1992,6 @@
   /**
    * @constructor
    */
-  function SortedSequence(parent, sortFn) {
-    this.parent = parent;
-    this.sortFn = sortFn;
-  }
-
-  SortedSequence.prototype = new Sequence();
-
-  SortedSequence.prototype.each = function(fn) {
-    var sortFn = createCallback(this.sortFn),
-        sorted = this.parent.toArray(),
-        i = -1;
-
-    sorted.sort(function(x, y) { return compare(x, y, sortFn); });
-
-    return forEach(sorted, fn);
-  };
-
-  /**
-   * @constructor
-   */
-  function ShuffledSequence(parent) {
-    this.parent = parent;
-  }
-
-  ShuffledSequence.prototype = new Sequence();
-
-  ShuffledSequence.prototype.each = function(fn) {
-    var shuffled = this.parent.toArray(),
-        floor = Math.floor,
-        random = Math.random,
-        j = 0;
-
-    for (var i = shuffled.length - 1; i > 0; --i) {
-      swap(shuffled, i, floor(random() * i) + 1);
-      if (fn(shuffled[i], j++) === false) {
-        return;
-      }
-    }
-    fn(shuffled[0], j);
-  };
-
-  /**
-   * @constructor
-   */
-  function GroupedSequence(parent, keyFn) {
-    this.parent = parent;
-    this.keyFn  = keyFn;
-  }
-
-  GroupedSequence.prototype = new Sequence();
-
-  GroupedSequence.prototype.each = function(fn) {
-    var keyFn   = createCallback(this.keyFn),
-        grouped = {};
-
-    this.parent.each(function(e) {
-      var key = keyFn(e);
-      if (!grouped[key]) {
-        grouped[key] = [e];
-      } else {
-        grouped[key].push(e);
-      }
-    });
-    for (var key in grouped) {
-      if (fn([key, grouped[key]]) === false) {
-        break;
-      }
-    }
-  };
-
-  /**
-   * @constructor
-   */
-  function CountedSequence(parent, keyFn) {
-    this.parent = parent;
-    this.keyFn  = keyFn;
-  }
-
-  CountedSequence.prototype = new Sequence();
-
-  CountedSequence.prototype.each = function(fn) {
-    var keyFn   = createCallback(this.keyFn),
-        counted = {};
-
-    this.parent.each(function(e) {
-      var key = keyFn(e);
-      if (!counted[key]) {
-        counted[key] = 1;
-      } else {
-        counted[key] += 1;
-      }
-    });
-    for (var key in counted) {
-      fn([key, counted[key]]);
-    }
-  };
-
-  /**
-   * @constructor
-   */
-  function UniqueSequence(parent, keyFn) {
-    this.parent = parent;
-    this.keyFn  = keyFn;
-  }
-
-  UniqueSequence.prototype = new Sequence();
-
-  UniqueSequence.prototype.each = function(fn) {
-    var cache = new Set(),
-        keyFn = this.keyFn,
-        i     = 0;
-
-    if (keyFn) {
-      keyFn = createCallback(keyFn);
-      return this.parent.each(function(e) {
-        if (cache.add(keyFn(e))) {
-          return fn(e, i++);
-        }
-      });
-
-    } else {
-      return this.parent.each(function(e) {
-        if (cache.add(e)) {
-          return fn(e, i++);
-        }
-      });
-    }
-  };
-
-  /**
-   * @constructor
-   */
-  function FlattenedSequence(parent) {
-    this.parent = parent;
-  }
-
-  FlattenedSequence.prototype = new Sequence();
-
-  FlattenedSequence.prototype.each = function(fn) {
-    var index = 0,
-        done  = false;
-
-    var recurseVisitor = function(e) {
-      if (done) {
-        return false;
-      }
-
-      if (e instanceof Sequence) {
-        e.each(function(seq) {
-          if (recurseVisitor(seq) === false) {
-            done = true;
-            return false;
-          }
-        });
-
-      } else if (e instanceof Array) {
-        return forEach(e, recurseVisitor);
-
-      } else {
-        return fn(e, index++);
-      }
-    };
-
-    this.parent.each(recurseVisitor);
-  };
-
-  /**
-   * @constructor
-   */
-  function WithoutSequence(parent, values) {
-    this.parent = parent;
-    this.values = values;
-  }
-
-  WithoutSequence.prototype = new Sequence();
-
-  WithoutSequence.prototype.each = function(fn) {
-    var set = createSet(this.values),
-        i = 0;
-    this.parent.each(function(e) {
-      if (!set.contains(e)) {
-        return fn(e, i++);
-      }
-    });
-  };
-
-  /**
-   * @constructor
-   */
   function SimpleIntersectionSequence(parent, array) {
     this.parent = parent;
     this.array  = array;
@@ -1904,39 +2032,6 @@
   }
 
   /**
-   * @constructor
-   */
-  function IntersectionSequence(parent, arrays) {
-    this.parent = parent;
-    this.arrays = arrays;
-  }
-
-  IntersectionSequence.prototype = new Sequence();
-
-  IntersectionSequence.prototype.each = function(fn) {
-    var sets = Lazy(this.arrays).map(function(values) {
-      return new UniqueMemoizer(Lazy(values).getIterator());
-    });
-
-    var setIterator = new UniqueMemoizer(sets.getIterator()),
-        i = 0;
-
-    this.parent.each(function(e) {
-      var includedInAll = true;
-      setIterator.each(function(set) {
-        if (!set.contains(e)) {
-          includedInAll = false;
-          return false;
-        }
-      });
-
-      if (includedInAll) {
-        return fn(e, i++);
-      }
-    });
-  };
-
-  /**
    * An optimized version of {@link ZippedSequence}, when zipping a sequence with
    * only one array.
    *
@@ -1955,30 +2050,6 @@
     var array = this.array;
     this.parent.each(function(e, i) {
       return fn([e, array[i]], i);
-    });
-  };
-
-  /**
-   * @constructor
-   */
-  function ZippedSequence(parent, arrays) {
-    this.parent = parent;
-    this.arrays = arrays;
-  }
-
-  ZippedSequence.prototype = new Sequence();
-
-  ZippedSequence.prototype.each = function(fn) {
-    var arrays = this.arrays,
-        i = 0;
-    this.parent.each(function(e) {
-      var group = [e];
-      for (var j = 0; j < arrays.length; ++j) {
-        if (arrays[j].length > i) {
-          group.push(arrays[j][i]);
-        }
-      }
-      return fn(group, i++);
     });
   };
 
@@ -2049,69 +2120,6 @@
 
     ++this.index;
     return true;
-  };
-
-  /**
-   * @constructor
-   */
-  function UniqueMemoizer(iterator) {
-    this.iterator     = iterator;
-    this.set          = new Set();
-    this.memo         = [];
-    this.currentValue = undefined;
-  }
-
-  UniqueMemoizer.prototype.current = function() {
-    return this.currentValue;
-  };
-
-  UniqueMemoizer.prototype.moveNext = function() {
-    var iterator = this.iterator,
-        set = this.set,
-        memo = this.memo,
-        current;
-
-    while (iterator.moveNext()) {
-      current = iterator.current();
-      if (set.add(current)) {
-        memo.push(current);
-        this.currentValue = current;
-        return true;
-      }
-    }
-    return false;
-  };
-
-  UniqueMemoizer.prototype.each = function(fn) {
-    var memo = this.memo,
-        length = memo.length,
-        i = -1;
-
-    while (++i < length) {
-      if (fn(memo[i], i) === false) {
-        return false;
-      }
-    }
-
-    while (this.moveNext()) {
-      if (fn(this.currentValue, i++) === false) {
-        break;
-      }
-    }
-  };
-
-  UniqueMemoizer.prototype.contains = function(e) {
-    if (this.set.contains(e)) {
-      return true;
-    }
-
-    while (this.moveNext()) {
-      if (this.currentValue === e) {
-        return true;
-      }
-    }
-
-    return false;
   };
 
   /**
