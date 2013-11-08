@@ -754,6 +754,10 @@
 
   TakeSequence.prototype = new Sequence();
 
+  TakeSequence.prototype.getIterator = function() {
+    return new TakeIterator(this.parent, this.count);
+  };
+
   TakeSequence.prototype.each = function(fn) {
     var count = this.count,
         i     = 0;
@@ -764,6 +768,22 @@
       if (++i >= count) { return false; }
       return result;
     });
+  };
+
+  /**
+   * @constructor
+   */
+  function TakeIterator(sequence, count) {
+    this.iterator = sequence.getIterator();
+    this.count    = count;
+  }
+
+  TakeIterator.prototype.current = function() {
+    return this.iterator.current();
+  };
+
+  TakeIterator.prototype.moveNext = function() {
+    return ((--this.count >= 0) && this.iterator.moveNext());
   };
 
   /**
