@@ -701,6 +701,28 @@
   };
 
   /**
+   * @constructor
+   */
+  function TakeSequence(parent, count) {
+    this.parent = parent;
+    this.count  = count;
+  }
+
+  TakeSequence.prototype = new Sequence();
+
+  TakeSequence.prototype.each = function(fn) {
+    var count = this.count,
+        i     = 0;
+
+    this.parent.each(function(e) {
+      var result;
+      if (i < count) { result = fn(e, i); }
+      if (++i >= count) { return false; }
+      return result;
+    });
+  };
+
+  /**
    * Creates a new sequence comprising the elements from the head of this sequence
    * that satisfy some predicate. Once an element is encountered that doesn't
    * satisfy the predicate, iteration will stop.
@@ -724,6 +746,24 @@
   };
 
   /**
+   * @constructor
+   */
+  function TakeWhileSequence(parent, predicate) {
+    this.parent    = parent;
+    this.predicate = predicate;
+  }
+
+  TakeWhileSequence.prototype = new Sequence();
+
+  TakeWhileSequence.prototype.each = function(fn) {
+    var predicate = this.predicate;
+
+    this.parent.each(function(e) {
+      return predicate(e) && fn(e);
+    });
+  };
+
+  /**
    * Creates a new sequence comprising all but the last N elements of this
    * sequence.
    *
@@ -733,14 +773,15 @@
    * @returns {Sequence} The new sequence.
    *
    * @examples
-   * Lazy([1, 2, 3, 4]).initial()  // sequence: [1, 2, 3]
-   * Lazy([1, 2, 3, 4]).initial(2) // sequence: [1, 2]
+   * Lazy([1, 2, 3, 4]).initial()                    // sequence: [1, 2, 3]
+   * Lazy([1, 2, 3, 4]).initial(2)                   // sequence: [1, 2]
+   * Lazy([1, 2, 3]).filter(Lazy.identity).initial() // sequence: [1, 2]
    */
   Sequence.prototype.initial = function(count) {
     if (typeof count === "undefined") {
       count = 1;
     }
-    return this.take(this.length() - count);
+    return this.take(this.getIndex().length() - count);
   };
 
   /**
@@ -754,8 +795,11 @@
    *     if no count was given).
    *
    * @examples
-   * Lazy([1, 2, 3]).last()  // => 3
-   * Lazy([1, 2, 3]).last(2) // sequence: [2, 3]
+   * function isEven(x) { return x % 2 === 0; }
+   *
+   * Lazy([1, 2, 3]).last()                 // => 3
+   * Lazy([1, 2, 3]).last(2)                // sequence: [2, 3]
+   * Lazy([1, 2, 3]).filter(isEven).last(2) // sequence: [2]
    */
   Sequence.prototype.last = function(count) {
     if (typeof count === "undefined") {
@@ -811,6 +855,27 @@
   };
 
   /**
+   * @constructor
+   */
+  function DropSequence(parent, count) {
+    this.parent = parent;
+    this.count  = typeof count === "number" ? count : 1;
+  }
+
+  DropSequence.prototype = new Sequence();
+
+  DropSequence.prototype.each = function(fn) {
+    var count   = this.count,
+        dropped = 0,
+        i       = 0;
+
+    this.parent.each(function(e) {
+      if (dropped++ < count) { return; }
+      return fn(e, i++);
+    });
+  };
+
+  /**
    * Creates a new sequence comprising the elements from this sequence *after*
    * those that satisfy some predicate. The sequence starts with the first
    * element that does not match the predicate.
@@ -826,6 +891,33 @@
 
   Sequence.prototype.skipWhile = function(predicate) {
     return this.dropWhile(predicate);
+  };
+
+  /**
+   * @constructor
+   */
+  function DropWhileSequence(parent, predicate) {
+    this.parent    = parent;
+    this.predicate = predicate;
+  }
+
+  DropWhileSequence.prototype = new Sequence();
+
+  DropWhileSequence.prototype.each = function(fn) {
+    var predicate = this.predicate,
+        done      = false;
+
+    this.parent.each(function(e) {
+      if (!done) {
+        if (predicate(e)) {
+          return;
+        }
+
+        done = true;
+      }
+
+      return fn(e);
+    });
   };
 
   /**
@@ -1578,94 +1670,6 @@
    */
   Sequence.prototype.async = function(interval) {
     return new AsyncSequence(this, interval);
-  };
-
-  /**
-   * @constructor
-   */
-  function TakeSequence(parent, count) {
-    this.parent = parent;
-    this.count  = count;
-  }
-
-  TakeSequence.prototype = new Sequence();
-
-  TakeSequence.prototype.each = function(fn) {
-    var count = this.count,
-        i     = 0;
-
-    this.parent.each(function(e) {
-      var result;
-      if (i < count) { result = fn(e, i); }
-      if (++i >= count) { return false; }
-      return result;
-    });
-  };
-
-  /**
-   * @constructor
-   */
-  function TakeWhileSequence(parent, predicate) {
-    this.parent    = parent;
-    this.predicate = predicate;
-  }
-
-  TakeWhileSequence.prototype = new Sequence();
-
-  TakeWhileSequence.prototype.each = function(fn) {
-    var predicate = this.predicate;
-
-    this.parent.each(function(e) {
-      return predicate(e) && fn(e);
-    });
-  };
-
-  /**
-   * @constructor
-   */
-  function DropSequence(parent, count) {
-    this.parent = parent;
-    this.count  = typeof count === "number" ? count : 1;
-  }
-
-  DropSequence.prototype = new Sequence();
-
-  DropSequence.prototype.each = function(fn) {
-    var count   = this.count,
-        dropped = 0,
-        i       = 0;
-
-    this.parent.each(function(e) {
-      if (dropped++ < count) { return; }
-      return fn(e, i++);
-    });
-  };
-
-  /**
-   * @constructor
-   */
-  function DropWhileSequence(parent, predicate) {
-    this.parent    = parent;
-    this.predicate = predicate;
-  }
-
-  DropWhileSequence.prototype = new Sequence();
-
-  DropWhileSequence.prototype.each = function(fn) {
-    var predicate = this.predicate,
-        done      = false;
-
-    this.parent.each(function(e) {
-      if (!done) {
-        if (predicate(e)) {
-          return;
-        }
-
-        done = true;
-      }
-
-      return fn(e);
-    });
   };
 
   /**
