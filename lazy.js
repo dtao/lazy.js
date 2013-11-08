@@ -786,7 +786,7 @@
    * _.each(_.uniq(mostDupes), Lazy.noop)    // lodash - mostly duplicate elements
    */
   Sequence.prototype.uniq = function(keyFn) {
-    return new UniqueSequence(this, createCallback(keyFn));
+    return new UniqueSequence(this, keyFn);
   };
 
   Sequence.prototype.unique = function(keyFn) {
@@ -1777,11 +1777,21 @@
         keyFn = this.keyFn,
         i     = 0;
 
-    this.parent.each(function(e) {
-      if (cache.add(keyFn(e))) {
-        return fn(e, i++);
-      }
-    });
+    if (keyFn) {
+      keyFn = createCallback(keyFn);
+      return this.parent.each(function(e) {
+        if (cache.add(keyFn(e))) {
+          return fn(e, i++);
+        }
+      });
+
+    } else {
+      return this.parent.each(function(e) {
+        if (cache.add(e)) {
+          return fn(e, i++);
+        }
+      });
+    }
   };
 
   /**
@@ -2653,7 +2663,7 @@
    */
   ArrayWrapper.prototype.uniq =
   ArrayWrapper.prototype.unique = function(keyFn) {
-    return new UniqueArrayWrapper(this, createCallback(keyFn));
+    return new UniqueArrayWrapper(this, keyFn);
   };
 
   /**
@@ -2741,7 +2751,7 @@
   function UniqueArrayWrapper(parent, keyFn) {
     this.parent = parent;
     this.each   = getEachForSource(parent.source);
-    this.keyFn  = createCallback(keyFn);
+    this.keyFn  = keyFn;
   }
 
   UniqueArrayWrapper.prototype = new Sequence();
@@ -2778,13 +2788,27 @@
         i = -1,
         j = 0;
 
-    while (++i < length) {
-      value = source[i];
-      key = keyFn(value);
-      if (!find(cache, key)) {
-        cache.push(key);
-        if (fn(value, j++) === false) {
-          return false;
+    if (keyFn) {
+      keyFn = createCallback(keyFn);
+      while (++i < length) {
+        value = source[i];
+        key = keyFn(value);
+        if (!find(cache, key)) {
+          cache.push(key);
+          if (fn(value, j++) === false) {
+            return false;
+          }
+        }
+      }
+
+    } else {
+      while (++i < length) {
+        value = source[i];
+        if (!find(cache, value)) {
+          cache.push(value);
+          if (fn(value, j++) === false) {
+            return false;
+          }
         }
       }
     }
@@ -4450,15 +4474,24 @@
    * containsBefore([1, 2, 3], 3, 3) // => true
    */
   function containsBefore(array, element, index, keyFn) {
-    keyFn = keyFn || Lazy.identity;
-
     var i = -1;
 
-    while (++i < index) {
-      if (keyFn(array[i]) === keyFn(element)) {
-        return true;
+    if (keyFn) {
+      keyFn = createCallback(keyFn);
+      while (++i < index) {
+        if (keyFn(array[i]) === keyFn(element)) {
+          return true;
+        }
+      }
+
+    } else {
+      while (++i < index) {
+        if (array[i] === element) {
+          return true;
+        }
       }
     }
+
     return false;
   }
 
