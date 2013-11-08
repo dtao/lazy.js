@@ -1025,10 +1025,10 @@
   };
 
   /**
-   * Creates a new sequence comprising the elements in this one, grouped
-   * together according to some key. The elements of the new sequence are pairs
-   * of the form `[key, values]` where `values` is an array containing all of
-   * the elements in this sequence with the same key.
+   * Creates a new {@link ObjectLikeSequence} comprising the elements in this
+   * one, grouped together according to some key. The value associated with each
+   * key in the resulting object-like sequence is an array containing all of
+   * the elements in this sequence with that key.
    *
    * @public
    * @param {Function|string} keyFn The function to call on the elements in this
@@ -1043,7 +1043,7 @@
    *
    * var numbers = [1, 2, 3, 4, 5];
    *
-   * Lazy(numbers).groupBy(oddOrEven) // sequence: [["odd", [1, 3, 5]], ["even", [2, 4]]]
+   * Lazy(numbers).groupBy(oddOrEven) // sequence: { odd: [1, 3, 5], even: [2, 4] }
    */
   Sequence.prototype.groupBy = function(keyFn) {
     return new GroupedSequence(this, keyFn);
@@ -1057,35 +1057,18 @@
     this.keyFn  = keyFn;
   }
 
-  GroupedSequence.prototype = new Sequence();
-
-  GroupedSequence.prototype.each = function(fn) {
-    var keyFn   = createCallback(this.keyFn),
-        grouped = {};
-
-    this.parent.each(function(e) {
-      var key = keyFn(e);
-      if (!grouped[key]) {
-        grouped[key] = [e];
-      } else {
-        grouped[key].push(e);
-      }
-    });
-    for (var key in grouped) {
-      if (fn([key, grouped[key]]) === false) {
-        break;
-      }
-    }
-  };
+  // GroupedSequence must have its prototype set after ObjectLikeSequence has
+  // been fully initialized.
 
   /**
-   * Creates a new sequence containing the unique keys of all the elements in
-   * this sequence, each paired with a number representing the number of times
-   * that key appears in the sequence.
+   * Creates a new {@link ObjectLikeSequence} containing the unique keys of all
+   * the elements in this sequence, each paired with the number of elements
+   * in this sequence having that key.
    *
    * @public
-   * @param {Function} keyFn The function to call on the elements in this
-   *     sequence to obtain a key by which to count them.
+   * @param {Function|string} keyFn The function to call on the elements in this
+   *     sequence to obtain a key by which to count them, or a string representing
+   *     a parameter to read from all the elements in this sequence.
    * @returns {Sequence} The new sequence.
    *
    * @examples
@@ -1095,7 +1078,7 @@
    *
    * var numbers = [1, 2, 3, 4, 5];
    *
-   * Lazy(numbers).countBy(oddOrEven) // sequence: [["odd", 3], ["even", 2]]
+   * Lazy(numbers).countBy(oddOrEven) // sequence: { odd: 3, even: 2 }
    */
   Sequence.prototype.countBy = function(keyFn) {
     return new CountedSequence(this, keyFn);
@@ -1109,24 +1092,8 @@
     this.keyFn  = keyFn;
   }
 
-  CountedSequence.prototype = new Sequence();
-
-  CountedSequence.prototype.each = function(fn) {
-    var keyFn   = createCallback(this.keyFn),
-        counted = {};
-
-    this.parent.each(function(e) {
-      var key = keyFn(e);
-      if (!counted[key]) {
-        counted[key] = 1;
-      } else {
-        counted[key] += 1;
-      }
-    });
-    for (var key in counted) {
-      fn([key, counted[key]]);
-    }
-  };
+  // CountedSequence, like GroupedSequence, must have its prototype set after
+  // ObjectLikeSequence has been fully initialized.
 
   /**
    * Creates a new sequence with every unique element from this one appearing
@@ -3373,6 +3340,57 @@
       object[key] = value;
     });
     return object;
+  };
+
+  // Now that we've fully initialized the ObjectLikeSequence prototype, we can
+  // actually set the prototype for GroupedSequence and CountedSequence.
+
+  GroupedSequence.prototype = new ObjectLikeSequence();
+
+  GroupedSequence.prototype.each = function(fn) {
+    var keyFn   = createCallback(this.keyFn),
+        grouped = {};
+
+    this.parent.each(function(e) {
+      var key = keyFn(e);
+      if (!grouped[key]) {
+        grouped[key] = [e];
+      } else {
+        grouped[key].push(e);
+      }
+    });
+
+    for (var key in grouped) {
+      if (fn(grouped[key], key) === false) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  CountedSequence.prototype = new ObjectLikeSequence();
+
+  CountedSequence.prototype.each = function(fn) {
+    var keyFn   = createCallback(this.keyFn),
+        counted = {};
+
+    this.parent.each(function(e) {
+      var key = keyFn(e);
+      if (!counted[key]) {
+        counted[key] = 1;
+      } else {
+        counted[key] += 1;
+      }
+    });
+
+    for (var key in counted) {
+      if (fn(counted[key], key) === false) {
+        return false;
+      }
+    }
+
+    return true;
   };
 
   /**
