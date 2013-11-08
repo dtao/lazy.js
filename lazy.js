@@ -3132,7 +3132,7 @@
    * Creates an array from the key/value pairs in this sequence.
    *
    * @public
-   * @aka pairs
+   * @aka toArray
    * @returns {Array} An array of `[key, value]` elements.
    *
    * @examples
@@ -3144,12 +3144,12 @@
    *
    * Lazy(colorCodes).toArray() // => [["red", "#f00"], ["green", "#0f0"], ["blue", "#00f"]]
    */
-  ObjectLikeSequence.prototype.toArray = function() {
+  ObjectLikeSequence.prototype.pairs = function() {
     return this.map(function(v, k) { return [k, v]; }).toArray();
   };
 
-  ObjectLikeSequence.prototype.pairs = function() {
-    return this.toArray();
+  ObjectLikeSequence.prototype.toArray = function() {
+    return this.pairs();
   };
 
   /**
