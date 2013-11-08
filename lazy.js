@@ -3168,7 +3168,11 @@
    * Lazy(colorCodes).toObject() // => { red: "#f00", green: "#0f0", blue: "#00f" }
    */
   ObjectLikeSequence.prototype.toObject = function() {
-    return this.map(function(v, k) { return [k, v]; }).toObject();
+    var object = {};
+    this.each(function(value, key) {
+      object[key] = value;
+    });
+    return object;
   };
 
   /**
