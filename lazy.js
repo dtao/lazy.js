@@ -2980,6 +2980,55 @@
   ObjectLikeSequence.prototype = new Sequence();
 
   /**
+   * Create a new constructor function for a type inheriting from
+   * `ObjectLikeSequence`.
+   *
+   * @public
+   * @param {string|Array.<string>} methodName The name(s) of the method(s) to be
+   *     used for constructing the new sequence. The method will be attached to
+   *     the `ObjectLikeSequence` prototype so that it can be chained with any other
+   *     methods that return object-like sequences.
+   * @param {Object} overrides An object containing function overrides for this
+   *     new sequence type. **Must** include `each`. *May* include `init` and
+   *     `get` (for looking up an element by key).
+   * @returns {Function} A constructor for a new type inheriting from
+   *     `ObjectLikeSequence`.
+   *
+   * @examples
+   * function downcaseKey(value, key) {
+   *   return [key.toLowerCase(), value];
+   * }
+   *
+   * Lazy.ObjectLikeSequence.define("caseInsensitive", {
+   *   init: function() {
+   *     var downcased = this.parent
+   *       .map(downcaseKey)
+   *       .toObject();
+   *     this.downcased = Lazy(downcased);
+   *   },
+   *
+   *   get: function(key) {
+   *     return this.downcased.get(key.toLowerCase());
+   *   },
+   *
+   *   each: function(fn) {
+   *     return this.downcased.each(fn);
+   *   }
+   * });
+   *
+   * Lazy({ Foo: 'bar' }).caseInsensitive()            // sequence: { foo: 'bar' }
+   * Lazy({ FOO: 'bar' }).caseInsensitive().get('foo') // => 'bar'
+   * Lazy({ FOO: 'bar' }).caseInsensitive().get('FOO') // => 'bar'
+   */
+  ObjectLikeSequence.define = function(methodName, overrides) {
+    if (!overrides || typeof overrides.each !== 'function') {
+      throw "A custom object-like sequence must implement *at least* each!";
+    }
+
+    return defineSequenceType(ObjectLikeSequence, methodName, overrides);
+  };
+
+  /**
    * Gets the element at the specified key in this sequence.
    *
    * @public
