@@ -4237,8 +4237,10 @@
   }
 
   AsyncHandle.prototype.cancel = function() {
+    var cancelCallback = this.cancelCallback;
+
     if (this.id) {
-      this.cancelCallback(this.id);
+      cancelCallback(this.id);
       this.id = null;
     }
   };
