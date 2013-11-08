@@ -4102,6 +4102,16 @@
     return this.fixedLength;
   };
 
+  /**
+   * Iterates over the sequence produced by invoking this sequence's generator
+   * function up to its specified length, or, if length is `undefined`,
+   * indefinitely (in which case the sequence will go on forever--you would need
+   * to call, e.g., {@link Sequence#take} to limit iteration).
+   *
+   * @public
+   * @param {Function} fn The function to call on each output from the generator
+   *     function.
+   */
   GeneratedSequence.prototype.each = function(fn) {
     var generatorFn = this.get,
         length = this.fixedLength,
@@ -4204,9 +4214,9 @@
    * @public
    * @param {Function} fn The function to invoke asynchronously on each element in
    *     the sequence one by one.
-   * @returns {AsyncHandle} An object providing the ability to cancel the
-   *     asynchronous iteration (by calling `cancel()`) as well as supply
-   *     callback(s) for when an error is encountered (`onError`) or when
+   * @returns {AsyncHandle} An {@link AsyncHandle} providing the ability to
+   *     cancel the asynchronous iteration (by calling `cancel()`) as well as
+   *     supply callback(s) for when an error is encountered (`onError`) or when
    *     iteration is complete (`onComplete`).
    */
   AsyncSequence.prototype.each = function(fn) {
@@ -4234,6 +4244,13 @@
   };
 
   /**
+   * An `AsyncHandle` provides control over an {@link AsyncSequence} that is
+   * currently (or was) iterating over its elements asynchronously. In
+   * particular it provides the ability to {@link AsyncHandle#cancel} the
+   * iteration as well as execute a callback when either an error occurs or
+   * iteration is complete with {@link AsyncHandle#onError} and
+   * {@link AsyncHandle#onComplete}.
+   *
    * @public
    * @constructor
    */

@@ -23,6 +23,7 @@
 
     <script type="text/javascript" src="../lazy.js"></script>
     <script type="text/javascript" src="../lazy.dom.js"></script>
+    <script type="text/javascript" src="defaults.js"></script>
 
     <script type="text/javascript">
       var benchmarks = {};
@@ -160,6 +161,7 @@
                         <li class="nav-header">
                             <a href="#GeneratedSequence">GeneratedSequence</a>
                         </li>
+                        <li><a href="#GeneratedSequence-each">each</a></li>
                         <li><a href="#GeneratedSequence-length">length</a></li>
                         <li class="nav-header">
                             <a href="#AsyncSequence">AsyncSequence</a>
@@ -10062,6 +10064,53 @@ function.</p>
                     <script type="text/javascript">
                     </script>
                 </section>
+                <section class="method" id="GeneratedSequence-each">
+                    <h1>
+                        each
+                        <small>GeneratedSequence#each</small>
+                    </h1>
+
+                    <p>Iterates over the sequence produced by invoking this sequence&#39;s generator
+function up to its specified length, or, if length is <code>undefined</code>,
+indefinitely (in which case the sequence will go on forever--you would need
+to call, e.g., <a href="#Sequence-take">Sequence#take</a> to limit iteration).</p>
+
+
+                    <div class="signature">
+                        <h3>Signature</h3>
+
+                        <textarea>GeneratedSequence.each = function(fn)</textarea>
+
+                        <table id="GeneratedSequence#each-parameters">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Type(s)</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td>fn</td>
+                                    <td>Function</td>
+                                    <td><p>The function to call on each output from the generator
+    function.</p>
+</td>
+                                </tr>
+
+                            </tbody>
+
+                            <tfoot>
+                            </tfoot>
+                        </table>
+                    </div>
+
+
+
+                    <script type="text/javascript">
+                    </script>
+                </section>
                 <section class="method" id="GeneratedSequence-length">
                     <h1>
                         length
@@ -10217,9 +10266,9 @@ can&#39;t move ahead any more.</p>
                                 <tr>
                                     <td>returns</td>
                                     <td>AsyncHandle</td>
-                                    <td><p>An object providing the ability to cancel the
-    asynchronous iteration (by calling <code>cancel()</code>) as well as supply
-    callback(s) for when an error is encountered (<code>onError</code>) or when
+                                    <td><p>An <a href="#AsyncHandle">AsyncHandle</a> providing the ability to
+    cancel the asynchronous iteration (by calling <code>cancel()</code>) as well as
+    supply callback(s) for when an error is encountered (<code>onError</code>) or when
     iteration is complete (<code>onComplete</code>).</p>
 </td>
                                 </tr>
@@ -10238,7 +10287,13 @@ can&#39;t move ahead any more.</p>
                         <small>AsyncHandle</small>
                     </h1>
 
-                    
+                    <p>An <code>AsyncHandle</code> provides control over an <a href="#AsyncSequence">AsyncSequence</a> that is
+currently (or was) iterating over its elements asynchronously. In
+particular it provides the ability to <a href="#AsyncHandle-cancel">AsyncHandle#cancel</a> the
+iteration as well as execute a callback when either an error occurs or
+iteration is complete with <a href="#AsyncHandle-onError">AsyncHandle#onError</a> and
+<a href="#AsyncHandle-onComplete">AsyncHandle#onComplete</a>.</p>
+
 
 
 

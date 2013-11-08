@@ -13,12 +13,7 @@ $(document).ready(function() {
       });
 
       var percent = (i + 1) / textareas.length * 100;
-
-      if (percent < 25) {
-        progressIndicator.text(percent.toFixed(0) + '% done');
-      } else {
-        progressIndicator.html('');
-      }
+      progressIndicator.text(percent.toFixed(0) + '% done');
     });
 
     asyncHandle.onComplete(callback || Lazy.noop);
