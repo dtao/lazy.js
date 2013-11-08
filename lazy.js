@@ -3928,9 +3928,6 @@
     return this.fixedLength;
   };
 
-  /**
-   * See {@link Sequence#each}.
-   */
   GeneratedSequence.prototype.each = function(fn) {
     var generatorFn = this.get,
         length = this.fixedLength,
@@ -3942,9 +3939,6 @@
     }
   };
 
-  /**
-   * See {@link Sequence#getIterator}
-   */
   GeneratedSequence.prototype.getIterator = function() {
     return new GeneratedIterator(this);
   };
@@ -4408,37 +4402,6 @@
     return true;
   }
 
-  /**
-   * Iterates over every individual element in an array of arrays (of arrays...).
-   *
-   * @param {Array} array The outermost array.
-   * @param {Function} fn The function to call on every element, which can return
-   *     false to stop the iteration early.
-   * @param {Array=} index An optional counter container, to keep track of the
-   *     current index.
-   * @returns {boolean} True if every element in the entire sequence was iterated,
-   *     otherwise false.
-   */
-  function recursiveForEach(array, fn, index) {
-    // It's easier to ensure this is initialized than to add special handling
-    // in case it isn't.
-    index = index || [0];
-
-    var i = -1;
-    while (++i < array.length) {
-      if (array[i] instanceof Array) {
-        if (recursiveForEach(array[i], fn, index) === false) {
-          return false;
-        }
-      } else {
-        if (fn(array[i], index[0]++) === false) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
   function getFirst(sequence) {
     var result;
     sequence.each(function(e) {
@@ -4727,20 +4690,6 @@
     }
 
     return snapshot;
-  };
-
-  /**
-   * Returns the number of elements in the queue.
-   *
-   * @examples
-   * var queue = new Queue(2);
-   *
-   * queue.add(1); // queue.size() == 1
-   * queue.add(2); // queue.size() == 2
-   * queue.add(3); // queue.size() == 2
-   */
-  Queue.prototype.size = function() {
-    return this.count;
   };
 
   /**
