@@ -4180,13 +4180,22 @@
         handle.errorCallback = callback;
       },
 
-      errorCallback: function(error) {}
+      errorCallback: function(error) {},
+
+      onComplete: function(callback) {
+        handle.completeCallback = callback;
+      },
+
+      completeCallback: function() {}
     };
 
     handle.id = onNextCallback(function iterate() {
       try {
         if (iterator.moveNext() && fn(iterator.current(), i++) !== false) {
           handle.id = onNextCallback(iterate);
+
+        } else {
+          handle.completeCallback();
         }
 
       } catch (e) {
