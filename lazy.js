@@ -3036,7 +3036,10 @@
    * @returns {*} The element.
    *
    * @examples
-   * Lazy({ foo: "bar" }).get("foo") // => "bar"
+   * Lazy({ foo: "bar" }).get("foo")                          // => "bar"
+   * Lazy({ foo: "bar" }).extend({ foo: "baz" }).get("foo")   // => "baz"
+   * Lazy({ foo: "bar" }).defaults({ bar: "baz" }).get("bar") // => "baz"
+   * Lazy({ foo: "bar" }).invert().get("bar")                 // => "foo"
    */
   ObjectLikeSequence.prototype.get = function(key) {
     return this.parent.get(key);
@@ -3213,10 +3216,29 @@
   };
 
   /**
-   * Creates an array from the key/value pairs in this sequence.
+   * Maps the key/value pairs in this sequence to arrays.
    *
    * @public
    * @aka toArray
+   * @returns {Sequence} An sequence of `[key, value]` pairs.
+   *
+   * @examples
+   * var colorCodes = {
+   *   red: "#f00",
+   *   green: "#0f0",
+   *   blue: "#00f"
+   * };
+   *
+   * Lazy(colorCodes).pairs() // sequence: [["red", "#f00"], ["green", "#0f0"], ["blue", "#00f"]]
+   */
+  ObjectLikeSequence.prototype.pairs = function() {
+    return this.map(function(v, k) { return [k, v]; });
+  };
+
+  /**
+   * Creates an array from the key/value pairs in this sequence.
+   *
+   * @public
    * @returns {Array} An array of `[key, value]` elements.
    *
    * @examples
@@ -3228,12 +3250,8 @@
    *
    * Lazy(colorCodes).toArray() // => [["red", "#f00"], ["green", "#0f0"], ["blue", "#00f"]]
    */
-  ObjectLikeSequence.prototype.pairs = function() {
-    return this.map(function(v, k) { return [k, v]; }).toArray();
-  };
-
   ObjectLikeSequence.prototype.toArray = function() {
-    return this.pairs();
+    return this.pairs().toArray();
   };
 
   /**
@@ -3269,6 +3287,10 @@
 
   AssignSequence.prototype = new ObjectLikeSequence();
 
+  AssignSequence.prototype.get = function(key) {
+    return this.other[key] || this.parent.get(key);
+  };
+
   AssignSequence.prototype.each = function(fn) {
     var merged = new Set(),
         done   = false;
@@ -3300,6 +3322,10 @@
   }
 
   DefaultsSequence.prototype = new ObjectLikeSequence();
+
+  DefaultsSequence.prototype.get = function(key) {
+    return this.parent.get(key) || this.defaults[key];
+  };
 
   DefaultsSequence.prototype.each = function(fn) {
     var merged = new Set(),
@@ -3333,6 +3359,14 @@
   }
 
   InvertedSequence.prototype = new ObjectLikeSequence();
+
+  InvertedSequence.prototype.get = function(key) {
+    var pair = this.parent.pairs().find(function(p) {
+      return p[1] === key;
+    });
+
+    return pair ? pair[0] : undefined;
+  };
 
   InvertedSequence.prototype.each = function(fn) {
     this.parent.each(function(value, key) {
