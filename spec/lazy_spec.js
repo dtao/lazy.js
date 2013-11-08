@@ -123,7 +123,7 @@ describe("Lazy", function() {
           });
           runs(function() {
             expect(context.setTimeout).toHaveBeenCalled();
-            expect(context.setTimeout.callCount).toBe(6);
+            expect(context.setTimeout.callCount).toBe(people.length + 1);
           });
         });
       }
