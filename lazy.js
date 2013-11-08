@@ -4444,12 +4444,24 @@
    * @returns {boolean} Whether or not the element exists in the array.
    *
    * @examples
-   * contains([1, 2], 2) // => true
-   * contains([1, 2], 3) // => false
+   * contains([1, 2], 2)              // => true
+   * contains([1, 2], 3)              // => false
+   * contains([undefined], undefined) // => true
+   * contains([NaN], NaN)             // => true
    */
   function contains(array, element) {
     var i = -1,
         length = array.length;
+
+    // Special handling for NaN
+    if (element !== element) {
+      while (++i < length) {
+        if (array[i] !== array[i]) {
+          return true;
+        }
+      }
+      return false;
+    }
 
     while (++i < length) {
       if (array[i] === element) {
