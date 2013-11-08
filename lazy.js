@@ -3385,14 +3385,14 @@
    * @returns {IndexedIterator} The iterator.
    */
   StringLikeSequence.prototype.getIterator = function() {
-    return new CharIterator(this.source);
+    return new CharIterator(this);
   };
 
   /**
    * @constructor
    */
   function CharIterator(source) {
-    this.source = source;
+    this.source = Lazy(source);
     this.index = -1;
   }
 
@@ -3401,7 +3401,7 @@
   };
 
   CharIterator.prototype.moveNext = function() {
-    return (++this.index < this.source.length);
+    return (++this.index < this.source.length());
   };
 
   /**
