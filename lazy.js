@@ -4143,9 +4143,9 @@
       throw "Sequence is already asynchronous!";
     }
 
-    this.parent = parent;
+    this.parent         = parent;
+    this.interval       = interval;
     this.onNextCallback = getOnNextCallback(interval);
-    this.cancelCallback = getCancelCallback();
   }
 
   AsyncSequence.prototype = new Sequence();
@@ -4156,38 +4156,17 @@
    * @public
    * @param {Function} fn The function to invoke asynchronously on each element in
    *     the sequence one by one.
-   * @returns {{cancel: Function, onError: Function}} An object providing the
-   *     ability to cancel the asynchronous iteration (by calling `cancel()`) as
-   *     well as handle any errors with a callback (set with `onError()`).
+   * @returns {AsyncHandle} An object providing the ability to cancel the
+   *     asynchronous iteration (by calling `cancel()`) as well as supply
+   *     callback(s) for when an error is encountered (`onError`) or when
+   *     iteration is complete (`onComplete`).
    */
   AsyncSequence.prototype.each = function(fn) {
     var iterator = this.parent.getIterator(),
         onNextCallback = this.onNextCallback,
-        cancelCallback = this.cancelCallback,
         i = 0;
 
-    var handle = {
-      id: null,
-
-      cancel: function() {
-        if (handle.id) {
-          cancelCallback(handle.id);
-          handle.id = null;
-        }
-      },
-
-      onError: function(callback) {
-        handle.errorCallback = callback;
-      },
-
-      errorCallback: function(error) {},
-
-      onComplete: function(callback) {
-        handle.completeCallback = callback;
-      },
-
-      completeCallback: function() {}
-    };
+    var handle = new AsyncHandle(this.interval);
 
     handle.id = onNextCallback(function iterate() {
       try {
@@ -4205,6 +4184,32 @@
 
     return handle;
   };
+
+  /**
+   * @constructor
+   */
+  function AsyncHandle(interval) {
+    this.cancelCallback = getCancelCallback(interval);
+  }
+
+  AsyncHandle.prototype.cancel = function() {
+    if (this.id) {
+      this.cancelCallback(this.id);
+      this.id = null;
+    }
+  };
+
+  AsyncHandle.prototype.onError = function(callback) {
+    this.errorCallback = callback;
+  };
+
+  AsyncHandle.prototype.errorCallback = Lazy.noop;
+
+  AsyncHandle.prototype.onComplete = function(callback) {
+    this.completeCallback = callback;
+  };
+
+  AsyncHandle.prototype.completeCallback = Lazy.noop;
 
   function getOnNextCallback(interval) {
     if (typeof interval === "undefined") {
