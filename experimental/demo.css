@@ -1,0 +1,25 @@
+body {
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+main {
+  width: 1200px;
+  margin: auto;
+}
+
+main > header {
+  font-size: 200%;
+}
+
+main > p {
+  font-size: 150%;
+}
+
+textarea {
+  height: 400px;
+  width: 100%;
+}
+
+pre.error {
+  color: red;
+}
