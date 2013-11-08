@@ -86,4 +86,33 @@ window.addEventListener('load', function() {
     displayData(e.message || e, 'error');
   });
 
+  var exampleData = [
+    "foo",
+    "bar",
+    { "foo": "bar" },
+    1,
+    2,
+    [3, 4],
+    null,
+    true,
+    {
+      "nested": {
+        "inner": {
+          "array": [2, 3.14, 321987432],
+          "jagged array": [43, [43, [123, 32, 43, 54]]]
+        }
+      }
+    },
+    { "blah": "slime" },
+    "string with \"escaped quotes\", a'p'o's't'r'a'p'h'e's, commas, [brackets] and {braces}"
+  ];
+
+  var exampleJson = JSON.stringify(exampleData);
+
+  document.getElementById('good-example-json').textContent = exampleJson;
+
+  document.getElementById('bad-example-json').textContent =
+    exampleJson.substring(0, exampleJson.length - 10) +
+    '" I AM INVALID JSON "' + exampleJson.substring(exampleJson.length - 10);
+
 });

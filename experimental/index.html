@@ -28,6 +28,14 @@
             Click <strong>Cancel</strong> at any point to stop parsing.
         </p>
 
+        <div>
+            <strong>Example valid JSON</strong>:<br />
+            <pre id="good-example-json"></pre>
+
+            <strong>Example <em>invalid</em> JSON</strong>:<br />
+            <pre id="bad-example-json"></pre>
+        </div>
+
         <fieldset>
             <legend>JSON</legend>
             <textarea id="json"></textarea>
@@ -39,7 +47,7 @@
 
         <div>
             <strong>Example</strong>:<br />
-            <pre>compact().map(function(data) { return typeof data; })</pre>
+            <pre>filter(function(data) { return typeof data === 'string'; })</pre>
         </div>
 
         <fieldset>
