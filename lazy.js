@@ -2203,6 +2203,10 @@
    * {@link #get} and {@link #length}, allowing a sequence to act as a "view" into
    * a collection or other indexed data source.
    *
+   * All methods of `ArrayLikeSequence` that conceptually should return
+   * something like a array (with indexed access) return another
+   * `ArrayLikeSequence`.
+   *
    * Defining custom array-like sequences
    * ------------------------------------
    *
@@ -2257,6 +2261,14 @@
    *
    * @public
    * @constructor
+   *
+   * @examples
+   * Lazy([1, 2, 3])                    // instanceof Lazy.ArrayLikeSequence
+   * Lazy([1, 2, 3]).map(Lazy.identity) // instanceof Lazy.ArrayLikeSequence
+   * Lazy([1, 2, 3]).take(2)            // instanceof Lazy.ArrayLikeSequence
+   * Lazy([1, 2, 3]).drop(2)            // instanceof Lazy.ArrayLikeSequence
+   * Lazy([1, 2, 3]).reverse()          // instanceof Lazy.ArrayLikeSequence
+   * Lazy([1, 2, 3]).slice(1, 2)        // instanceof Lazy.ArrayLikeSequence
    */
   function ArrayLikeSequence() {}
 
