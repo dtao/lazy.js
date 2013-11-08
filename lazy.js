@@ -635,19 +635,19 @@
    * @returns {Sequence} The new sequence.
    *
    * @examples
-   * Lazy([1, 2, 3, 4]).drop()  // sequence: [2, 3, 4]
-   * Lazy([1, 2, 3, 4]).drop(0) // sequence: [1, 2, 3, 4]
-   * Lazy([1, 2, 3, 4]).drop(2) // sequence: [3, 4]
-   * Lazy([1, 2, 3, 4]).drop(5) // sequence: []
+   * Lazy([1, 2, 3, 4]).rest()  // sequence: [2, 3, 4]
+   * Lazy([1, 2, 3, 4]).rest(0) // sequence: [1, 2, 3, 4]
+   * Lazy([1, 2, 3, 4]).rest(2) // sequence: [3, 4]
+   * Lazy([1, 2, 3, 4]).rest(5) // sequence: []
    */
-  Sequence.prototype.drop = function(count) {
+  Sequence.prototype.rest = function(count) {
     return new DropSequence(this, count);
   };
 
   Sequence.prototype.skip =
   Sequence.prototype.tail =
-  Sequence.prototype.rest = function(count) {
-    return this.drop(count);
+  Sequence.prototype.drop = function(count) {
+    return this.rest(count);
   };
 
   /**
