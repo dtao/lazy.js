@@ -4180,12 +4180,12 @@
     return Lazy.generate(function() { return value; }, count);
   };
 
-  Lazy.Sequence = Sequence;
-  Lazy.ArrayLikeSequence = ArrayLikeSequence;
+  Lazy.Sequence           = Sequence;
+  Lazy.ArrayLikeSequence  = ArrayLikeSequence;
   Lazy.ObjectLikeSequence = ObjectLikeSequence;
   Lazy.StringLikeSequence = StringLikeSequence;
-  Lazy.GeneratedSequence = GeneratedSequence;
-  Lazy.AsyncSequence = AsyncSequence;
+  Lazy.GeneratedSequence  = GeneratedSequence;
+  Lazy.AsyncSequence      = AsyncSequence;
 
   /*** Useful utility methods ***/
 
