@@ -2033,109 +2033,6 @@
 
   /**
    * @constructor
-   *
-   * @param {string|StringLikeSequence} source
-   */
-  function CharIterator(source) {
-    this.source = source;
-    this.index = -1;
-  }
-
-  CharIterator.prototype.current = function() {
-    return this.source.charAt(this.index);
-  };
-
-  CharIterator.prototype.moveNext = function() {
-    return (++this.index < this.source.length);
-  };
-
-  /**
-   * @constructor
-   */
-  function StringMatchIterator(source, pattern) {
-    this.source = source;
-
-    // clone the RegExp
-    this.pattern = eval("" + pattern + (!pattern.global ? "g" : ""));
-  }
-
-  StringMatchIterator.prototype.current = function() {
-    return this.match[0];
-  };
-
-  StringMatchIterator.prototype.moveNext = function() {
-    return !!(this.match = this.pattern.exec(this.source));
-  };
-
-  /**
-   * @constructor
-   */
-  function SplitWithRegExpIterator(source, pattern) {
-    this.source = source;
-
-    // clone the RegExp
-    this.pattern = eval("" + pattern + (!pattern.global ? "g" : ""));
-  }
-
-  SplitWithRegExpIterator.prototype.current = function() {
-    return this.source.substring(this.start, this.end);
-  };
-
-  SplitWithRegExpIterator.prototype.moveNext = function() {
-    if (!this.pattern) {
-      return false;
-    }
-
-    var match = this.pattern.exec(this.source);
-
-    if (match) {
-      this.start = this.nextStart ? this.nextStart : 0;
-      this.end = match.index;
-      this.nextStart = match.index + match[0].length;
-      return true;
-
-    } else if (this.pattern) {
-      this.start = this.nextStart;
-      this.end = undefined;
-      this.nextStart = undefined;
-      this.pattern = undefined;
-      return true;
-    }
-
-    return false;
-  };
-
-  /**
-   * @constructor
-   */
-  function SplitWithStringIterator(source, delimiter) {
-    this.source = source;
-    this.delimiter = delimiter;
-  }
-
-  SplitWithStringIterator.prototype.current = function() {
-    return this.source.substring(this.leftIndex, this.rightIndex);
-  };
-
-  SplitWithStringIterator.prototype.moveNext = function() {
-    if (!this.finished) {
-      this.leftIndex = typeof this.leftIndex !== "undefined" ?
-        this.rightIndex + this.delimiter.length :
-        0;
-      this.rightIndex = this.source.indexOf(this.delimiter, this.leftIndex);
-    }
-
-    if (this.rightIndex === -1) {
-      this.finished = true;
-      this.rightIndex = undefined;
-      return true;
-    }
-
-    return !this.finished;
-  };
-
-  /**
-   * @constructor
    */
   function UniqueMemoizer(iterator) {
     this.iterator     = iterator;
@@ -3492,6 +3389,22 @@
   };
 
   /**
+   * @constructor
+   */
+  function CharIterator(source) {
+    this.source = source;
+    this.index = -1;
+  }
+
+  CharIterator.prototype.current = function() {
+    return this.source.charAt(this.index);
+  };
+
+  CharIterator.prototype.moveNext = function() {
+    return (++this.index < this.source.length);
+  };
+
+  /**
    * Returns the character at the given index of this sequence, or the empty
    * string if the specified index lies outside the bounds of the sequence.
    *
@@ -3549,6 +3462,25 @@
   };
 
   /**
+   * @constructor
+   */
+  function StringSegment(parent, start, stop) {
+    this.parent = parent;
+    this.start  = Math.max(0, start);
+    this.stop   = stop;
+  }
+
+  StringSegment.prototype = new StringLikeSequence();
+
+  StringSegment.prototype.get = function(i) {
+    return this.parent.get(i + this.start);
+  };
+
+  StringSegment.prototype.length = function() {
+    return (typeof this.stop === "number" ? this.stop : this.parent.length()) - this.start;
+  };
+
+  /**
    * An optimized version of {@link Sequence#first} that returns another
    * {@link StringLikeSequence} (or just the first character, if `count` is
    * undefined).
@@ -3592,25 +3524,6 @@
 
   StringLikeSequence.prototype.drop = function(count) {
     return this.substring(count);
-  };
-
-  /**
-   * @constructor
-   */
-  function StringSegment(parent, start, stop) {
-    this.parent = parent;
-    this.start  = Math.max(0, start);
-    this.stop   = stop;
-  }
-
-  StringSegment.prototype = new StringLikeSequence();
-
-  StringSegment.prototype.get = function(i) {
-    return this.parent.get(i + this.start);
-  };
-
-  StringSegment.prototype.length = function() {
-    return (typeof this.stop === "number" ? this.stop : this.parent.length()) - this.start;
   };
 
   /**
@@ -3822,6 +3735,38 @@
   };
 
   /**
+   * @constructor
+   */
+  function StringMatchSequence(source, pattern) {
+    this.source = source;
+    this.pattern = pattern;
+  }
+
+  StringMatchSequence.prototype = new Sequence();
+
+  StringMatchSequence.prototype.getIterator = function() {
+    return new StringMatchIterator(this.source, this.pattern);
+  };
+
+  /**
+   * @constructor
+   */
+  function StringMatchIterator(source, pattern) {
+    this.source = source;
+
+    // clone the RegExp
+    this.pattern = eval("" + pattern + (!pattern.global ? "g" : ""));
+  }
+
+  StringMatchIterator.prototype.current = function() {
+    return this.match[0];
+  };
+
+  StringMatchIterator.prototype.moveNext = function() {
+    return !!(this.match = this.pattern.exec(this.source));
+  };
+
+  /**
    * Creates a {@link Sequence} comprising all of the substrings of this string
    * separated by the given delimiter, which can be either a string or a regular
    * expression.
@@ -3839,29 +3784,6 @@
    */
   StringLikeSequence.prototype.split = function(delimiter) {
     return new SplitStringSequence(this.source, delimiter);
-  };
-
-  /**
-   * @constructor
-   */
-  function StringMatchSequence(source, pattern) {
-    this.source = source;
-    this.pattern = pattern;
-  }
-
-  StringMatchSequence.prototype = new Sequence();
-
-  StringMatchSequence.prototype.each = function(fn) {
-    var iterator = this.getIterator();
-    while (iterator.moveNext()) {
-      if (fn(iterator.current()) === false) {
-        return;
-      }
-    }
-  };
-
-  StringMatchSequence.prototype.getIterator = function() {
-    return new StringMatchIterator(this.source, this.pattern);
   };
 
   /**
@@ -3886,6 +3808,73 @@
     } else {
       return new SplitWithStringIterator(this.source, this.pattern);
     }
+  };
+
+  /**
+   * @constructor
+   */
+  function SplitWithRegExpIterator(source, pattern) {
+    this.source = source;
+
+    // clone the RegExp
+    this.pattern = eval("" + pattern + (!pattern.global ? "g" : ""));
+  }
+
+  SplitWithRegExpIterator.prototype.current = function() {
+    return this.source.substring(this.start, this.end);
+  };
+
+  SplitWithRegExpIterator.prototype.moveNext = function() {
+    if (!this.pattern) {
+      return false;
+    }
+
+    var match = this.pattern.exec(this.source);
+
+    if (match) {
+      this.start = this.nextStart ? this.nextStart : 0;
+      this.end = match.index;
+      this.nextStart = match.index + match[0].length;
+      return true;
+
+    } else if (this.pattern) {
+      this.start = this.nextStart;
+      this.end = undefined;
+      this.nextStart = undefined;
+      this.pattern = undefined;
+      return true;
+    }
+
+    return false;
+  };
+
+  /**
+   * @constructor
+   */
+  function SplitWithStringIterator(source, delimiter) {
+    this.source = source;
+    this.delimiter = delimiter;
+  }
+
+  SplitWithStringIterator.prototype.current = function() {
+    return this.source.substring(this.leftIndex, this.rightIndex);
+  };
+
+  SplitWithStringIterator.prototype.moveNext = function() {
+    if (!this.finished) {
+      this.leftIndex = typeof this.leftIndex !== "undefined" ?
+        this.rightIndex + this.delimiter.length :
+        0;
+      this.rightIndex = this.source.indexOf(this.delimiter, this.leftIndex);
+    }
+
+    if (this.rightIndex === -1) {
+      this.finished = true;
+      this.rightIndex = undefined;
+      return true;
+    }
+
+    return !this.finished;
   };
 
   /**
