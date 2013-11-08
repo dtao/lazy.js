@@ -2830,7 +2830,7 @@
     } else if (source.length < 100) {
       return UniqueArrayWrapper.prototype.eachArrayCache;
     } else {
-      return UniqueSequence.prototype.each;
+      return UniqueArrayWrapper.prototype.eachSetCache;
     }
   }
 
