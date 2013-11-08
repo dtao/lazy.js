@@ -33,10 +33,6 @@ JsonIterator.prototype.current = function() {
   return this.currentValue;
 };
 
-JsonIterator.prototype.readSegment = function(index) {
-  return this.json.substring(this.position, index);
-};
-
 JsonIterator.prototype.firstMoveNext = function() {
   this.expectToken('[');
   return this.readValue();
@@ -54,9 +50,13 @@ JsonIterator.prototype.readValue = function() {
     return false;
   }
 
+  this.position = match.index + token.length;
+
   if (token === '"') {
-    this.position = match.index;
     this.currentValue = this.readString();
+
+  } else if (token === '[') {
+    this.currentValue = this.readArray();
 
   } else if (NumberPattern.test(token)) {
     this.currentValue = Number(token);
@@ -75,21 +75,54 @@ JsonIterator.prototype.readValue = function() {
   return true;
 };
 
-JsonIterator.prototype.readString = function() {
+JsonIterator.prototype.readString = function(fromPosition) {
   var json         = this.json,
       tokenMatcher = this.tokenMatcher,
+      position     = typeof fromPosition === 'number' ? fromPosition : this.position,
       match,
       string;
 
   while (match = tokenMatcher.exec(json)) {
     if (match[0] === '"' && json.charAt(match.index - 1) !== '\\') {
-      return json.substring(this.position + 1, match.index)
+      return json.substring(position, match.index)
         .replace(/\\(.)/g, '$1');
     }
   }
 
-  this.unexpectedToken(this.readSegment());
-}
+  this.unexpectedEOS();
+};
+
+JsonIterator.prototype.readArray = function() {
+  var json         = this.json,
+      tokenMatcher = this.tokenMatcher,
+      openBrackets = 1,
+      match,
+      string;
+
+  while ((openBrackets > 0) && (match = tokenMatcher.exec(json))) {
+    switch (match[0]) {
+      case '"':
+        this.readString(match.index + 1);
+        break;
+
+      case '[':
+        ++openBrackets;
+        break;
+
+      case ']':
+        --openBrackets;
+        break;
+    }
+  }
+
+  if (openBrackets === 0) {
+    // For now we'll just be lazy (ba-dum, ching!) and use JSON.parse for arrays
+    // *within* the JSON.
+    return JSON.parse(json.substring(this.position - 1, match.index + 1));
+  }
+
+  this.unexpectedEOS();
+};
 
 JsonIterator.prototype.readAnotherValue = function() {
   var separator = this.expectToken([',', ']']);
@@ -105,7 +138,7 @@ JsonIterator.prototype.expectToken = function(expectation) {
   var match = this.tokenMatcher.exec(this.json);
 
   if (!match) {
-    this.unexpectedToken(this.readSegment());
+    this.unexpectedEOS();
   }
 
   var token = match[0];
@@ -113,7 +146,6 @@ JsonIterator.prototype.expectToken = function(expectation) {
     this.unexpectedToken(match, expectation);
   }
 
-  this.position = match.index + token.length;
   return token;
 };
 
@@ -143,6 +175,13 @@ JsonIterator.prototype.unexpectedToken = function(match, expectation) {
   throw new SyntaxError(errorMessage);
 };
 
+JsonIterator.prototype.unexpectedEOS = function() {
+  throw new SyntaxError(
+    'Unexpected end of input: ' +
+    this.json.substring(this.position, index)
+  );
+};
+
 /**
  * Parses a JSON array into a sequence.
  *
@@ -158,6 +197,10 @@ JsonIterator.prototype.unexpectedToken = function(match, expectation) {
  * Lazy.parseJSON('[3.14, "foo"]')              // sequence: [3.14, 'foo']
  * Lazy.parseJSON('[1, "foo, \\"bar\\", baz"]') // sequence: [1, 'foo, "bar", baz']
  * Lazy.parseJSON('[1, null, true, false]')     // sequence: [1, null, true, false]
+ * Lazy.parseJSON('[1, [2, 3]]')                // sequence: [1, [2, 3]]
+ * Lazy.parseJSON('[1, ["foo [1, 2] bar"]]')    // sequence: [1, ["foo [1, 2] bar"]]
+ * Lazy.parseJSON('[1, [2, [3, 4]]]')           // sequence: [1, [2, [3, 4]]]
+ * Lazy.parseJSON('[1, [2, 3], blah').take(2)   // sequence: [1, [2, 3]]
  */
 Lazy.parseJSON = function(json) {
   return new JsonSequence(json);
