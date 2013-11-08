@@ -3040,6 +3040,10 @@
    * Lazy({ foo: "bar" }).extend({ foo: "baz" }).get("foo")   // => "baz"
    * Lazy({ foo: "bar" }).defaults({ bar: "baz" }).get("bar") // => "baz"
    * Lazy({ foo: "bar" }).invert().get("bar")                 // => "foo"
+   * Lazy({ foo: 1, bar: 2 }).pick(["foo"]).get("foo")        // => 1
+   * Lazy({ foo: 1, bar: 2 }).pick(["foo"]).get("bar")        // => undefined
+   * Lazy({ foo: 1, bar: 2 }).omit(["foo"]).get("bar")        // => 2
+   * Lazy({ foo: 1, bar: 2 }).omit(["foo"]).get("foo")        // => undefined
    */
   ObjectLikeSequence.prototype.get = function(key) {
     return this.parent.get(key);
@@ -3110,6 +3114,42 @@
   };
 
   /**
+   * @constructor
+   */
+  function AssignSequence(parent, other) {
+    this.parent = parent;
+    this.other  = other;
+  }
+
+  AssignSequence.prototype = new ObjectLikeSequence();
+
+  AssignSequence.prototype.get = function(key) {
+    return this.other[key] || this.parent.get(key);
+  };
+
+  AssignSequence.prototype.each = function(fn) {
+    var merged = new Set(),
+        done   = false;
+
+    Lazy(this.other).each(function(value, key) {
+      if (fn(value, key) === false) {
+        done = true;
+        return false;
+      }
+
+      merged.add(key);
+    });
+
+    if (!done) {
+      this.parent.each(function(value, key) {
+        if (!merged.contains(key) && fn(value, key) === false) {
+          return false;
+        }
+      });
+    }
+  };
+
+  /**
    * Returns an {@link ObjectLikeSequence} whose elements are the combination of
    * this sequence and a 'default' object. In the case of a key appearing in both
    * this sequence and the given object, this sequence's value will override the
@@ -3129,6 +3169,44 @@
   };
 
   /**
+   * @constructor
+   */
+  function DefaultsSequence(parent, defaults) {
+    this.parent   = parent;
+    this.defaults = defaults;
+  }
+
+  DefaultsSequence.prototype = new ObjectLikeSequence();
+
+  DefaultsSequence.prototype.get = function(key) {
+    return this.parent.get(key) || this.defaults[key];
+  };
+
+  DefaultsSequence.prototype.each = function(fn) {
+    var merged = new Set(),
+        done   = false;
+
+    this.parent.each(function(value, key) {
+      if (fn(value, key) === false) {
+        done = true;
+        return false;
+      }
+
+      if (typeof value !== "undefined") {
+        merged.add(key);
+      }
+    });
+
+    if (!done) {
+      Lazy(this.defaults).each(function(value, key) {
+        if (!merged.contains(key) && fn(value, key) === false) {
+          return false;
+        }
+      });
+    }
+  };
+
+  /**
    * Returns an {@link ObjectLikeSequence} whose values are this sequence's keys,
    * and whose keys are this sequence's values.
    *
@@ -3141,6 +3219,29 @@
    */
   ObjectLikeSequence.prototype.invert = function() {
     return new InvertedSequence(this);
+  };
+
+  /**
+   * @constructor
+   */
+  function InvertedSequence(parent) {
+    this.parent = parent;
+  }
+
+  InvertedSequence.prototype = new ObjectLikeSequence();
+
+  InvertedSequence.prototype.get = function(key) {
+    var pair = this.parent.pairs().find(function(p) {
+      return p[1] === key;
+    });
+
+    return pair ? pair[0] : undefined;
+  };
+
+  InvertedSequence.prototype.each = function(fn) {
+    this.parent.each(function(value, key) {
+      return fn(key, value);
+    });
   };
 
   /**
@@ -3194,6 +3295,31 @@
   };
 
   /**
+   * @constructor
+   */
+  function PickSequence(parent, properties) {
+    this.parent     = parent;
+    this.properties = properties;
+  }
+
+  PickSequence.prototype = new ObjectLikeSequence();
+
+  PickSequence.prototype.get = function(key) {
+    return contains(this.properties, key) ? this.parent.get(key) : undefined;
+  };
+
+  PickSequence.prototype.each = function(fn) {
+    var inArray    = contains,
+        properties = this.properties;
+
+    this.parent.each(function(value, key) {
+      if (inArray(properties, key)) {
+        return fn(value, key);
+      }
+    });
+  };
+
+  /**
    * Creates an {@link ObjectLikeSequence} consisting of the key/value pairs from
    * this sequence excluding those with the specified keys.
    *
@@ -3213,6 +3339,31 @@
    */
   ObjectLikeSequence.prototype.omit = function(properties) {
     return new OmitSequence(this, properties);
+  };
+
+  /**
+   * @constructor
+   */
+  function OmitSequence(parent, properties) {
+    this.parent     = parent;
+    this.properties = properties;
+  }
+
+  OmitSequence.prototype = new ObjectLikeSequence();
+
+  OmitSequence.prototype.get = function(key) {
+    return contains(this.properties, key) ? undefined : this.parent.get(key);
+  };
+
+  OmitSequence.prototype.each = function(fn) {
+    var inArray    = contains,
+        properties = this.properties;
+
+    this.parent.each(function(value, key) {
+      if (!inArray(properties, key)) {
+        return fn(value, key);
+      }
+    });
   };
 
   /**
@@ -3275,145 +3426,6 @@
       object[key] = value;
     });
     return object;
-  };
-
-  /**
-   * @constructor
-   */
-  function AssignSequence(parent, other) {
-    this.parent = parent;
-    this.other  = other;
-  }
-
-  AssignSequence.prototype = new ObjectLikeSequence();
-
-  AssignSequence.prototype.get = function(key) {
-    return this.other[key] || this.parent.get(key);
-  };
-
-  AssignSequence.prototype.each = function(fn) {
-    var merged = new Set(),
-        done   = false;
-
-    Lazy(this.other).each(function(value, key) {
-      if (fn(value, key) === false) {
-        done = true;
-        return false;
-      }
-
-      merged.add(key);
-    });
-
-    if (!done) {
-      this.parent.each(function(value, key) {
-        if (!merged.contains(key) && fn(value, key) === false) {
-          return false;
-        }
-      });
-    }
-  };
-
-  /**
-   * @constructor
-   */
-  function DefaultsSequence(parent, defaults) {
-    this.parent   = parent;
-    this.defaults = defaults;
-  }
-
-  DefaultsSequence.prototype = new ObjectLikeSequence();
-
-  DefaultsSequence.prototype.get = function(key) {
-    return this.parent.get(key) || this.defaults[key];
-  };
-
-  DefaultsSequence.prototype.each = function(fn) {
-    var merged = new Set(),
-        done   = false;
-
-    this.parent.each(function(value, key) {
-      if (fn(value, key) === false) {
-        done = true;
-        return false;
-      }
-
-      if (typeof value !== "undefined") {
-        merged.add(key);
-      }
-    });
-
-    if (!done) {
-      Lazy(this.defaults).each(function(value, key) {
-        if (!merged.contains(key) && fn(value, key) === false) {
-          return false;
-        }
-      });
-    }
-  };
-
-  /**
-   * @constructor
-   */
-  function InvertedSequence(parent) {
-    this.parent = parent;
-  }
-
-  InvertedSequence.prototype = new ObjectLikeSequence();
-
-  InvertedSequence.prototype.get = function(key) {
-    var pair = this.parent.pairs().find(function(p) {
-      return p[1] === key;
-    });
-
-    return pair ? pair[0] : undefined;
-  };
-
-  InvertedSequence.prototype.each = function(fn) {
-    this.parent.each(function(value, key) {
-      return fn(key, value);
-    });
-  };
-
-  /**
-   * @constructor
-   */
-  function PickSequence(parent, properties) {
-    this.parent     = parent;
-    this.properties = properties;
-  }
-
-  PickSequence.prototype = new ObjectLikeSequence();
-
-  PickSequence.prototype.each = function(fn) {
-    var inArray    = contains,
-        properties = this.properties;
-
-    this.parent.each(function(value, key) {
-      if (inArray(properties, key)) {
-        return fn(value, key);
-      }
-    });
-  };
-
-  /**
-   * @constructor
-   */
-  function OmitSequence(parent, properties) {
-    this.parent     = parent;
-    this.properties = properties;
-  }
-
-  OmitSequence.prototype = new ObjectLikeSequence();
-
-  OmitSequence.prototype.each = function(fn) {
-    var inArray    = contains,
-        properties = this.properties;
-
-    this.parent.each(function(value, key) {
-      if (!inArray(properties, key)) {
-        return fn(value, key);
-      }
-    });
   };
 
   /**
