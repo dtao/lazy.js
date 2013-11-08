@@ -4557,9 +4557,25 @@
    * set.contains('add')       // => false
    * set.add('add')            // => true
    * set.add('add')            // => false
+   * set.contains(undefined)   // => false
+   * set.add(undefined)        // => true
+   * set.contains(undefined)   // => true
+   * set.contains('undefined') // => false
+   * set.add('undefined')      // => true
+   * set.contains('undefined') // => true
+   * set.contains(NaN)         // => false
+   * set.add(NaN)              // => true
+   * set.contains(NaN)         // => true
+   * set.contains('NaN')       // => false
+   * set.add('NaN')            // => true
+   * set.contains('NaN')       // => true
+   * set.contains('@foo')      // => false
+   * set.add('@foo')           // => true
+   * set.contains('@foo')      // => true
    */
   function Set() {
-    this.table = {};
+    this.table   = {};
+    this.objects = [];
   }
 
   /**
@@ -4594,9 +4610,25 @@
         // with a number, boolean, or undefined (or a string that happens to start
         // with the escape character!), OR if it could override a special property
         // such as '__proto__' or 'constructor'.
-        firstChar = value.charAt(0);
-        if ("_ftc@".indexOf(firstChar) >= 0 || (firstChar >= "0" && firstChar <= "9")) {
-          value = "@" + value;
+        switch (value.charAt(0)) {
+          case "_": // e.g., __proto__
+          case "f": // for 'false'
+          case "t": // for 'true'
+          case "c": // for 'constructor'
+          case "u": // for 'undefined'
+          case "@": // escaped
+          case "0":
+          case "1":
+          case "2":
+          case "3":
+          case "4":
+          case "5":
+          case "6":
+          case "7":
+          case "8":
+          case "9":
+          case "N": // for NaN
+            value = "@" + value;
         }
         if (!table[value]) {
           table[value] = true;
@@ -4608,9 +4640,6 @@
         // For objects and functions, we can't really do anything other than store
         // them in an array and do a linear search for reference equality.
         objects = this.objects;
-        if (!objects) {
-          objects = this.objects = [];
-        }
         if (!contains(objects, value)) {
           objects.push(value);
           return true;
@@ -4642,16 +4671,32 @@
         // with a number, boolean, or undefined (or a string that happens to start
         // with the escape character!), OR if it could override a special property
         // such as '__proto__' or 'constructor'.
-        firstChar = value.charAt(0);
-        if ("_ftc@".indexOf(firstChar) >= 0 || (firstChar >= "0" && firstChar <= "9")) {
-          value = "@" + value;
+        switch (value.charAt(0)) {
+          case "_": // e.g., __proto__
+          case "f": // for 'false'
+          case "t": // for 'true'
+          case "c": // for 'constructor'
+          case "u": // for 'undefined'
+          case "@": // escaped
+          case "0":
+          case "1":
+          case "2":
+          case "3":
+          case "4":
+          case "5":
+          case "6":
+          case "7":
+          case "8":
+          case "9":
+          case "N": // for NaN
+            value = "@" + value;
         }
         return !!this.table[value];
 
       default:
         // For objects and functions, we can't really do anything other than store
         // them in an array and do a linear search for reference equality.
-        return this.objects && contains(this.objects, value);
+        return contains(this.objects, value);
     }
   };
 
