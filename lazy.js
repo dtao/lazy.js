@@ -1691,11 +1691,7 @@
 
     sorted.sort(function(x, y) { return compare(x, y, sortFn); });
 
-    while (++i < sorted.length) {
-      if (fn(sorted[i], i) === false) {
-        break;
-      }
-    }
+    return forEach(sorted, fn);
   };
 
   /**
