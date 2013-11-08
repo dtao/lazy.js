@@ -202,6 +202,50 @@
   };
 
   /**
+   * The Iterator object provides an API for iterating over a sequence.
+   *
+   * @public
+   * @param {Sequence} sequence The sequence to iterate over.
+   * @constructor
+   */
+  function Iterator(sequence) {
+    this.sequence = sequence;
+    this.index    = -1;
+  }
+
+  /**
+   * Gets the current item this iterator is pointing to.
+   *
+   * @public
+   * @returns {*} The current item.
+   */
+  Iterator.prototype.current = function() {
+    return this.cachedIndex && this.cachedIndex.get(this.index);
+  };
+
+  /**
+   * Moves the iterator to the next item in a sequence, if possible.
+   *
+   * @public
+   * @returns {boolean} True if the iterator is able to move to a new item, or else
+   *     false.
+   */
+  Iterator.prototype.moveNext = function() {
+    var cachedIndex = this.cachedIndex;
+
+    if (!cachedIndex) {
+      cachedIndex = this.cachedIndex = this.sequence.getIndex();
+    }
+
+    if (this.index >= cachedIndex.length() - 1) {
+      return false;
+    }
+
+    ++this.index;
+    return true;
+  };
+
+  /**
    * Creates an array snapshot of a sequence.
    *
    * Note that for indefinite sequences, this method may raise an exception or
@@ -2054,75 +2098,6 @@
   };
 
   /**
-   * The Iterator object provides an API for iterating over a sequence.
-   *
-   * @public
-   * @param {Sequence} sequence The sequence to iterate over.
-   * @constructor
-   */
-  function Iterator(sequence) {
-    this.sequence = sequence;
-    this.index    = -1;
-  }
-
-  /**
-   * Gets the current item this iterator is pointing to.
-   *
-   * @public
-   * @returns {*} The current item.
-   */
-  Iterator.prototype.current = function() {
-    return this.cachedIndex && this.cachedIndex.get(this.index);
-  };
-
-  /**
-   * Moves the iterator to the next item in a sequence, if possible.
-   *
-   * @public
-   * @returns {boolean} True if the iterator is able to move to a new item, or else
-   *     false.
-   */
-  Iterator.prototype.moveNext = function() {
-    var cachedIndex = this.cachedIndex;
-
-    if (!cachedIndex) {
-      cachedIndex = this.cachedIndex = this.sequence.getIndex();
-    }
-
-    if (this.index >= cachedIndex.length() - 1) {
-      return false;
-    }
-
-    ++this.index;
-    return true;
-  };
-
-  /**
-   * An optimized version of {@link Iterator} meant to work with already-indexed
-   * sequences.
-   *
-   * @param {ArrayLikeSequence} sequence The sequence to iterate over.
-   * @constructor
-   */
-  function IndexedIterator(sequence) {
-    this.sequence = sequence;
-    this.index    = -1;
-  }
-
-  IndexedIterator.prototype.current = function() {
-    return this.sequence.get(this.index);
-  };
-
-  IndexedIterator.prototype.moveNext = function() {
-    if (this.index >= this.sequence.length() - 1) {
-      return false;
-    }
-
-    ++this.index;
-    return true;
-  };
-
-  /**
    * An `ArrayLikeSequence` is a {@link Sequence} that provides random access to
    * its elements. This extends the API for iterating with the additional methods
    * {@link #get} and {@link #length}, allowing a sequence to act as a "view" into
@@ -2286,6 +2261,31 @@
   };
 
   /**
+   * An optimized version of {@link Iterator} meant to work with already-indexed
+   * sequences.
+   *
+   * @param {ArrayLikeSequence} sequence The sequence to iterate over.
+   * @constructor
+   */
+  function IndexedIterator(sequence) {
+    this.sequence = sequence;
+    this.index    = -1;
+  }
+
+  IndexedIterator.prototype.current = function() {
+    return this.sequence.get(this.index);
+  };
+
+  IndexedIterator.prototype.moveNext = function() {
+    if (this.index >= this.sequence.length() - 1) {
+      return false;
+    }
+
+    ++this.index;
+    return true;
+  };
+
+  /**
    * An optimized version of {@link Sequence#each}.
    */
   ArrayLikeSequence.prototype.each = function(fn) {
@@ -2379,82 +2379,6 @@
   };
 
   /**
-   * An optimized version of {@link Sequence#filter}.
-   */
-  ArrayLikeSequence.prototype.filter = function(filterFn) {
-    return new IndexedFilteredSequence(this, createCallback(filterFn));
-  };
-
-  /**
-   * An optimized version of {@link Sequence#reverse}, which creates an
-   * {@link ArrayLikeSequence} so that the result still provides random access.
-   *
-   * @public
-   *
-   * @examples
-   * Lazy([1, 2, 3]).reverse() // instanceof Lazy.ArrayLikeSequence
-   */
-  ArrayLikeSequence.prototype.reverse = function() {
-    return new IndexedReversedSequence(this);
-  };
-
-  /**
-   * An optimized version of {@link Sequence#first}, which creates an
-   * {@link ArrayLikeSequence} so that the result still provides random access.
-   *
-   * @public
-   *
-   * @examples
-   * Lazy([1, 2, 3]).first(2) // instanceof Lazy.ArrayLikeSequence
-   */
-  ArrayLikeSequence.prototype.first = function(count) {
-    if (typeof count === "undefined") {
-      return this.get(0);
-    }
-
-    return new IndexedTakeSequence(this, count);
-  };
-
-  /**
-   * An optimized version of {@link Sequence#rest}, which creates an
-   * {@link ArrayLikeSequence} so that the result still provides random access.
-   *
-   * @public
-   *
-   * @examples
-   * Lazy([1, 2, 3]).rest() // instanceof Lazy.ArrayLikeSequence
-   */
-  ArrayLikeSequence.prototype.rest = function(count) {
-    return new IndexedDropSequence(this, count);
-  };
-
-  /**
-   * An optimized version of {@link Sequence#concat} that returns another
-   * {@link ArrayLikeSequence} *if* the argument is an array.
-   *
-   * @public
-   * @param {...*} var_args
-   *
-   * @examples
-   * Lazy([1, 2]).concat([3, 4]) // instanceof Lazy.ArrayLikeSequence
-   * Lazy([1, 2]).concat([3, 4]) // sequence: [1, 2, 3, 4]
-   */
-  ArrayLikeSequence.prototype.concat = function(var_args) {
-    if (arguments.length === 1 && arguments[0] instanceof Array) {
-      return new IndexedConcatenatedSequence(this, (/** @type {Array} */ var_args));
-    } else {
-      return Sequence.prototype.concat.apply(this, arguments);
-    }
-  };
-
-  /**
-   * An optimized version of {@link Sequence#uniq}.
-   */
-  ArrayLikeSequence.prototype.uniq = function(keyFn) {
-    return new IndexedUniqueSequence(this, createCallback(keyFn));
-  };
-
-  /**
    * @constructor
    */
   function IndexedMappedSequence(parent, mapFn) {
@@ -2470,6 +2394,13 @@
     }
 
     return this.mapFn(this.parent.get(i), i);
+  };
+
+  /**
+   * An optimized version of {@link Sequence#filter}.
+   */
+  ArrayLikeSequence.prototype.filter = function(filterFn) {
+    return new IndexedFilteredSequence(this, createCallback(filterFn));
   };
 
   /**
@@ -2498,6 +2429,19 @@
   };
 
   /**
+   * An optimized version of {@link Sequence#reverse}, which creates an
+   * {@link ArrayLikeSequence} so that the result still provides random access.
+   *
+   * @public
+   *
+   * @examples
+   * Lazy([1, 2, 3]).reverse() // instanceof Lazy.ArrayLikeSequence
+   */
+  ArrayLikeSequence.prototype.reverse = function() {
+    return new IndexedReversedSequence(this);
+  };
+
+  /**
    * @constructor
    */
   function IndexedReversedSequence(parent) {
@@ -2508,6 +2452,23 @@
 
   IndexedReversedSequence.prototype.get = function(i) {
     return this.parent.get(this.length() - i - 1);
+  };
+
+  /**
+   * An optimized version of {@link Sequence#first}, which creates an
+   * {@link ArrayLikeSequence} so that the result still provides random access.
+   *
+   * @public
+   *
+   * @examples
+   * Lazy([1, 2, 3]).first(2) // instanceof Lazy.ArrayLikeSequence
+   */
+  ArrayLikeSequence.prototype.first = function(count) {
+    if (typeof count === "undefined") {
+      return this.get(0);
+    }
+
+    return new IndexedTakeSequence(this, count);
   };
 
   /**
@@ -2523,6 +2484,19 @@
   IndexedTakeSequence.prototype.length = function() {
     var parentLength = this.parent.length();
     return this.count <= parentLength ? this.count : parentLength;
+  };
+
+  /**
+   * An optimized version of {@link Sequence#rest}, which creates an
+   * {@link ArrayLikeSequence} so that the result still provides random access.
+   *
+   * @public
+   *
+   * @examples
+   * Lazy([1, 2, 3]).rest() // instanceof Lazy.ArrayLikeSequence
+   */
+  ArrayLikeSequence.prototype.rest = function(count) {
+    return new IndexedDropSequence(this, count);
   };
 
   /**
@@ -2542,6 +2516,25 @@
   IndexedDropSequence.prototype.length = function() {
     var parentLength = this.parent.length();
     return this.count <= parentLength ? parentLength - this.count : 0;
+  };
+
+  /**
+   * An optimized version of {@link Sequence#concat} that returns another
+   * {@link ArrayLikeSequence} *if* the argument is an array.
+   *
+   * @public
+   * @param {...*} var_args
+   *
+   * @examples
+   * Lazy([1, 2]).concat([3, 4]) // instanceof Lazy.ArrayLikeSequence
+   * Lazy([1, 2]).concat([3, 4]) // sequence: [1, 2, 3, 4]
+   */
+  ArrayLikeSequence.prototype.concat = function(var_args) {
+    if (arguments.length === 1 && arguments[0] instanceof Array) {
+      return new IndexedConcatenatedSequence(this, (/** @type {Array} */ var_args));
+    } else {
+      return Sequence.prototype.concat.apply(this, arguments);
+    }
   };
 
   /**
@@ -2565,6 +2558,13 @@
 
   IndexedConcatenatedSequence.prototype.length = function() {
     return this.parent.length() + this.other.length;
+  };
+
+  /**
+   * An optimized version of {@link Sequence#uniq}.
+   */
+  ArrayLikeSequence.prototype.uniq = function(keyFn) {
+    return new IndexedUniqueSequence(this, createCallback(keyFn));
   };
 
   /**
