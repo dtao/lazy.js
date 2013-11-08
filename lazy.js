@@ -2962,7 +2962,18 @@
   /**
    * An `ObjectLikeSequence` object represents a sequence of key/value pairs.
    *
+   * All methods of `ObjectLikeSequence` that conceptually should return
+   * something like an object return another `ObjectLikeSequence`.
+   *
+   * @public
    * @constructor
+   *
+   * @examples
+   * var obj = { foo: 'bar' };
+   *
+   * Lazy(obj).assign({ bar: 'baz' })   // instanceof Lazy.ObjectLikeSequence
+   * Lazy(obj).defaults({ bar: 'baz' }) // instanceof Lazy.ObjectLikeSequence
+   * Lazy(obj).invert()                 // instanceof Lazy.ObjectLikeSequence
    */
   function ObjectLikeSequence() {}
 
