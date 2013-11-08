@@ -3022,6 +3022,18 @@
   };
 
   /**
+   * Throws an exception. Asynchronous iteration over object-like sequences is
+   * not supported.
+   *
+   * @public
+   * @examples
+   * Lazy({ foo: 'bar' }).async() // throws
+   */
+  ObjectLikeSequence.prototype.async = function() {
+    throw 'An ObjectLikeSequence does not support asynchronous iteration.';
+  };
+
+  /**
    * Returns an {@link ObjectLikeSequence} whose elements are the combination of
    * this sequence and another object. In the case of a key appearing in both this
    * sequence and the given object, the other object's value will override the
