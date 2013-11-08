@@ -22,6 +22,8 @@
     <script type="text/javascript" src="{{{.}}}"></script>
     {{/javascripts}}
 
+    <script type="text/javascript" src="../lazy.js"></script>
+    <script type="text/javascript" src="../lazy.dom.js"></script>
     <script type="text/javascript" src="defaults.js"></script>
 
     <script type="text/javascript">
@@ -37,6 +39,9 @@
 
         <!-- Notification area for failing specs -->
         <div id="spec-failures"></div>
+
+        <!-- Little progress indicator -->
+        <div id="highlighting-progress"></div>
 
         <div class="layout">
             <div class="index">

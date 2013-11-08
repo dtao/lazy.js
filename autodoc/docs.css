@@ -345,3 +345,24 @@ section.method table tbody tr:nth-child(odd) td {
   overflow-y: hidden;
   overflow-x: auto;
 }
+
+#highlighting-progress {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  padding: 1ex 1em;
+
+  background-color: #000;
+  color: #fff;
+
+  opacity: 0.8;
+  filter: alpha(opacity=80);
+}
+
+#highlighting-progress:not(:empty):before {
+  content: "Highlighting code examples - ";
+}
+
+#highlighting-progress:empty {
+  display: none;
+}
