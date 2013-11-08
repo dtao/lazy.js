@@ -329,6 +329,49 @@
   };
 
   /**
+   * @constructor
+   */
+  function MappedSequence(parent, mapFn) {
+    this.parent = parent;
+    this.mapFn  = mapFn;
+  }
+
+  MappedSequence.prototype = new Sequence();
+
+  MappedSequence.prototype.getIterator = function() {
+    return new MappingIterator(this.parent, this.mapFn);
+  };
+
+  MappedSequence.prototype.each = function(fn) {
+    var mapFn = this.mapFn;
+    return this.parent.each(function(e, i) {
+      return fn(mapFn(e, i), i);
+    });
+  };
+
+  /**
+   * @constructor
+   */
+  function MappingIterator(sequence, mapFn) {
+    this.iterator = sequence.getIterator();
+    this.mapFn    = mapFn;
+    this.index    = -1;
+  }
+
+  MappingIterator.prototype.current = function() {
+    return this.mapFn(this.iterator.current(), this.index);
+  };
+
+  MappingIterator.prototype.moveNext = function() {
+    if (this.iterator.moveNext()) {
+      ++this.index;
+      return true;
+    }
+
+    return false;
+  };
+
+  /**
    * Creates a new sequence whose values are calculated by accessing the specified
    * property from each element in this sequence.
    *
@@ -415,6 +458,64 @@
   };
 
   /**
+   * @constructor
+   */
+  function FilteredSequence(parent, filterFn) {
+    this.parent   = parent;
+    this.filterFn = filterFn;
+  }
+
+  FilteredSequence.prototype = new Sequence();
+
+  FilteredSequence.prototype.getIterator = function() {
+    return new FilteringIterator(this.parent, this.filterFn);
+  };
+
+  FilteredSequence.prototype.each = function(fn) {
+    var filterFn = this.filterFn;
+
+    return this.parent.each(function(e, i) {
+      if (filterFn(e, i)) {
+        return fn(e, i);
+      }
+    });
+  };
+
+  FilteredSequence.prototype.reverse = function() {
+    return this.parent.reverse().filter(this.filterFn);
+  };
+
+  /**
+   * @constructor
+   */
+  function FilteringIterator(sequence, filterFn) {
+    this.iterator = sequence.getIterator();
+    this.filterFn = filterFn;
+    this.index    = 0;
+  }
+
+  FilteringIterator.prototype.current = function() {
+    return this.value;
+  };
+
+  FilteringIterator.prototype.moveNext = function() {
+    var iterator = this.iterator,
+        filterFn = this.filterFn,
+        value;
+
+    while (iterator.moveNext()) {
+      value = iterator.current();
+      if (filterFn(value, this.index++)) {
+        this.value = value;
+        return true;
+      }
+    }
+
+    this.value = undefined;
+    return false;
+  };
+
+  /**
    * Creates a new sequence whose values exclude the elements of this sequence
    * identified by the specified predicate.
    *
@@ -458,14 +559,7 @@
    * _.each(_.where(animals, { length: 3 }), Lazy.noop) // lodash
    */
   Sequence.prototype.where = function(properties) {
-    return this.filter(function(e) {
-      for (var p in properties) {
-        if (e[p] !== properties[p]) {
-          return false;
-        }
-      }
-      return true;
-    });
+    return this.filter(properties);
   };
 
   /**
@@ -1453,107 +1547,6 @@
    */
   Sequence.prototype.async = function(interval) {
     return new AsyncSequence(this, interval);
-  };
-
-  /**
-   * @constructor
-   */
-  function MappedSequence(parent, mapFn) {
-    this.parent = parent;
-    this.mapFn  = mapFn;
-  }
-
-  MappedSequence.prototype = new Sequence();
-
-  MappedSequence.prototype.getIterator = function() {
-    return new MappingIterator(this.parent, this.mapFn);
-  };
-
-  MappedSequence.prototype.each = function(fn) {
-    var mapFn = this.mapFn;
-    return this.parent.each(function(e, i) {
-      return fn(mapFn(e, i), i);
-    });
-  };
-
-  /**
-   * @constructor
-   */
-  function MappingIterator(sequence, mapFn) {
-    this.iterator = sequence.getIterator();
-    this.mapFn    = mapFn;
-    this.index    = -1;
-  }
-
-  MappingIterator.prototype.current = function() {
-    return this.mapFn(this.iterator.current(), this.index);
-  };
-
-  MappingIterator.prototype.moveNext = function() {
-    if (this.iterator.moveNext()) {
-      ++this.index;
-      return true;
-    }
-
-    return false;
-  };
-
-  /**
-   * @constructor
-   */
-  function FilteredSequence(parent, filterFn) {
-    this.parent   = parent;
-    this.filterFn = filterFn;
-  }
-
-  FilteredSequence.prototype = new Sequence();
-
-  FilteredSequence.prototype.getIterator = function() {
-    return new FilteringIterator(this.parent, this.filterFn);
-  };
-
-  FilteredSequence.prototype.each = function(fn) {
-    var filterFn = this.filterFn;
-
-    return this.parent.each(function(e, i) {
-      if (filterFn(e, i)) {
-        return fn(e, i);
-      }
-    });
-  };
-
-  FilteredSequence.prototype.reverse = function() {
-    return this.parent.reverse().filter(this.filterFn);
-  };
-
-  /**
-   * @constructor
-   */
-  function FilteringIterator(sequence, filterFn) {
-    this.iterator = sequence.getIterator();
-    this.filterFn = filterFn;
-    this.index    = 0;
-  }
-
-  FilteringIterator.prototype.current = function() {
-    return this.value;
-  };
-
-  FilteringIterator.prototype.moveNext = function() {
-    var iterator = this.iterator,
-        filterFn = this.filterFn,
-        value;
-
-    while (iterator.moveNext()) {
-      value = iterator.current();
-      if (filterFn(value, this.index++)) {
-        this.value = value;
-        return true;
-      }
-    }
-
-    this.value = undefined;
-    return false;
   };
 
   /**
