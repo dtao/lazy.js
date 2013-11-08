@@ -3447,6 +3447,45 @@
   StringLikeSequence.prototype = new ArrayLikeSequence();
 
   /**
+   * Create a new constructor function for a type inheriting from
+   * `StringLikeSequence`.
+   *
+   * @public
+   * @param {string|Array.<string>} methodName The name(s) of the method(s) to be
+   *     used for constructing the new sequence. The method will be attached to
+   *     the `StringLikeSequence` prototype so that it can be chained with any other
+   *     methods that return string-like sequences.
+   * @param {Object} overrides An object containing function overrides for this
+   *     new sequence type. Has the same requirements as
+   *     {@link ArrayLikeSequence.define}.
+   * @returns {Function} A constructor for a new type inheriting from
+   *     `StringLikeSequence`.
+   *
+   * @examples
+   * Lazy.StringLikeSequence.define("zomg", {
+   *   length: function() {
+   *     return this.parent.length() + "!!ZOMG!!!1".length;
+   *   },
+   *
+   *   get: function(i) {
+   *     if (i < this.parent.length()) {
+   *       return this.parent.get(i);
+   *     }
+   *     return "!!ZOMG!!!1".charAt(i - this.parent.length());
+   *   }
+   * });
+   *
+   * Lazy('foo').zomg() // sequence: "foo!!ZOMG!!!1"
+   */
+  StringLikeSequence.define = function(methodName, overrides) {
+    if (!overrides || typeof overrides.get !== 'function') {
+      throw "A custom string-like sequence must implement *at least* get!";
+    }
+
+    return defineSequenceType(StringLikeSequence, methodName, overrides);
+  };
+
+  /**
    * Returns an {@link IndexedIterator} that will step over each character in this
    * sequence one by one.
    *
