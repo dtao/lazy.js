@@ -2,24 +2,49 @@ body {
   font-family: Helvetica, Arial, sans-serif;
 }
 
-main {
-  width: 1200px;
-  margin: auto;
+#input {
+  position: fixed;
+  top: 20px;
+  bottom: 20px;
+  left: 20px;
+  right: calc(50% + 10px);
+
+  overflow: auto;
 }
 
-main > header {
+#results {
+  position: fixed;
+  top: 20px;
+  bottom: 20px;
+  left: calc(50% + 10px);
+  right: 20px;
+
+  overflow: auto;
+}
+
+#input > header {
   font-size: 200%;
 }
 
-main > p {
+#input > p {
   font-size: 150%;
 }
 
-textarea {
+#input > textarea {
   height: 400px;
   width: 100%;
+
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
 }
 
-pre.error {
+#results > pre {
+  background-color: #eee;
+  padding: 10px;
+  white-space: pre-wrap;
+}
+
+#results > pre.error {
   color: red;
 }

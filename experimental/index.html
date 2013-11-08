@@ -10,7 +10,7 @@
 </head>
 
 <body>
-    <main>
+    <div id="input">
         <header>
             <h1>Lazy.js JSON Parsing Demo</h1>
         </header>
@@ -21,13 +21,17 @@
             of the JSON as possible.
         </p>
 
-        <div id="input">
-            <textarea></textarea>
-            <div id="results"></div>
-        </div>
+        <p>
+            Click <strong>Cancel</strong> at any point to stop parsing.
+        </p>
+
+        <textarea></textarea>
 
         <button id="start">Start</button>
-    </main>
+        <button id="cancel">Cancel</button>
+    </div>
+
+    <div id="results"></div>
 </body>
 
 </html>

@@ -1,8 +1,9 @@
 window.addEventListener('load', function() {
 
-  var startButton = document.getElementById('start'),
-      textarea    = document.querySelector('#input textarea'),
-      results     = document.getElementById('results'),
+  var startButton  = document.getElementById('start'),
+      cancelButton = document.getElementById('cancel'),
+      textarea     = document.querySelector('#input textarea'),
+      results      = document.getElementById('results'),
       handler;
 
   function displayData(data, className) {
@@ -18,8 +19,9 @@ window.addEventListener('load', function() {
   startButton.addEventListener('click', function() {
     if (handler) {
       handler.cancel();
-      results.innerHTML = '';
     }
+
+    results.innerHTML = '';
 
     handler = Lazy.parseJSON(textarea.value).async(100).each(function(data) {
       displayData(JSON.stringify(data));
@@ -28,6 +30,13 @@ window.addEventListener('load', function() {
     handler.onError(function(error) {
       displayData(error.message, 'error');
     });
+  });
+
+  cancelButton.addEventListener('click', function() {
+    if (handler) {
+      handler.cancel();
+      handler = null;
+    }
   });
 
 });
