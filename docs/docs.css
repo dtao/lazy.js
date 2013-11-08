@@ -225,13 +225,7 @@ section.method table tbody tr:nth-child(odd) td {
 }
 
 .signature, .examples, .perf {
-  display: inline-block;
-  width: 45%;
-  min-width: 400px;
-  margin-right: 24px;
   margin-bottom: 24px;
-
-  vertical-align: top;
 }
 
 .examples table tr td {
@@ -341,4 +335,47 @@ section.method table tbody tr:nth-child(odd) td {
 
 #spec-failures:empty {
   display: none;
+}
+
+.CodeMirror {
+  height: auto;
+}
+
+.CodeMirror-scroll {
+  overflow-y: hidden;
+  overflow-x: auto;
+}
+
+#highlighting-progress {
+  position: fixed;
+  bottom: 10px;
+  padding: 1ex 1em;
+
+  background-color: #000;
+  color: #fff;
+
+  opacity: 0.8;
+  filter: alpha(opacity=80);
+}
+
+#highlighting-progress:not(:empty) {
+  right: 10px;
+
+  transition: right 0.5s;
+  -moz-transition: right 0.5s;
+  -o-transition: right 0.5s;
+  -webkit-transition: right 0.5s;
+}
+
+#highlighting-progress:not(:empty):before {
+  content: "Highlighting code examples - ";
+}
+
+#highlighting-progress:empty {
+  right: -500px;
+
+  transition: right 0.5s;
+  -moz-transition: right 0.5s;
+  -o-transition: right 0.5s;
+  -webkit-transition: right 0.5s;
 }

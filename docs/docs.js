@@ -1,8 +1,27 @@
 $(document).ready(function() {
-  function highlightCode() {
-    $('pre code').each(function() {
-      $(this).html(hljs.highlight('javascript', this.textContent).value);
+  var codeMirrors = {},
+      progressIndicator = $('#highlighting-progress');
+
+  function highlightCode(callback) {
+    var textareas = document.querySelectorAll('textarea');
+
+    var asyncHandle = Lazy(textareas).async().each(function(textarea, i) {
+      codeMirrors[textarea.id] = CodeMirror.fromTextArea(textarea, {
+        gutters: textarea.className.match(/source-examples/) ? ['result'] : [],
+        mode: 'javascript',
+        readOnly: true
+      });
+
+      var percent = (i + 1) / textareas.length * 100;
+
+      if (percent < 25) {
+        progressIndicator.text(percent.toFixed(0) + '% done');
+      } else {
+        progressIndicator.html('');
+      }
     });
+
+    asyncHandle.onComplete(callback || Lazy.noop);
   }
 
   function runSpecs() {
@@ -12,25 +31,28 @@ $(document).ready(function() {
 
     jasmineEnv.addReporter({
       reportSpecResults: function(spec) {
-        var matchingRow = $('#example-' + spec.exampleId);
-        var resultCell = $('td:last-child', matchingRow);
+        var editorId       = 'source-' + spec.suiteId,
+            matchingEditor = codeMirrors[editorId];
 
-        if (spec.results().passed()) {
-          matchingRow.addClass('success');
-          resultCell.text('Passed');
-          return;
-        }
+        var style = spec.results().passed() ? 'passed' : 'failed';
+        matchingEditor.addLineClass(spec.lineNumber, 'background', style);
 
-        matchingRow.addClass('failure');
+        var gutterMarker = $('<div>')
+          .addClass('gutter-marker')
+          .addClass(style)
+          .html(spec.results().passed() ? '&#10004;' : '&times;');
 
-        var errorsList = $('<ul>').appendTo(resultCell);
+        matchingEditor.setGutterMarker(spec.lineNumber, 'result', gutterMarker[0]);
+
+        var lastElement = matchingEditor.getWrapperElement();
         _(spec.results().getItems())
           .filter(function(item) { return item.passed && !item.passed(); })
           .pluck('message')
           .each(function(errorMessage) {
-            $('<li>')
+            lastElement = $('<pre>')
               .text(errorMessage)
-              .appendTo(errorsList);
+              .attr('id', 'example-' + spec.exampleId)
+              .insertBefore(lastElement);
 
             var notice = $('<p>')
               .text(errorMessage)
@@ -38,6 +60,8 @@ $(document).ready(function() {
 
             var link = $('<a>')
               .attr('href', '#example-' + spec.exampleId)
+              .attr('data-editor-id', editorId)
+              .attr('data-line-number', spec.lineNumber)
               .text('See specs')
               .appendTo(notice);
           });
@@ -50,16 +74,24 @@ $(document).ready(function() {
   $(document).on('click', '#spec-failures a', function(e) {
     e.preventDefault();
 
-    var exampleTarget = $(this).attr('href'),
+    var link          = $(this),
+        exampleTarget = link.attr('href'),
         targetExample = $(exampleTarget),
+        targetEditor  = codeMirrors[link.attr('data-editor-id')],
+        targetLine    = Number(link.attr('data-line-number')),
         parentSection = targetExample.closest('section');
 
     // Show the section where the example is located.
     parentSection[0].scrollIntoView();
 
     // Highlight the example.
+    targetEditor.addLineClass(targetLine, 'background', 'highlight');
     targetExample.addClass('highlight');
-    setTimeout(function() { targetExample.removeClass('highlight'); }, 750);
+
+    setTimeout(function() {
+      targetEditor.removeLineClass(targetLine, 'background', 'highlight');
+      targetExample.removeClass('highlight');
+    }, 1500);
   });
 
   $(document).on('click', '.perf button', function() {
@@ -110,8 +142,10 @@ $(document).ready(function() {
     suite.run({ async: true });
   });
 
-  highlightCode();
-  runSpecs();
+  highlightCode(function() {
+    progressIndicator.html('');
+    runSpecs();
+  });
 });
 
 function displayError(message) {

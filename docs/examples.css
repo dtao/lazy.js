@@ -1,0 +1,27 @@
+.CodeMirror {
+  height: auto;
+  margin-bottom: 20px; }
+
+.CodeMirror-scroll {
+  overflow-y: hidden;
+  overflow-x: auto; }
+
+.CodeMirror-linebackground {
+  transition: background-color 1s; }
+  .CodeMirror-linebackground.failed {
+    background-color: #fdd; }
+  .CodeMirror-linebackground.highlight {
+    background-color: #ff8 !important; }
+
+.CodeMirror-gutters {
+  width: 30px;
+  background-color: #fff; }
+
+div.gutter-marker {
+  display: inline-block;
+  width: 30px;
+  text-align: center; }
+  div.gutter-marker.passed {
+    color: #080; }
+  div.gutter-marker.failed {
+    color: #f00; }

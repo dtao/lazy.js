@@ -249,8 +249,8 @@
    * The Iterator object provides an API for iterating over a sequence.
    *
    * @public
-   * @param {Sequence} sequence The sequence to iterate over.
    * @constructor
+   * @param {Sequence} sequence The sequence to iterate over.
    */
   function Iterator(sequence) {
     this.sequence = sequence;
@@ -3487,6 +3487,7 @@
    * All methods of `StringLikeSequence` that conceptually should return
    * something like a string return another `StringLikeSequence`.
    *
+   * @public
    * @constructor
    *
    * @examples
@@ -4076,6 +4077,7 @@
    * determines its elements on-the-fly during iteration according to a generator
    * function.
    *
+   * @public
    * @constructor
    * @param {function(number):*} generatorFn A function which accepts an index
    *     and returns a value for the element at that position in the sequence.
@@ -4092,6 +4094,7 @@
   /**
    * Returns the length of this sequence.
    *
+   * @public
    * @returns {number} The length, or `undefined` if this is an indefinite
    *     sequence.
    */
@@ -4175,12 +4178,13 @@
    * (using `setImmediate`, if available, otherwise `setTimeout`) until the iterator
    * can't move ahead any more.
    *
+   * @public
+   * @constructor
    * @param {Sequence} parent A {@link Sequence} to wrap, to expose asynchronous
    *     iteration.
    * @param {number=} interval How many milliseconds should elapse between each
    *     element when iterating over this sequence. If this argument is omitted,
    *     asynchronous iteration will be executed as fast as possible.
-   * @constructor
    */
   function AsyncSequence(parent, interval) {
     if (parent instanceof AsyncSequence) {
@@ -4230,12 +4234,18 @@
   };
 
   /**
+   * @public
    * @constructor
    */
   function AsyncHandle(interval) {
     this.cancelCallback = getCancelCallback(interval);
   }
 
+  /**
+   * Cancels asynchronous iteration.
+   *
+   * @public
+   */
   AsyncHandle.prototype.cancel = function() {
     var cancelCallback = this.cancelCallback;
 
@@ -4245,12 +4255,27 @@
     }
   };
 
+  /**
+   * Updates the handle with a callback to execute if/when any error is
+   * encountered during asynchronous iteration.
+   *
+   * @public
+   * @param {Function} callback The function to call, with any associated error
+   *     object, when an error occurs.
+   */
   AsyncHandle.prototype.onError = function(callback) {
     this.errorCallback = callback;
   };
 
   AsyncHandle.prototype.errorCallback = Lazy.noop;
 
+  /**
+   * Updates the handle with a callback to execute when iteration is completed.
+   *
+   * @public
+   * @param {Function} callback The function to call when the asynchronous
+   *     iteration is completed.
+   */
   AsyncHandle.prototype.onComplete = function(callback) {
     this.completeCallback = callback;
   };
