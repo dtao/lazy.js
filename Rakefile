@@ -23,12 +23,13 @@ task :generate_docs do
   sequence_types = [
     "Lazy",
     "Sequence",
-    "Iterator",
     "ArrayLikeSequence",
     "ObjectLikeSequence",
     "StringLikeSequence",
     "GeneratedSequence",
-    "AsyncSequence"
+    "AsyncSequence",
+    "Iterator",
+    "AsyncHandle"
   ]
 
   sh "autodoc --namespaces #{sequence_types.join(',')} --template autodoc/index.html.mustache lazy.js"
