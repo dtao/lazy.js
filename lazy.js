@@ -1043,7 +1043,9 @@
    *
    * var numbers = [1, 2, 3, 4, 5];
    *
-   * Lazy(numbers).groupBy(oddOrEven) // sequence: { odd: [1, 3, 5], even: [2, 4] }
+   * Lazy(numbers).groupBy(oddOrEven)            // sequence: { odd: [1, 3, 5], even: [2, 4] }
+   * Lazy(numbers).groupBy(oddOrEven).get("odd") // => [1, 3, 5]
+   * Lazy(numbers).groupBy(oddOrEven).get("foo") // => undefined
    */
   Sequence.prototype.groupBy = function(keyFn) {
     return new GroupedSequence(this, keyFn);
@@ -1078,7 +1080,9 @@
    *
    * var numbers = [1, 2, 3, 4, 5];
    *
-   * Lazy(numbers).countBy(oddOrEven) // sequence: { odd: 3, even: 2 }
+   * Lazy(numbers).countBy(oddOrEven)            // sequence: { odd: 3, even: 2 }
+   * Lazy(numbers).countBy(oddOrEven).get("odd") // => 3
+   * Lazy(numbers).countBy(oddOrEven).get("foo") // => undefined
    */
   Sequence.prototype.countBy = function(keyFn) {
     return new CountedSequence(this, keyFn);
@@ -2952,7 +2956,11 @@
    * Lazy({ foo: 1, bar: 2 }).omit(["foo"]).get("foo")        // => undefined
    */
   ObjectLikeSequence.prototype.get = function(key) {
-    return this.parent.get(key);
+    var pair = this.pairs().find(function(pair) {
+      return pair[0] === key;
+    });
+
+    return pair ? pair[1] : undefined;
   };
 
   /**
@@ -3143,14 +3151,6 @@
   }
 
   InvertedSequence.prototype = new ObjectLikeSequence();
-
-  InvertedSequence.prototype.get = function(key) {
-    var pair = this.parent.pairs().find(function(p) {
-      return p[1] === key;
-    });
-
-    return pair ? pair[0] : undefined;
-  };
 
   InvertedSequence.prototype.each = function(fn) {
     this.parent.each(function(value, key) {
