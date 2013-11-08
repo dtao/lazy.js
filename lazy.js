@@ -1037,14 +1037,12 @@
    * Lazy([1, 2, 3]).map(reciprocal).indexOf(0.5) // => 1
    */
   Sequence.prototype.indexOf = function(value) {
-    var index = 0;
     var foundIndex = -1;
-    this.each(function(e) {
+    this.each(function(e, i) {
       if (e === value) {
-        foundIndex = index;
+        foundIndex = i;
         return false;
       }
-      ++index;
     });
     return foundIndex;
   };
