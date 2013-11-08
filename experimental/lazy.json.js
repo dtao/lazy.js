@@ -58,6 +58,9 @@ JsonIterator.prototype.readValue = function() {
   } else if (token === '[') {
     this.currentValue = this.readArray();
 
+  } else if (token === '{') {
+    this.currentValue = this.readObject();
+
   } else if (NumberPattern.test(token)) {
     this.currentValue = Number(token);
 
@@ -92,9 +95,10 @@ JsonIterator.prototype.readString = function(fromPosition) {
   this.unexpectedEOS();
 };
 
-JsonIterator.prototype.readArray = function() {
+JsonIterator.prototype.readArray = function(fromPosition) {
   var json         = this.json,
       tokenMatcher = this.tokenMatcher,
+      position     = typeof fromPosition === 'number' ? fromPosition : this.position,
       openBrackets = 1,
       match,
       string;
@@ -118,6 +122,63 @@ JsonIterator.prototype.readArray = function() {
   if (openBrackets === 0) {
     // For now we'll just be lazy (ba-dum, ching!) and use JSON.parse for arrays
     // *within* the JSON.
+    return JSON.parse(json.substring(position - 1, match.index + 1));
+  }
+
+  this.unexpectedEOS();
+};
+
+JsonIterator.prototype.readObject = function() {
+  var json         = this.json,
+      tokenMatcher = this.tokenMatcher,
+      openBraces   = 1,
+      expecting    = ['"', '}'],
+      state        = 'key',
+      match,
+      string;
+
+  while ((openBraces > 0) && (match = tokenMatcher.exec(json))) {
+    if (expecting && !this.tokenIsExpected(match[0], expecting)) {
+      this.unexpectedToken(match, expecting);
+    }
+
+    switch (match[0]) {
+      case '"':
+        this.readString(match.index + 1);
+        expecting = state === 'key' ? ':' : [',', '}'];
+        break;
+
+      case '[':
+        this.readArray(match.index + 1);
+        expecting = [',', '}'];
+        break;
+
+      case ':':
+        state = 'value';
+        expecting = null;
+        break;
+
+      case ',':
+        state = 'key';
+        expecting = '"';
+        break;
+
+      case '{':
+        state = 'key';
+        expecting = '"';
+        ++openBraces;
+        break;
+
+      case '}':
+        expecting = [',', '}'];
+        --openBraces;
+        break;
+    }
+  }
+
+  if (openBraces === 0) {
+    // For now we'll just be lazy (ba-dum, ching!) and use JSON.parse for
+    // objects *within* the JSON.
     return JSON.parse(json.substring(this.position - 1, match.index + 1));
   }
 
@@ -178,7 +239,7 @@ JsonIterator.prototype.unexpectedToken = function(match, expectation) {
 JsonIterator.prototype.unexpectedEOS = function() {
   throw new SyntaxError(
     'Unexpected end of input: ' +
-    this.json.substring(this.position, index)
+    this.json.substring(this.position)
   );
 };
 
@@ -201,6 +262,12 @@ JsonIterator.prototype.unexpectedEOS = function() {
  * Lazy.parseJSON('[1, ["foo [1, 2] bar"]]')    // sequence: [1, ["foo [1, 2] bar"]]
  * Lazy.parseJSON('[1, [2, [3, 4]]]')           // sequence: [1, [2, [3, 4]]]
  * Lazy.parseJSON('[1, [2, 3], blah').take(2)   // sequence: [1, [2, 3]]
+ * Lazy.parseJSON('[1, { "foo": "bar" }]')      // sequence: [1, { foo: 'bar' }]
+ * Lazy.parseJSON('[1, {}]')                    // sequence: [1, {}]
+ * Lazy.parseJSON('[1, {}}]').toArray()         // throws
+ *
+ * // crazy example
+ * Lazy.parseJSON('[1, { "foo": { "bar": [1, null, ["baz"]] } }, [3, false]]') // sequence: [1, { foo: { 'bar': [1, null, ['baz']] } }, [3, false]]
  */
 Lazy.parseJSON = function(json) {
   return new JsonSequence(json);
