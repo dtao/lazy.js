@@ -74,33 +74,37 @@
 
   context.createAsyncTest = function(description, options) {
     it(description, function() {
-      var results = [];
-
-      // This can be a function, in case what we want to expect is not defined at the time
-      // createAsyncTest is called.
-      var expected = typeof options.expected === "function" ?
-        options.expected() :
-        options.expected;
-
-      runs(function() {
-        options.getSequence().each(function(e) { results.push(e); });
-
-        // Should not yet be populated.
-        expect(results.length).toBe(0);
-      });
-
-      waitsFor(function() {
-        return results.length === expected.length;
-      });
-
-      runs(function() {
-        expect(results).toEqual(expected);
-      });
-
-      if (options.additionalExpectations) {
-        runs(options.additionalExpectations);
-      }
+      performAsyncSteps(options);
     });
+  };
+
+  context.performAsyncSteps = function(options) {
+    var results = [];
+
+    // This can be a function, in case what we want to expect is not defined at the time
+    // createAsyncTest is called.
+    var expected = typeof options.expected === "function" ?
+      options.expected() :
+      options.expected;
+
+    runs(function() {
+      options.getSequence().each(function(e) { results.push(e); });
+
+      // Should not yet be populated.
+      expect(results.length).toBe(0);
+    });
+
+    waitsFor(function() {
+      return results.length === expected.length;
+    });
+
+    runs(function() {
+      expect(results).toEqual(expected);
+    });
+
+    if (options.additionalExpectations) {
+      runs(options.additionalExpectations);
+    }
   };
 
   context.testAllSequenceTypes = function(description, array, expectation) {

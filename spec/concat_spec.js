@@ -29,5 +29,18 @@ describe("Lazy", function() {
     it("passes an index along with each element", function() {
       expect(Lazy(people).concat(taos, nickses)).toPassToEach(1, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
     });
+
+    testAllSequenceTypes(
+      "supports asynchronous iteration",
+
+      [1, 2],
+
+      function(sequence) {
+        performAsyncSteps({
+          getSequence: function() { return sequence.concat([3, 4]).async(); },
+          expected: function() { return [1, 2, 3, 4]; }
+        });
+      }
+    );
   });
 });

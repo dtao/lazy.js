@@ -628,11 +628,42 @@
    * var left  = [1, 2, 3];
    * var right = [4, 5, 6];
    *
-   * Lazy(left).concat(right)       // sequence: [1, 2, 3, 4, 5, 6]
-   * Lazy(left).concat(Lazy(right)) // sequence: [1, 2, 3, 4, 5, 6]
+   * Lazy(left).concat(right)         // sequence: [1, 2, 3, 4, 5, 6]
+   * Lazy(left).concat(Lazy(right))   // sequence: [1, 2, 3, 4, 5, 6]
+   * Lazy(left).concat(right, [7, 8]) // sequence: [1, 2, 3, 4, 5, 6, 7, 8]
    */
   Sequence.prototype.concat = function(var_args) {
     return new ConcatenatedSequence(this, Array.prototype.slice.call(arguments, 0));
+  };
+
+  /**
+   * @constructor
+   */
+  function ConcatenatedSequence(parent, arrays) {
+    this.parent = parent;
+    this.arrays = arrays;
+  }
+
+  ConcatenatedSequence.prototype = new Sequence();
+
+  ConcatenatedSequence.prototype.each = function(fn) {
+    var done = false,
+        i = 0;
+
+    this.parent.each(function(e) {
+      if (fn(e, i++) === false) {
+        done = true;
+        return false;
+      }
+    });
+
+    if (!done) {
+      Lazy(this.arrays).flatten().each(function(e) {
+        if (fn(e, i++) === false) {
+          return false;
+        }
+      });
+    }
   };
 
   /**
@@ -1547,36 +1578,6 @@
    */
   Sequence.prototype.async = function(interval) {
     return new AsyncSequence(this, interval);
-  };
-
-  /**
-   * @constructor
-   */
-  function ConcatenatedSequence(parent, arrays) {
-    this.parent = parent;
-    this.arrays = arrays;
-  }
-
-  ConcatenatedSequence.prototype = new Sequence();
-
-  ConcatenatedSequence.prototype.each = function(fn) {
-    var done = false,
-        i = 0;
-
-    this.parent.each(function(e) {
-      if (fn(e, i++) === false) {
-        done = true;
-        return false;
-      }
-    });
-
-    if (!done) {
-      Lazy(this.arrays).flatten().each(function(e) {
-        if (fn(e, i++) === false) {
-          return false;
-        }
-      });
-    }
   };
 
   /**
