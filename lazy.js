@@ -4438,7 +4438,7 @@
         len = array.length;
 
     while (++i < len) {
-      if (fn(array[i]) === false) {
+      if (fn(array[i], i) === false) {
         return false;
       }
     }
