@@ -50,8 +50,20 @@ body {
   font-size: 150%;
 }
 
-#input > textarea {
-  height: 400px;
+#input > fieldset {
+  border: none;
+  border-top: 1px solid #ddd;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+#input > fieldset > legend {
+  margin-left: 1em;
+  padding: 0 0.5em;
+  font-weight: bold;
+}
+
+#input > fieldset > textarea {
   width: 100%;
 
   box-sizing: border-box;
@@ -59,7 +71,15 @@ body {
   -webkit-box-sizing: border-box;
 }
 
-#results > pre {
+#json {
+  min-height: 300px;
+}
+
+#transform {
+  min-height: 100px;
+}
+
+pre {
   background-color: #eee;
   padding: 10px;
   white-space: pre-wrap;
@@ -84,4 +104,14 @@ body {
 
 #counter > span.canceled {
   color: #f80;
+}
+
+a {
+  color: #08f;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #04b;
 }
