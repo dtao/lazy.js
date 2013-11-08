@@ -2950,28 +2950,6 @@
   /**
    * An `ObjectLikeSequence` object represents a sequence of key/value pairs.
    *
-   * So, this one is arguably the least... good... of the sequence types right
-   * now. A bunch of methods are implemented already, and they basically "work";
-   * but the problem is I haven't quite made up my mind exactly how they *should*
-   * work, to be consistent and useful.
-   *
-   * Here are a couple of issues (there are others):
-   *
-   * 1. For iterating over an object, there is currently *not* a good way to do it
-   *    asynchronously (that I know of). The best approach is to call
-   *    `Object.keys` and then iterate over *those* asynchronously; but this of
-   *    course eagerly iterates over the object's keys (though maybe that's not
-   *    a really big deal).
-   * 2. In terms of method chaining, it is a bit unclear how that should work.
-   *    Iterating over an `ObjectLikeSequence` with {@link ObjectLikeSequence#each}
-   *    passes `(value, key)` to the given function; but what about the result of
-   *    {@link Sequence#map}, {@link Sequence#filter}, etc.? I've flip-flopped
-   *    between thinking they should return object-like sequences or regular
-   *    sequences.
-   *
-   * Expect this section to be updated for a coming version of Lazy.js, when I
-   * will hopefully have figured this stuff out.
-   *
    * @constructor
    */
   function ObjectLikeSequence() {}
