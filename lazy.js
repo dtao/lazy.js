@@ -4163,17 +4163,16 @@
       errorCallback: function(error) {}
     };
 
-    if (iterator.moveNext()) {
-      handle.id = onNextCallback(function iterate() {
-        try {
-          if (fn(iterator.current(), i++) !== false && iterator.moveNext()) {
-            handle.id = onNextCallback(iterate);
-          }
-        } catch (e) {
-          handle.errorCallback(e);
+    handle.id = onNextCallback(function iterate() {
+      try {
+        if (iterator.moveNext() && fn(iterator.current(), i++) !== false) {
+          handle.id = onNextCallback(iterate);
         }
-      });
-    }
+
+      } catch (e) {
+        handle.errorCallback(e);
+      }
+    });
 
     return handle;
   };
