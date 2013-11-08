@@ -82,4 +82,8 @@ window.addEventListener('load', function() {
     }
   });
 
+  window.addEventListener('error', function(e) {
+    displayData(e.message || e, 'error');
+  });
+
 });
