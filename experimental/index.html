@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Lazy.js JSON Parsing Demo</title>
+    <link rel="stylesheet" type="text/css" href="demo.css" />
+    <script type="text/javascript" src="../lazy.js"></script>
+    <script type="text/javascript" src="lazy.json.js"></script>
+    <script type="text/javascript" src="demo.js"></script>
+</head>
+
+<body>
+    <div id="input">
+        <header>
+            <h1>Lazy.js JSON Parsing Demo</h1>
+        </header>
+
+        <p>
+            Enter a big ol' blob of JSON data (arrays only) into the
+            <code>&lt;textarea&gt;</code> below and click <strong>Start</strong>.
+            <a href="http://danieltao.com/lazy.js/">Lazy.js</a> will parse as much
+            of the JSON as possible, asynchronously. <em>(Tip: try putting some
+            garbage in the middle to see how Lazy can parse the beginning even if
+            the overall string is invalid.)</em>
+        </p>
+
+        <p>
+            Click <strong>Cancel</strong> at any point to stop parsing.
+        </p>
+
+        <fieldset>
+            <legend>JSON</legend>
+            <textarea id="json"></textarea>
+        </fieldset>
+
+        <p>
+            Optionally, also transform the data:
+        </p>
+
+        <div>
+            <strong>Example</strong>:<br />
+            <pre>compact().map(function(data) { return typeof data; })</pre>
+        </div>
+
+        <fieldset>
+            <legend>Transform</legend>
+            <textarea id="transform"></textarea>
+        </fieldset>
+
+        <button id="start">Start</button>
+        <button id="cancel">Cancel</button>
+    </div>
+
+    <div id="results"></div>
+    <div id="counter"></div>
+</body>
+
+</html>

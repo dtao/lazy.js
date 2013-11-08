@@ -1,0 +1,117 @@
+body {
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+#input {
+  position: fixed;
+  top: 20px;
+  bottom: 20px;
+  left: 20px;
+  right: calc(50% + 10px);
+
+  overflow: auto;
+}
+
+#results {
+  position: fixed;
+  top: 20px;
+  bottom: 20px;
+  left: calc(50% + 10px);
+  right: 20px;
+
+  overflow: auto;
+}
+
+#counter {
+  position: fixed;
+  bottom: 20px;
+  left: calc(50% + 10px);
+  z-index: 1;
+
+  background-color: #000;
+  color: #fff;
+  opacity: 0.8;
+  filter: alpha(opacity=80);
+}
+
+#counter:not(:empty) {
+  padding: 0.5ex 1em;
+}
+
+#counter:not(:empty):before {
+  content: 'Counted items: ';
+}
+
+#input > header {
+  font-size: 200%;
+}
+
+#input > p {
+  font-size: 150%;
+}
+
+#input > fieldset {
+  border: none;
+  border-top: 1px solid #ddd;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+#input > fieldset > legend {
+  margin-left: 1em;
+  padding: 0 0.5em;
+  font-weight: bold;
+}
+
+#input > fieldset > textarea {
+  width: 100%;
+
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+
+#json {
+  min-height: 300px;
+}
+
+#transform {
+  min-height: 100px;
+}
+
+pre {
+  background-color: #eee;
+  padding: 10px;
+  white-space: pre-wrap;
+}
+
+#results > pre.error {
+  color: red;
+}
+
+#counter > span {
+  margin-left: 1em;
+  font-weight: bold;
+}
+
+#counter > span.complete {
+  color: #4f4;
+}
+
+#counter > span.error {
+  color: #f00;
+}
+
+#counter > span.canceled {
+  color: #f80;
+}
+
+a {
+  color: #08f;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #04b;
+}
