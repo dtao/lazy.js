@@ -61,6 +61,50 @@
 
 (function(context) {
   /**
+   * Wraps an object and returns a {@link Sequence}.
+   *
+   * - For **arrays**, Lazy will create a sequence comprising the elements in
+   *   the array (an {@link ArrayLikeSequence}).
+   * - For **objects**, Lazy will create a sequence of key/value pairs
+   *   (an {@link ObjectLikeSequence}).
+   * - For **strings**, Lazy will create a sequence of characters (a
+   *   {@link StringLikeSequence}).
+   *
+   * @public
+   * @param {Array|Object|string} source An array, object, or string to wrap.
+   * @returns {Sequence} The wrapped lazy object.
+   *
+   * @examples
+   * Lazy([1, 2, 4])       // instanceof Lazy.ArrayLikeSequence
+   * Lazy({ foo: "bar" })  // instanceof Lazy.ObjectLikeSequence
+   * Lazy("hello, world!") // instanceof Lazy.StringLikeSequence
+   * Lazy()                // throws
+   * Lazy(null)            // throws
+   */
+  var Lazy = function(source) {
+    if (source instanceof Array) {
+      return new ArrayWrapper(source);
+    } else if (typeof source === "string") {
+      return new StringWrapper(source);
+    } else if (source instanceof Sequence) {
+      return source;
+    }
+
+    if (!source || typeof source !== "object") {
+      throw "You cannot wrap null, undefined, or primitive values using Lazy.";
+    }
+
+    return new ObjectWrapper(source);
+  };
+
+  Lazy.VERSION = '0.2.0';
+
+  /*** Utility methods of questionable value ***/
+
+  Lazy.noop     = function() {};
+  Lazy.identity = function(x) { return x; };
+
+  /**
    * The `Sequence` object provides a unified API encapsulating the notion of
    * zero or more consecutive elements in a collection, stream, etc.
    *
@@ -4143,9 +4187,9 @@
       throw "Sequence is already asynchronous!";
     }
 
-    this.parent = parent;
+    this.parent         = parent;
+    this.interval       = interval;
     this.onNextCallback = getOnNextCallback(interval);
-    this.cancelCallback = getCancelCallback();
   }
 
   AsyncSequence.prototype = new Sequence();
@@ -4156,38 +4200,17 @@
    * @public
    * @param {Function} fn The function to invoke asynchronously on each element in
    *     the sequence one by one.
-   * @returns {{cancel: Function, onError: Function}} An object providing the
-   *     ability to cancel the asynchronous iteration (by calling `cancel()`) as
-   *     well as handle any errors with a callback (set with `onError()`).
+   * @returns {AsyncHandle} An object providing the ability to cancel the
+   *     asynchronous iteration (by calling `cancel()`) as well as supply
+   *     callback(s) for when an error is encountered (`onError`) or when
+   *     iteration is complete (`onComplete`).
    */
   AsyncSequence.prototype.each = function(fn) {
     var iterator = this.parent.getIterator(),
         onNextCallback = this.onNextCallback,
-        cancelCallback = this.cancelCallback,
         i = 0;
 
-    var handle = {
-      id: null,
-
-      cancel: function() {
-        if (handle.id) {
-          cancelCallback(handle.id);
-          handle.id = null;
-        }
-      },
-
-      onError: function(callback) {
-        handle.errorCallback = callback;
-      },
-
-      errorCallback: function(error) {},
-
-      onComplete: function(callback) {
-        handle.completeCallback = callback;
-      },
-
-      completeCallback: function() {}
-    };
+    var handle = new AsyncHandle(this.interval);
 
     handle.id = onNextCallback(function iterate() {
       try {
@@ -4205,6 +4228,34 @@
 
     return handle;
   };
+
+  /**
+   * @constructor
+   */
+  function AsyncHandle(interval) {
+    this.cancelCallback = getCancelCallback(interval);
+  }
+
+  AsyncHandle.prototype.cancel = function() {
+    var cancelCallback = this.cancelCallback;
+
+    if (this.id) {
+      cancelCallback(this.id);
+      this.id = null;
+    }
+  };
+
+  AsyncHandle.prototype.onError = function(callback) {
+    this.errorCallback = callback;
+  };
+
+  AsyncHandle.prototype.errorCallback = Lazy.noop;
+
+  AsyncHandle.prototype.onComplete = function(callback) {
+    this.completeCallback = callback;
+  };
+
+  AsyncHandle.prototype.completeCallback = Lazy.noop;
 
   function getOnNextCallback(interval) {
     if (typeof interval === "undefined") {
@@ -4307,45 +4358,6 @@
   };
 
   /**
-   * Wraps an object and returns a {@link Sequence}.
-   *
-   * - For **arrays**, Lazy will create a sequence comprising the elements in
-   *   the array (an {@link ArrayLikeSequence}).
-   * - For **objects**, Lazy will create a sequence of key/value pairs
-   *   (an {@link ObjectLikeSequence}).
-   * - For **strings**, Lazy will create a sequence of characters (a
-   *   {@link StringLikeSequence}).
-   *
-   * @public
-   * @param {Array|Object|string} source An array, object, or string to wrap.
-   * @returns {Sequence} The wrapped lazy object.
-   *
-   * @examples
-   * Lazy([1, 2, 4])       // instanceof Lazy.ArrayLikeSequence
-   * Lazy({ foo: "bar" })  // instanceof Lazy.ObjectLikeSequence
-   * Lazy("hello, world!") // instanceof Lazy.StringLikeSequence
-   * Lazy()                // throws
-   * Lazy(null)            // throws
-   */
-  var Lazy = function(source) {
-    if (source instanceof Array) {
-      return new ArrayWrapper(source);
-    } else if (typeof source === "string") {
-      return new StringWrapper(source);
-    } else if (source instanceof Sequence) {
-      return source;
-    }
-
-    if (!source || typeof source !== "object") {
-      throw "You cannot wrap null, undefined, or primitive values using Lazy.";
-    }
-
-    return new ObjectWrapper(source);
-  };
-
-  Lazy.VERSION = '0.2.0';
-
-  /**
    * Creates a {@link GeneratedSequence} using the specified generator function
    * and (optionally) length.
    *
@@ -4420,9 +4432,6 @@
   Lazy.AsyncSequence      = AsyncSequence;
 
   /*** Useful utility methods ***/
-
-  Lazy.noop     = function() {};
-  Lazy.identity = function(x) { return x; };
 
   /**
    * Creates a callback... you know, Lo-Dash style.
