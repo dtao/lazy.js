@@ -68,6 +68,12 @@ describe("Lazy", function() {
       var evensBackwards = Lazy([1, 2, 3, 4]).filter(isEven).reverse().toArray();
       expect(evensBackwards).toEqual([4, 2]);
     });
+
+    it("reverses before filtering", function() {
+      var lastMale = Lazy(people).filter(Person.isMale).reverse().first();
+      expect(lastMale).toBe(daniel);
+      expect(Person.accesses).toBe(2);
+    });
   });
 
   describe("reject", function() {

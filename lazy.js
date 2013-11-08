@@ -487,6 +487,41 @@
   };
 
   /**
+   * @constructor
+   */
+  function ReversedSequence(parent) {
+    this.parent = parent;
+  }
+
+  ReversedSequence.prototype = new Sequence();
+
+  ReversedSequence.prototype.getIterator = function() {
+    return new ReversedIterator(this.parent);
+  };
+
+  /**
+   * @constuctor
+   */
+  function ReversedIterator(sequence) {
+    this.sequence = sequence;
+  }
+
+  ReversedIterator.prototype.current = function() {
+    return this.sequence.getIndex().get(this.index);
+  };
+
+  ReversedIterator.prototype.moveNext = function() {
+    var indexed = this.sequence.getIndex(),
+        length  = indexed.length();
+
+    if (typeof this.index === "undefined") {
+      this.index = length;
+    }
+
+    return (--this.index >= 0);
+  };
+
+  /**
    * Creates a new sequence with all of the elements of this one, plus those of
    * the given array(s).
    *
@@ -1487,6 +1522,10 @@
     });
   };
 
+  FilteredSequence.prototype.reverse = function() {
+    return this.parent.reverse().filter(this.filterFn);
+  };
+
   /**
    * @constructor
    */
@@ -1515,27 +1554,6 @@
 
     this.value = undefined;
     return false;
-  };
-
-  /**
-   * @constructor
-   */
-  function ReversedSequence(parent) {
-    this.parent = parent;
-  }
-
-  ReversedSequence.prototype = new Sequence();
-
-  ReversedSequence.prototype.each = function(fn) {
-    var indexed = this.parent.getIndex(),
-        length  = indexed.length(),
-        i       = 0;
-
-    while (--length >= 0) {
-      if (fn(indexed.get(length), i++) === false) {
-        break;
-      }
-    }
   };
 
   /**
@@ -3006,6 +3024,14 @@
    */
   ObjectLikeSequence.prototype.async = function() {
     throw 'An ObjectLikeSequence does not support asynchronous iteration.';
+  };
+
+  /**
+   * Returns this same sequence. (Reversing an object-like sequence doesn't make
+   * any sense.)
+   */
+  ObjectLikeSequence.prototype.reverse = function() {
+    return this;
   };
 
   /**
