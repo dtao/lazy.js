@@ -107,7 +107,7 @@ describe("Lazy", function() {
           });
           runs(function() {
             expect(context.setImmediate).toHaveBeenCalled();
-            expect(context.setImmediate.callCount).toBe(6);
+            expect(context.setImmediate.callCount).toBe(people.length + 1);
           });
         });
 
