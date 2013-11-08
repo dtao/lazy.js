@@ -4719,7 +4719,7 @@
 
       // If a custom init function was supplied, call it now.
       if (sequence.init) {
-        fastApply(sequence, 'init', arguments);
+        sequence.init.apply(sequence, arguments);
       }
 
       return sequence;
@@ -4731,64 +4731,6 @@
     }
 
     return ctor;
-  }
-
-  /**
-   * Calls a function with arguments. Faster than `Function.prototype.apply`.
-   *
-   * @private
-   * @param {Object} object The object to bind `this` to.
-   * @param {string} methodName The name of the method to invoke on `object`.
-   * @param {Arguments} args The arguments with which to invoke `methodName`.
-   * @returns {*} Whatever `methodName` returns.
-   *
-   * @examples
-   * var Calculator = {
-   *   add: function(x, y) {
-   *     this.results = this.results || [];
-   *
-   *     var result = x + y;
-   *     this.results.push(result);
-   *     return result;
-   *   }
-   * };
-   *
-   * fastApply(Calculator, 'add', [3, 8]) // 11
-   * fastApply(Calculator, 'add', [2, 6]) // Calculator.results == [11, 8]
-   *
-   * @benchmarks
-   * var Calculator = {
-   *   add: function(x, y) {
-   *     this.results = this.results || [];
-   *
-   *     var result = x + y;
-   *     this.results.push(result);
-   *     return result;
-   *   }
-   * };
-   *
-   * var func = Calculator.add;
-   *
-   * fastApply(Calculator, 'add', [3, 4]) // fastApply
-   * func.apply(Calculator, [3, 4])       // Function.prototype.apply
-   */
-  function fastApply(object, methodName, args) {
-    switch (args.length) {
-      case 0:
-        return object[methodName]();
-
-      case 1:
-        return object[methodName](args[0]);
-
-      case 2:
-        return object[methodName](args[0], args[1]);
-
-      case 3:
-        return object[methodName](args[0], args[1], args[2]);
-
-      default:
-        throw 'Really need more than three arguments? https://github.com/dtao/lazy.js/issues/new';
-    }
   }
 
   /*** Exposing Lazy to the world ***/
