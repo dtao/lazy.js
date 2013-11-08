@@ -22,6 +22,26 @@ body {
   overflow: auto;
 }
 
+#counter {
+  position: fixed;
+  bottom: 20px;
+  left: calc(50% + 10px);
+  z-index: 1;
+
+  background-color: #000;
+  color: #fff;
+  opacity: 0.8;
+  filter: alpha(opacity=80);
+}
+
+#counter:not(:empty) {
+  padding: 0.5ex 1em;
+}
+
+#counter:not(:empty):before {
+  content: 'Counted items: ';
+}
+
 #input > header {
   font-size: 200%;
 }
@@ -47,4 +67,21 @@ body {
 
 #results > pre.error {
   color: red;
+}
+
+#counter > span {
+  margin-left: 1em;
+  font-weight: bold;
+}
+
+#counter > span.complete {
+  color: #4f4;
+}
+
+#counter > span.error {
+  color: #f00;
+}
+
+#counter > span.canceled {
+  color: #f80;
 }

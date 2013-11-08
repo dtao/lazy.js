@@ -25,13 +25,20 @@
             Click <strong>Cancel</strong> at any point to stop parsing.
         </p>
 
-        <textarea></textarea>
+        <textarea id="json"></textarea>
+
+        <p>
+            Optionally, also transform the data:
+        </p>
+
+        <textarea id="transform">compact().map(function(data) { return typeof data; })</textarea>
 
         <button id="start">Start</button>
         <button id="cancel">Cancel</button>
     </div>
 
     <div id="results"></div>
+    <div id="counter"></div>
 </body>
 
 </html>
