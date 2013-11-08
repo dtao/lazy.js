@@ -9,6 +9,7 @@ lazy.min.js
 *.node.js
 
 lib/
+node_modules/
 site/share.html
 spec/data/lines.txt
 spec/node_benchmark.js
