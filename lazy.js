@@ -61,6 +61,50 @@
 
 (function(context) {
   /**
+   * Wraps an object and returns a {@link Sequence}.
+   *
+   * - For **arrays**, Lazy will create a sequence comprising the elements in
+   *   the array (an {@link ArrayLikeSequence}).
+   * - For **objects**, Lazy will create a sequence of key/value pairs
+   *   (an {@link ObjectLikeSequence}).
+   * - For **strings**, Lazy will create a sequence of characters (a
+   *   {@link StringLikeSequence}).
+   *
+   * @public
+   * @param {Array|Object|string} source An array, object, or string to wrap.
+   * @returns {Sequence} The wrapped lazy object.
+   *
+   * @examples
+   * Lazy([1, 2, 4])       // instanceof Lazy.ArrayLikeSequence
+   * Lazy({ foo: "bar" })  // instanceof Lazy.ObjectLikeSequence
+   * Lazy("hello, world!") // instanceof Lazy.StringLikeSequence
+   * Lazy()                // throws
+   * Lazy(null)            // throws
+   */
+  var Lazy = function(source) {
+    if (source instanceof Array) {
+      return new ArrayWrapper(source);
+    } else if (typeof source === "string") {
+      return new StringWrapper(source);
+    } else if (source instanceof Sequence) {
+      return source;
+    }
+
+    if (!source || typeof source !== "object") {
+      throw "You cannot wrap null, undefined, or primitive values using Lazy.";
+    }
+
+    return new ObjectWrapper(source);
+  };
+
+  Lazy.VERSION = '0.2.0';
+
+  /*** Utility methods of questionable value ***/
+
+  Lazy.noop     = function() {};
+  Lazy.identity = function(x) { return x; };
+
+  /**
    * The `Sequence` object provides a unified API encapsulating the notion of
    * zero or more consecutive elements in a collection, stream, etc.
    *
@@ -4312,45 +4356,6 @@
   };
 
   /**
-   * Wraps an object and returns a {@link Sequence}.
-   *
-   * - For **arrays**, Lazy will create a sequence comprising the elements in
-   *   the array (an {@link ArrayLikeSequence}).
-   * - For **objects**, Lazy will create a sequence of key/value pairs
-   *   (an {@link ObjectLikeSequence}).
-   * - For **strings**, Lazy will create a sequence of characters (a
-   *   {@link StringLikeSequence}).
-   *
-   * @public
-   * @param {Array|Object|string} source An array, object, or string to wrap.
-   * @returns {Sequence} The wrapped lazy object.
-   *
-   * @examples
-   * Lazy([1, 2, 4])       // instanceof Lazy.ArrayLikeSequence
-   * Lazy({ foo: "bar" })  // instanceof Lazy.ObjectLikeSequence
-   * Lazy("hello, world!") // instanceof Lazy.StringLikeSequence
-   * Lazy()                // throws
-   * Lazy(null)            // throws
-   */
-  var Lazy = function(source) {
-    if (source instanceof Array) {
-      return new ArrayWrapper(source);
-    } else if (typeof source === "string") {
-      return new StringWrapper(source);
-    } else if (source instanceof Sequence) {
-      return source;
-    }
-
-    if (!source || typeof source !== "object") {
-      throw "You cannot wrap null, undefined, or primitive values using Lazy.";
-    }
-
-    return new ObjectWrapper(source);
-  };
-
-  Lazy.VERSION = '0.2.0';
-
-  /**
    * Creates a {@link GeneratedSequence} using the specified generator function
    * and (optionally) length.
    *
@@ -4425,9 +4430,6 @@
   Lazy.AsyncSequence      = AsyncSequence;
 
   /*** Useful utility methods ***/
-
-  Lazy.noop     = function() {};
-  Lazy.identity = function(x) { return x; };
 
   /**
    * Creates a callback... you know, Lo-Dash style.
