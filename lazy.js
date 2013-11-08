@@ -4195,6 +4195,8 @@
    * Lazy([1, 2, 4])       // instanceof Lazy.ArrayLikeSequence
    * Lazy({ foo: "bar" })  // instanceof Lazy.ObjectLikeSequence
    * Lazy("hello, world!") // instanceof Lazy.StringLikeSequence
+   * Lazy()                // throws
+   * Lazy(null)            // throws
    */
   var Lazy = function(source) {
     if (source instanceof Array) {
@@ -4204,6 +4206,11 @@
     } else if (source instanceof Sequence) {
       return source;
     }
+
+    if (!source || typeof source !== "object") {
+      throw "You cannot wrap null, undefined, or primitive values using Lazy.";
+    }
+
     return new ObjectWrapper(source);
   };
 
