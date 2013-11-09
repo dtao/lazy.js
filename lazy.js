@@ -320,6 +320,12 @@
    *
    * @returns {ArrayLikeSequence} A sequence containing the current contents of
    *     the sequence.
+   *
+   * @examples
+   * function isEven(x) { return x % 2 === 0; }
+   *
+   * Lazy([1, 2, 3]).filter(isEven)            // instanceof Lazy.Sequence
+   * Lazy([1, 2, 3]).filter(isEven).getIndex() // instanceof Lazy.ArrayLikeSequence
    */
   Sequence.prototype.getIndex = function() {
     if (!this.cachedIndex) {
