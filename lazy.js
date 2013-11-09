@@ -61,7 +61,9 @@
 
 (function(context) {
   /**
-   * Wraps an object and returns a {@link Sequence}.
+   * Wraps an object and returns a {@link Sequence}. For `null` or `undefined`,
+   * simply returns an empty sequence (see {@link Lazy.strict} for a stricter
+   * implementation).
    *
    * - For **arrays**, Lazy will create a sequence comprising the elements in
    *   the array (an {@link ArrayLikeSequence}).
@@ -78,8 +80,8 @@
    * Lazy([1, 2, 4])       // instanceof Lazy.ArrayLikeSequence
    * Lazy({ foo: "bar" })  // instanceof Lazy.ObjectLikeSequence
    * Lazy("hello, world!") // instanceof Lazy.StringLikeSequence
-   * Lazy()                // throws
-   * Lazy(null)            // throws
+   * Lazy()                // sequence: []
+   * Lazy(null)            // sequence: []
    */
   var Lazy = function(source) {
     if (source instanceof Array) {
@@ -88,10 +90,6 @@
       return new StringWrapper(source);
     } else if (source instanceof Sequence) {
       return source;
-    }
-
-    if (!source || typeof source !== "object") {
-      throw "You cannot wrap null, undefined, or primitive values using Lazy.";
     }
 
     return new ObjectWrapper(source);
@@ -103,6 +101,49 @@
 
   Lazy.noop     = function() {};
   Lazy.identity = function(x) { return x; };
+
+  /**
+   * Provides a stricter version of {@link Lazy} which throws an error when
+   * attempting to wrap `null`, `undefined`, or numeric or boolean values as a
+   * sequence.
+   *
+   * @public
+   * @returns {Function} A stricter version of the {@link Lazy} helper function.
+   *
+   * @examples
+   * var Strict = Lazy.strict();
+   *
+   * Strict()                  // throws
+   * Strict(null)              // throws
+   * Strict(true)              // throws
+   * Strict(5)                 // throws
+   * Strict([1, 2, 3])         // instanceof Lazy.ArrayLikeSequence
+   * Strict({ foo: "bar" })    // instanceof Lazy.ObjectLikeSequence
+   * Strict("hello, world!")   // instanceof Lazy.StringLikeSequence
+   *
+   * // Let's also ensure the static functions are still there.
+   * Strict.range(3)           // sequence: [0, 1, 2]
+   * Strict.generate(Date.now) // instanceof Lazy.GeneratedSequence
+   */
+  Lazy.strict = function() {
+    var strict = function(source) {
+      if (source == null) {
+        throw "You cannot wrap null or undefined using Lazy.";
+      }
+
+      if (typeof source === "number" || typeof source === "boolean") {
+        throw "You cannot wrap primitive values using Lazy.";
+      }
+
+      return Lazy(source);
+    };
+
+    Lazy(Lazy).each(function(property, name) {
+      strict[name] = property;
+    });
+
+    return strict;
+  };
 
   /**
    * The `Sequence` object provides a unified API encapsulating the notion of
