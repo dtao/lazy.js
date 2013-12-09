@@ -168,7 +168,7 @@ Here's an example. Let's say we want to handle all `mousemove` events on a given
 
 ```javascript
 // First we define our "sequence" of events.
-var mouseEvents = Lazy.events(sourceElement, "mousemove");
+var mouseEvents = Lazy(sourceElement).on("mousemove");
 
 // Map the Event objects to their coordinates, relative to the element.
 var coordinates = mouseEvents.map(function(e) {

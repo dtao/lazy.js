@@ -4523,6 +4523,16 @@
   /*** Useful utility methods ***/
 
   /**
+   * Marks a method as deprecated, so calling it will issue a console warning.
+   */
+  Lazy.deprecate = function(message, fn) {
+    return function() {
+      console.warn(message);
+      return fn.apply(this, arguments);
+    };
+  };
+
+  /**
    * Creates a callback... you know, Lo-Dash style.
    *
    * - for functions, just returns the function

@@ -20,6 +20,10 @@
     return new FlattenedNodeSequence(this.source);
   };
 
+  NodeSequence.prototype.on = function(eventName) {
+    return new EventSequence(this.source, eventName);
+  };
+
   function FlattenedNodeSequence(source) {
     this.source = source;
   }
@@ -90,9 +94,12 @@
    *     that will make up this sequence.
    * @return {Sequence} The sequence of events.
    */
-  Lazy.events = function(element, eventName) {
-    return new EventSequence(element, eventName);
-  };
+  Lazy.events = deprecate(
+    "Lazy.events is deprecated. Use Lazy('selector').on('event') instead",
+    function(element, eventName) {
+      return new EventSequence(element, eventName);
+    }
+  );
 
   var OriginalLazy = Lazy;
 
