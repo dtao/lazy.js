@@ -41,5 +41,28 @@ describe("Lazy", function() {
       // "adjusted" index.)
       expect(callback.calls[0].args).toEqual(['BAR', 1]);
     });
+
+    it("works with multiple listeners", function() {
+      var object = {},
+          numberCallback = jasmine.createSpy(),
+          stringCallback = jasmine.createSpy();
+
+      var values = Lazy(object).watch('foo');
+      values.ofType('number').each(numberCallback);
+      values.ofType('string').each(stringCallback);
+
+      object.foo = 5;
+      object.foo = 'bar';
+      object.foo = 10;
+      object.foo = 'baz';
+
+      expect(numberCallback.callCount).toBe(2);
+      expect(numberCallback.calls[0].args).toEqual([5, 0]);
+      expect(numberCallback.calls[1].args).toEqual([10, 2]);
+
+      expect(stringCallback.callCount).toBe(2);
+      expect(stringCallback.calls[0].args).toEqual(['bar', 1]);
+      expect(stringCallback.calls[1].args).toEqual(['baz', 3]);
+    });
   });
 });
