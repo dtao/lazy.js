@@ -665,9 +665,26 @@
    * Lazy([1, 2, 3, 4, 5]).reject(isEven) // sequence: [1, 3, 5]
    */
   Sequence.prototype.reject = function(rejectFn) {
-    return this.filter(function(e) {
-      return !rejectFn(e);
-    });
+    return this.filter(function(e) { return !rejectFn(e); });
+  };
+
+  /**
+   * Creates a new sequence whose values have the specified type, as determined
+   * by the `typeof` operator.
+   *
+   * @public
+   * @param {string} type The type of elements to include from the underlying
+   *     sequence, i.e. where `typeof [element] === [type]`.
+   * @returns {Sequence} The new sequence, comprising elements of the specified
+   *     type.
+   *
+   * @examples
+   * Lazy([1, 2, 'foo', 'bar']).ofType('number')  // sequence: [1, 2]
+   * Lazy([1, 2, 'foo', 'bar']).ofType('string')  // sequence: ['foo', 'bar']
+   * Lazy([1, 2, 'foo', 'bar']).ofType('boolean') // sequence: []
+   */
+  Sequence.prototype.ofType = function(type) {
+    return this.filter(function(e) { return typeof e === type; });
   };
 
   /**
