@@ -4370,6 +4370,39 @@
   }
 
   /**
+   * Watches for all changes to a specified property of an object.
+   */
+  ObjectWrapper.prototype.watch = function(propertyName) {
+    return new WatchedPropertySequence(this.source, propertyName);
+  };
+
+  function WatchedPropertySequence(object, propertyName) {
+    this.listeners = [];
+
+    var listeners = this.listeners,
+        index     = 0;
+
+    Object.defineProperty(object, propertyName, {
+      get: function() {
+        return object[propertyName];
+      },
+
+      set: function(value) {
+        Lazy(listeners).each(function(listener) {
+          listener(value, index);
+        });
+        ++index;
+      }
+    });
+  }
+
+  WatchedPropertySequence.prototype = new AsyncSequence();
+
+  WatchedPropertySequence.prototype.each = function(fn) {
+    this.listeners.push(fn);
+  };
+
+  /**
    * A StreamLikeSequence comprises a sequence of 'chunks' of data, which are
    * typically multiline strings.
    *
