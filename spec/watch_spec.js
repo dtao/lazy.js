@@ -64,5 +64,23 @@ describe("Lazy", function() {
       expect(stringCallback.calls[0].args).toEqual(['bar', 1]);
       expect(stringCallback.calls[1].args).toEqual(['baz', 3]);
     });
+
+    it("allows some listeners to exit early without affecting others", function() {
+      var object = {},
+          firstCallback = jasmine.createSpy(),
+          secondCallback = jasmine.createSpy();
+
+      var values = Lazy(object).watch('foo');
+      values.take(2).each(firstCallback);
+      values.each(secondCallback);
+
+      object.foo = 'yabba';
+      object.foo = 'dabba';
+      object.foo = 'doo!';
+
+      expect(firstCallback.callCount).toBe(2);
+      expect(secondCallback.callCount).toBe(3);
+      expect(secondCallback.calls[2].args).toEqual(['doo!', 2]);
+    });
   });
 });

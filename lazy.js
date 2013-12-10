@@ -4405,9 +4405,11 @@
       },
 
       set: function(value) {
-        Lazy(listeners).each(function(listener) {
-          listener(value, index);
-        });
+        for (var i = listeners.length - 1; i >= 0; --i) {
+          if (listeners[i](value, index) === false) {
+            listeners.splice(i, 1);
+          }
+        }
         ++index;
       }
     });
