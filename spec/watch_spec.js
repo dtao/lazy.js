@@ -84,6 +84,23 @@ describe("Lazy", function() {
       expect(stringCallback.calls[1].args).toEqual(['baz', 3]);
     });
 
+    it("defaults to all of an object's current properties", function() {
+      var object   = { foo: 1, bar: 2, baz: 3 },
+          callback = jasmine.createSpy();
+
+      Lazy(object).watch().each(callback);
+
+      object.foo = 'yada';
+      object.bar = 'blah';
+      object.baz = 'boo';
+      object.moo = 'woof';
+
+      expect(callback.callCount).toBe(3);
+      expect(callback.calls[0].args).toEqual([{ property: 'foo', value: 'yada' }, 0]);
+      expect(callback.calls[1].args).toEqual([{ property: 'bar', value: 'blah' }, 1]);
+      expect(callback.calls[2].args).toEqual([{ property: 'baz', value: 'boo' }, 2]);
+    });
+
     it("allows some listeners to exit early without affecting others", function() {
       var object = {},
           firstCallback = jasmine.createSpy(),

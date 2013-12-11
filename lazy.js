@@ -4396,7 +4396,9 @@
   function WatchedPropertySequence(object, propertyNames) {
     this.listeners = [];
 
-    if (!(propertyNames instanceof Array)) {
+    if (!propertyNames) {
+      propertyNames = Lazy(object).keys().toArray();
+    } else if (!(propertyNames instanceof Array)) {
       propertyNames = [propertyNames];
     }
 
