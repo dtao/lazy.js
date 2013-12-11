@@ -4389,29 +4389,35 @@
   /**
    * Watches for all changes to a specified property of an object.
    */
-  ObjectWrapper.prototype.watch = function(propertyName) {
-    return new WatchedPropertySequence(this.source, propertyName);
+  ObjectWrapper.prototype.watch = function(propertyNames) {
+    return new WatchedPropertySequence(this.source, propertyNames);
   };
 
-  function WatchedPropertySequence(object, propertyName) {
+  function WatchedPropertySequence(object, propertyNames) {
     this.listeners = [];
+
+    if (!(propertyNames instanceof Array)) {
+      propertyNames = [propertyNames];
+    }
 
     var listeners = this.listeners,
         index     = 0;
 
-    Object.defineProperty(object, propertyName, {
-      get: function() {
-        return object[propertyName];
-      },
+    Lazy(propertyNames).each(function(propertyName) {
+      Object.defineProperty(object, propertyName, {
+        get: function() {
+          return object[propertyName];
+        },
 
-      set: function(value) {
-        for (var i = listeners.length - 1; i >= 0; --i) {
-          if (listeners[i](value, index) === false) {
-            listeners.splice(i, 1);
+        set: function(value) {
+          for (var i = listeners.length - 1; i >= 0; --i) {
+            if (listeners[i]({ property: propertyName, value: value }, index) === false) {
+              listeners.splice(i, 1);
+            }
           }
+          ++index;
         }
-        ++index;
-      }
+      });
     });
   }
 

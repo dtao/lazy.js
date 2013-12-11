@@ -11,9 +11,23 @@ describe("Lazy", function() {
       object.foo = null;
 
       expect(callback.callCount).toBe(3);
-      expect(callback.calls[0].args).toEqual([1, 0]);
-      expect(callback.calls[1].args).toEqual(['bar', 1]);
-      expect(callback.calls[2].args).toEqual([null, 2]);
+      expect(callback.calls[0].args).toEqual([{ property: 'foo', value: 1 }, 0]);
+      expect(callback.calls[1].args).toEqual([{ property: 'foo', value: 'bar' }, 1]);
+      expect(callback.calls[2].args).toEqual([{ property: 'foo', value: null }, 2]);
+    });
+
+    it("can watch multiple properties", function() {
+      var object   = {},
+          callback = jasmine.createSpy();
+
+      Lazy(object).watch(['foo', 'bar']).each(callback);
+
+      object.foo = 1;
+      object.bar = 2;
+
+      expect(callback.callCount).toBe(2);
+      expect(callback.calls[0].args).toEqual([{ property: 'foo', value: 1 }, 0]);
+      expect(callback.calls[1].args).toEqual([{ property: 'bar', value: 2}, 1]);
     });
 
     it("provides access to map, filter, etc.", function() {
@@ -28,7 +42,12 @@ describe("Lazy", function() {
       var object   = {},
           callback = jasmine.createSpy();
 
-      Lazy(object).watch('foo').compact().map(upcase).each(callback);
+      Lazy(object)
+        .watch('foo')
+        .pluck('value')
+        .compact()
+        .map(upcase)
+        .each(callback);
 
       object.foo = '';
       object.foo = 'bar';
@@ -47,7 +66,7 @@ describe("Lazy", function() {
           numberCallback = jasmine.createSpy(),
           stringCallback = jasmine.createSpy();
 
-      var values = Lazy(object).watch('foo');
+      var values = Lazy(object).watch('foo').pluck('value');
       values.ofType('number').each(numberCallback);
       values.ofType('string').each(stringCallback);
 
@@ -70,7 +89,7 @@ describe("Lazy", function() {
           firstCallback = jasmine.createSpy(),
           secondCallback = jasmine.createSpy();
 
-      var values = Lazy(object).watch('foo');
+      var values = Lazy(object).watch('foo').pluck('value');
       values.take(2).each(firstCallback);
       values.each(secondCallback);
 
