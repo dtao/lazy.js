@@ -2,11 +2,11 @@
 
 与Underscore、Lo-Dash的比较：
 
-!()[http://i.imgur.com/9vP6sVG.png]
+![](http://i.imgur.com/9vP6sVG.png)
 
 当数组非常大的时候，对于不需要迭代整个数组的方法，例如`indexOf`和`take`，Lazy.js的性能提升更为惊人：
 
-!()[http://i.imgur.com/oGPlPug.png]
+![](http://i.imgur.com/oGPlPug.png)
 
 安装
 ----
