@@ -151,25 +151,16 @@ Lazy.makeHttpRequest = function(url) {
  * - Object
  * - String
  * - Stream
- *
- * This function provides the last one, and then falls back to the original
- * 'Lazy' which provides the first three.
  */
-module.exports = function(source) {
+
+if (!Lazy._extras) {
+  Lazy._extras = [];
+}
+
+Lazy._extras.push(function(source) {
   if (source instanceof Stream) {
     return new StreamedSequence(source);
-  } else {
-    return Lazy(source);
   }
-};
+});
 
-/*
- * Attach all of the same properties that Lazy already had.
- *
- * TODO: Think of a better approach here. This is really hacky.
- */
-for (var prop in Lazy) {
-  if (Lazy.hasOwnProperty(prop)) {
-    module.exports[prop] = Lazy[prop];
-  }
-}
+module.exports = Lazy;

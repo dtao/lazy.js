@@ -84,6 +84,16 @@
    * Lazy(null)            // sequence: []
    */
   var Lazy = function(source) {
+    if (Lazy._extras) {
+      var extras = Lazy._extras, length = extras.length, result;
+      while (!result && length--) {
+        result = extras[length](source);
+      }
+      if (result) {
+        return result;
+      }
+    }
+
     if (source instanceof Array) {
       return new ArrayWrapper(source);
     } else if (typeof source === "string") {
