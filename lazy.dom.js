@@ -100,28 +100,13 @@
   );
 
   /*
-   * Assuming someone does:
-   * <script src="lazy.js"></script>
-   * <script src="lazy.dom.js"></script>
-   *
-   * Then they should be able to write:
-   * Lazy(source)
-   *
-   * Where `source` can be a:
-   * - Array
-   * - Object
-   * - String
-   * - NodeList or HTMLCollection
-   *
-   * This function provides the last one, and then falls back to the original
-   * 'Lazy' which provides the first three.
+   * Add support for `Lazy(NodeList)` and `Lazy(HTMLCollection)`.
    */
-
-  if (!Lazy._extras) {
-    Lazy._extras = [];
+  if (!Lazy.extensions) {
+    Lazy.extensions = [];
   }
 
-  Lazy._extras.push(function(source) {
+  Lazy.extensions.push(function(source) {
     if (source instanceof NodeList || source instanceof HTMLCollection) {
       return new NodeSequence(source);
     }

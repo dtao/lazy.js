@@ -140,24 +140,13 @@ Lazy.makeHttpRequest = function(url) {
 };
 
 /*
- * Assuming someone does:
- * var Lazy = require("lazy.js");
- *
- * Then they should be able to write:
- * Lazy(source)
- *
- * Where `source` can be a:
- * - Array
- * - Object
- * - String
- * - Stream
+ * Add support for `Lazy(Stream)`.
  */
-
-if (!Lazy._extras) {
-  Lazy._extras = [];
+if (!Lazy.extensions) {
+  Lazy.extensions = [];
 }
 
-Lazy._extras.push(function(source) {
+Lazy.extensions.push(function(source) {
   if (source instanceof Stream) {
     return new StreamedSequence(source);
   }

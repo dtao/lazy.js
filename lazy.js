@@ -83,17 +83,7 @@
    * Lazy()                // sequence: []
    * Lazy(null)            // sequence: []
    */
-  var Lazy = function(source) {
-    if (Lazy._extras) {
-      var extras = Lazy._extras, length = extras.length, result;
-      while (!result && length--) {
-        result = extras[length](source);
-      }
-      if (result) {
-        return result;
-      }
-    }
-
+  function Lazy(source) {
     if (source instanceof Array) {
       return new ArrayWrapper(source);
     } else if (typeof source === "string") {
@@ -102,10 +92,21 @@
       return source;
     }
 
-    return new ObjectWrapper(source);
-  };
+    if (Lazy.extensions) {
+      var extensions = Lazy.extensions, length = extensions.length, result;
+      while (!result && length--) {
+        result = extensions[length](source);
+      }
+      if (result) {
+        return result;
+      }
+    }
 
-  Lazy.VERSION = '0.2.1';
+    return new ObjectWrapper(source);
+  }
+
+  Lazy.VERSION    = '0.2.1';
+  Lazy.extensions = [];
 
   /*** Utility methods of questionable value ***/
 
