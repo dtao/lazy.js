@@ -1,6 +1,4 @@
-(function(window) {
-
-  var Lazy = window.Lazy;
+(function(Lazy) {
 
   function NodeSequence(source) {
     this.source = source;
@@ -101,8 +99,6 @@
     }
   );
 
-  var OriginalLazy = Lazy;
-
   /*
    * Assuming someone does:
    * <script src="lazy.js"></script>
@@ -120,25 +116,15 @@
    * This function provides the last one, and then falls back to the original
    * 'Lazy' which provides the first three.
    */
-  Lazy = function(source) {
-    if (source instanceof NodeList || source instanceof HTMLCollection) {
-      return new NodeSequence(source);
-    } else {
-      return OriginalLazy(source);
-    }
-  };
 
-  /*
-   * Attach all of the same properties that Lazy already had.
-   *
-   * TODO: Think of a better approach here. This is really hacky.
-   */
-  for (var prop in OriginalLazy) {
-    if (OriginalLazy.hasOwnProperty(prop)) {
-      Lazy[prop] = OriginalLazy[prop];
-    }
+  if (!Lazy._extras) {
+    Lazy._extras = [];
   }
 
-  window.Lazy = Lazy;
+  Lazy._extras.push(function(source) {
+    if (source instanceof NodeList || source instanceof HTMLCollection) {
+      return new NodeSequence(source);
+    }
+  });
 
-}(window));
+}(window.Lazy));
