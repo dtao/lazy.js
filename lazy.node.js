@@ -47,6 +47,19 @@ StreamedSequence.prototype.each = function(fn) {
   });
 };
 
+/**
+ * Creates a {@link Sequence} of lines as they are read from a file.
+ *
+ * @return {Sequence} A sequence comprising the lines in the underlying file, as
+ *     they are read.
+ */
+StreamedSequence.prototype.lines = function() {
+  return new StreamedLineSequence(this);
+};
+
+/**
+ * @constructor
+ */
 function StreamedLineSequence(parent) {
   this.parent = parent;
 }
@@ -80,16 +93,6 @@ StreamedLineSequence.prototype.each = function(fn) {
       return false;
     }
   });
-};
-
-/**
- * Creates a {@link Sequence} of lines as they are read from a file.
- *
- * @return {Sequence} A sequence comprising the lines in the underlying file, as
- *     they are read.
- */
-StreamedSequence.prototype.lines = function() {
-  return new StreamedLineSequence(this);
 };
 
 function FileStreamSequence(path, encoding) {
