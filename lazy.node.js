@@ -39,7 +39,10 @@ StreamedSequence.prototype.each = function(fn) {
       }
     };
 
-    if (stream.setEncoding) stream.setEncoding(encoding);
+    if (stream.setEncoding) {
+      stream.setEncoding(encoding);
+    }
+
     stream.on("data", listener);
   });
 };
