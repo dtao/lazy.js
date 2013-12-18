@@ -3999,10 +3999,8 @@
    * @constructor
    */
   function StringMatchIterator(source, pattern) {
-    this.source = source;
-
-    // clone the RegExp
-    this.pattern = eval("" + pattern + (!pattern.global ? "g" : ""));
+    this.source  = source;
+    this.pattern = cloneRegex(pattern);
   }
 
   StringMatchIterator.prototype.current = function current() {
@@ -4448,7 +4446,7 @@
    */
   function StreamLikeSequence() {}
 
-  StreamLikeSequence.prototype = new Sequence();
+  StreamLikeSequence.prototype = new AsyncSequence();
 
   StreamLikeSequence.prototype.split = function(delimiter) {
     return new SplitStreamSequence(this, delimiter);
@@ -4483,6 +4481,37 @@
 
   StreamLikeSequence.prototype.lines = function lines() {
     return this.split("\n");
+  };
+
+  StreamLikeSequence.prototype.match = function(pattern) {
+    return new MatchedStreamSequence(this, pattern);
+  };
+
+  /**
+   * @constructor
+   */
+  function MatchedStreamSequence(parent, pattern) {
+    this.parent  = parent;
+    this.pattern = cloneRegex(pattern);
+  }
+
+  MatchedStreamSequence.prototype = new AsyncSequence();
+
+  MatchedStreamSequence.prototype.each = function(fn) {
+    var pattern = this.pattern,
+        done      = false,
+        i         = 0;
+
+    this.parent.each(function(chunk) {
+      Lazy(chunk).match(pattern).each(function(match) {
+        if (fn(match, i++) === false) {
+          done = true;
+          return false;
+        }
+      });
+
+      return !done;
+    });
   };
 
   /**
@@ -4784,6 +4813,17 @@
     array[i] = array[j];
     array[j] = temp;
   }
+
+  /**
+   * "Clones" a regular expression (but makes it always global).
+   *
+   * @private
+   * @param {RegExp|string} pattern
+   * @returns {RegExp}
+   */
+  function cloneRegex(pattern) {
+    return eval("" + pattern + (!pattern.global ? "g" : ""));
+  };
 
   /**
    * A collection of unique elements.
