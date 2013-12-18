@@ -15,7 +15,6 @@
   ],
   "scripts": [
     "lazy.js",
-    "lazy.dom.js",
-    "lazy.node.js"
+    "lazy.browser.js"
   ]
 }

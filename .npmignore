@@ -5,4 +5,4 @@ spec/
 Gemfile*
 Rakefile*
 *.mustache
-lazy.dom.js
+lazy.browser.js

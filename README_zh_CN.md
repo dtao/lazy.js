@@ -20,7 +20,7 @@ Lazy.js没有外部依赖，所以加载Lazy.js非常方便：
 如果你希望支持DOM事件序列的惰性求值，那么用这个：
 
 ```html
-<script type="text/javascript" src="lazy.dom.js"></script>
+<script type="text/javascript" src="lazy.browser.js"></script>
 ```
 
 如果你使用Node.js：
@@ -163,7 +163,7 @@ asyncSequence.each(function(e) {
 
 我们看到，和Underscore和Lo-Dash不同，对于无穷序列，Lazy.js并不需要把一个把所有数据放到内存以便迭代。异步序列也显示了它并不需要一次完成所有迭代。
 
-现在我们要介绍一个Lazy.js的小扩展`lazy.dom.js`（基于浏览器的环境需要包含一个单独的文件），它组合了以上两个特性，现在，处理DOM事件也可以使用Lazy.js的力量了。换句话说，Lazy.js让你把DOM事件看成是一个序列——和其他序列一样——然后可以将那些用于序列的函数`map`和`filter`应用到序列上。
+现在我们要介绍一个Lazy.js的小扩展`lazy.browser.js`（基于浏览器的环境需要包含一个单独的文件），它组合了以上两个特性，现在，处理DOM事件也可以使用Lazy.js的力量了。换句话说，Lazy.js让你把DOM事件看成是一个序列——和其他序列一样——然后可以将那些用于序列的函数`map`和`filter`应用到序列上。
 
 下面是一个例子。比如我们打算处理给定的DOM元素的所有`mousemove`事件，同时显示它们的坐标。
 
