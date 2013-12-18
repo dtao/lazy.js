@@ -31,6 +31,28 @@ describe("working with streams", function() {
 
   // TODO: Figure out a smart way to test HTTP streams and other types of
   // streams as well.
+  it("can split the contents of the stream, as if it were a string", function() {
+    var words = [];
+
+    runs(function() {
+      var stream = fs.createReadStream("./spec/data/haiku.txt");
+      Lazy(stream).split(/\s+/).each(function(word) {
+        words.push(word);
+      });
+    });
+
+    waitsFor(function() {
+      return words.length > 0;
+    });
+
+    runs(function() {
+      expect(words).toEqual([
+        'at', 'the', 'age', 'old', 'pond',
+        'a', 'frog', 'leaps', 'into', 'water',
+        'a', 'deep', 'resonance'
+      ]);
+    });
+  });
 
   describe("file streams", function() {
     describe("lines", function() {

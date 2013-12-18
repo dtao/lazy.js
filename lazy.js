@@ -4450,6 +4450,37 @@
 
   StreamLikeSequence.prototype = new Sequence();
 
+  StreamLikeSequence.prototype.split = function(delimiter) {
+    return new SplitStreamSequence(this, delimiter);
+  };
+
+  /**
+   * @constructor
+   */
+  function SplitStreamSequence(parent, delimiter) {
+    this.parent    = parent;
+    this.delimiter = delimiter;
+  }
+
+  SplitStreamSequence.prototype = new Sequence();
+
+  SplitStreamSequence.prototype.each = function(fn) {
+    var delimiter = this.delimiter,
+        done      = false,
+        i         = 0;
+
+    this.parent.each(function(chunk) {
+      Lazy(chunk).split(delimiter).each(function(piece) {
+        if (fn(piece, i++) === false) {
+          done = true;
+          return false;
+        }
+      });
+
+      return !done;
+    });
+  };
+
   StreamLikeSequence.prototype.lines = function lines() {
     return new LinesSequence(this);
   };
