@@ -1,0 +1,4 @@
+[
+  { "name": "foobar", "foo": 1, "bar": 2 },
+  { "name": "flintstones", "yabba": 3, "dabba": 4, "doo": 5 }
+]

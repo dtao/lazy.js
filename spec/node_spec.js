@@ -1,4 +1,5 @@
-var fs = require("fs");
+var fs         = require("fs"),
+    JSONStream = require('JSONStream');
 
 require("./lazy_spec.js");
 require("./map_spec.js");
@@ -73,6 +74,30 @@ describe("working with streams", function() {
 
         runs(function() {
           expect(lines[0]).toEqual("The quick brown fox jumped over the lazy dog.");
+        });
+      });
+    });
+
+    describe("wrapping non-text streams", function() {
+      it("works with whatever the stream produces, such as objects", function() {
+        var objects = [];
+
+        runs(function() {
+          var stream = fs.createReadStream("./spec/data/objects.json")
+            .pipe(JSONStream.parse("*"));
+
+          Lazy(stream).each(function(object) {
+            objects.push(object);
+          });
+        });
+
+        waitsFor(function() {
+          return objects.length > 0;
+        });
+
+        runs(function() {
+          var names = Lazy(objects).pluck("name");
+          expect(names).toComprise(["foobar", "flintstones"]);
         });
       });
     });
