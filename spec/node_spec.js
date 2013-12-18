@@ -69,6 +69,29 @@ describe("working with streams", function() {
     });
   });
 
+  it("does not insert extra breaks on newlines when splitting", function() {
+    var stream = fs.createReadStream("./spec/data/commas.txt"),
+        chunks = [];
+
+    Lazy(stream).split(/,\s*/).each(function(chunk) {
+      chunks.push(chunk);
+    });
+
+    waitsFor(function() {
+      return chunks.length > 0;
+    });
+
+    runs(function() {
+      expect(chunks).toEqual([
+        'first chunk',
+        'second chunk',
+        'third\nchunk',
+        'fourth chunk',
+        'fifth chunk'
+      ]);
+    });
+  });
+
   describe("file streams", function() {
     describe("lines", function() {
       it("reads every line of a file", function() {
