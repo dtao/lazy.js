@@ -4482,33 +4482,7 @@
   };
 
   StreamLikeSequence.prototype.lines = function lines() {
-    return new LinesSequence(this);
-  };
-
-  /**
-   * A sequence of lines (segments of a larger string or string-like sequence
-   * delimited by line breaks).
-   *
-   * @constructor
-   */
-  function LinesSequence(parent) {
-    this.parent = parent;
-  }
-
-  LinesSequence.prototype = new Sequence();
-
-  LinesSequence.prototype.each = function each(fn) {
-    var done = false;
-    this.parent.each(function(chunk) {
-      Lazy(chunk).split("\n").each(function(line) {
-        if (fn(line) === false) {
-          done = true;
-          return false;
-        }
-      });
-
-      return !done;
-    });
+    return this.split("\n");
   };
 
   /**

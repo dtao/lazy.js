@@ -54,45 +54,7 @@ StreamedSequence.prototype.each = function(fn) {
  *     they are read.
  */
 StreamedSequence.prototype.lines = function() {
-  return new StreamedLineSequence(this);
-};
-
-/**
- * @constructor
- */
-function StreamedLineSequence(parent) {
-  this.parent = parent;
-}
-
-StreamedLineSequence.prototype = new Lazy.Sequence();
-
-/**
- * Handles every line of data in the underlying file.
- *
- * @param {function(string):*} fn The function to call on each line of data as
- *     it's read from the file. Return false from the function to stop reading
- *     the file.
- */
-StreamedLineSequence.prototype.each = function(fn) {
-  var i = 0;
-
-  this.parent.each(function(data) {
-    var finished = false;
-
-    // TODO: I'm pretty sure there's a bug here: if/when the buffer ends in the
-    // middle of a line, this will artificially split that line in two. I'll
-    // come back to this later.
-    Lazy(data).split(os.EOL || "\n").each(function(line) {
-      if (fn(line, i++) === false) {
-        finished = true;
-        return false;
-      }
-    });
-
-    if (finished) {
-      return false;
-    }
-  });
+  return this.split(os.EOL || "\n");
 };
 
 function FileStreamSequence(path, encoding) {
