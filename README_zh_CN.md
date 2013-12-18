@@ -14,7 +14,7 @@
 Lazy.js没有外部依赖，所以加载Lazy.js非常方便：
 
 ```html
-<script type="text/javascript" src="lazy.min.js"></script>
+<script type="text/javascript" src="lazy.js"></script>
 ```
 
 如果你希望支持DOM事件序列的惰性求值，那么用这个：

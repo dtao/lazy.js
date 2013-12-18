@@ -16,7 +16,7 @@ You can see that the performance difference becomes much more significant for me
 Intrigued? Great! Lazy.js has no external dependencies, so you can get started right away with:
 
 ```html
-<script type="text/javascript" src="lazy.min.js"></script>
+<script type="text/javascript" src="lazy.js"></script>
 
 <!-- optional: if you want support for lazy DOM event sequences: -->
 <script type="text/javascript" src="lazy.dom.js"></script>
