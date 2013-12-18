@@ -99,6 +99,43 @@
     }
   );
 
+  /**
+   * A `StreamingHttpSequence` is a {@link StreamLikeSequence} comprising the
+   * chunks of data that are streamed in response to an HTTP request.
+   *
+   * @param {string} url The URL of the HTTP request.
+   * @constructor
+   */
+  function StreamingHttpSequence(url) {
+    this.url = url;
+  }
+
+  StreamingHttpSequence.prototype = new Lazy.StreamLikeSequence();
+
+  StreamingHttpSequence.prototype.each = function each(fn) {
+    var request = new XMLHttpRequest(),
+        index   = 0,
+        aborted = false;
+
+    request.open("GET", this.url);
+
+    var listener = function listener(data) {
+      if (!aborted) {
+        data = request.responseText.substring(index);
+        if (fn(data) === false) {
+          request.removeEventListener("progress", listener, false);
+          request.abort();
+          aborted = true;
+        }
+        index += data.length;
+      }
+    };
+
+    request.addEventListener("progress", listener, false);
+
+    request.send();
+  };
+
   /*
    * Add support for `Lazy(NodeList)` and `Lazy(HTMLCollection)`.
    */

@@ -15,7 +15,7 @@ function StreamedSequence(stream) {
   this.stream = stream;
 }
 
-StreamedSequence.prototype = new Lazy.Sequence();
+StreamedSequence.prototype = new Lazy.StreamLikeSequence();
 
 StreamedSequence.prototype.openStream = function(callback) {
   this.stream.resume();

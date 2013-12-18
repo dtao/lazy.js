@@ -4481,43 +4481,6 @@
   };
 
   /**
-   * A StreamingHttpSequence is a `StreamLikeSequence` comprising the chunks of
-   * data that are streamed in response to an HTTP request.
-   *
-   * @param {string} url The URL of the HTTP request.
-   * @constructor
-   */
-  function StreamingHttpSequence(url) {
-    this.url = url;
-  }
-
-  StreamingHttpSequence.prototype = new StreamLikeSequence();
-
-  StreamingHttpSequence.prototype.each = function each(fn) {
-    var request = new XMLHttpRequest(),
-        index   = 0,
-        aborted = false;
-
-    request.open("GET", this.url);
-
-    var listener = function listener(data) {
-      if (!aborted) {
-        data = request.responseText.substring(index);
-        if (fn(data) === false) {
-          request.removeEventListener("progress", listener, false);
-          request.abort();
-          aborted = true;
-        }
-        index += data.length;
-      }
-    };
-
-    request.addEventListener("progress", listener, false);
-
-    request.send();
-  };
-
-  /**
    * Creates a {@link GeneratedSequence} using the specified generator function
    * and (optionally) length.
    *
@@ -4588,6 +4551,7 @@
   Lazy.ArrayLikeSequence  = ArrayLikeSequence;
   Lazy.ObjectLikeSequence = ObjectLikeSequence;
   Lazy.StringLikeSequence = StringLikeSequence;
+  Lazy.StreamLikeSequence = StreamLikeSequence;
   Lazy.GeneratedSequence  = GeneratedSequence;
   Lazy.AsyncSequence      = AsyncSequence;
 
