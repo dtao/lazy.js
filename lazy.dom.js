@@ -92,7 +92,7 @@
    *     that will make up this sequence.
    * @return {Sequence} The sequence of events.
    */
-  Lazy.events = deprecate(
+  Lazy.events = Lazy.deprecate(
     "Lazy.events is deprecated. Use Lazy('selector').on('event') instead",
     function(element, eventName) {
       return new EventSequence(element, eventName);
