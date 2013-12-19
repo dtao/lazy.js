@@ -4396,6 +4396,39 @@
   }
 
   /**
+   * A version of {@link Sequence#reduce} which, instead of immediately
+   * returning a result (which it can't, obviously, because this is an
+   * asynchronous sequence), calls the specified callback once iteration has
+   * completed.
+   *
+   * @param {Function} aggregator The function through which to pass every element
+   *     in the sequence. For every element, the function will be passed the total
+   *     aggregated result thus far and the element itself, and should return a
+   *     new aggregated result.
+   * @param {*=} memo The starting value to use for the aggregated result
+   *     (defaults to the first element in the sequence).
+   * @param {Function} callback The function to call with the result of the
+   *     aggregation, once iteration is complete.
+   * @returns {AsyncHandle} An {@link AsyncHandle} allowing you to cancel
+   *     iteration and/or handle errors.
+   */
+  AsyncSequence.prototype.reduce = function reduce(aggregator, memo, callback) {
+    var handle = this.each(function(e, i) {
+      if (typeof memo === "undefined" && i === 0) {
+        memo = e;
+      } else {
+        memo = aggregator(memo, e, i);
+      }
+    });
+
+    handle.onComplete(function() {
+      callback(memo);
+    });
+
+    return handle;
+  };
+
+  /**
    * Watches for all changes to a specified property of an object.
    */
   ObjectWrapper.prototype.watch = function watch(propertyNames) {

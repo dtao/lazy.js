@@ -26,6 +26,7 @@ require("./watch_spec.js");
 
 // Sequence types
 require("./string_like_sequence_spec.js");
+require("./async_sequence_spec.js");
 
 describe("working with streams", function() {
 
