@@ -4433,6 +4433,13 @@
   };
 
   /**
+   * Just return the same sequence for `AsyncSequence#async` (I see no harm in this).
+   */
+  AsyncSequence.prototype.async = function() {
+    return this;
+  };
+
+  /**
    * Watches for all changes to a specified property of an object.
    */
   ObjectWrapper.prototype.watch = function watch(propertyNames) {
