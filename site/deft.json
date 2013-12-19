@@ -1,0 +1,34 @@
+{
+  "destination": {
+    "js": "source/javascripts/lib",
+    "css": "source/stylesheets/lib"
+  },
+
+  "dependencies": [
+    ["pivotal/jasmine", "v1.3.1", "lib/jasmine-core/jasmine.js"],
+    ["bestiejs/benchmark.js", "v1.0.0", "benchmark.js"],
+
+    ["jashkenas/underscore", "1.5.2", "underscore.js"],
+    ["lodash/lodash", "2.4.1", "lodash.js"],
+    ["fitzgen/wu.js", "0.1.8", "lib/wu.js"],
+    ["suckgamoni/fromjs", "v2.1.6.1", { "from.src.js": "from.js" }],
+    ["Reactive-Extensions/IxJS", "v1.0.6", ["l2o.js", "ix.js"]],
+    ["Xaxis/boiler", "v0.9.0", "boiler.js"],
+    ["rfw/sloth.js", "sloth.js"],
+    ["dtao/lazy.js", {
+      "lazy.js": "lazy.js",
+      "lazy.browser.js": "lazy.browser.js",
+      "spec/support/spec_helper.js": "spec/spec_helper.js",
+      "spec/support/person.js": "spec/person.js",
+      "spec/lazy_spec.js": "spec/lazy_spec.js"
+    }],
+
+    ["http://code.jquery.com/", { "jquery-1.10.1.min.js": "jquery.js" }],
+    ["http://code.highcharts.com/", { "highcharts.src.js": "highcharts.js" }],
+    ["dtao/HighTables", "0.1.1", "dist/hightables.js"],
+    ["ludo/jquery-treetable", "3.1.0", [
+      "javascripts/src/jquery.treetable.js",
+      "stylesheets/jquery.treetable.css"
+    ]]
+  ]
+}

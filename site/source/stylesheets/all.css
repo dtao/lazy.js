@@ -1,0 +1,324 @@
+/*= require fonts */
+/*= require lib/jquery.treetable */
+/*= require pygments */
+/*= require common */
+
+@media all and (min-width: 960px) {
+  body {
+    width: 960px;
+    margin: auto;
+  }
+}
+
+body.full-comparisons {
+  width: 100%;
+  margin: 0;
+  padding: 20px;
+
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+
+.sharing a,
+.sharing iframe {
+  height: 20px;
+  width: 90px;
+}
+
+.sharing a {
+  display: inline-block;
+  position: relative;
+  top: -1px;
+}
+
+a.github-ribbon {
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: 0;
+  height: 148px;
+  width: 148px;
+  background: url(https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png);
+}
+
+a.github-ribbon:hover {
+  background: url(https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png);
+}
+
+nav.subnav ul li {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+nav.subnav ul li.selected {
+  border-bottom: 2px solid #555;
+}
+
+nav.subnav ul li a {
+  color: #678;
+}
+
+nav.subnav ul li:hover a {
+  color: #89a;
+}
+
+figure {
+  text-align: center;
+}
+
+#dom-event-source {
+  position: relative;
+  height: 200px;
+  border: dashed 5px #ccc;
+  text-align: center;
+  cursor: crosshair;
+}
+
+#dom-event-source p {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  line-height: 2ex;
+  margin-top: -1ex;
+}
+
+#dom-event-output {
+  position: relative;
+  height: 100px;
+  margin-top: 20px;
+}
+
+#dom-event-output .left {
+  position: absolute;
+  top: 1%;
+  bottom: 1%;
+  left: 1%;
+  right: 51%;
+  background-color: #aeb;
+  text-align: center;
+}
+
+#dom-event-output .left p {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  line-height: 50px;
+  margin-top: -25px;
+}
+
+#dom-event-output .right {
+  position: absolute;
+  top: 1%;
+  bottom: 1%;
+  left: 51%;
+  right: 1%;
+  background-color: #aef;
+  text-align: center;
+}
+
+#dom-event-output .right p {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  line-height: 50px;
+  margin-top: -25px;
+}
+
+a.why-to-array-vs-each {
+  color: #888;
+  font-size: 75%;
+  text-decoration: none;
+}
+
+a.why-to-array-vs-each:hover {
+  color: #567;
+}
+
+#why-to-array-vs-each {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: -300px;
+  width: 276px;
+  padding: 12px;
+  background-color: #000;
+  color: #fff;
+  opacity: 0.8;
+  filter: alpha(opacity=80);
+  overflow: auto;
+  z-index: 1;
+
+  transition: all 0.25s;
+}
+
+#why-to-array-vs-each.showing {
+  right: 0;
+  transition: all 0.25s;
+}
+
+#why-to-array-vs-each code {
+  color: #48f;
+}
+
+.field {
+  margin-bottom: 20px;
+}
+
+.field > label {
+  display: inline-block;
+  width: 200px;
+  vertical-align: top;
+}
+
+.field .values {
+  display: inline-block;
+}
+
+.field .values label {
+  display: block;
+}
+
+.column-chart {
+  position: relative;
+}
+
+.loading .column-chart:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff url(../images/loading.gif) no-repeat center;
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+}
+
+.benchmark-results-table tr th:first-child,
+.benchmark-results-table tr td:first-child {
+  padding-left: 24px;
+}
+
+.benchmark-results-table tr th:last-child,
+.benchmark-results-table tr td:last-child {
+  padding-right: 24px;
+}
+
+.benchmark-result.running {
+  background-color: #ff8;
+  opacity: 0.50;
+  filter: alpha(opacity=50);
+}
+
+.benchmark-result.selected td:first-child {
+  background: url(../images/check.png) no-repeat 4px center;
+}
+
+.benchmark-result.running td:first-child {
+  background: url(../images/running.gif) no-repeat 4px center;
+}
+
+.benchmark-result td.not-applicable {
+  color: #888;
+  font-size: 90%;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table tr.expanded .indenter a {
+  background: url(../images/collapse.png) no-repeat left;
+}
+
+table tr.collapsed .indenter a {
+  background: url(../images/expand.png) no-repeat left;
+}
+
+table th,
+table td {
+  padding: 0.5ex 0.5em;
+  text-align: left;
+}
+
+.benchmark-results-table th,
+.benchmark-results-table td {
+  width: 20%;
+}
+
+.benchmark-results-table th:first-child,
+.benchmark-results-table td:first-child {
+  width: 40%;
+}
+
+.full-comparisons .benchmark-results-table th,
+.full-comparisons .benchmark-results-table td {
+  width: 7.5%;
+}
+
+.full-comparisons .benchmark-results-table th:first-child,
+.full-comparisons .benchmark-results-table td:first-child {
+  width: 17.5%;
+}
+
+#test-results-table th:first-child,
+#test-results-table td:first-child {
+  width: 80%;
+}
+
+table th:nth-child(n+2),
+table td:nth-child(n+2) {
+  text-align: right;
+}
+
+table tr:first-child {
+  border-bottom: 1px solid black;
+}
+
+table tr.success td:last-child {
+  background: url(../images/success.png) no-repeat right;
+  background-size: 24px 24px;
+}
+
+table tr.failure td:last-child {
+  background: url(../images/failure.png) no-repeat right;
+  background-size: 24px 24px;
+}
+
+table tr:nth-child(n+2):hover {
+  background-color: #def;
+}
+
+table td.positive {
+  color: green;
+}
+
+table td.negative {
+  color: red;
+}
+
+.failure-information {
+  margin-top: 10px;
+  padding: 20px;
+  background-color: #fee;
+  border-left: 3px solid #b88;
+  color: red;
+  font-family: monospace;
+}
+
+table tr:hover .failure-information {
+  border-left: 3px solid red;
+}
+
+/* Social sharing stuff */
+iframe.twitter-share-button {
+  width: 90px !important;
+}
