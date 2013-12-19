@@ -88,8 +88,9 @@ describe("Lazy", function() {
       expected: ["David", "Mary", "Lauren", "Adam", "Daniel", "Happy"]
     });
 
-    it("cannot be called on an already-asynchronous sequence", function() {
-      expect(function() { Lazy(people).async().async(); }).toThrow();
+    it("on an already-asynchronous sequence, returns the same sequence", function() {
+      var asyncSequence = Lazy(people).async();
+      expect(asyncSequence.async()).toBe(asyncSequence);
     });
 
     describe("when interval is undefined", function() {
