@@ -4366,6 +4366,13 @@
   }
 
   /**
+   * An async version of {@link Sequence#reverse}.
+   */
+  AsyncSequence.prototype.reverse = function() {
+    return this.parent.reverse().async();
+  };
+
+  /**
    * A version of {@link Sequence#reduce} which, instead of immediately
    * returning a result (which it can't, obviously, because this is an
    * asynchronous sequence), returns an {@link AsyncHandle} whose `onComplete`

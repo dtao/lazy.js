@@ -53,4 +53,9 @@ describe('AsyncSequence', function() {
       expectedArgs: [6]
     });
   });
+
+  createAsyncTest('supports reverse iteration', {
+    getSequence: function() { return Lazy([1, 2, 3]).async().reverse(); },
+    expected: [3, 2, 1]
+  });
 });

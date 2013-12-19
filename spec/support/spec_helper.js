@@ -72,6 +72,11 @@
     });
   };
 
+  // Example usage:
+  // createAsyncTest('blah', {
+  //   getSequence: function() { return Lazy([1, 2, 3]); },
+  //   expected: [1, 2, 3]
+  // });
   context.createAsyncTest = function(description, options) {
     it(description, function() {
       performAsyncSteps(options);
