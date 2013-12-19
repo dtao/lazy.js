@@ -126,9 +126,25 @@
 
   // ----- Helpers, to make specs more concise -----
 
-  context.increment  = function(x) { return x + 1; }
-  context.isEven     = function(x) { return x % 2 === 0; }
-  context.identity   = function(x) { return x; }
-  context.alwaysTrue = function(x) { return true; }
+  context.increment  = function(x) { return x + 1; };
+  context.isEven     = function(x) { return x % 2 === 0; };
+  context.identity   = function(x) { return x; };
+  context.alwaysTrue = function(x) { return true; };
+
+  // ----- Specifically for spies -----
+
+  context.toBeCalled = function(callback) {
+    return function() { return callback.callCount > 0; };
+  };
+
+  context.toBePopulated = function(collection, length) {
+    return function() {
+      if (length) {
+        return collection.length === length;
+      }
+
+      return collection.length > 0;
+    };
+  };
 
 }(typeof global !== 'undefined' ? global : window));

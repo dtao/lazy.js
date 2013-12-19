@@ -169,9 +169,7 @@ describe("Lazy", function() {
           handle.onError(errorCallback);
         })
 
-        waitsFor(function() {
-          return errorCallback.callCount > 0;
-        });
+        waitsFor(toBeCalled(errorCallback));
 
         runs(function() {
           expect(errorCallback).toHaveBeenCalled();

@@ -5,9 +5,7 @@ describe('AsyncSequence', function() {
 
       sequence.async().reduce(function(x, y) { return x + y; }, 0, callback);
 
-      waitsFor(function() {
-        return callback.callCount > 0;
-      });
+      waitsFor(toBeCalled(callback));
 
       runs(function() {
         expect(callback.callCount).toBe(1);

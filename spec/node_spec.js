@@ -40,9 +40,7 @@ describe("working with streams", function() {
       words.push(word);
     });
 
-    waitsFor(function() {
-      return words.length > 0;
-    });
+    waitsFor(toBePopulated(words));
 
     runs(function() {
       expect(words).toEqual([
@@ -61,9 +59,7 @@ describe("working with streams", function() {
       words.push(word);
     });
 
-    waitsFor(function() {
-      return words.length > 0;
-    });
+    waitsFor(toBePopulated(words));
 
     runs(function() {
       expect(words).toEqual(['at', 'age', 'a', 'a']);
@@ -78,9 +74,7 @@ describe("working with streams", function() {
       chunks.push(chunk);
     });
 
-    waitsFor(function() {
-      return chunks.length > 0;
-    });
+    waitsFor(toBePopulated(chunks));
 
     runs(function() {
       expect(chunks).toEqual([
@@ -106,9 +100,7 @@ describe("working with streams", function() {
             });
         });
 
-        waitsFor(function() {
-          return lines.length >= 25;
-        });
+        waitsFor(toBePopulated(lines, 25));
 
         runs(function() {
           expect(lines).toEqual(Lazy.repeat("The quick brown fox jumped over the lazy dog.", 25).toArray());
@@ -152,9 +144,7 @@ describe("working with streams", function() {
           });
         });
 
-        waitsFor(function() {
-          return objects.length > 0;
-        });
+        waitsFor(toBePopulated(objects));
 
         runs(function() {
           var names = Lazy(objects).pluck("name");
