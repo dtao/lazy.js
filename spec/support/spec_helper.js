@@ -126,6 +126,7 @@
 
   // ----- Helpers, to make specs more concise -----
 
+  context.add        = function(x, y) { return x + y; };
   context.increment  = function(x) { return x + 1; };
   context.isEven     = function(x) { return x % 2 === 0; };
   context.identity   = function(x) { return x; };

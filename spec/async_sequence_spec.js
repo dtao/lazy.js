@@ -1,16 +1,47 @@
 describe('AsyncSequence', function() {
-  describe('reduce', function() {
-    testAllSequenceTypes('passes the result to a callback', [1, 2, 3], function(sequence) {
+  function testAsyncCallback(description, array, options) {
+    testAllSequenceTypes(description, array, function(sequence) {
       var callback = jasmine.createSpy();
 
-      sequence.async().reduce(function(x, y) { return x + y; }, 0, callback);
+      options.setup(sequence.async(), callback);
 
       waitsFor(toBeCalled(callback));
 
       runs(function() {
-        expect(callback.callCount).toBe(1);
-        expect(callback.calls[0].args).toEqual([6]);
+        expect(callback.calls[0].args).toEqual(options.expectedArgs);
       });
+    });
+  }
+
+  describe('reduce', function() {
+    testAsyncCallback('passes the result to a callback', [1, 2, 3], {
+      setup: function(sequence, callback) {
+        sequence.reduce(add, 0).then(callback);
+      },
+      expectedArgs: [6]
+    });
+  });
+
+  describe('other methods that translate to reduce', function() {
+    testAsyncCallback('passes the result of max() to a callback', [1, 3, 2], {
+      setup: function(sequence, callback) {
+        sequence.max().then(callback);
+      },
+      expectedArgs: [3]
+    });
+
+    testAsyncCallback('passes the result of min() to a callback', [2, 1, 3], {
+      setup: function(sequence, callback) {
+        sequence.min().then(callback);
+      },
+      expectedArgs: [1]
+    });
+
+    testAsyncCallback('passes the result of sum() to a callback', [2, 1, 3], {
+      setup: function(sequence, callback) {
+        sequence.sum().then(callback);
+      },
+      expectedArgs: [6]
     });
   });
 });

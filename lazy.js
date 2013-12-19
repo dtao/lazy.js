@@ -1995,30 +1995,16 @@
    * Lazy([6, 18, 2, 49, 34]).min(negate) // => 49
    */
   Sequence.prototype.min = function min(valueFn) {
-    var leastValue = Infinity, least;
-
     if (typeof valueFn !== "undefined") {
-      valueFn = createCallback(valueFn);
-
-      this.each(function(e) {
-        var value = valueFn(e);
-        if (value < leastValue) {
-          leastValue = value;
-          least = e;
-        }
-      });
-
-      return least;
-
-    } else {
-      this.each(function(e) {
-        if (e < leastValue) {
-          leastValue = e;
-        }
-      });
-
-      return leastValue;
+      return this.minBy(valueFn);
     }
+
+    return this.reduce(function(x, y) { return y < x ? y : x; }, Infinity);
+  };
+
+  Sequence.prototype.minBy = function(valueFn) {
+    valueFn = createCallback(valueFn);
+    return this.reduce(function(x, y) { return valueFn(y) < valueFn(x) ? y : x; });
   };
 
   /**
@@ -2040,30 +2026,16 @@
    * Lazy([6, 18, 2, 48, 29]).max(reverseDigits) // => 29
    */
   Sequence.prototype.max = function max(valueFn) {
-    var greatestValue = -Infinity, greatest;
-
     if (typeof valueFn !== "undefined") {
-      valueFn = createCallback(valueFn);
-
-      this.each(function(e) {
-        var value = valueFn(e);
-        if (value > greatestValue) {
-          greatestValue = value;
-          greatest = e;
-        }
-      });
-
-      return greatest;
-
-    } else {
-      this.each(function(e) {
-        if (e > greatestValue) {
-          greatestValue = e;
-        }
-      });
-
-      return greatestValue;
+      return this.maxBy(valueFn);
     }
+
+    return this.reduce(function(x, y) { return y > x ? y : x; }, -Infinity);
+  };
+
+  Sequence.prototype.maxBy = function maxBy(valueFn) {
+    valueFn = createCallback(valueFn);
+    return this.reduce(function(x, y) { return valueFn(y) > valueFn(x) ? y : x; });
   };
 
   /**
@@ -2082,16 +2054,15 @@
    */
   Sequence.prototype.sum = function sum(valueFn) {
     if (typeof valueFn !== "undefined") {
-      valueFn = createCallback(valueFn);
-      return this.reduce(function(sum, element) {
-        return sum += valueFn(element);
-      }, 0);
-
-    } else {
-      return this.reduce(function(sum, value) {
-        return sum += value;
-      }, 0);
+      return this.sumBy(valueFn);
     }
+
+    return this.reduce(function(x, y) { return x + y; }, 0);
+  };
+
+  Sequence.prototype.sumBy = function(valueFn) {
+    valueFn = createCallback(valueFn);
+    return this.reduce(function(x, y) { return x + valueFn(y); }, 0);
   };
 
   /**
@@ -4419,7 +4390,7 @@
       }
     });
 
-    handle.then = function(callback) {
+    handle.onComplete = handle.then = function(callback) {
       handle.completeCallback = function() {
         callback(memo);
       };
