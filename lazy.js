@@ -2002,7 +2002,7 @@
     return this.reduce(function(x, y) { return y < x ? y : x; }, Infinity);
   };
 
-  Sequence.prototype.minBy = function(valueFn) {
+  Sequence.prototype.minBy = function minBy(valueFn) {
     valueFn = createCallback(valueFn);
     return this.reduce(function(x, y) { return valueFn(y) < valueFn(x) ? y : x; });
   };
@@ -2060,7 +2060,7 @@
     return this.reduce(function(x, y) { return x + y; }, 0);
   };
 
-  Sequence.prototype.sumBy = function(valueFn) {
+  Sequence.prototype.sumBy = function sumBy(valueFn) {
     valueFn = createCallback(valueFn);
     return this.reduce(function(x, y) { return x + valueFn(y); }, 0);
   };
@@ -4452,7 +4452,7 @@
 
   StreamLikeSequence.prototype = new AsyncSequence();
 
-  StreamLikeSequence.prototype.split = function(delimiter) {
+  StreamLikeSequence.prototype.split = function split(delimiter) {
     return new SplitStreamSequence(this, delimiter);
   };
 
@@ -4466,7 +4466,7 @@
 
   SplitStreamSequence.prototype = new Sequence();
 
-  SplitStreamSequence.prototype.each = function(fn) {
+  SplitStreamSequence.prototype.each = function each(fn) {
     var delimiter = this.delimiter,
         done      = false,
         i         = 0;
@@ -4487,7 +4487,7 @@
     return this.split("\n");
   };
 
-  StreamLikeSequence.prototype.match = function(pattern) {
+  StreamLikeSequence.prototype.match = function match(pattern) {
     return new MatchedStreamSequence(this, pattern);
   };
 
@@ -4501,7 +4501,7 @@
 
   MatchedStreamSequence.prototype = new AsyncSequence();
 
-  MatchedStreamSequence.prototype.each = function(fn) {
+  MatchedStreamSequence.prototype.each = function each(fn) {
     var pattern = this.pattern,
         done      = false,
         i         = 0;
