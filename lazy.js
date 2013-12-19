@@ -4368,8 +4368,9 @@
   /**
    * A version of {@link Sequence#reduce} which, instead of immediately
    * returning a result (which it can't, obviously, because this is an
-   * asynchronous sequence), calls the specified callback once iteration has
-   * completed.
+   * asynchronous sequence), returns an {@link AsyncHandle} whose `onComplete`
+   * method can be called to supply a callback to handle the final result once
+   * iteration has completed.
    *
    * @public
    * @param {Function} aggregator The function through which to pass every element
@@ -4391,9 +4392,40 @@
       }
     });
 
-    handle.onComplete = handle.then = function(callback) {
+    handle.then = handle.onComplete = function(callback) {
       handle.completeCallback = function() {
         callback(memo);
+      };
+    };
+
+    return handle;
+  };
+
+  /**
+   * A version of {@link Sequence#find} which returns a promise-y
+   * {@link AsyncHandle}.
+   *
+   * @public
+   * @param {Function} predicate A function to call on (potentially) every element
+   *     in the sequence.
+   * @returns {AsyncHandle} An {@link AsyncHandle} allowing you to cancel
+   *     iteration and/or handle errors, with an added `then` method providing
+   *     a promise-like interface to handle the found element, once it is
+   *     detected.
+   */
+  AsyncSequence.prototype.find = function(predicate) {
+    var found;
+
+    var handle = this.each(function(e, i) {
+      if (predicate(e, i)) {
+        found = e;
+        return false;
+      }
+    });
+
+    handle.then = handle.onComplete = function(callback) {
+      handle.completeCallback = function() {
+        callback(found);
       };
     };
 

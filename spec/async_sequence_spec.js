@@ -44,4 +44,13 @@ describe('AsyncSequence', function() {
       expectedArgs: [6]
     });
   });
+
+  describe('find', function() {
+    testAsyncCallback('passes the found element to a callback', [1, 3, 5, 6, 7], {
+      setup: function(sequence, callback) {
+        sequence.find(isEven).then(callback);
+      },
+      expectedArgs: [6]
+    });
+  });
 });
