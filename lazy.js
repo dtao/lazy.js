@@ -4371,6 +4371,7 @@
    * asynchronous sequence), calls the specified callback once iteration has
    * completed.
    *
+   * @public
    * @param {Function} aggregator The function through which to pass every element
    *     in the sequence. For every element, the function will be passed the total
    *     aggregated result thus far and the element itself, and should return a
