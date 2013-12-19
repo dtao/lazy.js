@@ -1866,7 +1866,6 @@
     if (arguments.length < 2) {
       return this.tail().reduce(aggregator, this.head());
     }
-
     this.each(function(e, i) {
       memo = aggregator(memo, e, i);
     });
@@ -4407,12 +4406,11 @@
    *     new aggregated result.
    * @param {*=} memo The starting value to use for the aggregated result
    *     (defaults to the first element in the sequence).
-   * @param {Function} callback The function to call with the result of the
-   *     aggregation, once iteration is complete.
    * @returns {AsyncHandle} An {@link AsyncHandle} allowing you to cancel
-   *     iteration and/or handle errors.
+   *     iteration and/or handle errors, with an added `then` method providing
+   *     a promise-like thing allowing you to handle the result of aggregation.
    */
-  AsyncSequence.prototype.reduce = function reduce(aggregator, memo, callback) {
+  AsyncSequence.prototype.reduce = function reduce(aggregator, memo) {
     var handle = this.each(function(e, i) {
       if (typeof memo === "undefined" && i === 0) {
         memo = e;
@@ -4421,9 +4419,11 @@
       }
     });
 
-    handle.onComplete(function() {
-      callback(memo);
-    });
+    handle.then = function(callback) {
+      handle.completeCallback = function() {
+        callback(memo);
+      };
+    };
 
     return handle;
   };
