@@ -4466,9 +4466,11 @@
         index     = 0;
 
     Lazy(propertyNames).each(function(propertyName) {
+      var propertyValue = object[propertyName];
+
       Object.defineProperty(object, propertyName, {
         get: function() {
-          return object[propertyName];
+          return propertyValue;
         },
 
         set: function(value) {
@@ -4477,6 +4479,7 @@
               listeners.splice(i, 1);
             }
           }
+          propertyValue = value;
           ++index;
         }
       });

@@ -30,6 +30,25 @@ describe("Lazy", function() {
       expect(callback.calls[1].args).toEqual([{ property: 'bar', value: 2}, 1]);
     });
 
+    it("does not exhibit infinite recursion on accesses (!)", function() {
+      var object = { foo: 1 };
+      Lazy(object).watch(['foo']).each(Lazy.noop);
+      expect(function() { var foo = object.foo; }).not.toThrow();
+    });
+
+    it("does not override the original value", function() {
+      var object = { foo: 1 };
+      Lazy(object).watch('foo').each(Lazy.noop);
+      expect(object.foo).toBe(1);
+    });
+
+    it("properly updates the value on sets", function() {
+      var object = { foo: 1 };
+      Lazy(object).watch('foo').each(Lazy.noop);
+      object.foo = 2;
+      expect(object.foo).toBe(2);
+    });
+
     it("provides access to map, filter, etc.", function() {
       function upcase(str) {
         return str.toUpperCase();
