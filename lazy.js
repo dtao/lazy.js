@@ -2175,19 +2175,20 @@
    *
    * @examples
    * Lazy([6, 29, 1984]).join("/")  // => "6/29/1984"
+   * Lazy(["a", "b", "c"]).join()   // => "a,b,c"
    * Lazy(["a", "b", "c"]).join("") // => "abc"
+   * Lazy([1, 2, 3]).join()         // => "1,2,3"
+   * Lazy([1, 2, 3]).join("")       // => "123"
    */
   Sequence.prototype.join = function join(delimiter) {
     delimiter = typeof delimiter === "string" ? delimiter : ",";
 
-    var str = "";
-    this.each(function(e) {
+    return this.reduce(function(str, e) {
       if (str.length > 0) {
         str += delimiter;
       }
-      str += e;
-    });
-    return str;
+      return str + e;
+    }, "");
   };
 
   Sequence.prototype.toString = function toString(delimiter) {
