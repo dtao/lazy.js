@@ -354,12 +354,10 @@
    * Lazy([1, 2, 3]).toArray() // => [1, 2, 3]
    */
   Sequence.prototype.toArray = function toArray() {
-    var array = [];
-    this.each(function(e) {
-      array.push(e);
-    });
-
-    return array;
+    return this.reduce(function(arr, element) {
+      arr.push(element);
+      return arr;
+    }, []);
   };
 
   /**

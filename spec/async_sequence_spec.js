@@ -43,6 +43,13 @@ describe('AsyncSequence', function() {
       },
       expectedArgs: [6]
     });
+
+    testAsyncCallback('passes the result of toArray() to a callback', ['a', 'b', 'c'], {
+      setup: function(sequence, callback) {
+        sequence.toArray().then(callback);
+      },
+      expectedArgs: [['a', 'b', 'c']]
+    });
   });
 
   describe('find', function() {
