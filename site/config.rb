@@ -11,6 +11,10 @@ class HTMLwithPygments < Redcarpet::Render::HTML
 end
 
 helpers do
+  def version
+    @version ||= JSON.parse(File.read(path_to_file('package.json')))['version']
+  end
+
   def readme
     @readme ||= File.read(path_to_file('README.md'))
   end

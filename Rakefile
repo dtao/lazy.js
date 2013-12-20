@@ -1,3 +1,9 @@
+require "json"
+
+def package_info
+  JSON.parse(File.read('package.json'))
+end
+
 def update_json(file_path, updates)
   json = JSON.parse(File.read(file_path))
   json.merge!(updates)
@@ -10,8 +16,6 @@ end
 
 desc "Update the library version in package.json, bower.json, and component.json"
 task :update_version do
-  require "json"
-
   if (version = ENV['VERSION']).nil?
     puts "Set the VERSION environment variable for this Rake task."
     exit
@@ -41,7 +45,8 @@ task :generate_docs do
     :template => "autodoc/index.html.mustache",
     :handlers => "autodoc/handlers.js",
     :partials => "autodoc/",
-    :output => "site/build/docs"
+    :output => "site/build/docs",
+    :'template-data' => "version:#{package_info['version']}"
   }
 
   sh "autodoc #{format_options(options)} lazy.js"

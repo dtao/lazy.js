@@ -39,6 +39,12 @@ body > main > header h1 a:hover {
   color: #000;
 }
 
+body > main > header h1 small {
+  color: #777;
+  font-family: "Open Sans", sans-serif;
+  font-size: 50%;
+}
+
 h1, h2, h3 {
   color: #444;
 }
