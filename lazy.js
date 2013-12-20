@@ -4309,10 +4309,9 @@
    * same way as other sequences for functions that return values directly (e.g.,
    * `reduce`, `max`, `any`, even `toArray`).
    *
-   * The plan is to eventually implement all of these methods differently for
-   * `AsyncSequence`: instead of returning values, they will accept a callback and
-   * pass a result to the callback once iteration has been completed (or an error
-   * is raised). But that isn't done yet.
+   * Instead, these methods return an `AsyncHandle` whose `onComplete` method
+   * accepts a callback that will be called with the final result once iteration
+   * has finished.
    *
    * Defining custom asynchronous sequences
    * --------------------------------------
