@@ -3603,6 +3603,41 @@
   };
 
   /**
+   * Watches for all changes to a specified property (or properties) of an
+   * object and produces a sequence whose elements have the properties
+   * `{ property, value }` indicating which property changed and what it was
+   * changed to.
+   *
+   * Note that this method **only works on directly wrapped objects**; it will
+   * *not* work on any arbitrary {@link ObjectLikeSequence}.
+   *
+   * @public
+   * @param {(string|Array)=} A property name or array of property names to
+   *     watch. If this parameter is `undefined`, all of the object's current
+   *     (enumerable) properties will be watched.
+   * @returns {Sequence} A sequence comprising `{ property, value }` objects
+   *     describing each change to the specified property/properties.
+   *
+   * @examples
+   * var obj = {},
+   *     changes = [];
+   *
+   * Lazy(obj).watch('foo').each(function(change) {
+   *   changes.push(change);
+   * });
+   *
+   * obj.foo = 1;
+   * obj.bar = 2;
+   * obj.foo = 3;
+   *
+   * obj.foo; // => 3
+   * changes; // => [{ property: 'foo', value: 1 }, { property: 'foo', value: 3 }]
+   */
+  ObjectLikeSequence.prototype.watch = function watch(propertyNames) {
+    throw 'You can only call #watch on a directly wrapped object.';
+  };
+
+  /**
    * @constructor
    */
   function ObjectWrapper(source) {
@@ -4546,7 +4581,7 @@
   };
 
   /**
-   * Watches for all changes to a specified property of an object.
+   * See {@link ObjectLikeSequence#watch} for docs.
    */
   ObjectWrapper.prototype.watch = function watch(propertyNames) {
     return new WatchedPropertySequence(this.source, propertyNames);
