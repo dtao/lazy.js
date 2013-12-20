@@ -4,6 +4,10 @@ def update_json(file_path, updates)
   File.write(file_path, JSON.pretty_generate(json))
 end
 
+def format_options(options)
+  options.map { |key, value| "--#{key} #{value}" }.join(" ")
+end
+
 desc "Update the library version in package.json, bower.json, and component.json"
 task :update_version do
   require "json"
@@ -32,5 +36,13 @@ task :generate_docs do
     "AsyncHandle"
   ]
 
-  sh "autodoc --namespaces #{sequence_types.join(',')} --template autodoc/index.html.mustache --output site/source/docs lazy.js"
+  options = {
+    :namespaces => sequence_types.join(","),
+    :template => "autodoc/index.html.mustache",
+    :handlers => "autodoc/handlers.js",
+    :partials => "autodoc/",
+    :output => "site/build/docs"
+  }
+
+  sh "autodoc #{format_options(options)} lazy.js"
 end
