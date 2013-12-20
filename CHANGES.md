@@ -3,8 +3,8 @@ Lazy.js Changelog
 
 This file includes at least a partial list of the major changes in each version.
 
-v0.2.2 (in progress)
---------------------
+v0.3.0
+------
 
 - now these methods on `AsyncSequence` return a promise-like `AsyncHandle`, allowing you to do something w/ the result once iteration is complete (using `onComplete`, which is aliased as `then`):
   - `reduce`

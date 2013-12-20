@@ -3,7 +3,7 @@
   "repo": "dtao/lazy.js",
   "description": "Like Underscore, but lazier",
   "demo": "http://danieltao.com/lazy.js/",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "main": "lazy.js",
   "license": "MIT",
   "keywords": [
