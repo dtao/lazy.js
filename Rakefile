@@ -32,5 +32,5 @@ task :generate_docs do
     "AsyncHandle"
   ]
 
-  sh "autodoc --namespaces #{sequence_types.join(',')} --template autodoc/index.html.mustache lazy.js"
+  sh "autodoc --namespaces #{sequence_types.join(',')} --template autodoc/index.html.mustache --output site/source/docs lazy.js"
 end
