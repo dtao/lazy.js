@@ -9,9 +9,12 @@
 // ----- Comparison libs -----
 //= require lib/underscore
 //= require lib/lodash
+//= require lib/sugar
 //= require lib/wu
 //= require lib/l2o
 //= require lib/ix
+//= require lib/jslinq
+//= require lib/linq
 //= require lib/sloth
 //= require lib/from
 //= require lib/boiler

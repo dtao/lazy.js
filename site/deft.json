@@ -10,6 +10,9 @@
 
     ["jashkenas/underscore", "1.5.2", "underscore.js"],
     ["lodash/lodash", "2.4.1", "lodash.js"],
+    ["andrewplummer/Sugar", "1.4.1", {
+      "release/sugar-full.development.js": "sugar.js"
+    }],
     ["fitzgen/wu.js", "0.1.8", "lib/wu.js"],
     ["suckgamoni/fromjs", "v2.1.6.1", { "from.src.js": "from.js" }],
     ["Reactive-Extensions/IxJS", "v1.0.6", ["l2o.js", "ix.js"]],
