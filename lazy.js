@@ -1947,6 +1947,71 @@
   };
 
   /**
+   * Breaks this sequence into chunks (arrays) of a specified length.
+   *
+   * @public
+   * @param {number} size The size of each chunk.
+   * @returns {Sequence} The resulting sequence of chunks.
+   *
+   * @examples
+   * Lazy([]).chunk(2)        // sequence: []
+   * Lazy([1, 2, 3]).chunk(2) // sequence: [[1, 2], [3]]
+   * Lazy([1, 2, 3]).chunk(1) // sequence: [[1], [2], [3]]
+   * Lazy([1, 2, 3]).chunk(4) // sequence: [[1, 2, 3]]
+   * Lazy([1, 2, 3]).chunk(0) // throws
+   */
+  Sequence.prototype.chunk = function chunk(size) {
+    if (size < 1) {
+      throw "You must specify a positive chunk size.";
+    }
+
+    return new ChunkedSequence(this, size);
+  };
+
+  /**
+   * @constructor
+   */
+  function ChunkedSequence(parent, size) {
+    this.parent = parent;
+    this.size   = size;
+  }
+
+  ChunkedSequence.prototype = new Sequence();
+
+  ChunkedSequence.prototype.getIterator = function() {
+    return new ChunkedIterator(this.parent, this.size);
+  };
+
+  /**
+   * @constructor
+   */
+  function ChunkedIterator(sequence, size) {
+    this.iterator = sequence.getIterator();
+    this.size     = size;
+  }
+
+  ChunkedIterator.prototype.current = function() {
+    return this.currentChunk;
+  };
+
+  ChunkedIterator.prototype.moveNext = function() {
+    var iterator  = this.iterator,
+        chunkSize = this.size,
+        chunk     = [];
+
+    while (chunk.length < chunkSize && iterator.moveNext()) {
+      chunk.push(iterator.current());
+    }
+
+    if (chunk.length === 0) {
+      return false;
+    }
+
+    this.currentChunk = chunk;
+    return true;
+  };
+
+  /**
    * Seaches for the first element in the sequence satisfying a given predicate.
    *
    * @public
