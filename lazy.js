@@ -2012,6 +2012,43 @@
   };
 
   /**
+   * Passes each element in the sequence to the specified callback during
+   * iteration. This is like {@link Sequence#each}, except that it can be
+   * inserted anywhere in the middle of a chain of methods to "intercept" the
+   * values in the sequence at that point.
+   *
+   * @public
+   * @param {Function} callback A function to call on every element in the
+   *     sequence during iteration. The return value of this function does not
+   *     matter.
+   * @returns {Sequence} A sequence comprising the same elements as this one.
+   *
+   * @examples
+   * Lazy([1, 2, 3]).tap(fn).each(Lazy.noop); // calls fn 3 times
+   */
+  Sequence.prototype.tap = function(callback) {
+    return new TappedSequence(this, callback);
+  };
+
+  /**
+   * @constructor
+   */
+  function TappedSequence(parent, callback) {
+    this.parent = parent;
+    this.callback = callback;
+  }
+
+  TappedSequence.prototype = new Sequence();
+
+  TappedSequence.prototype.each = function each(fn) {
+    var callback = this.callback;
+    return this.parent.each(function(e, i) {
+      callback(e, i);
+      return fn(e, i);
+    });
+  };
+
+  /**
    * Seaches for the first element in the sequence satisfying a given predicate.
    *
    * @public
