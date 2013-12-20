@@ -25,7 +25,7 @@
     "util"
   ],
   "devDependencies": {
-    "autodoc": ">= 0.5.0",
+    "autodoc": ">= 0.5.1",
     "deft": ">= 0.2.0",
     "jasmine-node": "1.7.x",
     "jsdoc": "3.2.x",

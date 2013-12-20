@@ -1,4 +1,6 @@
-@import url(http://fonts.googleapis.com/css?family=Chewy|Open+Sans:700,400,300|Oswald:400,300|Source+Code+Pro:700,400);
+/*= require fonts */
+/*= require examples */
+/*= require highlight */
 
 body {
   margin: 0;
@@ -92,6 +94,7 @@ pre, code {
 
 pre {
   font-size: 80%;
+  padding: 10px;
 }
 
 code {
@@ -175,17 +178,12 @@ article {
   top: 110px;
   left: 300px;
   right: 0;
-  padding: 0 20px;
+  padding: 0 40px;
   max-width: 1600px;
 }
 
 section.constructor {
-  border-top: 3px double #444;
   margin-top: 20px;
-}
-
-section.method {
-  border-top: 1px solid #444;
 }
 
 section.description h1,
@@ -251,11 +249,11 @@ section.method table tbody tr:nth-child(odd) td {
 }
 
 .examples table tr.success td:last-child {
-  background-image: url("success.png");
+  background-image: url("../images/success.png");
 }
 
 .examples table tr.failure td:last-child {
-  background-image: url("failure.png");
+  background-image: url("../images/failure.png");
 }
 
 .examples table tr.highlight td {
@@ -297,7 +295,7 @@ section.method table tbody tr:nth-child(odd) td {
   bottom: 0;
   left: 0;
   right: 0;
-  background: white url("gears.gif") no-repeat center;
+  background: white url("../images/gears.gif") no-repeat center;
   opacity: 0.5;
 }
 
