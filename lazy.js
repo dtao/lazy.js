@@ -4554,7 +4554,7 @@
    *     a promise-like interface to handle the found element, once it is
    *     detected.
    */
-  AsyncSequence.prototype.find = function(predicate) {
+  AsyncSequence.prototype.find = function find(predicate) {
     var found;
 
     var handle = this.each(function(e, i) {
@@ -4567,6 +4567,35 @@
     handle.then = handle.onComplete = function(callback) {
       handle.completeCallback = function() {
         callback(found);
+      };
+    };
+
+    return handle;
+  };
+
+  /**
+   * A version of {@link Sequence#indexOf} which returns a promise-y
+   * {@link AsyncHandle}.
+   *
+   * @public
+   * @param {*} value The element to search for in the sequence.
+   * @returns {AsyncHandle} An {@link AsyncHandle} with an added `then` method
+   *     providing a promise-like interface to handle the found index, once it
+   *     is detected, or -1.
+   */
+  AsyncSequence.prototype.indexOf = function indexOf(value) {
+    var foundIndex = -1;
+
+    var handle = this.each(function(e, i) {
+      if (e === value) {
+        foundIndex = i;
+        return false;
+      }
+    });
+
+    handle.then = handle.onComplete = function(callback) {
+      handle.completeCallback = function() {
+        callback(foundIndex);
       };
     };
 

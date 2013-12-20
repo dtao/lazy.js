@@ -61,6 +61,22 @@ describe('AsyncSequence', function() {
     });
   });
 
+  describe('indexOf', function() {
+    testAsyncCallback('passes the found index to a callback', [1, 3, 5, 6, 7], {
+      setup: function(sequence, callback) {
+        sequence.indexOf(5).then(callback);
+      },
+      expectedArgs: [2]
+    });
+
+    testAsyncCallback("passes the -1 to the callback if the element isn't found", [1, 3, 5, 6, 7], {
+      setup: function(sequence, callback) {
+        sequence.indexOf(15).then(callback);
+      },
+      expectedArgs: [-1]
+    });
+  });
+
   createAsyncTest('supports reverse iteration', {
     getSequence: function() { return Lazy([1, 2, 3]).async().reverse(); },
     expected: [3, 2, 1]
