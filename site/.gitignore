@@ -15,8 +15,6 @@
 
 # Ignore Autodoc-generated folder
 source/docs/
-!source/docs/handlers.js
-!source/docs/*.js.mustache
 
 # Ignore deft dependencies
 source/javascripts/lib/
