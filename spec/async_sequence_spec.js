@@ -77,6 +77,22 @@ describe('AsyncSequence', function() {
     });
   });
 
+  describe('contains', function() {
+    testAsyncCallback('passes true if the value is found', [1, 3, 5, 6, 7], {
+      setup: function(sequence, callback) {
+        sequence.contains(5).then(callback);
+      },
+      expectedArgs: [true]
+    });
+
+    testAsyncCallback("passes false if the value isn't found", [1, 3, 5, 6, 7], {
+      setup: function(sequence, callback) {
+        sequence.contains(15).then(callback);
+      },
+      expectedArgs: [false]
+    });
+  });
+
   createAsyncTest('supports reverse iteration', {
     getSequence: function() { return Lazy([1, 2, 3]).async().reverse(); },
     expected: [3, 2, 1]

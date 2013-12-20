@@ -4603,6 +4603,35 @@
   };
 
   /**
+   * A version of {@link Sequence#contains} which returns a promise-y
+   * {@link AsyncHandle}.
+   *
+   * @public
+   * @param {*} value The element to search for in the sequence.
+   * @returns {AsyncHandle} An {@link AsyncHandle} with an added `then` method
+   *     providing a promise-like interface to handle the result (either `true`
+   *     `false` to indicate whether the element was found).
+   */
+  AsyncSequence.prototype.contains = function contains(value) {
+    var found = false;
+
+    var handle = this.each(function(e) {
+      if (e === value) {
+        found = true;
+        return false;
+      }
+    });
+
+    handle.then = handle.onComplete = function(callback) {
+      handle.completeCallback = function() {
+        callback(found);
+      };
+    };
+
+    return handle;
+  };
+
+  /**
    * Just return the same sequence for `AsyncSequence#async` (I see no harm in this).
    */
   AsyncSequence.prototype.async = function() {
