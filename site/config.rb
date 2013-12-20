@@ -12,7 +12,15 @@ end
 
 helpers do
   def readme
-    @readme ||= File.read(File.join(File.dirname(__FILE__), '..', 'README.md'))
+    @readme ||= File.read(path_to_file('README.md'))
+  end
+
+  def spec_files
+    @spec_files ||= Dir.glob(path_to_file('site/source/javascripts/lib/spec/*_spec.js')).map(&File.method(:basename))
+  end
+
+  def path_to_file(relative_path)
+    File.join(File.dirname(__FILE__), '..', *relative_path.split('/'))
   end
 
   # I would much prefer to just have a partial called "_about.md.erb", but see this:
@@ -30,14 +38,6 @@ set :images_dir, 'images'
 set :markdown_engine, :redcarpet
 set :markdown, :fenced_code_blocks => true, :smartypants => true
 
-# Build-specific configuration
 configure :build do
-  # For example, change the Compass output style for deployment
   activate :minify_css
-
-  # Minify Javascript on build
-  activate :minify_javascript
-
-  # Use relative URLs
-  activate :relative_assets
 end
