@@ -1,0 +1,25 @@
+/* Taken from CodeMirror's default theme */
+
+pre .cm-keyword {color: #708;}
+pre .cm-atom {color: #219;}
+pre .cm-number {color: #164;}
+pre .cm-def {color: #00f;}
+pre .cm-variable {color: black;}
+pre .cm-variable-2 {color: #05a;}
+pre .cm-variable-3 {color: #085;}
+pre .cm-property {color: black;}
+pre .cm-operator {color: black;}
+pre .cm-comment {color: #a50;}
+pre .cm-string {color: #a11;}
+pre .cm-string-2 {color: #f50;}
+pre .cm-meta {color: #555;}
+pre .cm-error {color: #f00;}
+pre .cm-qualifier {color: #555;}
+pre .cm-builtin {color: #30a;}
+pre .cm-bracket {color: #997;}
+pre .cm-tag {color: #170;}
+pre .cm-attribute {color: #00c;}
+pre .cm-header {color: blue;}
+pre .cm-quote {color: #090;}
+pre .cm-hr {color: #999;}
+pre .cm-link {color: #00c;}

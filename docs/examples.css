@@ -1,27 +1,29 @@
-.CodeMirror {
-  height: auto;
-  margin-bottom: 20px; }
-
-.CodeMirror-scroll {
-  overflow-y: hidden;
-  overflow-x: auto; }
-
-.CodeMirror-linebackground {
+pre {
+  background-color: #fff;
+  border: 0;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  border-radius: 0;
   transition: background-color 1s; }
-  .CodeMirror-linebackground.failed {
-    background-color: #fdd; }
-  .CodeMirror-linebackground.highlight {
+  pre.highlight {
     background-color: #ff8 !important; }
-
-.CodeMirror-gutters {
-  width: 30px;
-  background-color: #fff; }
-
-div.gutter-marker {
-  display: inline-block;
-  width: 30px;
-  text-align: center; }
-  div.gutter-marker.passed {
-    color: #080; }
-  div.gutter-marker.failed {
-    color: #f00; }
+  pre span.line {
+    position: relative;
+    display: inline-block;
+    width: 100%; }
+    pre span.line.passed:before {
+      content: "\2713";
+      position: absolute;
+      top: -3px;
+      display: inline-block;
+      left: -20px;
+      color: #080;
+      font-size: 125%; }
+    pre span.line.failed:before {
+      content: "\00D7";
+      position: absolute;
+      top: -3px;
+      display: inline-block;
+      left: -20px;
+      color: #f00;
+      font-size: 125%; }

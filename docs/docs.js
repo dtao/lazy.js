@@ -1,24 +1,4 @@
-$(document).ready(function() {
-  var codeMirrors = {},
-      progressIndicator = $('#highlighting-progress');
-
-  function highlightCode(callback) {
-    var textareas = document.querySelectorAll('textarea');
-
-    var asyncHandle = Lazy(textareas).async().each(function(textarea, i) {
-      codeMirrors[textarea.id] = CodeMirror.fromTextArea(textarea, {
-        gutters: textarea.className.match(/source-examples/) ? ['result'] : [],
-        mode: 'javascript',
-        readOnly: true
-      });
-
-      var percent = (i + 1) / textareas.length * 100;
-      progressIndicator.text(percent.toFixed(0) + '% done');
-    });
-
-    asyncHandle.onComplete(callback || Lazy.noop);
-  }
-
+window.addEventListener('load', function() {
   function runSpecs() {
     var failureNotices = $('#spec-failures');
 
@@ -27,19 +7,12 @@ $(document).ready(function() {
     jasmineEnv.addReporter({
       reportSpecResults: function(spec) {
         var editorId       = 'source-' + spec.suiteId,
-            matchingEditor = codeMirrors[editorId];
+            matchingEditor = document.getElementById(editorId);
 
         var style = spec.results().passed() ? 'passed' : 'failed';
-        matchingEditor.addLineClass(spec.lineNumber, 'background', style);
+        $('.line[data-line-no="' + spec.lineNumber + '"]', matchingEditor).addClass(style);
 
-        var gutterMarker = $('<div>')
-          .addClass('gutter-marker')
-          .addClass(style)
-          .html(spec.results().passed() ? '&#10004;' : '&times;');
-
-        matchingEditor.setGutterMarker(spec.lineNumber, 'result', gutterMarker[0]);
-
-        var lastElement = matchingEditor.getWrapperElement();
+        var lastElement = $(matchingEditor);
         _(spec.results().getItems())
           .filter(function(item) { return item.passed && !item.passed(); })
           .pluck('message')
@@ -72,7 +45,7 @@ $(document).ready(function() {
     var link          = $(this),
         exampleTarget = link.attr('href'),
         targetExample = $(exampleTarget),
-        targetEditor  = codeMirrors[link.attr('data-editor-id')],
+        // targetEditor  = codeMirrors[link.attr('data-editor-id')],
         targetLine    = Number(link.attr('data-line-number')),
         parentSection = targetExample.closest('section');
 
@@ -80,11 +53,11 @@ $(document).ready(function() {
     parentSection[0].scrollIntoView();
 
     // Highlight the example.
-    targetEditor.addLineClass(targetLine, 'background', 'highlight');
+    // targetEditor.addLineClass(targetLine, 'background', 'highlight');
     targetExample.addClass('highlight');
 
     setTimeout(function() {
-      targetEditor.removeLineClass(targetLine, 'background', 'highlight');
+      // targetEditor.removeLineClass(targetLine, 'background', 'highlight');
       targetExample.removeClass('highlight');
     }, 1500);
   });
@@ -137,10 +110,7 @@ $(document).ready(function() {
     suite.run({ async: true });
   });
 
-  highlightCode(function() {
-    progressIndicator.html('');
-    runSpecs();
-  });
+  runSpecs();
 });
 
 function displayError(message) {
