@@ -401,12 +401,10 @@
    * Lazy(details).toObject() // => { first: "Dan", last: "Tao", age: 29 }
    */
   Sequence.prototype.toObject = function toObject() {
-    var object = {};
-    this.each(function(e) {
-      object[e[0]] = e[1];
-    });
-
-    return object;
+    return this.reduce(function(object, pair) {
+      object[pair[0]] = pair[1];
+      return object;
+    }, {});
   };
 
   /**

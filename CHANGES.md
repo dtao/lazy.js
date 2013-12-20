@@ -15,6 +15,7 @@ v0.2.2 (in progress)
   - `indexOf`
   - `contains`
   - `toArray`
+  - `toObject`
 - added `Lazy(object).watch` to monitor changes to a property as a sequence (see #49)
 - added `Sequence#chunk`, `Sequence#tap`, and `Sequence#ofType`
 - deprecated `Lazy.events` in favor of `NodeSequence#on` (note: I should probably rename `NodeSequence` to `DOMSequence`)
