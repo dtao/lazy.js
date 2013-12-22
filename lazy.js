@@ -156,8 +156,8 @@
     return StrictLazy;
   };
   
-    /**
-   * For Easy Compatibility with Existing Underscore/LowDash Code
+  /**
+   * For Easy Compatibility with Existing Underscore/Lo-Dash Code
    * To use both Lazy and any other library that uses the _
    * simply call Lazy.noConflict(); before any dependent code
    */
