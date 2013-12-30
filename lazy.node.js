@@ -120,38 +120,40 @@ Lazy.makeHttpRequest = function(url) {
   return new HttpStreamSequence(url);
 };
 
-Lazy.Sequence.prototype.toStream = function toStream(options) {
-  return new LazyStream(this, options);
-};
+if (typeof Stream.Readable !== "undefined") {
+  Lazy.Sequence.prototype.toStream = function toStream(options) {
+    return new LazyStream(this, options);
+  };
 
-function LazyStream(sequence, options) {
-  options = Lazy(options || {})
-    .extend({ objectMode: true })
-    .toObject();
+  function LazyStream(sequence, options) {
+    options = Lazy(options || {})
+      .extend({ objectMode: true })
+      .toObject();
 
-  Stream.Readable.call(this, options);
+    Stream.Readable.call(this, options);
 
-  this.sequence = sequence;
-  this.started  = false;
-}
-
-util.inherits(LazyStream, Stream.Readable);
-
-LazyStream.prototype._read = function() {
-  var self = this;
-
-  if (!this.started) {
-    var handle = this.sequence.each(function(e, i) {
-      return self.push(e, i);
-    });
-    if (handle instanceof Lazy.AsyncHandle) {
-      handle.onComplete(function() {
-        self.push(null);
-      });
-    }
-    this.started = true;
+    this.sequence = sequence;
+    this.started  = false;
   }
-};
+
+  util.inherits(LazyStream, Stream.Readable);
+
+  LazyStream.prototype._read = function() {
+    var self = this;
+
+    if (!this.started) {
+      var handle = this.sequence.each(function(e, i) {
+        return self.push(e, i);
+      });
+      if (handle instanceof Lazy.AsyncHandle) {
+        handle.onComplete(function() {
+          self.push(null);
+        });
+      }
+      this.started = true;
+    }
+  };
+}
 
 /*
  * Add support for `Lazy(Stream)`.

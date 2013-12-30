@@ -1,5 +1,6 @@
-var fs   = require("fs"),
-    path = require("path");
+var fs     = require("fs"),
+    path   = require("path"),
+    Stream = require("stream");
 
 require("./lazy_spec.js");
 require("./map_spec.js");
@@ -165,25 +166,27 @@ describe("working with streams", function() {
     });
   });
 
-  describe("toStream", function() {
-    it('creates a readable stream that you can use just like any other stream', function() {
-      var stream = Lazy(fs.createReadStream('./spec/data/lines.txt'))
-        .map(function(chunk) { return chunk.toUpperCase(); })
-        .toStream();
+  if (typeof Stream.Readable !== "undefined") {
+    describe("toStream", function() {
+      it('creates a readable stream that you can use just like any other stream', function() {
+        var stream = Lazy(fs.createReadStream('./spec/data/lines.txt'))
+          .map(function(chunk) { return chunk.toUpperCase(); })
+          .toStream();
 
-      var finished = jasmine.createSpy();
+        var finished = jasmine.createSpy();
 
-      stream.pipe(fs.createWriteStream(TEMP_FILE_PATH));
+        stream.pipe(fs.createWriteStream(TEMP_FILE_PATH));
 
-      stream.on('end', finished);
+        stream.on('end', finished);
 
-      waitsFor(toBeCalled(finished));
+        waitsFor(toBeCalled(finished));
 
-      runs(function() {
-        var contents = fs.readFileSync(TEMP_FILE_PATH, 'utf-8');
-        var expected = Lazy.repeat('The quick brown fox jumped over the lazy dog.'.toUpperCase(), 25).join('\n');
-        expect(contents).toEqual(expected);
+        runs(function() {
+          var contents = fs.readFileSync(TEMP_FILE_PATH, 'utf-8');
+          var expected = Lazy.repeat('The quick brown fox jumped over the lazy dog.'.toUpperCase(), 25).join('\n');
+          expect(contents).toEqual(expected);
+        });
       });
     });
-  });
+  }
 });
