@@ -4833,6 +4833,7 @@
   Lazy.StreamLikeSequence = StreamLikeSequence;
   Lazy.GeneratedSequence  = GeneratedSequence;
   Lazy.AsyncSequence      = AsyncSequence;
+  Lazy.AsyncHandle        = AsyncHandle;
 
   /*** Useful utility methods ***/
 
