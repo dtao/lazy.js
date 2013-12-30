@@ -3,6 +3,7 @@ var http   = require("http");
 var os     = require("os");
 var Stream = require("stream");
 var URL    = require("url");
+var util   = require("util");
 
 // The starting point is everything that works in any environment (browser OR
 // Node.js)
@@ -32,10 +33,16 @@ StreamedSequence.prototype.openStream = function(callback) {
 StreamedSequence.prototype.each = function(fn) {
   var encoding = this.encoding || "utf-8";
 
+  var handle = new Lazy.AsyncHandle();
+
   this.openStream(function(stream) {
     var listener = function(e) {
-      if (fn(e) === false) {
-        stream.removeListener("data", listener);
+      try {
+        if (fn(e) === false) {
+          stream.removeListener("data", listener);
+        }
+      } catch (e) {
+        handle.errorCallback(e);
       }
     };
 
@@ -44,7 +51,13 @@ StreamedSequence.prototype.each = function(fn) {
     }
 
     stream.on("data", listener);
+
+    stream.on("end", function() {
+      handle.completeCallback();
+    });
   });
+
+  return handle;
 };
 
 /**
@@ -105,6 +118,39 @@ HttpStreamSequence.prototype.openStream = function(callback) {
  */
 Lazy.makeHttpRequest = function(url) {
   return new HttpStreamSequence(url);
+};
+
+Lazy.Sequence.prototype.toStream = function toStream(options) {
+  return new LazyStream(this, options);
+};
+
+function LazyStream(sequence, options) {
+  options = Lazy(options || {})
+    .extend({ objectMode: true })
+    .toObject();
+
+  Stream.Readable.call(this, options);
+
+  this.sequence = sequence;
+  this.started  = false;
+}
+
+util.inherits(LazyStream, Stream.Readable);
+
+LazyStream.prototype._read = function() {
+  var self = this;
+
+  if (!this.started) {
+    var handle = this.sequence.each(function(e, i) {
+      self.push(e, i);
+    });
+    if (handle instanceof Lazy.AsyncHandle) {
+      handle.onComplete(function() {
+        self.push(null);
+      });
+    }
+    this.started = true;
+  }
 };
 
 /*

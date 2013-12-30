@@ -153,4 +153,21 @@ describe("working with streams", function() {
       });
     });
   });
+
+  describe("toStream", function() {
+    it('creates a readable stream that you can use just like any other stream', function() {
+      var stream = Lazy(fs.createReadStream('./spec/data/lines.txt'))
+        .lines()
+        .map(function(chunk) { return chunk.toUpperCase(); })
+        .toStream();
+
+      var finished = jasmine.createSpy();
+
+      stream.pipe(fs.createWriteStream('./spec/data/temp.txt'));
+
+      stream.on('end', finished);
+
+      waitsFor(toBeCalled(finished));
+    });
+  });
 });
