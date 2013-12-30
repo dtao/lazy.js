@@ -142,7 +142,7 @@ LazyStream.prototype._read = function() {
 
   if (!this.started) {
     var handle = this.sequence.each(function(e, i) {
-      self.push(e, i);
+      return self.push(e, i);
     });
     if (handle instanceof Lazy.AsyncHandle) {
       handle.onComplete(function() {
