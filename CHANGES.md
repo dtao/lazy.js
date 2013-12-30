@@ -3,6 +3,11 @@ Lazy.js Changelog
 
 This file includes at least a partial list of the major changes in each version.
 
+v0.3.1 (in progress)
+--------------------
+
+- added `Sequence#toStream` to create an actual `stream.Readable` in Node, to interact w/ stream-based libraries
+
 v0.3.0
 ------
 
