@@ -1,5 +1,5 @@
-var fs         = require("fs"),
-    JSONStream = require('JSONStream');
+var fs   = require("fs"),
+    path = require("path");
 
 require("./lazy_spec.js");
 require("./map_spec.js");
@@ -27,6 +27,15 @@ require("./watch_spec.js");
 // Sequence types
 require("./string_like_sequence_spec.js");
 require("./async_sequence_spec.js");
+
+// Clean up temporary file (if it exists) after each run
+var TEMP_FILE_PATH = path.join(__dirname, 'data/temp.txt');
+
+afterEach(function() {
+  if ((path.existsSync || fs.existsSync)(TEMP_FILE_PATH)) {
+    fs.unlinkSync(TEMP_FILE_PATH);
+  }
+});
 
 describe("working with streams", function() {
 
@@ -132,6 +141,8 @@ describe("working with streams", function() {
     });
 
     describe("wrapping non-text streams", function() {
+      var JSONStream = require('JSONStream');
+
       it("works with whatever the stream produces, such as objects", function() {
         var objects = [];
 
@@ -157,17 +168,22 @@ describe("working with streams", function() {
   describe("toStream", function() {
     it('creates a readable stream that you can use just like any other stream', function() {
       var stream = Lazy(fs.createReadStream('./spec/data/lines.txt'))
-        .lines()
         .map(function(chunk) { return chunk.toUpperCase(); })
         .toStream();
 
       var finished = jasmine.createSpy();
 
-      stream.pipe(fs.createWriteStream('./spec/data/temp.txt'));
+      stream.pipe(fs.createWriteStream(TEMP_FILE_PATH));
 
       stream.on('end', finished);
 
       waitsFor(toBeCalled(finished));
+
+      runs(function() {
+        var contents = fs.readFileSync(TEMP_FILE_PATH, 'utf-8');
+        var expected = Lazy.repeat('The quick brown fox jumped over the lazy dog.'.toUpperCase(), 25).join('\n');
+        expect(contents).toEqual(expected);
+      });
     });
   });
 });
