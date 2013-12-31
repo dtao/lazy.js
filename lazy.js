@@ -4152,10 +4152,8 @@
    * @constructor
    */
   function SplitWithRegExpIterator(source, pattern) {
-    this.source = source;
-
-    // clone the RegExp
-    this.pattern = eval("" + pattern + (!pattern.global ? "g" : ""));
+    this.source  = source;
+    this.pattern = cloneRegex(pattern);
   }
 
   SplitWithRegExpIterator.prototype.current = function current() {
