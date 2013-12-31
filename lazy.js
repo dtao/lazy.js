@@ -792,7 +792,7 @@
    * Lazy(left).concat(right, [7, 8]) // sequence: [1, 2, 3, 4, 5, 6, 7, 8]
    */
   Sequence.prototype.concat = function concat(var_args) {
-    return new ConcatenatedSequence(this, Array.prototype.slice.call(arguments, 0));
+    return new ConcatenatedSequence(this, arraySlice.call(arguments, 0));
   };
 
   /**
@@ -1330,7 +1330,7 @@
     if (arguments.length === 1) {
       return new SimpleZippedSequence(this, (/** @type {Array} */ var_args));
     } else {
-      return new ZippedSequence(this, Array.prototype.slice.call(arguments, 0));
+      return new ZippedSequence(this, arraySlice.call(arguments, 0));
     }
   };
 
@@ -1466,7 +1466,7 @@
    * Lazy([1, 2, 3, 4, 5]).without([4, 5]) // sequence: [1, 2, 3]
    */
   Sequence.prototype.without = function without(var_args) {
-    return new WithoutSequence(this, Array.prototype.slice.call(arguments, 0));
+    return new WithoutSequence(this, arraySlice.call(arguments, 0));
   };
 
   Sequence.prototype.difference = function difference(var_args) {
@@ -1527,7 +1527,7 @@
     if (arguments.length === 1 && arguments[0] instanceof Array) {
       return new SimpleIntersectionSequence(this, (/** @type {Array} */ var_args));
     } else {
-      return new IntersectionSequence(this, Array.prototype.slice.call(arguments, 0));
+      return new IntersectionSequence(this, arraySlice.call(arguments, 0));
     }
   };
 
@@ -4838,6 +4838,8 @@
       return fn.apply(this, arguments);
     };
   };
+
+  var arraySlice = Array.prototype.slice;
 
   /**
    * Creates a callback... you know, Lo-Dash style.
