@@ -1,0 +1,189 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Lazy.js - Library Performance Comparisons</title>
+
+  <script type="text/javascript">
+    window.COMPARE_ALL_LIBS = true;
+  </script>
+
+  <%= stylesheet_link_tag("all") %>
+  <%= javascript_include_tag("all") %>
+  <%= javascript_include_tag("comparisons_all") %>
+</head>
+
+<body class="full-comparisons">
+  <header>
+    <h1><a href="index.html">lazy.js</a></h1>
+    <a href="https://github.com/dtao/lazy.js" class="github-ribbon"></a>
+  </header>
+
+  <nav data-sections=".benchmark-results-section">
+    <ul>
+      <li class="selected"><a href="#benchmark-results-10">10 Elements</a></li>
+      <li><a href="#benchmark-results-100">100 Elements</a></li>
+      <li><a href="#benchmark-results-other">Other</a></li>
+    </ul>
+  </nav>
+
+  <form>
+    <p>
+      Select the tests you want to run below, choose either
+      <label><input id="test-each" type="radio" checked="checked"><code>each</code></input></label> or
+      <label><input id="test-to-array" type="radio"><code>toArray</code></input></label>
+      <a class="why-to-array-vs-each" href="javascript:void(0);">(why?)</a>, and
+      <button class="start-benchmarking">start benchmarking</button>
+      to compare Lazy.js,
+      <a href="http://underscorejs.org/">Underscore</a>,
+      <a href="http://lodash.com">Lo-Dash</a>,
+      <a href="http://fitzgen.github.io/wu.js/">wu.js</a>,
+      <a href="http://sugarjs.com/">Sugar</a>,
+      <a href="http://linqjs.codeplex.com/">Linq.js</a>,
+      <a href="http://jslinq.codeplex.com/">JSLINQ</a>,
+      <a href="https://github.com/suckgamoni/fromjs/">From.js</a>,
+      <a href="http://rx.codeplex.com/">IxJS</a>,
+      <a href="http://www.boilerjs.com/">Boiler.js</a>, and
+      <a href="http://rfw.name/sloth.js/">sloth.js</a>.
+    </p>
+
+    <p>
+      You can also choose to display results in
+      <label><input id="test-absolute" type="radio" checked="checked">absolute ops/second</input></label>,
+      <label><input id="test-proportional" type="radio">in proportion to the fastest method</input></label>, or
+      <label><input id="test-proportional-lodash" type="radio">in proportion to Lo-Dash</input></label>
+      (which is generally the fastest of the popular JS utility libraries). Proportional results
+      will likely be easier to read when you've selected many benchmarks.
+    </p>
+  </form>
+
+  <div id="why-to-array-vs-each">
+    <p>
+      Comparing the performance of Lazy.js to other libraries like Underscore and Lo-Dash is
+      unfortunately not black and white. On the one hand, calling <code>toArray</code> on the
+      result of a Lazy sequence will give you an actual JavaScript array, which you might need if,
+      e.g., you're passing the result to a function from an external library. However, in most
+      cases when you use methods like <code>map</code> or <code>filter</code>, you are probably
+      just going to do something while iterating over the result. In this case, you don't need an
+      array at all; calling <code>each</code> on a <code>Lazy.Sequence</code> will be functionally
+      indistinguishable from calling <code>_.each</code> on an array.
+    </p>
+    <p>
+      Generally speaking, Lazy.js performs best (and "wins" more performance races) when you
+      <em>don't</em> have to call <code>toArray</code>. However, when chaining methods together
+      it's often still the fastest solution regardless.
+    </p>
+  </div>
+
+  <section id="benchmark-results-10"
+    class="benchmark-results-section">
+
+    <div id="benchmark-results-chart-10" class="column-chart"
+      data-title="Ops/second - 10 elements"
+      data-source="#benchmark-results-table-10"
+      data-transpose="true"
+      data-row-filter="benchmarkChartRowFilter"
+      data-options="benchmarkChartOptions">
+    </div>
+
+    <p>
+      Select:
+      <button class="select-all">All</button>
+      <button class="select-none">None</button>
+      <button class="clear-selected">Clear</button>
+    </p>
+
+    <table id="benchmark-results-table-10" class="benchmark-results-table">
+      <tr>
+        <th>Test</th>
+        <th>Underscore</th>
+        <th>Lo-Dash</th>
+        <th>Wu.js</th>
+        <th>Sugar</th>
+        <th>Linq.js</th>
+        <th>JSLINQ</th>
+        <th>From.js</th>
+        <th>IxJS</th>
+        <th>Boiler.js</th>
+        <th>Sloth.js</th>
+        <th>Lazy.js</th>
+      </tr>
+    </table>
+  </section>
+
+  <section id="benchmark-results-100"
+    class="benchmark-results-section"
+    style="display: none;">
+
+    <div id="benchmark-results-chart-100" class="column-chart"
+      data-title="Ops/second - 100 elements"
+      data-source="#benchmark-results-table-100"
+      data-transpose="true"
+      data-row-filter="benchmarkChartRowFilter"
+      data-options="benchmarkChartOptions">
+    </div>
+
+    <p>
+      Select:
+      <button class="select-all">All</button>
+      <button class="select-none">None</button>
+      <button class="clear-selected">Clear</button>
+    </p>
+
+    <table id="benchmark-results-table-100" class="benchmark-results-table">
+      <tr>
+        <th>Test</th>
+        <th>Underscore</th>
+        <th>Lo-Dash</th>
+        <th>Wu.js</th>
+        <th>Sugar</th>
+        <th>Linq.js</th>
+        <th>JSLINQ</th>
+        <th>From.js</th>
+        <th>IxJS</th>
+        <th>Boiler.js</th>
+        <th>Sloth.js</th>
+        <th>Lazy.js</th>
+      </tr>
+    </table>
+  </section>
+
+  <section id="benchmark-results-other"
+    class="benchmark-results-section"
+    style="display: none;">
+
+    <div id="benchmark-results-chart-other" class="column-chart"
+      data-title="Ops/second - other"
+      data-source="#benchmark-results-table-other"
+      data-transpose="true"
+      data-row-filter="benchmarkChartRowFilter"
+      data-options="benchmarkChartOptions">
+    </div>
+
+    <p>
+      Select:
+      <button class="select-all">All</button>
+      <button class="select-none">None</button>
+      <button class="clear-selected">Clear</button>
+    </p>
+
+    <table id="benchmark-results-table-other" class="benchmark-results-table">
+      <tr>
+        <th>Test</th>
+        <th>Underscore</th>
+        <th>Lo-Dash</th>
+        <th>Wu.js</th>
+        <th>Sugar</th>
+        <th>Linq.js</th>
+        <th>JSLINQ</th>
+        <th>From.js</th>
+        <th>IxJS</th>
+        <th>Boiler.js</th>
+        <th>Sloth.js</th>
+        <th>Lazy.js</th>
+      </tr>
+    </table>
+  </section>
+</body>
+
+</html>

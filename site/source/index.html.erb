@@ -6,6 +6,7 @@
 
   <%= stylesheet_link_tag("all") %>
   <%= javascript_include_tag("all") %>
+  <%= javascript_include_tag("main_all") %>
   <% spec_files.each do |file| %>
   <%= javascript_include_tag("lib/spec/#{file}") %>
   <% end %>
