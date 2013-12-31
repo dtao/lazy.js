@@ -59,4 +59,5 @@ set :markdown, :fenced_code_blocks => true, :smartypants => true
 
 configure :build do
   activate :minify_css
+  activate :relative_assets
 end
