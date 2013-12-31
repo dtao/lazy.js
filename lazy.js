@@ -4712,7 +4712,7 @@
         done      = false,
         i         = 0;
 
-    this.parent.each(function(chunk) {
+    return this.parent.each(function(chunk) {
       Lazy(chunk).split(delimiter).each(function(piece) {
         if (fn(piece, i++) === false) {
           done = true;
@@ -4747,7 +4747,7 @@
         done      = false,
         i         = 0;
 
-    this.parent.each(function(chunk) {
+    return this.parent.each(function(chunk) {
       Lazy(chunk).match(pattern).each(function(match) {
         if (fn(match, i++) === false) {
           done = true;
@@ -4833,6 +4833,7 @@
   Lazy.StreamLikeSequence = StreamLikeSequence;
   Lazy.GeneratedSequence  = GeneratedSequence;
   Lazy.AsyncSequence      = AsyncSequence;
+  Lazy.AsyncHandle        = AsyncHandle;
 
   /*** Useful utility methods ***/
 
