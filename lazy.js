@@ -1647,16 +1647,7 @@
    * Lazy(numbers).every(isPositive) // => true
    */
   Sequence.prototype.every = function every(predicate) {
-    predicate = createCallback(predicate);
-
-    var success = true;
-    this.each(function(e, i) {
-      if (!predicate(e, i)) {
-        success = false;
-        return false;
-      }
-    });
-    return success;
+    return this.each(createCallback(predicate));
   };
 
   Sequence.prototype.all = function all(predicate) {
