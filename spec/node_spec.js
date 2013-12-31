@@ -175,7 +175,11 @@ describe("working with streams", function() {
 
         var finished = jasmine.createSpy();
 
-        stream.pipe(fs.createWriteStream(TEMP_FILE_PATH));
+        var output = fs.createWriteStream(TEMP_FILE_PATH);
+
+        output.on('open', function() {
+          stream.pipe(output);
+        });
 
         stream.on('end', finished);
 
