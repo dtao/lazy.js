@@ -1485,7 +1485,7 @@
   WithoutSequence.prototype.each = function each(fn) {
     var set = createSet(this.values),
         i = 0;
-    this.parent.each(function(e) {
+    return this.parent.each(function(e) {
       if (!set.contains(e)) {
         return fn(e, i++);
       }
@@ -1548,7 +1548,7 @@
     var setIterator = new UniqueMemoizer(sets.getIterator()),
         i = 0;
 
-    this.parent.each(function(e) {
+    return this.parent.each(function(e) {
       var includedInAll = true;
       setIterator.each(function(set) {
         if (!set.contains(e)) {
@@ -2215,7 +2215,7 @@
     var iterator = new UniqueMemoizer(Lazy(this.array).getIterator()),
         i = 0;
 
-    this.parent.each(function(e) {
+    return this.parent.each(function(e) {
       if (iterator.contains(e)) {
         return fn(e, i++);
       }
@@ -2227,7 +2227,7 @@
         find  = arrayContains,
         i = 0;
 
-    this.parent.each(function(e) {
+    return this.parent.each(function(e) {
       if (find(array, e)) {
         return fn(e, i++);
       }
@@ -2259,7 +2259,7 @@
 
   SimpleZippedSequence.prototype.each = function each(fn) {
     var array = this.array;
-    this.parent.each(function(e, i) {
+    return this.parent.each(function(e, i) {
       return fn([e, array[i]], i);
     });
   };
@@ -2458,11 +2458,14 @@
   ArrayLikeSequence.prototype.each = function each(fn) {
     var length = this.length(),
         i = -1;
+
     while (++i < length) {
       if (fn(this.get(i), i) === false) {
-        break;
+        return false;
       }
     }
+
+    return true;
   };
 
   /**
@@ -2590,9 +2593,11 @@
     while (++i < length) {
       e = parent.get(i);
       if (filterFn(e, i) && fn(e, i) === false) {
-        break;
+        return false;
       }
     }
+
+    return true;
   };
 
   /**
@@ -2816,15 +2821,7 @@
    * An optimized version of {@link Sequence#each}.
    */
   ArrayWrapper.prototype.each = function each(fn) {
-    var source = this.source,
-        length = source.length,
-        i = -1;
-
-    while (++i < length) {
-      if (fn(source[i], i) === false) {
-        break;
-      }
-    }
+    return forEach(this.source, fn);
   };
 
   /**
@@ -2898,11 +2895,14 @@
         length = this.source.length,
         mapFn  = this.mapFn,
         i = -1;
+
     while (++i < length) {
       if (fn(mapFn(source[i], i), i) === false) {
-        return;
+        return false;
       }
     }
+
+    return true;
   };
 
   /**
@@ -2925,9 +2925,11 @@
     while (++i < length) {
       e = source[i];
       if (filterFn(e, i) && fn(e, i) === false) {
-        break;
+        return false;
       }
     }
+
+    return true;
   };
 
   /**
@@ -2959,6 +2961,8 @@
         return false;
       }
     }
+
+    return true;
   };
 
   UniqueArrayWrapper.prototype.eachArrayCache = function eachArrayCache(fn) {
@@ -2997,6 +3001,8 @@
         }
       }
     }
+
+    return true;
   };
 
   UniqueArrayWrapper.prototype.eachSetCache = UniqueSequence.prototype.each;
@@ -3063,6 +3069,8 @@
         return false;
       }
     }
+
+    return true;
   };
 
   /**
@@ -3259,7 +3267,7 @@
     });
 
     if (!done) {
-      this.parent.each(function(value, key) {
+      return this.parent.each(function(value, key) {
         if (!merged.contains(key) && fn(value, key) === false) {
           return false;
         }
@@ -3422,7 +3430,7 @@
     var inArray    = arrayContains,
         properties = this.properties;
 
-    this.parent.each(function(value, key) {
+    return this.parent.each(function(value, key) {
       if (inArray(properties, key)) {
         return fn(value, key);
       }
@@ -3469,7 +3477,7 @@
     var inArray    = arrayContains,
         properties = this.properties;
 
-    this.parent.each(function(value, key) {
+    return this.parent.each(function(value, key) {
       if (!inArray(properties, key)) {
         return fn(value, key);
       }
@@ -3531,11 +3539,10 @@
    * Lazy(colorCodes).toObject() // => { red: "#f00", green: "#0f0", blue: "#00f" }
    */
   ObjectLikeSequence.prototype.toObject = function toObject() {
-    var object = {};
-    this.each(function(value, key) {
+    return this.reduce(function(object, value, key) {
       object[key] = value;
-    });
-    return object;
+      return object;
+    }, {});
   };
 
   // Now that we've fully initialized the ObjectLikeSequence prototype, we can
@@ -3643,9 +3650,11 @@
 
     for (key in source) {
       if (fn(source[key], key) === false) {
-        return;
+        return false;
       }
     }
+
+    return true;
   };
 
   /**
@@ -4281,11 +4290,14 @@
     var generatorFn = this.get,
         length = this.fixedLength,
         i = 0;
+
     while (typeof length === "undefined" || i < length) {
       if (fn(generatorFn(i++)) === false) {
-        break;
+        return false;
       }
     }
+
+    return true;
   };
 
   GeneratedSequence.prototype.getIterator = function getIterator() {
