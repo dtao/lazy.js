@@ -3611,9 +3611,9 @@
    * *not* work on any arbitrary {@link ObjectLikeSequence}.
    *
    * @public
-   * @param {(string|Array)=} A property name or array of property names to
-   *     watch. If this parameter is `undefined`, all of the object's current
-   *     (enumerable) properties will be watched.
+   * @param {(string|Array)=} propertyNames A property name or array of property
+   *     names to watch. If this parameter is `undefined`, all of the object's
+   *     current (enumerable) properties will be watched.
    * @returns {Sequence} A sequence comprising `{ property, value }` objects
    *     describing each change to the specified property/properties.
    *
