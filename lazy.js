@@ -3355,6 +3355,130 @@
   };
 
   /**
+   * Produces an {@link ObjectLikeSequence} consisting of all the recursively
+   * merged values from this and the given object(s) or sequence(s).
+   *
+   * @public
+   * @param {...Object|ObjectLikeSequence} others The other object(s) or
+   *     sequence(s) whose values will be merged into this one.
+   * @param {Function=} mergeFn An optional function used to customize merging
+   *     behavior.
+   * @returns {ObjectLikeSequence} The new sequence consisting of merged values.
+   *
+   * @examples
+   * // These examples are complete stolen from Lo-Dash's documentation:
+   * // lodash.com/docs#merge
+   *
+   * var names = {
+   *   'characters': [
+   *     { 'name': 'barney' },
+   *     { 'name': 'fred' }
+   *   ]
+   * };
+   *
+   * var ages = {
+   *   'characters': [
+   *     { 'age': 36 },
+   *     { 'age': 40 }
+   *   ]
+   * };
+   *
+   * var food = {
+   *   'fruits': ['apple'],
+   *   'vegetables': ['beet']
+   * };
+   *
+   * var otherFood = {
+   *   'fruits': ['banana'],
+   *   'vegetables': ['carrot']
+   * };
+   *
+   * function mergeArrays(a, b) {
+   *   return Array.isArray(a) ? a.concat(b) : undefined;
+   * }
+   *
+   * Lazy(names).merge(ages); // => sequence: { 'characters': [{ 'name': 'barney', 'age': 36 }, { 'name': 'fred', 'age': 40 }] }
+   * Lazy(food).merge(otherFood, mergeArrays); // => sequence: { 'fruits': ['apple', 'banana'], 'vegetables': ['beet', 'carrot'] }
+   */
+  ObjectLikeSequence.prototype.merge = function(var_args) {
+    var mergeFn = arguments.length > 1 && typeof arguments[arguments.length - 1] === "function" ?
+      arrayPop.call(arguments) : null;
+    return new MergedSequence(this, arraySlice.call(arguments, 0), mergeFn);
+  };
+
+  /**
+   * @constructor
+   */
+  function MergedSequence(parent, others, mergeFn) {
+    this.parent  = parent;
+    this.others  = others;
+    this.mergeFn = mergeFn;
+  }
+
+  MergedSequence.prototype = new ObjectLikeSequence();
+
+  MergedSequence.prototype.each = function(fn) {
+    var others  = this.others,
+        mergeFn = this.mergeFn || mergeObjects,
+        keys    = {};
+
+    var iteratedFullSource = this.parent.each(function(value, key) {
+      var merged = value;
+
+      forEach(others, function(other) {
+        if (key in other) {
+          merged = mergeFn(merged, other[key]);
+        }
+      });
+
+      keys[key] = true;
+
+      return fn(merged, key);
+    });
+
+    if (iteratedFullSource === false) {
+      return false;
+    }
+
+    var remaining = {};
+
+    forEach(others, function(other) {
+      for (var k in other) {
+        if (!keys[k]) {
+          remaining[k] = mergeFn(remaining[k], other[k]);
+        }
+      }
+    });
+
+    return Lazy(remaining).each(fn);
+  };
+
+  /**
+   * @private
+   * @examples
+   * mergeObjects({ foo: 1 }, { bar: 2 }); // => { foo: 1, bar: 2 }
+   * mergeObjects({ foo: { bar: 1 } }, { foo: { baz: 2 } }); // => { foo: { bar: 1, baz: 2 } }
+   */
+  function mergeObjects(a, b) {
+    // Override non-objects w/ supplied values UNLESS the supplied value is
+    // undefined
+    if (typeof a !== 'object' || a === null) {
+      return typeof b !== 'undefined' ? b : a;
+    }
+
+    var merged = {}, prop;
+    for (prop in a) {
+      merged[prop] = mergeObjects(a[prop], b[prop]);
+    }
+    for (prop in b) {
+      if (!merged[prop]) {
+        merged[prop] = b[prop];
+      }
+    }
+    return merged;
+  }
+
+  /**
    * Creates a {@link Sequence} consisting of the keys from this sequence whose
    *     values are functions.
    *
@@ -4837,7 +4961,8 @@
     };
   };
 
-  var arraySlice = Array.prototype.slice;
+  var arrayPop   = Array.prototype.pop,
+      arraySlice = Array.prototype.slice;
 
   /**
    * Creates a callback... you know, Lo-Dash style.
