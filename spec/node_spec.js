@@ -33,7 +33,7 @@ require("./async_sequence_spec.js");
 var TEMP_FILE_PATH = path.join(__dirname, 'data/temp.txt');
 
 afterEach(function() {
-  if ((path.existsSync || fs.existsSync)(TEMP_FILE_PATH)) {
+  if ((fs.existsSync || path.existsSync)(TEMP_FILE_PATH)) {
     fs.unlinkSync(TEMP_FILE_PATH);
   }
 });
