@@ -17,8 +17,21 @@ helpers do
     @version ||= JSON.parse(File.read(path_to_file('package.json')))['version']
   end
 
-  def readme
-    @readme ||= File.read(path_to_file('README.md'))
+  def about
+    @about ||= begin
+      html = render_markdown(File.read(path_to_file('README.md')))
+
+      frag = Nokogiri::HTML.fragment(html)
+      insert = frag.css('p').find do |para|
+        links = para.css('a')
+        links.length > 0 && links.first['href'] =~ /^https:\/\/travis-ci.org/
+      end
+
+      insert['class'] = 'sharing'
+      insert.inner_html += partial('share')
+
+      frag.to_html
+    end
   end
 
   def spec_files
