@@ -1,0 +1,21 @@
+<% content_for(:head) do %>
+    <title>Lazy.js JSON Parsing Demo</title>
+    <%= stylesheet_link_tag("demos/events") %>
+    <%= javascript_include_tag("lib/lazy") %>
+    <%= javascript_include_tag("lib/lazy.browser") %>
+    <%= javascript_include_tag("dom_example") %>
+<% end %>
+
+<% content_for(:body) do %>
+    <div id="dom-event-source">
+      <p>
+        Move the mouse over this element.<br />
+        (See the documentation for an explanation of this section.)
+      </p>
+    </div>
+
+    <div id="dom-event-output">
+      <div class="left"><p></p></div>
+      <div class="right"><p></p></div>
+    </div>
+<% end %>

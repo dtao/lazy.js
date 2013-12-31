@@ -1,0 +1,22 @@
+<% content_for(:head) do %>
+  <title>Lazy Primes</title>
+
+  <%= stylesheet_link_tag("demos/primes") %>
+  <%= javascript_include_tag("lib/lazy") %>
+  <%= javascript_include_tag("lib/lazy.browser") %>
+  <%= javascript_include_tag("demos/primes") %>
+<% end %>
+
+<% content_for(:body) do %>
+  <div></div>
+
+  <p>
+    There is a <code>&lt;script&gt;</code> tag on this page that uses <code>Lazy.generate</code> to
+    define a <code>Lazy.GeneratedSequence</code> that computes prime numbers. It is currently
+    iterating over this sequence <strong>asynchronously</strong> using <code>#async()</code>.
+
+    <br /><br />
+
+    Pretty neat, right?
+  </p>
+<% end %>

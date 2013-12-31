@@ -1,3 +1,5 @@
+page "demos/*", :layout => "demo"
+
 ###
 # Helpers
 ###

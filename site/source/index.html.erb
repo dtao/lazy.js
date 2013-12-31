@@ -21,7 +21,7 @@
   <nav data-sections=".top-level-section">
     <ul>
       <li class="selected"><a href="#about">About</a></li>
-      <li><a href="#dom-example">DOM Example</a></li>
+      <li><a href="#demos">Demos</a></li>
       <li><a href="#benchmark-results">Benchmark Results</a></li>
       <li><a href="#test-results">Spec Results</a></li>
       <li><a href="docs/">API Docs</a></li>
@@ -32,18 +32,12 @@
     <%= render_markdown(readme) %>
   </section>
 
-  <section id="dom-example" class="top-level-section" style="display: none;">
-    <div id="dom-event-source">
-      <p>
-        Move the mouse over this element.<br />
-        (See the documentation for an explanation of this section.)
-      </p>
-    </div>
-
-    <div id="dom-event-output">
-      <div class="left"><p></p></div>
-      <div class="right"><p></p></div>
-    </div>
+  <section id="demos" class="top-level-section" style="display: none;">
+    <ul>
+      <li><a href="demos/events">Treating DOM events as a sequence</a></li>
+      <li><a href="demos/json">Parsing JSON lazily</a></li>
+      <li><a href="demos/primes">Generating prime numbers asynchronously</a></li>
+    </ul>
   </section>
 
   <section id="benchmark-results" class="top-level-section" style="display: none;">

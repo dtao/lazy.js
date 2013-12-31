@@ -1,15 +1,12 @@
-<!DOCTYPE html>
-<html>
-
-<head>
+<% content_for(:head) do %>
     <title>Lazy.js JSON Parsing Demo</title>
-    <link rel="stylesheet" type="text/css" href="demo.css" />
-    <script type="text/javascript" src="../lazy.js"></script>
-    <script type="text/javascript" src="lazy.json.js"></script>
-    <script type="text/javascript" src="demo.js"></script>
-</head>
+    <%= stylesheet_link_tag("demos/json") %>
+    <%= javascript_include_tag("lib/lazy") %>
+    <%= javascript_include_tag("lib/lazy.json") %>
+    <%= javascript_include_tag("demos/json") %>
+<% end %>
 
-<body>
+<% content_for(:body) do %>
     <div id="input">
         <header>
             <h1>Lazy.js JSON Parsing Demo</h1>
@@ -61,6 +58,4 @@
 
     <div id="results"></div>
     <div id="counter"></div>
-</body>
-
-</html>
+<% end %>

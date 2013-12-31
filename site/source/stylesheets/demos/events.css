@@ -1,0 +1,63 @@
+#dom-event-source {
+  position: relative;
+  height: 200px;
+  border: dashed 5px #ccc;
+  text-align: center;
+  cursor: crosshair;
+}
+
+#dom-event-source p {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  line-height: 2ex;
+  margin-top: -1ex;
+}
+
+#dom-event-output {
+  position: relative;
+  height: 100px;
+  margin-top: 20px;
+}
+
+#dom-event-output .left {
+  position: absolute;
+  top: 1%;
+  bottom: 1%;
+  left: 1%;
+  right: 51%;
+  background-color: #aeb;
+  text-align: center;
+}
+
+#dom-event-output .left p {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  line-height: 50px;
+  margin-top: -25px;
+}
+
+#dom-event-output .right {
+  position: absolute;
+  top: 1%;
+  bottom: 1%;
+  left: 51%;
+  right: 1%;
+  background-color: #aef;
+  text-align: center;
+}
+
+#dom-event-output .right p {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  line-height: 50px;
+  margin-top: -25px;
+}

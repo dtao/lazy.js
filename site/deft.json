@@ -38,6 +38,7 @@
     ["dtao/lazy.js", {
       "lazy.js": "lazy.js",
       "lazy.browser.js": "lazy.browser.js",
+      "experimental/lazy.json.js": "lazy.json.js",
       "spec/support/spec_helper.js": "spec/spec_helper.js",
       "spec/support/person.js": "spec/person.js",
       "spec/lazy_spec.js": "spec/lazy_spec.js",

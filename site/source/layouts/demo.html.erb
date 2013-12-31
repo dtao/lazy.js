@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <%= yield_content(:head) %>
+</head>
+
+<body>
+    <%= yield_content(:body) %>
+    <%= javascript_include_tag("ga") %>
+</body>
+
+</html>

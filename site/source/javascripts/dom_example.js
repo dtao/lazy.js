@@ -27,7 +27,7 @@
       .each(function(pos) { displayCoordinates(rightElement, pos); });
   }
 
-  $(document).ready(function() {
+  window.addEventListener('load', function() {
     initializeDomExample();
   });
 }());
