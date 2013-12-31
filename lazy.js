@@ -1423,23 +1423,17 @@
   FlattenedSequence.prototype.each = function each(fn) {
     var index = 0;
 
-    var recurseVisitor = function recurseVisitor(e) {
+    return this.parent.each(function recurseVisitor(e) {
       if (e instanceof Array) {
         return forEach(e, recurseVisitor);
-
-      } else if (e instanceof Sequence) {
-        return e.each(function(seq) {
-          if (recurseVisitor(seq) === false) {
-            return false;
-          }
-        });
-
-      } else {
-        return fn(e, index++);
       }
-    };
 
-    this.parent.each(recurseVisitor);
+      if (e instanceof Sequence) {
+        return e.each(recurseVisitor);
+      }
+
+      return fn(e, index++);
+    });
   };
 
   /**
