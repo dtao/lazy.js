@@ -1421,24 +1421,18 @@
   FlattenedSequence.prototype = new Sequence();
 
   FlattenedSequence.prototype.each = function each(fn) {
-    var index = 0,
-        done  = false;
+    var index = 0;
 
     var recurseVisitor = function recurseVisitor(e) {
-      if (done) {
-        return false;
-      }
+      if (e instanceof Array) {
+        return forEach(e, recurseVisitor);
 
-      if (e instanceof Sequence) {
-        e.each(function(seq) {
+      } else if (e instanceof Sequence) {
+        return e.each(function(seq) {
           if (recurseVisitor(seq) === false) {
-            done = true;
             return false;
           }
         });
-
-      } else if (e instanceof Array) {
-        return forEach(e, recurseVisitor);
 
       } else {
         return fn(e, index++);
