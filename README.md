@@ -77,7 +77,7 @@ for (var i = 0; i < array.length; ++i) {
 }
 ```
 
-There&mdash;now we we haven't created have any extraneous arrays, and we did all of the work in one iteration. Any problems?
+There&mdash;now we haven't created any extraneous arrays, and we did all of the work in one iteration. Any problems?
 
 Well, yeah. The main problem is that this is one-off code, which isn't reusable and took a bit of time to write. If only we could somehow leverage the expressive power of Underscore but still get the performance of the hand-written procedural solution...
 
