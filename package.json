@@ -30,6 +30,7 @@
     "jasmine-node": "1.7.x",
     "jsdoc": "3.2.x",
     "JSONStream": ">= 0.7.1",
+    "memorystream": ">= 0.2.0",
     "benchmark": "1.0.0",
     "race.js": "0.1.4",
     "lodash": "2.0.0",
