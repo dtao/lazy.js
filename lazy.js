@@ -2324,6 +2324,9 @@
    * {@link #get} and {@link #length}, allowing a sequence to act as a "view" into
    * a collection or other indexed data source.
    *
+   * The initial sequence created by wrapping an array with `Lazy(array)` is an
+   * `ArrayLikeSequence`.
+   *
    * All methods of `ArrayLikeSequence` that conceptually should return
    * something like a array (with indexed access) return another
    * `ArrayLikeSequence`.
@@ -3137,6 +3140,9 @@
   /**
    * An `ObjectLikeSequence` object represents a sequence of key/value pairs.
    *
+   * The initial sequence you get by wrapping an object with `Lazy(object)` is
+   * an `ObjectLikeSequence`.
+   *
    * All methods of `ObjectLikeSequence` that conceptually should return
    * something like an object return another `ObjectLikeSequence`.
    *
@@ -3876,6 +3882,9 @@
   /**
    * A `StringLikeSequence` represents a sequence of characters.
    *
+   * The initial sequence you get by wrapping a string with `Lazy(string)` is a
+   * `StringLikeSequence`.
+   *
    * All methods of `StringLikeSequence` that conceptually should return
    * something like a string return another `StringLikeSequence`.
    *
@@ -4469,9 +4478,11 @@
   };
 
   /**
-   * A GeneratedSequence does not wrap an in-memory colllection but rather
+   * A `GeneratedSequence` does not wrap an in-memory colllection but rather
    * determines its elements on-the-fly during iteration according to a generator
    * function.
+   *
+   * You create a `GeneratedSequence` by calling {@link Lazy.generate}.
    *
    * @public
    * @constructor
@@ -4557,6 +4568,10 @@
   /**
    * An `AsyncSequence` iterates over its elements asynchronously when
    * {@link #each} is called.
+   *
+   * You get an `AsyncSequence` by calling {@link Sequence#async} on any
+   * sequence. Note that some sequence types may not support asynchronous
+   * iteration.
    *
    * Returning values
    * ----------------
