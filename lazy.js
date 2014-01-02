@@ -298,6 +298,47 @@
   };
 
   /**
+   * Gets the root sequence underlying the current chain of sequences.
+   */
+  Sequence.prototype.root = function() {
+    return this.parent.root();
+  };
+
+  /**
+   * Evaluates the sequence and produces an appropriate value (an array in most
+   * cases, an object for {@link ObjectLikeSequence}s or a string for
+   * {@link StringLikeSequence}s).
+   */
+  Sequence.prototype.value = function() {
+    return this.toArray();
+  };
+
+  /**
+   * Applies the current transformation chain to a given source.
+   *
+   * @examples
+   * var sequence = Lazy()
+   *   .map(function(x) { return x * -1; })
+   *   .filter(function(x) { return x % 2 === 0; });
+   *
+   * sequence.apply([1, 2, 3, 4]); // => [-2, -4]
+   */
+  Sequence.prototype.apply = function(source) {
+    var root = this.root(),
+        previousSource = root.source,
+        result;
+
+    try {
+      root.source = source;
+      result = this.value();
+    } finally {
+      root.source = previousSource;
+    }
+
+    return result;
+  };
+
+  /**
    * The Iterator object provides an API for iterating over a sequence.
    *
    * @public
@@ -2790,6 +2831,10 @@
 
   ArrayWrapper.prototype = new ArrayLikeSequence();
 
+  ArrayWrapper.prototype.root = function() {
+    return this;
+  };
+
   /**
    * Returns the element at the specified index in the source array.
    *
@@ -3132,6 +3177,10 @@
     }
 
     return defineSequenceType(ObjectLikeSequence, methodName, overrides);
+  };
+
+  ObjectLikeSequence.prototype.value = function() {
+    return this.toObject();
   };
 
   /**
@@ -3779,6 +3828,10 @@
 
   ObjectWrapper.prototype = new ObjectLikeSequence();
 
+  ObjectWrapper.prototype.root = function() {
+    return this;
+  };
+
   ObjectWrapper.prototype.get = function get(key) {
     return this.source[key];
   };
@@ -3863,6 +3916,10 @@
     }
 
     return defineSequenceType(StringLikeSequence, methodName, overrides);
+  };
+
+  StringLikeSequence.prototype.value = function() {
+    return this.toString();
   };
 
   /**
@@ -4374,6 +4431,10 @@
   }
 
   StringWrapper.prototype = new StringLikeSequence();
+
+  StringWrapper.prototype.root = function() {
+    return this;
+  };
 
   StringWrapper.prototype.get = function get(i) {
     return this.source.charAt(i);
