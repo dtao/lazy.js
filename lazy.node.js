@@ -125,6 +125,10 @@ if (typeof Stream.Readable !== "undefined") {
     return new LazyStream(this, options);
   };
 
+  Lazy.Sequence.prototype.pipe = function pipe(destination) {
+    this.toStream().pipe(destination);
+  };
+
   function LazyStream(sequence, options) {
     options = Lazy(options || {})
       .extend({ objectMode: true })
