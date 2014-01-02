@@ -317,7 +317,7 @@
    * Applies the current transformation chain to a given source.
    *
    * @examples
-   * var sequence = Lazy()
+   * var sequence = Lazy([])
    *   .map(function(x) { return x * -1; })
    *   .filter(function(x) { return x % 2 === 0; });
    *
@@ -2866,7 +2866,7 @@
    */
   ArrayWrapper.prototype.map =
   ArrayWrapper.prototype.collect = function collect(mapFn) {
-    return new MappedArrayWrapper(this.source, createCallback(mapFn));
+    return new MappedArrayWrapper(this, createCallback(mapFn));
   };
 
   /**
@@ -2892,7 +2892,7 @@
    */
   ArrayWrapper.prototype.concat = function concat(var_args) {
     if (arguments.length === 1 && arguments[0] instanceof Array) {
-      return new ConcatArrayWrapper(this.source, (/** @type {Array} */ var_args));
+      return new ConcatArrayWrapper(this, (/** @type {Array} */ var_args));
     } else {
       return ArrayLikeSequence.prototype.concat.apply(this, arguments);
     }
@@ -2908,28 +2908,30 @@
   /**
    * @constructor
    */
-  function MappedArrayWrapper(source, mapFn) {
-    this.source = source;
+  function MappedArrayWrapper(parent, mapFn) {
+    this.parent = parent;
     this.mapFn  = mapFn;
   }
 
   MappedArrayWrapper.prototype = new ArrayLikeSequence();
 
   MappedArrayWrapper.prototype.get = function get(i) {
-    if (i < 0 || i >= this.source.length) {
+    var source = this.parent.source;
+
+    if (i < 0 || i >= source.length) {
       return undefined;
     }
 
-    return this.mapFn(this.source[i]);
+    return this.mapFn(source[i]);
   };
 
   MappedArrayWrapper.prototype.length = function length() {
-    return this.source.length;
+    return this.parent.source.length;
   };
 
   MappedArrayWrapper.prototype.each = function each(fn) {
-    var source = this.source,
-        length = this.source.length,
+    var source = this.parent.source,
+        length = source.length,
         mapFn  = this.mapFn,
         i = -1;
 
@@ -3065,29 +3067,30 @@
   /**
    * @constructor
    */
-  function ConcatArrayWrapper(source, other) {
-    this.source = source;
+  function ConcatArrayWrapper(parent, other) {
+    this.parent = parent;
     this.other  = other;
   }
 
   ConcatArrayWrapper.prototype = new ArrayLikeSequence();
 
   ConcatArrayWrapper.prototype.get = function get(i) {
-    var sourceLength = this.source.length;
+    var source = this.parent.source,
+        sourceLength = source.length;
 
     if (i < sourceLength) {
-      return this.source[i];
+      return source[i];
     } else {
       return this.other[i - sourceLength];
     }
   };
 
   ConcatArrayWrapper.prototype.length = function length() {
-    return this.source.length + this.other.length;
+    return this.parent.source.length + this.other.length;
   };
 
   ConcatArrayWrapper.prototype.each = function each(fn) {
-    var source = this.source,
+    var source = this.parent.source,
         sourceLength = source.length,
         other = this.other,
         otherLength = other.length,
