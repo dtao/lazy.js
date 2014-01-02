@@ -3366,7 +3366,7 @@
    * @returns {ObjectLikeSequence} The new sequence consisting of merged values.
    *
    * @examples
-   * // These examples are complete stolen from Lo-Dash's documentation:
+   * // These examples are completely stolen from Lo-Dash's documentation:
    * // lodash.com/docs#merge
    *
    * var names = {
@@ -3399,6 +3399,26 @@
    *
    * Lazy(names).merge(ages); // => sequence: { 'characters': [{ 'name': 'barney', 'age': 36 }, { 'name': 'fred', 'age': 40 }] }
    * Lazy(food).merge(otherFood, mergeArrays); // => sequence: { 'fruits': ['apple', 'banana'], 'vegetables': ['beet', 'carrot'] }
+   *
+   * // ----- Now for my own tests: -----
+   *
+   * // merges objects
+   * Lazy({ foo: 1 }).merge({ foo: 2 }); // => sequence: { foo: 2 }
+   * Lazy({ foo: 1 }).merge({ bar: 2 }); // => sequence: { foo: 1, bar: 2 }
+   *
+   * // goes deep
+   * Lazy({ foo: { bar: 1 } }).merge({ foo: { bar: 2 } }); // => sequence: { foo: { bar: 2 } }
+   * Lazy({ foo: { bar: 1 } }).merge({ foo: { baz: 2 } }); // => sequence: { foo: { bar: 1, baz: 2 } }
+   * Lazy({ foo: { bar: 1 } }).merge({ foo: { baz: 2 } }); // => sequence: { foo: { bar: 1, baz: 2 } }
+   *
+   * // undefined gets passed over
+   * Lazy({ foo: 1 }).merge({ foo: undefined }); // => sequence: { foo: 1 }
+   *
+   * // null doesn't get passed over
+   * Lazy({ foo: 1 }).merge({ foo: null }); // => sequence: { foo: null }
+   *
+   * // array contents get merged as well
+   * Lazy({ foo: [{ bar: 1 }] }).merge({ foo: [{ baz: 2 }] }); // => sequence: { foo: [{ bar: 1, baz: 2}] }
    */
   ObjectLikeSequence.prototype.merge = function(var_args) {
     var mergeFn = arguments.length > 1 && typeof arguments[arguments.length - 1] === "function" ?
