@@ -274,6 +274,27 @@
   };
 
   /**
+   * Gets the number of elements in the sequence. In some cases, this may
+   * require eagerly evaluating the sequence.
+   *
+   * @public
+   * @returns {number} The number of elements in the sequence.
+   *
+   * @examples
+   * function isEven(x) { return x % 2 === 0; }
+   *
+   * Lazy([1, 2, 3]).size();                 // => 3
+   * Lazy([1, 2]).map(Lazy.identity).size(); // => 2
+   * Lazy([1, 2, 3]).reject(isEven).size();  // => 2
+   * Lazy([1, 2, 3]).take(1).size();         // => 1
+   * Lazy({ foo: 1, bar: 2 }).size();        // => 2
+   * Lazy('hello').size();                   // => 5
+   */
+  Sequence.prototype.size = function() {
+    return this.getIndex().length();
+  };
+
+  /**
    * Creates an {@link Iterator} object with two methods, `moveNext` -- returning
    * true or false -- and `current` -- returning the current value.
    *
@@ -1989,14 +2010,14 @@
    * @constructor
    */
   function ChunkedSequence(parent, size) {
-    this.parent = parent;
-    this.size   = size;
+    this.parent    = parent;
+    this.chunkSize = size;
   }
 
   ChunkedSequence.prototype = new Sequence();
 
   ChunkedSequence.prototype.getIterator = function() {
-    return new ChunkedIterator(this.parent, this.size);
+    return new ChunkedIterator(this.parent, this.chunkSize);
   };
 
   /**
