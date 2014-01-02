@@ -3411,6 +3411,9 @@
    * Lazy({ foo: { bar: 1 } }).merge({ foo: { baz: 2 } }); // => sequence: { foo: { bar: 1, baz: 2 } }
    * Lazy({ foo: { bar: 1 } }).merge({ foo: { baz: 2 } }); // => sequence: { foo: { bar: 1, baz: 2 } }
    *
+   * // gives precedence to later sources
+   * Lazy({ foo: 1 }).merge({ bar: 2 }, { bar: 3 }); // => sequence: { foo: 1, bar: 3 }
+   *
    * // undefined gets passed over
    * Lazy({ foo: 1 }).merge({ foo: undefined }); // => sequence: { foo: 1 }
    *
