@@ -162,9 +162,7 @@ if (typeof Stream.Readable !== "undefined") {
 /*
  * Add support for `Lazy(Stream)`.
  */
-if (!Lazy.extensions) {
-  Lazy.extensions = [];
-}
+Lazy.extensions || (Lazy.extensions = []);
 
 Lazy.extensions.push(function(source) {
   if (source instanceof Stream) {

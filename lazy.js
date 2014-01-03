@@ -106,7 +106,6 @@
   }
 
   Lazy.VERSION    = '0.3.0';
-  Lazy.extensions = [];
 
   /*** Utility methods of questionable value ***/
 

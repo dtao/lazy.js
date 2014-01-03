@@ -139,9 +139,7 @@
   /*
    * Add support for `Lazy(NodeList)` and `Lazy(HTMLCollection)`.
    */
-  if (!Lazy.extensions) {
-    Lazy.extensions = [];
-  }
+  Lazy.extensions || (Lazy.extensions = []);
 
   Lazy.extensions.push(function(source) {
     if (source instanceof NodeList || source instanceof HTMLCollection) {
