@@ -3559,12 +3559,15 @@
    * @examples
    * mergeObjects({ foo: 1 }, { bar: 2 }); // => { foo: 1, bar: 2 }
    * mergeObjects({ foo: { bar: 1 } }, { foo: { baz: 2 } }); // => { foo: { bar: 1, baz: 2 } }
+   * mergeObjects({ foo: { bar: 1 } }, { foo: undefined }); // => { foo: { bar: 1 } }
    */
   function mergeObjects(a, b) {
-    // Override non-objects w/ supplied values UNLESS the supplied value is
-    // undefined
+    if (typeof b === 'undefined') {
+      return a;
+    }
+
     if (typeof a !== 'object' || a === null) {
-      return typeof b !== 'undefined' ? b : a;
+      return b;
     }
 
     var merged = {}, prop;
