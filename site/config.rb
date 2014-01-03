@@ -35,7 +35,11 @@ helpers do
   end
 
   def spec_files
-    @spec_files ||= Dir.glob(path_to_file('site/source/javascripts/lib/spec/*_spec.js')).map(&File.method(:basename))
+    @spec_files ||= begin
+      files = Dir.glob(path_to_file('site/source/javascripts/lib/spec/*_spec.js'))
+      files.map!(&File.method(:basename))
+      files.reject! { |file| file =~ /node_spec\.js/ }
+    end
   end
 
   def path_to_file(relative_path)
