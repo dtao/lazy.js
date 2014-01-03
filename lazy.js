@@ -3560,13 +3560,16 @@
    * mergeObjects({ foo: 1 }, { bar: 2 }); // => { foo: 1, bar: 2 }
    * mergeObjects({ foo: { bar: 1 } }, { foo: { baz: 2 } }); // => { foo: { bar: 1, baz: 2 } }
    * mergeObjects({ foo: { bar: 1 } }, { foo: undefined }); // => { foo: { bar: 1 } }
+   * mergeObjects({ foo: { bar: 1 } }, { foo: null }); // => { foo: null }
    */
   function mergeObjects(a, b) {
     if (typeof b === 'undefined') {
       return a;
     }
 
-    if (typeof a !== 'object' || a === null) {
+    // Unless we're dealing with two objects, there's no merging to do --
+    // just replace a w/ b.
+    if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null) {
       return b;
     }
 
