@@ -1,32 +1,32 @@
 (function(Lazy) {
 
-  function NodeSequence(source) {
+  function DomSequence(source) {
     this.source = source;
   }
 
-  NodeSequence.prototype = new Lazy.ArrayLikeSequence();
+  DomSequence.prototype = new Lazy.ArrayLikeSequence();
 
-  NodeSequence.prototype.get = function(i) {
+  DomSequence.prototype.get = function(i) {
     return this.source[i];
   };
 
-  NodeSequence.prototype.length = function() {
+  DomSequence.prototype.length = function() {
     return this.source.length;
   };
 
-  NodeSequence.prototype.flatten = function() {
-    return new FlattenedNodeSequence(this.source);
+  DomSequence.prototype.flatten = function() {
+    return new FlattenedDomSequence(this.source);
   };
 
-  NodeSequence.prototype.on = function(eventName) {
-    return new EventSequence(this.source, eventName);
+  DomSequence.prototype.on = function(eventName) {
+    return new DomEventSequence(this.source, eventName);
   };
 
-  function FlattenedNodeSequence(source) {
+  function FlattenedDomSequence(source) {
     this.source = source;
   }
 
-  FlattenedNodeSequence.prototype = new Lazy.Sequence();
+  FlattenedDomSequence.prototype = new Lazy.Sequence();
 
   /**
    * Iterates over all of a DOM node's descendents (its children, and their
@@ -34,7 +34,7 @@
    *
    * @param {function(Node):*} fn The function to call on each descendent.
    */
-  FlattenedNodeSequence.prototype.each = function(fn) {
+  FlattenedDomSequence.prototype.each = function(fn) {
     var i    = 0,
         done = false;
 
@@ -56,12 +56,12 @@
     });
   };
 
-  function EventSequence(element, eventName) {
+  function DomEventSequence(element, eventName) {
     this.element = element;
     this.eventName = eventName;
   }
 
-  EventSequence.prototype = new Lazy.Sequence();
+  DomEventSequence.prototype = new Lazy.Sequence();
 
   /**
    * Handles every event in this sequence.
@@ -69,7 +69,7 @@
    * @param {function(Event):*} fn The function to call on each event in the
    *     sequence. Return false from the function to stop handling the events.
    */
-  EventSequence.prototype.each = function(fn) {
+  DomEventSequence.prototype.each = function(fn) {
     var element = this.element,
         eventName = this.eventName;
 
@@ -95,7 +95,7 @@
   Lazy.events = Lazy.deprecate(
     "Lazy.events is deprecated. Use Lazy('selector').on('event') instead",
     function(element, eventName) {
-      return new EventSequence(element, eventName);
+      return new DomEventSequence(element, eventName);
     }
   );
 
@@ -139,13 +139,11 @@
   /*
    * Add support for `Lazy(NodeList)` and `Lazy(HTMLCollection)`.
    */
-  if (!Lazy.extensions) {
-    Lazy.extensions = [];
-  }
+  Lazy.extensions || (Lazy.extensions = []);
 
   Lazy.extensions.push(function(source) {
     if (source instanceof NodeList || source instanceof HTMLCollection) {
-      return new NodeSequence(source);
+      return new DomSequence(source);
     }
   });
 

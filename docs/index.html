@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Lazy.js API Docs - v0.3.0</title>
+    <title>Lazy.js API Docs - v0.3.1</title>
 
     <link rel="stylesheet" type="text/css" href="../stylesheets/docs.css" />
 
@@ -22,7 +22,7 @@
 <body>
     <main>
         <header>
-            <h1><a href="../">Lazy.js <small class="version">0.3.0</small></a></h1>
+            <h1><a href="../">Lazy.js <small class="version">0.3.1</small></a></h1>
         </header>
 
         <!-- Notification area for failing specs -->
@@ -82,6 +82,7 @@
                         <li><a href="#Sequence-rest">rest</a></li>
                         <li><a href="#Sequence-reverse">reverse</a></li>
                         <li><a href="#Sequence-shuffle">shuffle</a></li>
+                        <li><a href="#Sequence-size">size</a></li>
                         <li><a href="#Sequence-some">some</a></li>
                         <li><a href="#Sequence-sortBy">sortBy</a></li>
                         <li><a href="#Sequence-sortedIndex">sortedIndex</a></li>
@@ -125,6 +126,7 @@
                         <li><a href="#ObjectLikeSequence-get">get</a></li>
                         <li><a href="#ObjectLikeSequence-invert">invert</a></li>
                         <li><a href="#ObjectLikeSequence-keys">keys</a></li>
+                        <li><a href="#ObjectLikeSequence-merge">merge</a></li>
                         <li><a href="#ObjectLikeSequence-omit">omit</a></li>
                         <li><a href="#ObjectLikeSequence-pairs">pairs</a></li>
                         <li><a href="#ObjectLikeSequence-pick">pick</a></li>
@@ -201,8 +203,8 @@ sequence with each call.</p>
 <span class="line" data-line-no="2"><span class="cm-keyword">var</span> <span class="cm-variable">statistics</span> = <span class="cm-variable">Lazy</span>(<span class="cm-variable">data</span>)</span>
 <span class="line" data-line-no="3">  .<span class="cm-property">map</span>(<span class="cm-variable">transform</span>)</span>
 <span class="line" data-line-no="4">  .<span class="cm-property">filter</span>(<span class="cm-variable">validate</span>)</span>
-<span class="line" data-line-no="5">  .<span class="cm-property">reduce</span>(<span class="cm-variable">aggregate</span>);</span></code></pre>
-<p><a href="#Sequence">Sequence</a> is the foundation of other, more specific sequence types.</p>
+<span class="line" data-line-no="5">  .<span class="cm-property">reduce</span>(<span class="cm-variable">aggregate</span>);</span>
+</code></pre><p><a href="#Sequence">Sequence</a> is the foundation of other, more specific sequence types.</p>
 <p>An <a href="#ArrayLikeSequence">ArrayLikeSequence</a> provides indexed access to its elements.</p>
 <p>An <a href="#ObjectLikeSequence">ObjectLikeSequence</a> consists of key/value pairs.</p>
 <p>A <a href="#StringLikeSequence">StringLikeSequence</a> is like a string (duh): actually, it is an
@@ -924,11 +926,11 @@ iterating an underlying data source multiple times.</p>
 <pre><code><span class="line" data-line-no="0"><span class="cm-keyword">var</span> <span class="cm-variable">seq</span> = <span class="cm-variable">Lazy</span>(<span class="cm-variable">source</span>) <span class="cm-comment">// 1st sequence</span></span>
 <span class="line" data-line-no="1">  .<span class="cm-property">map</span>(<span class="cm-variable">func</span>)           <span class="cm-comment">// 2nd</span></span>
 <span class="line" data-line-no="2">  .<span class="cm-property">filter</span>(<span class="cm-variable">pred</span>)        <span class="cm-comment">// 3rd</span></span>
-<span class="line" data-line-no="3">  .<span class="cm-property">reverse</span>();          <span class="cm-comment">// 4th</span></span></code></pre>
-<p>Lazy&#39;s convention is to hold off on iterating or otherwise <em>doing</em> anything
+<span class="line" data-line-no="3">  .<span class="cm-property">reverse</span>();          <span class="cm-comment">// 4th</span></span>
+</code></pre><p>Lazy&#39;s convention is to hold off on iterating or otherwise <em>doing</em> anything
 (aside from creating <code>Sequence</code> objects) until you call <code>each</code>:</p>
-<pre><code><span class="line" data-line-no="0"><span class="cm-variable">seq</span>.<span class="cm-property">each</span>(<span class="cm-keyword">function</span>(<span class="cm-def">x</span>) { <span class="cm-variable">console</span>.<span class="cm-property">log</span>(<span class="cm-variable-2">x</span>); });</span></code></pre>
-<h2 id="defining-custom-sequences">Defining custom sequences</h2>
+<pre><code><span class="line" data-line-no="0"><span class="cm-variable">seq</span>.<span class="cm-property">each</span>(<span class="cm-keyword">function</span>(<span class="cm-def">x</span>) { <span class="cm-variable">console</span>.<span class="cm-property">log</span>(<span class="cm-variable-2">x</span>); });</span>
+</code></pre><h2 id="defining-custom-sequences">Defining custom sequences</h2>
 <p>Defining your own type of sequence is relatively simple:</p>
 <ol>
 <li>Pass a <em>method name</em> and an object containing <em>function overrides</em> to
@@ -953,8 +955,8 @@ which randomly may or may not include each element from its parent.</p>
 <span class="line" data-line-no="6">      }</span>
 <span class="line" data-line-no="7">    });</span>
 <span class="line" data-line-no="8">  }</span>
-<span class="line" data-line-no="9">});</span></code></pre>
-<p>(Of course, the above could also easily have been implemented using
+<span class="line" data-line-no="9">});</span>
+</code></pre><p>(Of course, the above could also easily have been implemented using
 <a href="#-filter">#filter</a> instead of creating a custom sequence. But I <em>did</em> say this
 was a trivial example, to be fair.)</p>
 <p>Now it will be possible to create this type of sequence from any parent
@@ -962,8 +964,8 @@ sequence by calling the method name you specified. In other words, you can
 now do this:</p>
 <pre><code><span class="line" data-line-no="0"><span class="cm-variable">Lazy</span>(<span class="cm-variable">arr</span>).<span class="cm-property">sample</span>();</span>
 <span class="line" data-line-no="1"><span class="cm-variable">Lazy</span>(<span class="cm-variable">arr</span>).<span class="cm-property">map</span>(<span class="cm-variable">func</span>).<span class="cm-property">sample</span>();</span>
-<span class="line" data-line-no="2"><span class="cm-variable">Lazy</span>(<span class="cm-variable">arr</span>).<span class="cm-property">map</span>(<span class="cm-variable">func</span>).<span class="cm-property">filter</span>(<span class="cm-variable">pred</span>).<span class="cm-property">sample</span>();</span></code></pre>
-<p>Etc., etc.</p>
+<span class="line" data-line-no="2"><span class="cm-variable">Lazy</span>(<span class="cm-variable">arr</span>).<span class="cm-property">map</span>(<span class="cm-variable">func</span>).<span class="cm-property">filter</span>(<span class="cm-variable">pred</span>).<span class="cm-property">sample</span>();</span>
+</code></pre><p>Etc., etc.</p>
 
 
 
@@ -2556,7 +2558,8 @@ values.</p>
                     <div class="examples">
                         <h3>Examples</h3>
 
-                        <pre class="source-examples" id="source-Sequence-flatten"><span class="line" data-line-no="0"><span class="cm-variable">Lazy</span>([<span class="cm-number">1</span>, [<span class="cm-number">2</span>, <span class="cm-number">3</span>], [<span class="cm-number">4</span>, [<span class="cm-number">5</span>]]]).<span class="cm-property">flatten</span>() <span class="cm-comment">// sequence: [1, 2, 3, 4, 5]</span></span></pre>
+                        <pre class="source-examples" id="source-Sequence-flatten"><span class="line" data-line-no="0"><span class="cm-variable">Lazy</span>([<span class="cm-number">1</span>, [<span class="cm-number">2</span>, <span class="cm-number">3</span>], [<span class="cm-number">4</span>, [<span class="cm-number">5</span>]]]).<span class="cm-property">flatten</span>() <span class="cm-comment">// sequence: [1, 2, 3, 4, 5]</span></span>
+<span class="line" data-line-no="1"><span class="cm-variable">Lazy</span>([<span class="cm-number">1</span>, <span class="cm-variable">Lazy</span>([<span class="cm-number">2</span>, <span class="cm-number">3</span>])]).<span class="cm-property">flatten</span>()     <span class="cm-comment">// sequence: [1, 2, 3]</span></span></pre>
                     </div>
 
 
@@ -2575,6 +2578,19 @@ expect(actual.toArray()).toEqual([1, 2, 3, 4, 5]);
     spec.actual     = 'Lazy([1, [2, 3], [4, [5]]]).flatten()';
     spec.expected   = 'sequence: [1, 2, 3, 4, 5]';
     spec.lineNumber = 0;
+  }());
+  (function() {
+    var spec = it('Lazy([1, Lazy([2, 3])]).flatten() => sequence: [1, 2, 3]', function() {
+      var actual = Lazy([1, Lazy([2, 3])]).flatten();
+expect(actual.toArray()).toEqual([1, 2, 3]);
+
+    });
+
+    spec.suiteId    = 'Sequence-flatten';
+    spec.exampleId  = 'Sequence-flatten-2';
+    spec.actual     = 'Lazy([1, Lazy([2, 3])]).flatten()';
+    spec.expected   = 'sequence: [1, 2, 3]';
+    spec.lineNumber = 1;
   }());
 });
                     </script>
@@ -4739,6 +4755,143 @@ expect(actual).toEqual([1, 2, 3, 4, 5].sort());
 });
                     </script>
                 </section>
+                <section class="method" id="Sequence-size">
+                    <h1>
+                        size
+                        <small>Sequence#size</small>
+                    </h1>
+
+                    <p>Gets the number of elements in the sequence. In some cases, this may
+require eagerly evaluating the sequence.</p>
+
+
+                    <div class="signature">
+                        <h3>Signature</h3>
+
+                        <pre><span class="line" data-line-no="0"><span class="cm-variable">Sequence</span>.<span class="cm-property">size</span> = <span class="cm-keyword">function</span>() { <span class="cm-comment">/*...*/</span> }</span></pre>
+
+                        <table id="Sequence#size-parameters">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Type(s)</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                            </tbody>
+
+                            <tfoot>
+                                <tr>
+                                    <td>returns</td>
+                                    <td>number</td>
+                                    <td><p>The number of elements in the sequence.</p>
+</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <div class="examples">
+                        <h3>Examples</h3>
+
+                        <pre class="source-examples" id="source-Sequence-size"><span class="line" data-line-no="0"><span class="cm-keyword">function</span> <span class="cm-variable">isEven</span>(<span class="cm-def">x</span>) { <span class="cm-keyword">return</span> <span class="cm-variable-2">x</span> % <span class="cm-number">2</span> === <span class="cm-number">0</span>; }</span>
+<span class="line" data-line-no="1"></span>
+<span class="line" data-line-no="2"><span class="cm-variable">Lazy</span>([<span class="cm-number">1</span>, <span class="cm-number">2</span>, <span class="cm-number">3</span>]).<span class="cm-property">size</span>();                 <span class="cm-comment">// =&gt; 3</span></span>
+<span class="line" data-line-no="3"><span class="cm-variable">Lazy</span>([<span class="cm-number">1</span>, <span class="cm-number">2</span>]).<span class="cm-property">map</span>(<span class="cm-variable">Lazy</span>.<span class="cm-property">identity</span>).<span class="cm-property">size</span>(); <span class="cm-comment">// =&gt; 2</span></span>
+<span class="line" data-line-no="4"><span class="cm-variable">Lazy</span>([<span class="cm-number">1</span>, <span class="cm-number">2</span>, <span class="cm-number">3</span>]).<span class="cm-property">reject</span>(<span class="cm-variable">isEven</span>).<span class="cm-property">size</span>();  <span class="cm-comment">// =&gt; 2</span></span>
+<span class="line" data-line-no="5"><span class="cm-variable">Lazy</span>([<span class="cm-number">1</span>, <span class="cm-number">2</span>, <span class="cm-number">3</span>]).<span class="cm-property">take</span>(<span class="cm-number">1</span>).<span class="cm-property">size</span>();         <span class="cm-comment">// =&gt; 1</span></span>
+<span class="line" data-line-no="6"><span class="cm-variable">Lazy</span>({ <span class="cm-property">foo</span>: <span class="cm-number">1</span>, <span class="cm-property">bar</span>: <span class="cm-number">2</span> }).<span class="cm-property">size</span>();        <span class="cm-comment">// =&gt; 2</span></span>
+<span class="line" data-line-no="7"><span class="cm-variable">Lazy</span>(<span class="cm-string">&#39;hello&#39;</span>).<span class="cm-property">size</span>();                   <span class="cm-comment">// =&gt; 5</span></span></pre>
+                    </div>
+
+
+                    <script type="text/javascript">
+describe('size', function() {
+  function isEven(x) { return x % 2 === 0; }
+  (function() {
+    var spec = it('Lazy([1, 2, 3]).size(); => 3', function() {
+      var result   = Lazy([1, 2, 3]).size();;
+      var expected = 3;
+      assertEquality(expected, result);
+    });
+
+    spec.suiteId    = 'Sequence-size';
+    spec.exampleId  = 'Sequence-size-1';
+    spec.actual     = 'Lazy([1, 2, 3]).size();';
+    spec.expected   = '3';
+    spec.lineNumber = 2;
+  }());
+  (function() {
+    var spec = it('Lazy([1, 2]).map(Lazy.identity).size(); => 2', function() {
+      var result   = Lazy([1, 2]).map(Lazy.identity).size();;
+      var expected = 2;
+      assertEquality(expected, result);
+    });
+
+    spec.suiteId    = 'Sequence-size';
+    spec.exampleId  = 'Sequence-size-2';
+    spec.actual     = 'Lazy([1, 2]).map(Lazy.identity).size();';
+    spec.expected   = '2';
+    spec.lineNumber = 3;
+  }());
+  (function() {
+    var spec = it('Lazy([1, 2, 3]).reject(isEven).size(); => 2', function() {
+      var result   = Lazy([1, 2, 3]).reject(isEven).size();;
+      var expected = 2;
+      assertEquality(expected, result);
+    });
+
+    spec.suiteId    = 'Sequence-size';
+    spec.exampleId  = 'Sequence-size-3';
+    spec.actual     = 'Lazy([1, 2, 3]).reject(isEven).size();';
+    spec.expected   = '2';
+    spec.lineNumber = 4;
+  }());
+  (function() {
+    var spec = it('Lazy([1, 2, 3]).take(1).size(); => 1', function() {
+      var result   = Lazy([1, 2, 3]).take(1).size();;
+      var expected = 1;
+      assertEquality(expected, result);
+    });
+
+    spec.suiteId    = 'Sequence-size';
+    spec.exampleId  = 'Sequence-size-4';
+    spec.actual     = 'Lazy([1, 2, 3]).take(1).size();';
+    spec.expected   = '1';
+    spec.lineNumber = 5;
+  }());
+  (function() {
+    var spec = it('Lazy({ foo: 1, bar: 2 }).size(); => 2', function() {
+      var result   = Lazy({ foo: 1, bar: 2 }).size();;
+      var expected = 2;
+      assertEquality(expected, result);
+    });
+
+    spec.suiteId    = 'Sequence-size';
+    spec.exampleId  = 'Sequence-size-5';
+    spec.actual     = 'Lazy({ foo: 1, bar: 2 }).size();';
+    spec.expected   = '2';
+    spec.lineNumber = 6;
+  }());
+  (function() {
+    var spec = it('Lazy(\'hello\').size(); => 5', function() {
+      var result   = Lazy('hello').size();;
+      var expected = 5;
+      assertEquality(expected, result);
+    });
+
+    spec.suiteId    = 'Sequence-size';
+    spec.exampleId  = 'Sequence-size-6';
+    spec.actual     = 'Lazy(\'hello\').size();';
+    spec.expected   = '5';
+    spec.lineNumber = 7;
+  }());
+});
+                    </script>
+                </section>
                 <section class="method" id="Sequence-some">
                     <h1>
                         some
@@ -6439,6 +6592,8 @@ expect(actual.toArray()).toEqual([[1, 3], [2, 4]]);
 its elements. This extends the API for iterating with the additional methods
 <a href="#-get">#get</a> and <a href="#-length">#length</a>, allowing a sequence to act as a &quot;view&quot; into
 a collection or other indexed data source.</p>
+<p>The initial sequence created by wrapping an array with <code>Lazy(array)</code> is an
+<code>ArrayLikeSequence</code>.</p>
 <p>All methods of <code>ArrayLikeSequence</code> that conceptually should return
 something like a array (with indexed access) return another
 <code>ArrayLikeSequence</code>.</p>
@@ -6459,8 +6614,8 @@ first parameter.</p>
 <span class="line" data-line-no="5">  <span class="cm-property">get</span>: <span class="cm-keyword">function</span>(<span class="cm-def">i</span>) {</span>
 <span class="line" data-line-no="6">    <span class="cm-keyword">return</span> <span class="cm-keyword">this</span>.<span class="cm-property">parent</span>.<span class="cm-property">get</span>((<span class="cm-variable-2">i</span> + <span class="cm-keyword">this</span>.<span class="cm-property">offset</span>) % <span class="cm-keyword">this</span>.<span class="cm-property">parent</span>.<span class="cm-property">length</span>());</span>
 <span class="line" data-line-no="7">  }</span>
-<span class="line" data-line-no="8">});</span></code></pre>
-<p>It&#39;s worth noting a couple of things here.</p>
+<span class="line" data-line-no="8">});</span>
+</code></pre><p>It&#39;s worth noting a couple of things here.</p>
 <p>First, Lazy&#39;s default implementation of <code>length</code> simply returns the parent&#39;s
 length. In this case, since an <code>OffsetSequence</code> will always have the same
 number of elements as its parent, that implementation is fine; so we don&#39;t
@@ -6472,10 +6627,10 @@ probably just stick with the default.</p>
 <p>So we&#39;re already done, after only implementing <code>get</code>! Pretty easy, huh?</p>
 <p>Now the <code>offset</code> method will be chainable from any <code>ArrayLikeSequence</code>. So
 for example:</p>
-<pre><code><span class="line" data-line-no="0"><span class="cm-variable">Lazy</span>([<span class="cm-number">1</span>, <span class="cm-number">2</span>, <span class="cm-number">3</span>]).<span class="cm-property">map</span>(<span class="cm-variable">mapFn</span>).<span class="cm-property">offset</span>(<span class="cm-number">3</span>);</span></code></pre>
-<p>...will work, but:</p>
-<pre><code><span class="line" data-line-no="0"><span class="cm-variable">Lazy</span>([<span class="cm-number">1</span>, <span class="cm-number">2</span>, <span class="cm-number">3</span>]).<span class="cm-property">filter</span>(<span class="cm-variable">mapFn</span>).<span class="cm-property">offset</span>(<span class="cm-number">3</span>);</span></code></pre>
-<p>...will not (because <code>filter</code> does not return an <code>ArrayLikeSequence</code>).</p>
+<pre><code><span class="line" data-line-no="0"><span class="cm-variable">Lazy</span>([<span class="cm-number">1</span>, <span class="cm-number">2</span>, <span class="cm-number">3</span>]).<span class="cm-property">map</span>(<span class="cm-variable">mapFn</span>).<span class="cm-property">offset</span>(<span class="cm-number">3</span>);</span>
+</code></pre><p>...will work, but:</p>
+<pre><code><span class="line" data-line-no="0"><span class="cm-variable">Lazy</span>([<span class="cm-number">1</span>, <span class="cm-number">2</span>, <span class="cm-number">3</span>]).<span class="cm-property">filter</span>(<span class="cm-variable">mapFn</span>).<span class="cm-property">offset</span>(<span class="cm-number">3</span>);</span>
+</code></pre><p>...will not (because <code>filter</code> does not return an <code>ArrayLikeSequence</code>).</p>
 <p>(Also, as with the example provided for defining custom <a href="#Sequence">Sequence</a>
 types, this example really could have been implemented using a function
 already available as part of Lazy.js: in this case, <a href="#Sequence-map">Sequence#map</a>.)</p>
@@ -7424,6 +7579,8 @@ expect(actual.toArray()).toEqual([1, 2, 3, 4, 5]);
                     </h1>
 
                     <p>An <code>ObjectLikeSequence</code> object represents a sequence of key/value pairs.</p>
+<p>The initial sequence you get by wrapping an object with <code>Lazy(object)</code> is
+an <code>ObjectLikeSequence</code>.</p>
 <p>All methods of <code>ObjectLikeSequence</code> that conceptually should return
 something like an object return another <code>ObjectLikeSequence</code>.</p>
 
@@ -8213,6 +8370,299 @@ expect(actual.toArray()).toEqual(["hello", "goodbye"]);
 });
                     </script>
                 </section>
+                <section class="method" id="ObjectLikeSequence-merge">
+                    <h1>
+                        merge
+                        <small>ObjectLikeSequence#merge</small>
+                    </h1>
+
+                    <p>Produces an <a href="#ObjectLikeSequence">ObjectLikeSequence</a> consisting of all the recursively
+merged values from this and the given object(s) or sequence(s).</p>
+
+
+                    <div class="signature">
+                        <h3>Signature</h3>
+
+                        <pre><span class="line" data-line-no="0"><span class="cm-variable">ObjectLikeSequence</span>.<span class="cm-property">merge</span> = <span class="cm-keyword">function</span>(<span class="cm-def">others</span>, <span class="cm-def">mergeFn</span>) { <span class="cm-comment">/*...*/</span> }</span></pre>
+
+                        <table id="ObjectLikeSequence#merge-parameters">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Type(s)</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td>others</td>
+                                    <td>...Object|ObjectLikeSequence</td>
+                                    <td><p>The other object(s) or
+    sequence(s) whose values will be merged into this one.</p>
+</td>
+                                </tr>
+                                <tr>
+                                    <td>mergeFn</td>
+                                    <td>Function?</td>
+                                    <td><p>An optional function used to customize merging
+    behavior.</p>
+</td>
+                                </tr>
+
+                            </tbody>
+
+                            <tfoot>
+                                <tr>
+                                    <td>returns</td>
+                                    <td>ObjectLikeSequence</td>
+                                    <td><p>The new sequence consisting of merged values.</p>
+</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <div class="examples">
+                        <h3>Examples</h3>
+
+                        <pre class="source-examples" id="source-ObjectLikeSequence-merge"><span class="line" data-line-no="0"><span class="cm-comment">// These examples are completely stolen from Lo-Dash&#39;s documentation:</span></span>
+<span class="line" data-line-no="1"><span class="cm-comment">// lodash.com/docs#merge</span></span>
+<span class="line" data-line-no="2"></span>
+<span class="line" data-line-no="3"><span class="cm-keyword">var</span> <span class="cm-variable">names</span> = {</span>
+<span class="line" data-line-no="4">  <span class="cm-stringcm-property">&#39;characters&#39;</span>: [</span>
+<span class="line" data-line-no="5">    { <span class="cm-stringcm-property">&#39;name&#39;</span>: <span class="cm-string">&#39;barney&#39;</span> },</span>
+<span class="line" data-line-no="6">    { <span class="cm-stringcm-property">&#39;name&#39;</span>: <span class="cm-string">&#39;fred&#39;</span> }</span>
+<span class="line" data-line-no="7">  ]</span>
+<span class="line" data-line-no="8">};</span>
+<span class="line" data-line-no="9"></span>
+<span class="line" data-line-no="10"><span class="cm-keyword">var</span> <span class="cm-variable">ages</span> = {</span>
+<span class="line" data-line-no="11">  <span class="cm-stringcm-property">&#39;characters&#39;</span>: [</span>
+<span class="line" data-line-no="12">    { <span class="cm-stringcm-property">&#39;age&#39;</span>: <span class="cm-number">36</span> },</span>
+<span class="line" data-line-no="13">    { <span class="cm-stringcm-property">&#39;age&#39;</span>: <span class="cm-number">40</span> }</span>
+<span class="line" data-line-no="14">  ]</span>
+<span class="line" data-line-no="15">};</span>
+<span class="line" data-line-no="16"></span>
+<span class="line" data-line-no="17"><span class="cm-keyword">var</span> <span class="cm-variable">food</span> = {</span>
+<span class="line" data-line-no="18">  <span class="cm-stringcm-property">&#39;fruits&#39;</span>: [<span class="cm-string">&#39;apple&#39;</span>],</span>
+<span class="line" data-line-no="19">  <span class="cm-stringcm-property">&#39;vegetables&#39;</span>: [<span class="cm-string">&#39;beet&#39;</span>]</span>
+<span class="line" data-line-no="20">};</span>
+<span class="line" data-line-no="21"></span>
+<span class="line" data-line-no="22"><span class="cm-keyword">var</span> <span class="cm-variable">otherFood</span> = {</span>
+<span class="line" data-line-no="23">  <span class="cm-stringcm-property">&#39;fruits&#39;</span>: [<span class="cm-string">&#39;banana&#39;</span>],</span>
+<span class="line" data-line-no="24">  <span class="cm-stringcm-property">&#39;vegetables&#39;</span>: [<span class="cm-string">&#39;carrot&#39;</span>]</span>
+<span class="line" data-line-no="25">};</span>
+<span class="line" data-line-no="26"></span>
+<span class="line" data-line-no="27"><span class="cm-keyword">function</span> <span class="cm-variable">mergeArrays</span>(<span class="cm-def">a</span>, <span class="cm-def">b</span>) {</span>
+<span class="line" data-line-no="28">  <span class="cm-keyword">return</span> <span class="cm-variable">Array</span>.<span class="cm-property">isArray</span>(<span class="cm-variable-2">a</span>) ? <span class="cm-variable-2">a</span>.<span class="cm-property">concat</span>(<span class="cm-variable-2">b</span>) : <span class="cm-atom">undefined</span>;</span>
+<span class="line" data-line-no="29">}</span>
+<span class="line" data-line-no="30"></span>
+<span class="line" data-line-no="31"><span class="cm-variable">Lazy</span>(<span class="cm-variable">names</span>).<span class="cm-property">merge</span>(<span class="cm-variable">ages</span>); <span class="cm-comment">// =&gt; sequence: { &#39;characters&#39;: [{ &#39;name&#39;: &#39;barney&#39;, &#39;age&#39;: 36 }, { &#39;name&#39;: &#39;fred&#39;, &#39;age&#39;: 40 }] }</span></span>
+<span class="line" data-line-no="32"><span class="cm-variable">Lazy</span>(<span class="cm-variable">food</span>).<span class="cm-property">merge</span>(<span class="cm-variable">otherFood</span>, <span class="cm-variable">mergeArrays</span>); <span class="cm-comment">// =&gt; sequence: { &#39;fruits&#39;: [&#39;apple&#39;, &#39;banana&#39;], &#39;vegetables&#39;: [&#39;beet&#39;, &#39;carrot&#39;] }</span></span>
+<span class="line" data-line-no="33"></span>
+<span class="line" data-line-no="34"><span class="cm-comment">// ----- Now for my own tests: -----</span></span>
+<span class="line" data-line-no="35"></span>
+<span class="line" data-line-no="36"><span class="cm-comment">// merges objects</span></span>
+<span class="line" data-line-no="37"><span class="cm-variable">Lazy</span>({ <span class="cm-property">foo</span>: <span class="cm-number">1</span> }).<span class="cm-property">merge</span>({ <span class="cm-property">foo</span>: <span class="cm-number">2</span> }); <span class="cm-comment">// =&gt; sequence: { foo: 2 }</span></span>
+<span class="line" data-line-no="38"><span class="cm-variable">Lazy</span>({ <span class="cm-property">foo</span>: <span class="cm-number">1</span> }).<span class="cm-property">merge</span>({ <span class="cm-property">bar</span>: <span class="cm-number">2</span> }); <span class="cm-comment">// =&gt; sequence: { foo: 1, bar: 2 }</span></span>
+<span class="line" data-line-no="39"></span>
+<span class="line" data-line-no="40"><span class="cm-comment">// goes deep</span></span>
+<span class="line" data-line-no="41"><span class="cm-variable">Lazy</span>({ <span class="cm-property">foo</span>: { <span class="cm-property">bar</span>: <span class="cm-number">1</span> } }).<span class="cm-property">merge</span>({ <span class="cm-property">foo</span>: { <span class="cm-property">bar</span>: <span class="cm-number">2</span> } }); <span class="cm-comment">// =&gt; sequence: { foo: { bar: 2 } }</span></span>
+<span class="line" data-line-no="42"><span class="cm-variable">Lazy</span>({ <span class="cm-property">foo</span>: { <span class="cm-property">bar</span>: <span class="cm-number">1</span> } }).<span class="cm-property">merge</span>({ <span class="cm-property">foo</span>: { <span class="cm-property">baz</span>: <span class="cm-number">2</span> } }); <span class="cm-comment">// =&gt; sequence: { foo: { bar: 1, baz: 2 } }</span></span>
+<span class="line" data-line-no="43"><span class="cm-variable">Lazy</span>({ <span class="cm-property">foo</span>: { <span class="cm-property">bar</span>: <span class="cm-number">1</span> } }).<span class="cm-property">merge</span>({ <span class="cm-property">foo</span>: { <span class="cm-property">baz</span>: <span class="cm-number">2</span> } }); <span class="cm-comment">// =&gt; sequence: { foo: { bar: 1, baz: 2 } }</span></span>
+<span class="line" data-line-no="44"></span>
+<span class="line" data-line-no="45"><span class="cm-comment">// gives precedence to later sources</span></span>
+<span class="line" data-line-no="46"><span class="cm-variable">Lazy</span>({ <span class="cm-property">foo</span>: <span class="cm-number">1</span> }).<span class="cm-property">merge</span>({ <span class="cm-property">bar</span>: <span class="cm-number">2</span> }, { <span class="cm-property">bar</span>: <span class="cm-number">3</span> }); <span class="cm-comment">// =&gt; sequence: { foo: 1, bar: 3 }</span></span>
+<span class="line" data-line-no="47"></span>
+<span class="line" data-line-no="48"><span class="cm-comment">// undefined gets passed over</span></span>
+<span class="line" data-line-no="49"><span class="cm-variable">Lazy</span>({ <span class="cm-property">foo</span>: <span class="cm-number">1</span> }).<span class="cm-property">merge</span>({ <span class="cm-property">foo</span>: <span class="cm-atom">undefined</span> }); <span class="cm-comment">// =&gt; sequence: { foo: 1 }</span></span>
+<span class="line" data-line-no="50"></span>
+<span class="line" data-line-no="51"><span class="cm-comment">// null doesn&#39;t get passed over</span></span>
+<span class="line" data-line-no="52"><span class="cm-variable">Lazy</span>({ <span class="cm-property">foo</span>: <span class="cm-number">1</span> }).<span class="cm-property">merge</span>({ <span class="cm-property">foo</span>: <span class="cm-atom">null</span> }); <span class="cm-comment">// =&gt; sequence: { foo: null }</span></span>
+<span class="line" data-line-no="53"></span>
+<span class="line" data-line-no="54"><span class="cm-comment">// array contents get merged as well</span></span>
+<span class="line" data-line-no="55"><span class="cm-variable">Lazy</span>({ <span class="cm-property">foo</span>: [{ <span class="cm-property">bar</span>: <span class="cm-number">1</span> }] }).<span class="cm-property">merge</span>({ <span class="cm-property">foo</span>: [{ <span class="cm-property">baz</span>: <span class="cm-number">2</span> }] }); <span class="cm-comment">// =&gt; sequence: { foo: [{ bar: 1, baz: 2}] }</span></span></pre>
+                    </div>
+
+
+                    <script type="text/javascript">
+describe('merge', function() {
+  // These examples are completely stolen from Lo-Dash's documentation:
+// lodash.com/docs#merge
+
+var names = {
+  'characters': [
+    { 'name': 'barney' },
+    { 'name': 'fred' }
+  ]
+};
+
+var ages = {
+  'characters': [
+    { 'age': 36 },
+    { 'age': 40 }
+  ]
+};
+
+var food = {
+  'fruits': ['apple'],
+  'vegetables': ['beet']
+};
+
+var otherFood = {
+  'fruits': ['banana'],
+  'vegetables': ['carrot']
+};
+
+function mergeArrays(a, b) {
+  return Array.isArray(a) ? a.concat(b) : undefined;
+}
+  (function() {
+    var spec = it('Lazy(names).merge(ages); => sequence: { \'characters\': [{ \'name\': \'barney\', \'age\': 36 }, { \'name\': \'fred\', \'age\': 40 }] }', function() {
+      var actual = Lazy(names).merge(ages);;
+expect(actual.toObject()).toEqual({  'characters': [{ 'name': 'barney', 'age': 36 }, { 'name': 'fred', 'age': 40 }]  });
+
+    });
+
+    spec.suiteId    = 'ObjectLikeSequence-merge';
+    spec.exampleId  = 'ObjectLikeSequence-merge-1';
+    spec.actual     = 'Lazy(names).merge(ages);';
+    spec.expected   = 'sequence: { \'characters\': [{ \'name\': \'barney\', \'age\': 36 }, { \'name\': \'fred\', \'age\': 40 }] }';
+    spec.lineNumber = 31;
+  }());
+  (function() {
+    var spec = it('Lazy(food).merge(otherFood, mergeArrays); => sequence: { \'fruits\': [\'apple\', \'banana\'], \'vegetables\': [\'beet\', \'carrot\'] }', function() {
+      var actual = Lazy(food).merge(otherFood, mergeArrays);;
+expect(actual.toObject()).toEqual({  'fruits': ['apple', 'banana'], 'vegetables': ['beet', 'carrot']  });
+
+    });
+
+    spec.suiteId    = 'ObjectLikeSequence-merge';
+    spec.exampleId  = 'ObjectLikeSequence-merge-2';
+    spec.actual     = 'Lazy(food).merge(otherFood, mergeArrays);';
+    spec.expected   = 'sequence: { \'fruits\': [\'apple\', \'banana\'], \'vegetables\': [\'beet\', \'carrot\'] }';
+    spec.lineNumber = 32;
+  }());
+  (function() {
+    var spec = it('Lazy({ foo: 1 }).merge({ foo: 2 }); => sequence: { foo: 2 }', function() {
+      var actual = Lazy({ foo: 1 }).merge({ foo: 2 });;
+expect(actual.toObject()).toEqual({  foo: 2  });
+
+    });
+
+    spec.suiteId    = 'ObjectLikeSequence-merge';
+    spec.exampleId  = 'ObjectLikeSequence-merge-3';
+    spec.actual     = 'Lazy({ foo: 1 }).merge({ foo: 2 });';
+    spec.expected   = 'sequence: { foo: 2 }';
+    spec.lineNumber = 37;
+  }());
+  (function() {
+    var spec = it('Lazy({ foo: 1 }).merge({ bar: 2 }); => sequence: { foo: 1, bar: 2 }', function() {
+      var actual = Lazy({ foo: 1 }).merge({ bar: 2 });;
+expect(actual.toObject()).toEqual({  foo: 1, bar: 2  });
+
+    });
+
+    spec.suiteId    = 'ObjectLikeSequence-merge';
+    spec.exampleId  = 'ObjectLikeSequence-merge-4';
+    spec.actual     = 'Lazy({ foo: 1 }).merge({ bar: 2 });';
+    spec.expected   = 'sequence: { foo: 1, bar: 2 }';
+    spec.lineNumber = 38;
+  }());
+  (function() {
+    var spec = it('Lazy({ foo: { bar: 1 } }).merge({ foo: { bar: 2 } }); => sequence: { foo: { bar: 2 } }', function() {
+      var actual = Lazy({ foo: { bar: 1 } }).merge({ foo: { bar: 2 } });;
+expect(actual.toObject()).toEqual({  foo: { bar: 2 }  });
+
+    });
+
+    spec.suiteId    = 'ObjectLikeSequence-merge';
+    spec.exampleId  = 'ObjectLikeSequence-merge-5';
+    spec.actual     = 'Lazy({ foo: { bar: 1 } }).merge({ foo: { bar: 2 } });';
+    spec.expected   = 'sequence: { foo: { bar: 2 } }';
+    spec.lineNumber = 41;
+  }());
+  (function() {
+    var spec = it('Lazy({ foo: { bar: 1 } }).merge({ foo: { baz: 2 } }); => sequence: { foo: { bar: 1, baz: 2 } }', function() {
+      var actual = Lazy({ foo: { bar: 1 } }).merge({ foo: { baz: 2 } });;
+expect(actual.toObject()).toEqual({  foo: { bar: 1, baz: 2 }  });
+
+    });
+
+    spec.suiteId    = 'ObjectLikeSequence-merge';
+    spec.exampleId  = 'ObjectLikeSequence-merge-6';
+    spec.actual     = 'Lazy({ foo: { bar: 1 } }).merge({ foo: { baz: 2 } });';
+    spec.expected   = 'sequence: { foo: { bar: 1, baz: 2 } }';
+    spec.lineNumber = 42;
+  }());
+  (function() {
+    var spec = it('Lazy({ foo: { bar: 1 } }).merge({ foo: { baz: 2 } }); => sequence: { foo: { bar: 1, baz: 2 } }', function() {
+      var actual = Lazy({ foo: { bar: 1 } }).merge({ foo: { baz: 2 } });;
+expect(actual.toObject()).toEqual({  foo: { bar: 1, baz: 2 }  });
+
+    });
+
+    spec.suiteId    = 'ObjectLikeSequence-merge';
+    spec.exampleId  = 'ObjectLikeSequence-merge-7';
+    spec.actual     = 'Lazy({ foo: { bar: 1 } }).merge({ foo: { baz: 2 } });';
+    spec.expected   = 'sequence: { foo: { bar: 1, baz: 2 } }';
+    spec.lineNumber = 43;
+  }());
+  (function() {
+    var spec = it('Lazy({ foo: 1 }).merge({ bar: 2 }, { bar: 3 }); => sequence: { foo: 1, bar: 3 }', function() {
+      var actual = Lazy({ foo: 1 }).merge({ bar: 2 }, { bar: 3 });;
+expect(actual.toObject()).toEqual({  foo: 1, bar: 3  });
+
+    });
+
+    spec.suiteId    = 'ObjectLikeSequence-merge';
+    spec.exampleId  = 'ObjectLikeSequence-merge-8';
+    spec.actual     = 'Lazy({ foo: 1 }).merge({ bar: 2 }, { bar: 3 });';
+    spec.expected   = 'sequence: { foo: 1, bar: 3 }';
+    spec.lineNumber = 46;
+  }());
+  (function() {
+    var spec = it('Lazy({ foo: 1 }).merge({ foo: undefined }); => sequence: { foo: 1 }', function() {
+      var actual = Lazy({ foo: 1 }).merge({ foo: undefined });;
+expect(actual.toObject()).toEqual({  foo: 1  });
+
+    });
+
+    spec.suiteId    = 'ObjectLikeSequence-merge';
+    spec.exampleId  = 'ObjectLikeSequence-merge-9';
+    spec.actual     = 'Lazy({ foo: 1 }).merge({ foo: undefined });';
+    spec.expected   = 'sequence: { foo: 1 }';
+    spec.lineNumber = 49;
+  }());
+  (function() {
+    var spec = it('Lazy({ foo: 1 }).merge({ foo: null }); => sequence: { foo: null }', function() {
+      var actual = Lazy({ foo: 1 }).merge({ foo: null });;
+expect(actual.toObject()).toEqual({  foo: null  });
+
+    });
+
+    spec.suiteId    = 'ObjectLikeSequence-merge';
+    spec.exampleId  = 'ObjectLikeSequence-merge-10';
+    spec.actual     = 'Lazy({ foo: 1 }).merge({ foo: null });';
+    spec.expected   = 'sequence: { foo: null }';
+    spec.lineNumber = 52;
+  }());
+  (function() {
+    var spec = it('Lazy({ foo: [{ bar: 1 }] }).merge({ foo: [{ baz: 2 }] }); => sequence: { foo: [{ bar: 1, baz: 2}] }', function() {
+      var actual = Lazy({ foo: [{ bar: 1 }] }).merge({ foo: [{ baz: 2 }] });;
+expect(actual.toObject()).toEqual({  foo: [{ bar: 1, baz: 2}]  });
+
+    });
+
+    spec.suiteId    = 'ObjectLikeSequence-merge';
+    spec.exampleId  = 'ObjectLikeSequence-merge-11';
+    spec.actual     = 'Lazy({ foo: [{ bar: 1 }] }).merge({ foo: [{ baz: 2 }] });';
+    spec.expected   = 'sequence: { foo: [{ bar: 1, baz: 2}] }';
+    spec.lineNumber = 55;
+  }());
+});
+                    </script>
+                </section>
                 <section class="method" id="ObjectLikeSequence-omit">
                     <h1>
                         omit
@@ -8783,6 +9233,8 @@ obj.foo = 3;
                     </h1>
 
                     <p>A <code>StringLikeSequence</code> represents a sequence of characters.</p>
+<p>The initial sequence you get by wrapping a string with <code>Lazy(string)</code> is a
+<code>StringLikeSequence</code>.</p>
 <p>All methods of <code>StringLikeSequence</code> that conceptually should return
 something like a string return another <code>StringLikeSequence</code>.</p>
 
@@ -10656,9 +11108,10 @@ expect(actual.toString()).toEqual("BCD");
                         <small>GeneratedSequence</small>
                     </h1>
 
-                    <p>A GeneratedSequence does not wrap an in-memory colllection but rather
+                    <p>A <code>GeneratedSequence</code> does not wrap an in-memory colllection but rather
 determines its elements on-the-fly during iteration according to a generator
 function.</p>
+<p>You create a <code>GeneratedSequence</code> by calling <a href="#Lazy-generate">Lazy.generate</a>.</p>
 
 
                     <div class="signature">
@@ -10800,6 +11253,9 @@ to call, e.g., <a href="#Sequence-take">Sequence#take</a> to limit iteration).</
 
                     <p>An <code>AsyncSequence</code> iterates over its elements asynchronously when
 <a href="#-each">#each</a> is called.</p>
+<p>You get an <code>AsyncSequence</code> by calling <a href="#Sequence-async">Sequence#async</a> on any
+sequence. Note that some sequence types may not support asynchronous
+iteration.</p>
 <h2 id="returning-values">Returning values</h2>
 <p>Because of its asynchronous nature, an <code>AsyncSequence</code> cannot be used in the
 same way as other sequences for functions that return values directly (e.g.,

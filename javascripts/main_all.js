@@ -891,7 +891,7 @@ var SpecReporter = function() {
         var actual = this.actual;
 
         this.message = function() {
-          return 'Expeceted ' + actual + ' to be a ' + (sequenceType.name || sequenceType);
+          return 'Expected ' + actual + ' to be a ' + (sequenceType.name || sequenceType);
         };
 
         return actual instanceof sequenceType;

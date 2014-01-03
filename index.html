@@ -2,65 +2,65 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>Lazy.js - v0.3.0</title>
+  <title>Lazy.js - v0.3.1</title>
 
   <link href="stylesheets/all.css" media="screen" rel="stylesheet" type="text/css" />
   <script src="javascripts/all.js" type="text/javascript"></script>
   <script src="javascripts/main_all.js" type="text/javascript"></script>
   
+  <script src="javascripts/lib/spec/reverse_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/intersection_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/min_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/map_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/lazy_spec.js" type="text/javascript"></script>
+  
   <script src="javascripts/lib/spec/filter_spec.js" type="text/javascript"></script>
   
   <script src="javascripts/lib/spec/async_sequence_spec.js" type="text/javascript"></script>
   
-  <script src="javascripts/lib/spec/watch_spec.js" type="text/javascript"></script>
-  
-  <script src="javascripts/lib/spec/count_by_spec.js" type="text/javascript"></script>
+  <script src="javascripts/lib/spec/shuffle_spec.js" type="text/javascript"></script>
   
   <script src="javascripts/lib/spec/sum_spec.js" type="text/javascript"></script>
   
-  <script src="javascripts/lib/spec/sort_by_spec.js" type="text/javascript"></script>
-  
-  <script src="javascripts/lib/spec/lazy_spec.js" type="text/javascript"></script>
-  
-  <script src="javascripts/lib/spec/min_spec.js" type="text/javascript"></script>
-  
-  <script src="javascripts/lib/spec/intersection_spec.js" type="text/javascript"></script>
-  
-  <script src="javascripts/lib/spec/shuffle_spec.js" type="text/javascript"></script>
-  
-  <script src="javascripts/lib/spec/zip_spec.js" type="text/javascript"></script>
-  
-  <script src="javascripts/lib/spec/flatten_spec.js" type="text/javascript"></script>
-  
-  <script src="javascripts/lib/spec/string_like_sequence_spec.js" type="text/javascript"></script>
-  
-  <script src="javascripts/lib/spec/take_spec.js" type="text/javascript"></script>
-  
-  <script src="javascripts/lib/spec/drop_spec.js" type="text/javascript"></script>
-  
-  <script src="javascripts/lib/spec/map_spec.js" type="text/javascript"></script>
-  
-  <script src="javascripts/lib/spec/reverse_spec.js" type="text/javascript"></script>
-  
   <script src="javascripts/lib/spec/concat_spec.js" type="text/javascript"></script>
   
-  <script src="javascripts/lib/spec/find_spec.js" type="text/javascript"></script>
+  <script src="javascripts/lib/spec/count_by_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/uniq_spec.js" type="text/javascript"></script>
   
   <script src="javascripts/lib/spec/group_by_spec.js" type="text/javascript"></script>
   
-  <script src="javascripts/lib/spec/max_spec.js" type="text/javascript"></script>
-  
   <script src="javascripts/lib/spec/without_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/find_spec.js" type="text/javascript"></script>
   
   <script src="javascripts/lib/spec/union_spec.js" type="text/javascript"></script>
   
-  <script src="javascripts/lib/spec/uniq_spec.js" type="text/javascript"></script>
+  <script src="javascripts/lib/spec/flatten_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/zip_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/take_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/string_like_sequence_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/watch_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/sort_by_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/max_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/drop_spec.js" type="text/javascript"></script>
   
 </head>
 
 <body>
   <header>
-    <h1><a href="./">lazy.js</a> <small class="version">0.3.0</small></h1>
+    <h1><a href="./">lazy.js</a> <small class="version">0.3.1</small></h1>
     <a href="https://github.com/dtao/lazy.js" class="github-ribbon"></a>
   </header>
 
@@ -172,7 +172,7 @@
   <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
-<p>There—now we we haven't created have any extraneous arrays, and we did all of the work in one iteration. Any problems?</p>
+<p>There—now we haven't created any extraneous arrays, and we did all of the work in one iteration. Any problems?</p>
 
 <p>Well, yeah. The main problem is that this is one-off code, which isn't reusable and took a bit of time to write. If only we could somehow leverage the expressive power of Underscore but still get the performance of the hand-written procedural solution...</p>
 
