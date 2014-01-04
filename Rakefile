@@ -26,6 +26,17 @@ task :update_version do
   update_json('component.json', { 'version' => version })
 end
 
+desc "Setup symbolic links to lazy.js, etc. for project site"
+task :symlinks do
+  sh <<-BASH
+    cd site/source/javascripts/lib
+    ln -s ../../../../lazy.js lazy.js
+    ln -s ../../../../lazy.browser.js lazy.browser.js
+    ln -s ../../../../experimental/lazy.json.js lazy.json.js
+    ln -s ../../../../spec spec
+  BASH
+end
+
 desc "Generate documentation using Breakneck"
 task :generate_docs do
   sequence_types = [
