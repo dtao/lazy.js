@@ -84,9 +84,8 @@ FileStreamSequence.prototype.openStream = function(callback) {
 
 /**
  * Creates a {@link Sequence} from a file stream, whose elements are chunks of
- * data as the stream is read. This sequence works asynchronously, so
- * synchronous methods such as {@code indexOf}, {@code any}, and {@code toArray}
- * won't work.
+ * data as the stream is read. This is an {@link AsyncSequence}, so methods such
+ * as {@link Sequence#reduce} return an {@link AsyncHandle} rather than a value.
  *
  * @param {string} path A path to a file.
  * @param {string} encoding The text encoding of the file (e.g., "utf-8").

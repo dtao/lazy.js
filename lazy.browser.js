@@ -1,5 +1,18 @@
 (function(Lazy) {
 
+  /**
+   * A seqence of DOM nodes.
+   *
+   * You can get a `DomSequence` by wrapping a `NodeList` or `HTMLCollection`
+   * with `Lazy`:
+   *
+   *     var paragraphs = Lazy(document.querySelectorAll('p'));
+   *
+   * @public
+   * @constructor
+   * @param {NodeList|HTMLCollection} source The underlying collection of DOM
+   *     nodes.
+   */
   function DomSequence(source) {
     this.source = source;
   }
@@ -14,12 +27,15 @@
     return this.source.length;
   };
 
+  /**
+   * Provides a sequence comprising all of this sequence's nodes and their
+   * descendents (children, grandchildren, etc.).
+   *
+   * @public
+   * @returns {Sequence}
+   */
   DomSequence.prototype.flatten = function() {
     return new FlattenedDomSequence(this.source);
-  };
-
-  DomSequence.prototype.on = function(eventName) {
-    return new DomEventSequence(this.source, eventName);
   };
 
   function FlattenedDomSequence(source) {
@@ -28,12 +44,6 @@
 
   FlattenedDomSequence.prototype = new Lazy.Sequence();
 
-  /**
-   * Iterates over all of a DOM node's descendents (its children, and their
-   * children, etc.) and executes a function for each descendent.
-   *
-   * @param {function(Node):*} fn The function to call on each descendent.
-   */
   FlattenedDomSequence.prototype.each = function(fn) {
     var i    = 0,
         done = false;
@@ -54,6 +64,18 @@
         return false;
       }
     });
+  };
+
+  /**
+   * Creates a sequence comprising all of the `Event` objects from the given
+   * event propagating through the node(s) in the current sequence.
+   *
+   * @public
+   * @param {string} eventName The name of the event to catch.
+   * @returns {AsyncSequence}
+   */
+  DomSequence.prototype.on = function(eventName) {
+    return new DomEventSequence(this.source, eventName);
   };
 
   function DomEventSequence(element, eventName) {
@@ -103,6 +125,7 @@
    * A `StreamingHttpSequence` is a {@link StreamLikeSequence} comprising the
    * chunks of data that are streamed in response to an HTTP request.
    *
+   * @public
    * @param {string} url The URL of the HTTP request.
    * @constructor
    */
