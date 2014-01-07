@@ -5009,6 +5009,7 @@
     });
   };
 
+  /**
    * Defines a factory for a custom {@link StreamLikeSequence}.
    *
    * @param {Function} initializer An initialization function called on objects
