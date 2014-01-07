@@ -5009,6 +5009,74 @@
     });
   };
 
+   * Defines a factory for a custom {@link StreamLikeSequence}.
+   *
+   * @param {Function} initializer An initialization function called on objects
+   *     created by this factory. `this` will be bound to the created object,
+   *     which is an instance of {@link StreamLikeSequence}. Use
+   *     {@link StreamLikeSequence#emit} to generate data for this sequence.
+   * @returns {Function} A function that creates a new {@link StreamLikeSequence},
+   *     initializes it using the specified function, and returns it.
+   *
+   * @example
+   * var factory = Lazy.factory(function(eventSource) {
+   *   var sequence = this;
+   *
+   *   eventSource.on('customEvent', function(data) {
+   *     sequence.emit(data);
+   *   });
+   * });
+   *
+   * var eventEmitter = {
+   *   trigger: function(eventName, data) {
+   *     var handler = eventEmitter.handlers[eventName];
+   *     if (handler) { handler(data); }
+   *   },
+   *   on: function(eventName, handler) {
+   *     eventEmitter.handlers[eventName] = handler;
+   *   },
+   *   handlers: {}
+   * };
+   *
+   * var events = [];
+   *
+   * factory(eventEmitter).each(function(e) {
+   *   events.push(e);
+   * });
+   *
+   * eventEmitter.trigger('customEvent', { foo: 1 });
+   * eventEmitter.trigger('customEvent', { bar: 2 });
+   *
+   * events // => [{ foo: 1 }, { bar: 2 }]
+   */
+  Lazy.factory = function factory(initializer) {
+    var ctor = function() {
+      this.listeners = [];
+    };
+
+    ctor.prototype = new StreamLikeSequence();
+
+    ctor.prototype.each = function(listener) {
+      this.listeners.push(listener);
+    };
+
+    ctor.prototype.emit = function(data) {
+      var listeners = this.listeners;
+
+      for (var len = listeners.length, i = len - 1; i >= 0; --i) {
+        if (listeners[i](data) === false) {
+          listeners.splice(i, 1);
+        }
+      }
+    };
+
+    return function() {
+      var sequence = new ctor();
+      initializer.apply(sequence, arguments);
+      return sequence;
+    };
+  };
+
   /**
    * Creates a {@link GeneratedSequence} using the specified generator function
    * and (optionally) length.
