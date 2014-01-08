@@ -76,6 +76,13 @@
    * @param {Array|Object|string} source An array, object, or string to wrap.
    * @returns {Sequence} The wrapped lazy object.
    *
+   * @exampleHelpers
+   * // Utility functions to provide to all examples
+   * function increment(x) { return x + 1; }
+   * function isEven(x) { return x % 2 === 0; }
+   * function isPositive(x) { return x > 0; }
+   * function isNegative(x) { return x < 0; }
+   *
    * @examples
    * Lazy([1, 2, 4])       // instanceof Lazy.ArrayLikeSequence
    * Lazy({ foo: "bar" })  // instanceof Lazy.ObjectLikeSequence
@@ -280,8 +287,6 @@
    * @returns {number} The number of elements in the sequence.
    *
    * @examples
-   * function isEven(x) { return x % 2 === 0; }
-   *
    * Lazy([1, 2, 3]).size();                 // => 3
    * Lazy([1, 2]).map(Lazy.identity).size(); // => 2
    * Lazy([1, 2, 3]).reject(isEven).size();  // => 2
@@ -433,8 +438,6 @@
    *     the sequence.
    *
    * @examples
-   * function isEven(x) { return x % 2 === 0; }
-   *
    * Lazy([1, 2, 3]).filter(isEven)            // instanceof Lazy.Sequence
    * Lazy([1, 2, 3]).filter(isEven).getIndex() // instanceof Lazy.ArrayLikeSequence
    */
@@ -507,8 +510,6 @@
    * @returns {Sequence} The new sequence.
    *
    * @examples
-   * function increment(x) { return x + 1; }
-   *
    * Lazy([]).map(increment)        // sequence: []
    * Lazy([1, 2, 3]).map(increment) // sequence: [2, 3, 4]
    *
@@ -635,8 +636,6 @@
    * @returns {Sequence} The new sequence.
    *
    * @examples
-   * function isEven(x) { return x % 2 === 0; }
-   *
    * var numbers = [1, 2, 3, 4, 5, 6];
    *
    * Lazy(numbers).filter(isEven) // sequence: [2, 4, 6]
@@ -728,8 +727,6 @@
    * @returns {Sequence} The new sequence.
    *
    * @examples
-   * function isEven(x) { return x % 2 === 0; }
-   *
    * Lazy([1, 2, 3, 4, 5]).reject(isEven)              // sequence: [1, 3, 5]
    * Lazy([{ foo: 1 }, { bar: 2 }]).reject('foo')      // sequence: [{ bar: 2 }]
    * Lazy([{ foo: 1 }, { foo: 2 }]).reject({ foo: 2 }) // sequence: [{ foo: 1 }]
@@ -1038,8 +1035,6 @@
    *     if no count was given).
    *
    * @examples
-   * function isEven(x) { return x % 2 === 0; }
-   *
    * Lazy([1, 2, 3]).last()                 // => 3
    * Lazy([1, 2, 3]).last(2)                // sequence: [2, 3]
    * Lazy([1, 2, 3]).filter(isEven).last(2) // sequence: [2]
@@ -1703,9 +1698,6 @@
    *     for at least one element.
    *
    * @examples
-   * function isEven(x) { return x % 2 === 0; }
-   * function isPositive(x) { return x > 0; }
-   *
    * var numbers = [1, 2, 3, 4, 5];
    *
    * var objects = [{ foo: true }, { foo: false, bar: true }];
@@ -1741,9 +1733,6 @@
    *     the sequence is empty).
    *
    * @examples
-   * function isEven(x) { return x % 2 === 0; }
-   * function isNegative(x) { return x < 0; }
-   *
    * var numbers = [1, 2, 3, 4, 5];
    *
    * Lazy(numbers).some()           // => true
@@ -1780,9 +1769,6 @@
    *     element.
    *
    * @examples
-   * function isEven(x) { return x % 2 === 0; }
-   * function isNegative(x) { return x < 0; }
-   *
    * var numbers = [1, 2, 3, 4, 5];
    *
    * Lazy(numbers).none()           // => false
@@ -1848,8 +1834,6 @@
    *     is located, or -1 if the sequence doesn't contain the value.
    *
    * @examples
-   * function isEven(x) { return x % 2 === 0; }
-   *
    * Lazy(["a", "b", "c", "b", "a"]).lastIndexOf("b")    // => 3
    * Lazy([1, 2, 3]).lastIndexOf(0)                      // => -1
    * Lazy([2, 2, 1, 2, 4]).filter(isEven).lastIndexOf(2) // 2
@@ -1875,8 +1859,6 @@
    *     located, or where it belongs in sorted order.
    *
    * @examples
-   * function isEven(x) { return x % 2 === 0; }
-   *
    * Lazy([1, 3, 6, 9]).sortedIndex(3)                    // => 1
    * Lazy([1, 3, 6, 9]).sortedIndex(7)                    // => 3
    * Lazy([5, 10, 15, 20]).filter(isEven).sortedIndex(10) // => 0
@@ -2137,10 +2119,6 @@
    * @examples
    * function divisibleBy3(x) {
    *   return x % 3 === 0;
-   * }
-   *
-   * function isNegative(x) {
-   *   return x < 0;
    * }
    *
    * var numbers = [5, 6, 7, 8, 9, 10];
