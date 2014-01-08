@@ -1766,6 +1766,34 @@
   };
 
   /**
+   * Checks whether NO elements in this sequence satisfy the given predicate
+   * (the opposite of {@link Sequence#all}, basically).
+   *
+   * @public
+   * @param {Function=} predicate A function to call on (potentially) every element
+   *     in this sequence.
+   * @returns {boolean} True if `predicate` does not return true for any element
+   *     in the sequence. False if `predicate` returns true for at least one
+   *     element.
+   *
+   * @examples
+   * function isEven(x) { return x % 2 === 0; }
+   * function isNegative(x) { return x < 0; }
+   *
+   * var numbers = [1, 2, 3, 4, 5];
+   *
+   * Lazy(numbers).none()           // => false
+   * Lazy(numbers).none(isEven)     // => false
+   * Lazy(numbers).none(isNegative) // => true
+   * Lazy([]).none(isEven)          // => true
+   * Lazy([]).none(isNegative)      // => true
+   * Lazy([]).none()                // => true
+   */
+  Sequence.prototype.none = function none(predicate) {
+    return !this.any(predicate);
+  };
+
+  /**
    * Checks whether the sequence has no elements.
    *
    * @public

@@ -3,6 +3,11 @@ Lazy.js Changelog
 
 This file includes at least a partial list of the major changes in each version.
 
+v0.3.2 (in progress)
+--------------------
+
+- added `Sequence#none`
+
 v0.3.1
 ------
 
