@@ -6,6 +6,8 @@ This file includes at least a partial list of the major changes in each version.
 v0.3.2 (in progress)
 --------------------
 
+- fixed `Sequence#reject` to accept a string or object (like other methods involving predicates)
+- fixed bug in `Sequence#all`
 - added `Sequence#none`
 
 v0.3.1

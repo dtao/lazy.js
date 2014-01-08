@@ -730,9 +730,12 @@
    * @examples
    * function isEven(x) { return x % 2 === 0; }
    *
-   * Lazy([1, 2, 3, 4, 5]).reject(isEven) // sequence: [1, 3, 5]
+   * Lazy([1, 2, 3, 4, 5]).reject(isEven)              // sequence: [1, 3, 5]
+   * Lazy([{ foo: 1 }, { bar: 2 }]).reject('foo')      // sequence: [{ bar: 2 }]
+   * Lazy([{ foo: 1 }, { foo: 2 }]).reject({ foo: 2 }) // sequence: [{ foo: 1 }]
    */
   Sequence.prototype.reject = function reject(rejectFn) {
+    rejectFn = createCallback(rejectFn);
     return this.filter(function(e) { return !rejectFn(e); });
   };
 
