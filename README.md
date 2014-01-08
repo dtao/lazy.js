@@ -2,6 +2,8 @@ Like Underscore, but lazier
 ===========================
 
 [![Build Status](https://travis-ci.org/dtao/lazy.js.png?branch=master)](https://travis-ci.org/dtao/lazy.js)
+[![Bower version](https://badge.fury.io/bo/lazy.js.png)](http://badge.fury.io/bo/lazy.js)
+[![NPM version](https://badge.fury.io/js/lazy.js.png)](http://badge.fury.io/js/lazy.js)
 
 **Lazy.js** it a utility library for JavaScript, similar to [Underscore](http://underscorejs.org/) and [Lo-Dash](http://lodash.com/) but with one important difference: **lazy evaluation** (also known as deferred execution). This can translate to superior performance in many cases, *especially* when dealing with large arrays and/or "chaining" together multiple methods. For simple cases (`map`, `filter`, etc.) on small arrays, Lazy's performance should be similar to Underscore or Lo-Dash.
 
