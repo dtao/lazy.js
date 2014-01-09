@@ -48,7 +48,6 @@ task :generate_docs do
     "StreamLikeSequence",
     "GeneratedSequence",
     "AsyncSequence",
-    "DomSequence",
     "Iterator",
     "AsyncHandle"
   ]
@@ -62,5 +61,5 @@ task :generate_docs do
     :'template-data' => "version:#{package_info['version']}"
   }
 
-  sh "autodoc #{format_options(options)} lazy.js,lazy.browser.js,lazy.node.js"
+  sh "autodoc #{format_options(options)} lazy.js"
 end
