@@ -449,6 +449,39 @@
   };
 
   /**
+   * Provides an indexed, memoized view into the sequence. The difference
+   * between this method and {@link Sequence#getIndex} is that `memoize` will
+   * not eagerly evaluate the sequence. Rather, it will cache the result
+   * whenever you *do* iterate the sequence, so that the underlying source is
+   * only accessed once.
+   *
+   * @public
+   * @returns {ArrayLikeSequence} An indexed, memoized sequence containing the
+   *     same elements as this one.
+   *
+   * @example
+   * function createObject() { return new Object(); }
+   *
+   * var plain    = Lazy.generate(createObject, 10),
+   *     memoized = Lazy.generate(createObject, 10).memoize();
+   *
+   * plain.toArray()[0] === plain.toArray()[0];       // => false
+   * memoized.toArray()[0] === memoized.toArray()[0]; // => true
+   */
+  Sequence.prototype.memoize = function memoize() {
+    return new MemoizedSequence(this);
+  };
+
+  /**
+   * @constructor
+   */
+  function MemoizedSequence(parent) {
+    this.parent = parent;
+  }
+
+  // MemoizedSequence needs to have its prototype set up after ArrayLikeSequence
+
+  /**
    * Creates an object from a sequence of key/value pairs.
    *
    * @public
@@ -2857,6 +2890,23 @@
       return UniqueSequence.prototype.each;
     }
   }
+
+  // Now that we've fully initialized the ArrayLikeSequence prototype, we can
+  // set the prototype for MemoizedSequence.
+
+  MemoizedSequence.prototype = new ArrayLikeSequence();
+
+  MemoizedSequence.prototype.getIndex = function getIndex() {
+    return this.cachedIndex || (this.cachedIndex = this.parent.getIndex());
+  };
+
+  MemoizedSequence.prototype.get = function get(i) {
+    return this.getIndex().get(i);
+  };
+
+  MemoizedSequence.prototype.length = function length() {
+    return this.getIndex().length();
+  };
 
   /**
    * ArrayWrapper is the most basic {@link Sequence}. It directly wraps an array
