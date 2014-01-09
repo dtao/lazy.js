@@ -78,6 +78,8 @@
 
                         <pre>{{{highlightedSignature}}}</pre>
 
+                        <pre class="function-source" id="source-{{identifier}}">{{{highlightedSource}}}</pre>
+
                         <table id="{{name}}-parameters">
                             <thead>
                                 <tr>
@@ -118,7 +120,7 @@
                         <h3>Examples</h3>
 
                         {{#examples}}
-                        <pre class="source-examples" id="source-{{identifier}}">{{{highlightedCode}}}</pre>
+                        <pre class="source-examples" id="examples-{{identifier}}">{{{highlightedCode}}}</pre>
                         {{/examples}}
                     </div>
                     {{/hasExamples}}
@@ -154,6 +156,8 @@
                     {{/hasBenchmarks}}
 
                     <script type="text/javascript">
+                      {{{exampleHelpers}}}
+
                       {{> examples}}
                       {{> benchmarks}}
                     </script>

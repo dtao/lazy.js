@@ -232,6 +232,10 @@ section.method table tbody tr:nth-child(odd) td {
   margin-bottom: 24px;
 }
 
+.signature pre.function-source {
+  display: none;
+}
+
 .examples table tr td {
   vertical-align: middle;
 
