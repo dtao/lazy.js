@@ -294,7 +294,7 @@
    * Lazy({ foo: 1, bar: 2 }).size();        // => 2
    * Lazy('hello').size();                   // => 5
    */
-  Sequence.prototype.size = function() {
+  Sequence.prototype.size = function size() {
     return this.getIndex().length();
   };
 
@@ -330,7 +330,7 @@
   /**
    * Gets the root sequence underlying the current chain of sequences.
    */
-  Sequence.prototype.root = function() {
+  Sequence.prototype.root = function root() {
     return this.parent.root();
   };
 
@@ -339,7 +339,7 @@
    * cases, an object for {@link ObjectLikeSequence}s or a string for
    * {@link StringLikeSequence}s).
    */
-  Sequence.prototype.value = function() {
+  Sequence.prototype.value = function value() {
     return this.toArray();
   };
 
@@ -353,7 +353,7 @@
    *
    * sequence.apply([1, 2, 3, 4]); // => [-2, -4]
    */
-  Sequence.prototype.apply = function(source) {
+  Sequence.prototype.apply = function apply(source) {
     var root = this.root(),
         previousSource = root.source,
         result;
@@ -2078,7 +2078,7 @@
 
   ChunkedSequence.prototype = new Sequence();
 
-  ChunkedSequence.prototype.getIterator = function() {
+  ChunkedSequence.prototype.getIterator = function getIterator() {
     return new ChunkedIterator(this.parent, this.chunkSize);
   };
 
@@ -2090,11 +2090,11 @@
     this.size     = size;
   }
 
-  ChunkedIterator.prototype.current = function() {
+  ChunkedIterator.prototype.current = function current() {
     return this.currentChunk;
   };
 
-  ChunkedIterator.prototype.moveNext = function() {
+  ChunkedIterator.prototype.moveNext = function moveNext() {
     var iterator  = this.iterator,
         chunkSize = this.size,
         chunk     = [];
@@ -2126,7 +2126,7 @@
    * @examples
    * Lazy([1, 2, 3]).tap(fn).each(Lazy.noop); // calls fn 3 times
    */
-  Sequence.prototype.tap = function(callback) {
+  Sequence.prototype.tap = function tap(callback) {
     return new TappedSequence(this, callback);
   };
 
@@ -2938,7 +2938,7 @@
 
   ArrayWrapper.prototype = new ArrayLikeSequence();
 
-  ArrayWrapper.prototype.root = function() {
+  ArrayWrapper.prototype.root = function root() {
     return this;
   };
 
@@ -3292,7 +3292,7 @@
     return defineSequenceType(ObjectLikeSequence, methodName, overrides);
   };
 
-  ObjectLikeSequence.prototype.value = function() {
+  ObjectLikeSequence.prototype.value = function value() {
     return this.toObject();
   };
 
@@ -3585,7 +3585,7 @@
    * // array contents get merged as well
    * Lazy({ foo: [{ bar: 1 }] }).merge({ foo: [{ baz: 2 }] }); // => sequence: { foo: [{ bar: 1, baz: 2}] }
    */
-  ObjectLikeSequence.prototype.merge = function(var_args) {
+  ObjectLikeSequence.prototype.merge = function merge(var_args) {
     var mergeFn = arguments.length > 1 && typeof arguments[arguments.length - 1] === "function" ?
       arrayPop.call(arguments) : null;
     return new MergedSequence(this, arraySlice.call(arguments, 0), mergeFn);
@@ -3602,7 +3602,7 @@
 
   MergedSequence.prototype = new ObjectLikeSequence();
 
-  MergedSequence.prototype.each = function(fn) {
+  MergedSequence.prototype.each = function each(fn) {
     var others  = this.others,
         mergeFn = this.mergeFn || mergeObjects,
         keys    = {};
@@ -3947,7 +3947,7 @@
 
   ObjectWrapper.prototype = new ObjectLikeSequence();
 
-  ObjectWrapper.prototype.root = function() {
+  ObjectWrapper.prototype.root = function root() {
     return this;
   };
 
@@ -4040,7 +4040,7 @@
     return defineSequenceType(StringLikeSequence, methodName, overrides);
   };
 
-  StringLikeSequence.prototype.value = function() {
+  StringLikeSequence.prototype.value = function value() {
     return this.toString();
   };
 
@@ -4554,7 +4554,7 @@
 
   StringWrapper.prototype = new StringLikeSequence();
 
-  StringWrapper.prototype.root = function() {
+  StringWrapper.prototype.root = function root() {
     return this;
   };
 
@@ -4839,7 +4839,7 @@
   /**
    * An async version of {@link Sequence#reverse}.
    */
-  AsyncSequence.prototype.reverse = function() {
+  AsyncSequence.prototype.reverse = function reverse() {
     return this.parent.reverse().async();
   };
 
@@ -4971,7 +4971,7 @@
   /**
    * Just return the same sequence for `AsyncSequence#async` (I see no harm in this).
    */
-  AsyncSequence.prototype.async = function() {
+  AsyncSequence.prototype.async = function async() {
     return this;
   };
 
