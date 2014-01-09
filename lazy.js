@@ -5098,33 +5098,40 @@
   };
 
   /**
-   * Defines a factory for a custom {@link StreamLikeSequence}.
+   * Defines a wrapper for custom {@link StreamLikeSequence}s. This is useful
+   * if you want a way to handle a stream of events as a sequence, but you can't
+   * use Lazy's existing interface (i.e., you're wrapping an object from a
+   * library with its own custom events).
    *
+   * This method defines a *factory*: that is, it produces a function that can
+   * be used to wrap objects and return a {@link Sequence}. Hopefully the
+   * example will make this clear.
+   *
+   * @public
    * @param {Function} initializer An initialization function called on objects
    *     created by this factory. `this` will be bound to the created object,
-   *     which is an instance of {@link StreamLikeSequence}. Use
-   *     {@link StreamLikeSequence#emit} to generate data for this sequence.
+   *     which is an instance of {@link StreamLikeSequence}. Use `emit` to
+   *     generate data for the sequence.
    * @returns {Function} A function that creates a new {@link StreamLikeSequence},
    *     initializes it using the specified function, and returns it.
    *
    * @example
-   * var factory = Lazy.factory(function(eventSource) {
+   * var factory = Lazy.createWrapper(function(eventSource) {
    *   var sequence = this;
    *
-   *   eventSource.on('customEvent', function(data) {
+   *   eventSource.handleEvent(function(data) {
    *     sequence.emit(data);
    *   });
    * });
    *
    * var eventEmitter = {
-   *   trigger: function(eventName, data) {
-   *     var handler = eventEmitter.handlers[eventName];
-   *     if (handler) { handler(data); }
+   *   triggerEvent: function(data) {
+   *     eventEmitter.eventHandler(data);
    *   },
-   *   on: function(eventName, handler) {
-   *     eventEmitter.handlers[eventName] = handler;
+   *   handleEvent: function(handler) {
+   *     eventEmitter.eventHandler = handler;
    *   },
-   *   handlers: {}
+   *   eventHandler: function() {}
    * };
    *
    * var events = [];
@@ -5133,12 +5140,12 @@
    *   events.push(e);
    * });
    *
-   * eventEmitter.trigger('customEvent', { foo: 1 });
-   * eventEmitter.trigger('customEvent', { bar: 2 });
+   * eventEmitter.triggerEvent('foo');
+   * eventEmitter.triggerEvent('bar');
    *
-   * events // => [{ foo: 1 }, { bar: 2 }]
+   * events // => ['foo', 'bar']
    */
-  Lazy.factory = function factory(initializer) {
+  Lazy.createWrapper = function createWrapper(initializer) {
     var ctor = function() {
       this.listeners = [];
     };
