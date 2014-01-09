@@ -306,6 +306,11 @@
    * inheriting from `Sequence` must implement this method or it can't support
    * asynchronous iteration.
    *
+   * Note that **this method is not intended to be used directly by application
+   * code.** Rather, it is intended as a means for implementors to potentially
+   * define custom sequence types that support either synchronous or
+   * asynchronous iteration.
+   *
    * @public
    * @returns {Iterator} An iterator object.
    *
@@ -365,6 +370,12 @@
 
   /**
    * The Iterator object provides an API for iterating over a sequence.
+   *
+   * The purpose of the `Iterator` type is mainly to offer an agnostic way of
+   * iterating over a sequence -- either synchronous (i.e. with a `while` loop)
+   * or asynchronously (with recursive calls to either `setTimeout` or --- if
+   * available --- `setImmediate`). It is not intended to be used directly by
+   * application code.
    *
    * @public
    * @constructor
@@ -4698,6 +4709,18 @@
   }
 
   AsyncSequence.prototype = new Sequence();
+
+  /**
+   * Throws an exception. You cannot manually iterate over an asynchronous
+   * sequence.
+   *
+   * @public
+   * @example
+   * Lazy([1, 2, 3]).async().getIterator() // throws
+   */
+  AsyncSequence.prototype.getIterator = function getIterator() {
+    throw 'An AsyncSequence does not support synchronous iteration.';
+  };
 
   /**
    * An asynchronous version of {@link Sequence#each}.
