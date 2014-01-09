@@ -3,12 +3,14 @@ Lazy.js Changelog
 
 This file includes at least a partial list of the major changes in each version.
 
-v0.3.2 (in progress)
---------------------
+v0.3.2
+------
 
+- added `Sequence.createWrapper` (see http://stackoverflow.com/questions/20959394)
 - added `Sequence#memoize` and `Sequence#none`
 - fixed `Sequence#reject` to accept a string or object (like other methods involving predicates)
 - fixed bug in `Sequence#all`
+- `AsyncSequence#getIterator` now throws an error (see [#63](https://github.com/dtao/lazy.js/issues/63))
 
 v0.3.1
 ------
