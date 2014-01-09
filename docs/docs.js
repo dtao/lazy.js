@@ -6,7 +6,7 @@ window.addEventListener('load', function() {
 
     jasmineEnv.addReporter({
       reportSpecResults: function(spec) {
-        var editorId       = 'source-' + spec.suiteId,
+        var editorId       = 'examples-' + spec.suiteId,
             matchingEditor = document.getElementById(editorId);
 
         var style = spec.results().passed() ? 'passed' : 'failed';
@@ -60,6 +60,31 @@ window.addEventListener('load', function() {
       // targetEditor.removeLineClass(targetLine, 'background', 'highlight');
       targetExample.removeClass('highlight');
     }, 1500);
+  });
+
+  $(document).on('keyup', 'input[name="search"]', function() {
+    var query = $(this).val(),
+        sections = $('section.constructor,section.method,section.typedef');
+
+    // Show all sections for a blank query.
+    if (query.match(/^\s*$/)) {
+      sections.show();
+      return;
+    }
+
+    // Otherwise just show sections whose name matches the query.
+    sections.hide();
+    $('section[data-filter^="' + query + '"]').show();
+  });
+
+  $(document).on('click', '.reveal-source', function(e) {
+    e.preventDefault();
+
+    var link = $(this);
+    var target = $(link.attr('href'));
+
+    link.closest('pre').hide();
+    target.show();
   });
 
   $(document).on('click', '.perf button', function() {

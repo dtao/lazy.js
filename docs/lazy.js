@@ -59,7 +59,6 @@
  * [@dtao](https://github.com/dtao)
  */
 
-
 (function(context) {
   /**
    * Wraps an object and returns a {@link Sequence}. For `null` or `undefined`,

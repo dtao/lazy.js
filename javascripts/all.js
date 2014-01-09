@@ -64599,6 +64599,13 @@ if (platform == 'nodejs') {
    * @param {Array|Object|string} source An array, object, or string to wrap.
    * @returns {Sequence} The wrapped lazy object.
    *
+   * @exampleHelpers
+   * // Utility functions to provide to all examples
+   * function increment(x) { return x + 1; }
+   * function isEven(x) { return x % 2 === 0; }
+   * function isPositive(x) { return x > 0; }
+   * function isNegative(x) { return x < 0; }
+   *
    * @examples
    * Lazy([1, 2, 4])       // instanceof Lazy.ArrayLikeSequence
    * Lazy({ foo: "bar" })  // instanceof Lazy.ObjectLikeSequence
@@ -64628,7 +64635,7 @@ if (platform == 'nodejs') {
     return new ObjectWrapper(source);
   }
 
-  Lazy.VERSION = '0.3.1';
+  Lazy.VERSION = '0.3.2';
 
   /*** Utility methods of questionable value ***/
 
@@ -64803,8 +64810,6 @@ if (platform == 'nodejs') {
    * @returns {number} The number of elements in the sequence.
    *
    * @examples
-   * function isEven(x) { return x % 2 === 0; }
-   *
    * Lazy([1, 2, 3]).size();                 // => 3
    * Lazy([1, 2]).map(Lazy.identity).size(); // => 2
    * Lazy([1, 2, 3]).reject(isEven).size();  // => 2
@@ -64812,7 +64817,7 @@ if (platform == 'nodejs') {
    * Lazy({ foo: 1, bar: 2 }).size();        // => 2
    * Lazy('hello').size();                   // => 5
    */
-  Sequence.prototype.size = function() {
+  Sequence.prototype.size = function size() {
     return this.getIndex().length();
   };
 
@@ -64822,6 +64827,11 @@ if (platform == 'nodejs') {
    *
    * This method is used when asynchronously iterating over sequences. Any type
    * inheriting from `Sequence` must implement this method or it can't support
+   * asynchronous iteration.
+   *
+   * Note that **this method is not intended to be used directly by application
+   * code.** Rather, it is intended as a means for implementors to potentially
+   * define custom sequence types that support either synchronous or
    * asynchronous iteration.
    *
    * @public
@@ -64843,7 +64853,7 @@ if (platform == 'nodejs') {
   /**
    * Gets the root sequence underlying the current chain of sequences.
    */
-  Sequence.prototype.root = function() {
+  Sequence.prototype.root = function root() {
     return this.parent.root();
   };
 
@@ -64852,7 +64862,7 @@ if (platform == 'nodejs') {
    * cases, an object for {@link ObjectLikeSequence}s or a string for
    * {@link StringLikeSequence}s).
    */
-  Sequence.prototype.value = function() {
+  Sequence.prototype.value = function value() {
     return this.toArray();
   };
 
@@ -64866,7 +64876,7 @@ if (platform == 'nodejs') {
    *
    * sequence.apply([1, 2, 3, 4]); // => [-2, -4]
    */
-  Sequence.prototype.apply = function(source) {
+  Sequence.prototype.apply = function apply(source) {
     var root = this.root(),
         previousSource = root.source,
         result;
@@ -64883,6 +64893,12 @@ if (platform == 'nodejs') {
 
   /**
    * The Iterator object provides an API for iterating over a sequence.
+   *
+   * The purpose of the `Iterator` type is mainly to offer an agnostic way of
+   * iterating over a sequence -- either synchronous (i.e. with a `while` loop)
+   * or asynchronously (with recursive calls to either `setTimeout` or --- if
+   * available --- `setImmediate`). It is not intended to be used directly by
+   * application code.
    *
    * @public
    * @constructor
@@ -64956,8 +64972,6 @@ if (platform == 'nodejs') {
    *     the sequence.
    *
    * @examples
-   * function isEven(x) { return x % 2 === 0; }
-   *
    * Lazy([1, 2, 3]).filter(isEven)            // instanceof Lazy.Sequence
    * Lazy([1, 2, 3]).filter(isEven).getIndex() // instanceof Lazy.ArrayLikeSequence
    */
@@ -64967,6 +64981,37 @@ if (platform == 'nodejs') {
     }
     return this.cachedIndex;
   };
+
+  /**
+   * Provides an indexed, memoized view into the sequence. This will cache the
+   * result whenever the sequence is first iterated, so that subsequent
+   * iterations will access the same element objects.
+   *
+   * @public
+   * @returns {ArrayLikeSequence} An indexed, memoized sequence containing this
+   *     sequence's elements, cached after the first iteration.
+   *
+   * @example
+   * function createObject() { return new Object(); }
+   *
+   * var plain    = Lazy.generate(createObject, 10),
+   *     memoized = Lazy.generate(createObject, 10).memoize();
+   *
+   * plain.toArray()[0] === plain.toArray()[0];       // => false
+   * memoized.toArray()[0] === memoized.toArray()[0]; // => true
+   */
+  Sequence.prototype.memoize = function memoize() {
+    return new MemoizedSequence(this);
+  };
+
+  /**
+   * @constructor
+   */
+  function MemoizedSequence(parent) {
+    this.parent = parent;
+  }
+
+  // MemoizedSequence needs to have its prototype set up after ArrayLikeSequence
 
   /**
    * Creates an object from a sequence of key/value pairs.
@@ -65030,8 +65075,6 @@ if (platform == 'nodejs') {
    * @returns {Sequence} The new sequence.
    *
    * @examples
-   * function increment(x) { return x + 1; }
-   *
    * Lazy([]).map(increment)        // sequence: []
    * Lazy([1, 2, 3]).map(increment) // sequence: [2, 3, 4]
    *
@@ -65158,8 +65201,6 @@ if (platform == 'nodejs') {
    * @returns {Sequence} The new sequence.
    *
    * @examples
-   * function isEven(x) { return x % 2 === 0; }
-   *
    * var numbers = [1, 2, 3, 4, 5, 6];
    *
    * Lazy(numbers).filter(isEven) // sequence: [2, 4, 6]
@@ -65251,11 +65292,12 @@ if (platform == 'nodejs') {
    * @returns {Sequence} The new sequence.
    *
    * @examples
-   * function isEven(x) { return x % 2 === 0; }
-   *
-   * Lazy([1, 2, 3, 4, 5]).reject(isEven) // sequence: [1, 3, 5]
+   * Lazy([1, 2, 3, 4, 5]).reject(isEven)              // sequence: [1, 3, 5]
+   * Lazy([{ foo: 1 }, { bar: 2 }]).reject('foo')      // sequence: [{ bar: 2 }]
+   * Lazy([{ foo: 1 }, { foo: 2 }]).reject({ foo: 2 }) // sequence: [{ foo: 1 }]
    */
   Sequence.prototype.reject = function reject(rejectFn) {
+    rejectFn = createCallback(rejectFn);
     return this.filter(function(e) { return !rejectFn(e); });
   };
 
@@ -65558,8 +65600,6 @@ if (platform == 'nodejs') {
    *     if no count was given).
    *
    * @examples
-   * function isEven(x) { return x % 2 === 0; }
-   *
    * Lazy([1, 2, 3]).last()                 // => 3
    * Lazy([1, 2, 3]).last(2)                // sequence: [2, 3]
    * Lazy([1, 2, 3]).filter(isEven).last(2) // sequence: [2]
@@ -66223,16 +66263,21 @@ if (platform == 'nodejs') {
    *     for at least one element.
    *
    * @examples
-   * function isEven(x) { return x % 2 === 0; }
-   * function isPositive(x) { return x > 0; }
-   *
    * var numbers = [1, 2, 3, 4, 5];
+   *
+   * var objects = [{ foo: true }, { foo: false, bar: true }];
    *
    * Lazy(numbers).every(isEven)     // => false
    * Lazy(numbers).every(isPositive) // => true
+   * Lazy(objects).all('foo')        // => false
+   * Lazy(objects).all('bar')        // => false
    */
   Sequence.prototype.every = function every(predicate) {
-    return this.each(createCallback(predicate));
+    predicate = createCallback(predicate);
+
+    return this.each(function(e, i) {
+      return !!predicate(e, i);
+    });
   };
 
   Sequence.prototype.all = function all(predicate) {
@@ -66253,9 +66298,6 @@ if (platform == 'nodejs') {
    *     the sequence is empty).
    *
    * @examples
-   * function isEven(x) { return x % 2 === 0; }
-   * function isNegative(x) { return x < 0; }
-   *
    * var numbers = [1, 2, 3, 4, 5];
    *
    * Lazy(numbers).some()           // => true
@@ -66278,6 +66320,31 @@ if (platform == 'nodejs') {
 
   Sequence.prototype.any = function any(predicate) {
     return this.some(predicate);
+  };
+
+  /**
+   * Checks whether NO elements in this sequence satisfy the given predicate
+   * (the opposite of {@link Sequence#all}, basically).
+   *
+   * @public
+   * @param {Function=} predicate A function to call on (potentially) every element
+   *     in this sequence.
+   * @returns {boolean} True if `predicate` does not return true for any element
+   *     in the sequence. False if `predicate` returns true for at least one
+   *     element.
+   *
+   * @examples
+   * var numbers = [1, 2, 3, 4, 5];
+   *
+   * Lazy(numbers).none()           // => false
+   * Lazy(numbers).none(isEven)     // => false
+   * Lazy(numbers).none(isNegative) // => true
+   * Lazy([]).none(isEven)          // => true
+   * Lazy([]).none(isNegative)      // => true
+   * Lazy([]).none()                // => true
+   */
+  Sequence.prototype.none = function none(predicate) {
+    return !this.any(predicate);
   };
 
   /**
@@ -66332,8 +66399,6 @@ if (platform == 'nodejs') {
    *     is located, or -1 if the sequence doesn't contain the value.
    *
    * @examples
-   * function isEven(x) { return x % 2 === 0; }
-   *
    * Lazy(["a", "b", "c", "b", "a"]).lastIndexOf("b")    // => 3
    * Lazy([1, 2, 3]).lastIndexOf(0)                      // => -1
    * Lazy([2, 2, 1, 2, 4]).filter(isEven).lastIndexOf(2) // 2
@@ -66359,8 +66424,6 @@ if (platform == 'nodejs') {
    *     located, or where it belongs in sorted order.
    *
    * @examples
-   * function isEven(x) { return x % 2 === 0; }
-   *
    * Lazy([1, 3, 6, 9]).sortedIndex(3)                    // => 1
    * Lazy([1, 3, 6, 9]).sortedIndex(7)                    // => 3
    * Lazy([5, 10, 15, 20]).filter(isEven).sortedIndex(10) // => 0
@@ -66538,7 +66601,7 @@ if (platform == 'nodejs') {
 
   ChunkedSequence.prototype = new Sequence();
 
-  ChunkedSequence.prototype.getIterator = function() {
+  ChunkedSequence.prototype.getIterator = function getIterator() {
     return new ChunkedIterator(this.parent, this.chunkSize);
   };
 
@@ -66550,11 +66613,11 @@ if (platform == 'nodejs') {
     this.size     = size;
   }
 
-  ChunkedIterator.prototype.current = function() {
+  ChunkedIterator.prototype.current = function current() {
     return this.currentChunk;
   };
 
-  ChunkedIterator.prototype.moveNext = function() {
+  ChunkedIterator.prototype.moveNext = function moveNext() {
     var iterator  = this.iterator,
         chunkSize = this.size,
         chunk     = [];
@@ -66586,7 +66649,7 @@ if (platform == 'nodejs') {
    * @examples
    * Lazy([1, 2, 3]).tap(fn).each(Lazy.noop); // calls fn 3 times
    */
-  Sequence.prototype.tap = function(callback) {
+  Sequence.prototype.tap = function tap(callback) {
     return new TappedSequence(this, callback);
   };
 
@@ -66621,10 +66684,6 @@ if (platform == 'nodejs') {
    * @examples
    * function divisibleBy3(x) {
    *   return x % 3 === 0;
-   * }
-   *
-   * function isNegative(x) {
-   *   return x < 0;
    * }
    *
    * var numbers = [5, 6, 7, 8, 9, 10];
@@ -67364,6 +67423,31 @@ if (platform == 'nodejs') {
     }
   }
 
+  // Now that we've fully initialized the ArrayLikeSequence prototype, we can
+  // set the prototype for MemoizedSequence.
+
+  MemoizedSequence.prototype = new ArrayLikeSequence();
+
+  MemoizedSequence.prototype.cache = function cache() {
+    return this.cachedResult || (this.cachedResult = this.parent.toArray());
+  };
+
+  MemoizedSequence.prototype.get = function get(i) {
+    return this.cache()[i];
+  };
+
+  MemoizedSequence.prototype.length = function length() {
+    return this.cache().length;
+  };
+
+  MemoizedSequence.prototype.slice = function slice(begin, end) {
+    return this.cache().slice(begin, end);
+  };
+
+  MemoizedSequence.prototype.toArray = function toArray() {
+    return this.cache().slice(0);
+  };
+
   /**
    * ArrayWrapper is the most basic {@link Sequence}. It directly wraps an array
    * and implements the same methods as {@link ArrayLikeSequence}, but more
@@ -67377,7 +67461,7 @@ if (platform == 'nodejs') {
 
   ArrayWrapper.prototype = new ArrayLikeSequence();
 
-  ArrayWrapper.prototype.root = function() {
+  ArrayWrapper.prototype.root = function root() {
     return this;
   };
 
@@ -67731,7 +67815,7 @@ if (platform == 'nodejs') {
     return defineSequenceType(ObjectLikeSequence, methodName, overrides);
   };
 
-  ObjectLikeSequence.prototype.value = function() {
+  ObjectLikeSequence.prototype.value = function value() {
     return this.toObject();
   };
 
@@ -68024,7 +68108,7 @@ if (platform == 'nodejs') {
    * // array contents get merged as well
    * Lazy({ foo: [{ bar: 1 }] }).merge({ foo: [{ baz: 2 }] }); // => sequence: { foo: [{ bar: 1, baz: 2}] }
    */
-  ObjectLikeSequence.prototype.merge = function(var_args) {
+  ObjectLikeSequence.prototype.merge = function merge(var_args) {
     var mergeFn = arguments.length > 1 && typeof arguments[arguments.length - 1] === "function" ?
       arrayPop.call(arguments) : null;
     return new MergedSequence(this, arraySlice.call(arguments, 0), mergeFn);
@@ -68041,7 +68125,7 @@ if (platform == 'nodejs') {
 
   MergedSequence.prototype = new ObjectLikeSequence();
 
-  MergedSequence.prototype.each = function(fn) {
+  MergedSequence.prototype.each = function each(fn) {
     var others  = this.others,
         mergeFn = this.mergeFn || mergeObjects,
         keys    = {};
@@ -68082,12 +68166,18 @@ if (platform == 'nodejs') {
    * @examples
    * mergeObjects({ foo: 1 }, { bar: 2 }); // => { foo: 1, bar: 2 }
    * mergeObjects({ foo: { bar: 1 } }, { foo: { baz: 2 } }); // => { foo: { bar: 1, baz: 2 } }
+   * mergeObjects({ foo: { bar: 1 } }, { foo: undefined }); // => { foo: { bar: 1 } }
+   * mergeObjects({ foo: { bar: 1 } }, { foo: null }); // => { foo: null }
    */
   function mergeObjects(a, b) {
-    // Override non-objects w/ supplied values UNLESS the supplied value is
-    // undefined
-    if (typeof a !== 'object' || a === null) {
-      return typeof b !== 'undefined' ? b : a;
+    if (typeof b === 'undefined') {
+      return a;
+    }
+
+    // Unless we're dealing with two objects, there's no merging to do --
+    // just replace a w/ b.
+    if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null) {
+      return b;
     }
 
     var merged = {}, prop;
@@ -68380,7 +68470,7 @@ if (platform == 'nodejs') {
 
   ObjectWrapper.prototype = new ObjectLikeSequence();
 
-  ObjectWrapper.prototype.root = function() {
+  ObjectWrapper.prototype.root = function root() {
     return this;
   };
 
@@ -68473,7 +68563,7 @@ if (platform == 'nodejs') {
     return defineSequenceType(StringLikeSequence, methodName, overrides);
   };
 
-  StringLikeSequence.prototype.value = function() {
+  StringLikeSequence.prototype.value = function value() {
     return this.toString();
   };
 
@@ -68987,7 +69077,7 @@ if (platform == 'nodejs') {
 
   StringWrapper.prototype = new StringLikeSequence();
 
-  StringWrapper.prototype.root = function() {
+  StringWrapper.prototype.root = function root() {
     return this;
   };
 
@@ -69144,6 +69234,18 @@ if (platform == 'nodejs') {
   AsyncSequence.prototype = new Sequence();
 
   /**
+   * Throws an exception. You cannot manually iterate over an asynchronous
+   * sequence.
+   *
+   * @public
+   * @example
+   * Lazy([1, 2, 3]).async().getIterator() // throws
+   */
+  AsyncSequence.prototype.getIterator = function getIterator() {
+    throw 'An AsyncSequence does not support synchronous iteration.';
+  };
+
+  /**
    * An asynchronous version of {@link Sequence#each}.
    *
    * @public
@@ -69260,7 +69362,7 @@ if (platform == 'nodejs') {
   /**
    * An async version of {@link Sequence#reverse}.
    */
-  AsyncSequence.prototype.reverse = function() {
+  AsyncSequence.prototype.reverse = function reverse() {
     return this.parent.reverse().async();
   };
 
@@ -69392,7 +69494,7 @@ if (platform == 'nodejs') {
   /**
    * Just return the same sequence for `AsyncSequence#async` (I see no harm in this).
    */
-  AsyncSequence.prototype.async = function() {
+  AsyncSequence.prototype.async = function async() {
     return this;
   };
 
@@ -69516,6 +69618,82 @@ if (platform == 'nodejs') {
 
       return !done;
     });
+  };
+
+  /**
+   * Defines a wrapper for custom {@link StreamLikeSequence}s. This is useful
+   * if you want a way to handle a stream of events as a sequence, but you can't
+   * use Lazy's existing interface (i.e., you're wrapping an object from a
+   * library with its own custom events).
+   *
+   * This method defines a *factory*: that is, it produces a function that can
+   * be used to wrap objects and return a {@link Sequence}. Hopefully the
+   * example will make this clear.
+   *
+   * @public
+   * @param {Function} initializer An initialization function called on objects
+   *     created by this factory. `this` will be bound to the created object,
+   *     which is an instance of {@link StreamLikeSequence}. Use `emit` to
+   *     generate data for the sequence.
+   * @returns {Function} A function that creates a new {@link StreamLikeSequence},
+   *     initializes it using the specified function, and returns it.
+   *
+   * @example
+   * var factory = Lazy.createWrapper(function(eventSource) {
+   *   var sequence = this;
+   *
+   *   eventSource.handleEvent(function(data) {
+   *     sequence.emit(data);
+   *   });
+   * });
+   *
+   * var eventEmitter = {
+   *   triggerEvent: function(data) {
+   *     eventEmitter.eventHandler(data);
+   *   },
+   *   handleEvent: function(handler) {
+   *     eventEmitter.eventHandler = handler;
+   *   },
+   *   eventHandler: function() {}
+   * };
+   *
+   * var events = [];
+   *
+   * factory(eventEmitter).each(function(e) {
+   *   events.push(e);
+   * });
+   *
+   * eventEmitter.triggerEvent('foo');
+   * eventEmitter.triggerEvent('bar');
+   *
+   * events // => ['foo', 'bar']
+   */
+  Lazy.createWrapper = function createWrapper(initializer) {
+    var ctor = function() {
+      this.listeners = [];
+    };
+
+    ctor.prototype = new StreamLikeSequence();
+
+    ctor.prototype.each = function(listener) {
+      this.listeners.push(listener);
+    };
+
+    ctor.prototype.emit = function(data) {
+      var listeners = this.listeners;
+
+      for (var len = listeners.length, i = len - 1; i >= 0; --i) {
+        if (listeners[i](data) === false) {
+          listeners.splice(i, 1);
+        }
+      }
+    };
+
+    return function() {
+      var sequence = new ctor();
+      initializer.apply(sequence, arguments);
+      return sequence;
+    };
   };
 
   /**
@@ -70144,6 +70322,19 @@ if (platform == 'nodejs') {
 }(this));
 (function(Lazy) {
 
+  /**
+   * A seqence of DOM nodes.
+   *
+   * You can get a `DomSequence` by wrapping a `NodeList` or `HTMLCollection`
+   * with `Lazy`:
+   *
+   *     var paragraphs = Lazy(document.querySelectorAll('p'));
+   *
+   * @public
+   * @constructor
+   * @param {NodeList|HTMLCollection} source The underlying collection of DOM
+   *     nodes.
+   */
   function DomSequence(source) {
     this.source = source;
   }
@@ -70158,12 +70349,15 @@ if (platform == 'nodejs') {
     return this.source.length;
   };
 
+  /**
+   * Provides a sequence comprising all of this sequence's nodes and their
+   * descendents (children, grandchildren, etc.).
+   *
+   * @public
+   * @returns {Sequence}
+   */
   DomSequence.prototype.flatten = function() {
     return new FlattenedDomSequence(this.source);
-  };
-
-  DomSequence.prototype.on = function(eventName) {
-    return new DomEventSequence(this.source, eventName);
   };
 
   function FlattenedDomSequence(source) {
@@ -70172,12 +70366,6 @@ if (platform == 'nodejs') {
 
   FlattenedDomSequence.prototype = new Lazy.Sequence();
 
-  /**
-   * Iterates over all of a DOM node's descendents (its children, and their
-   * children, etc.) and executes a function for each descendent.
-   *
-   * @param {function(Node):*} fn The function to call on each descendent.
-   */
   FlattenedDomSequence.prototype.each = function(fn) {
     var i    = 0,
         done = false;
@@ -70198,6 +70386,18 @@ if (platform == 'nodejs') {
         return false;
       }
     });
+  };
+
+  /**
+   * Creates a sequence comprising all of the `Event` objects from the given
+   * event propagating through the node(s) in the current sequence.
+   *
+   * @public
+   * @param {string} eventName The name of the event to catch.
+   * @returns {AsyncSequence}
+   */
+  DomSequence.prototype.on = function(eventName) {
+    return new DomEventSequence(this.source, eventName);
   };
 
   function DomEventSequence(element, eventName) {
@@ -70247,6 +70447,7 @@ if (platform == 'nodejs') {
    * A `StreamingHttpSequence` is a {@link StreamLikeSequence} comprising the
    * chunks of data that are streamed in response to an HTTP request.
    *
+   * @public
    * @param {string} url The URL of the HTTP request.
    * @constructor
    */
