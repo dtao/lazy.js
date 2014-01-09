@@ -449,15 +449,13 @@
   };
 
   /**
-   * Provides an indexed, memoized view into the sequence. The difference
-   * between this method and {@link Sequence#getIndex} is that `memoize` will
-   * not eagerly evaluate the sequence. Rather, it will cache the result
-   * whenever you *do* iterate the sequence, so that the underlying source is
-   * only accessed once.
+   * Provides an indexed, memoized view into the sequence. This will cache the
+   * result whenever the sequence is first iterated, so that subsequent
+   * iterations will access the same element objects.
    *
    * @public
-   * @returns {ArrayLikeSequence} An indexed, memoized sequence containing the
-   *     same elements as this one.
+   * @returns {ArrayLikeSequence} An indexed, memoized sequence containing this
+   *     sequence's elements, cached after the first iteration.
    *
    * @example
    * function createObject() { return new Object(); }
@@ -2896,16 +2894,24 @@
 
   MemoizedSequence.prototype = new ArrayLikeSequence();
 
-  MemoizedSequence.prototype.getIndex = function getIndex() {
-    return this.cachedIndex || (this.cachedIndex = this.parent.getIndex());
+  MemoizedSequence.prototype.cache = function cache() {
+    return this.cachedResult || (this.cachedResult = this.parent.toArray());
   };
 
   MemoizedSequence.prototype.get = function get(i) {
-    return this.getIndex().get(i);
+    return this.cache()[i];
   };
 
   MemoizedSequence.prototype.length = function length() {
-    return this.getIndex().length();
+    return this.cache().length;
+  };
+
+  MemoizedSequence.prototype.slice = function slice(begin, end) {
+    return this.cache().slice(begin, end);
+  };
+
+  MemoizedSequence.prototype.toArray = function toArray() {
+    return this.cache().slice(0);
   };
 
   /**
