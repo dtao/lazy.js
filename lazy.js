@@ -1299,6 +1299,42 @@
   // been fully initialized.
 
   /**
+   * Creates a new {@link ObjectLikeSequence} comprising the elements in this
+   * one, indexed according to some key.
+   *
+   * @public
+   * @param {Function|string} keyFn The function to call on the elements in this
+   *     sequence to obtain a key by which to index them, or a string
+   *     representing a property to read from all the elements in this sequence.
+   * @returns {Sequence} The new sequence.
+   *
+   * @examples
+   * var people = [
+   *   { name: 'Bob', age: 25 },
+   *   { name: 'Fred', age: 34 }
+   * ];
+   *
+   * var bob  = people[0],
+   *     fred = people[1];
+   *
+   * Lazy(people).indexBy('name') // sequence: { 'Bob': bob, 'Fred': fred }
+   */
+  Sequence.prototype.indexBy = function(keyFn) {
+    return new IndexedSequence(this, keyFn);
+  };
+
+  /**
+   * @constructor
+   */
+  function IndexedSequence(parent, keyFn) {
+    this.parent = parent;
+    this.keyFn  = keyFn;
+  }
+
+  // IndexedSequence must have its prototype set after ObjectLikeSequence has
+  // been fully initialized.
+
+  /**
    * Creates a new {@link ObjectLikeSequence} containing the unique keys of all
    * the elements in this sequence, each paired with the number of elements
    * in this sequence having that key.
@@ -3853,7 +3889,8 @@
   };
 
   // Now that we've fully initialized the ObjectLikeSequence prototype, we can
-  // actually set the prototype for GroupedSequence and CountedSequence.
+  // actually set the prototypes for GroupedSequence, IndexedSequence, and
+  // CountedSequence.
 
   GroupedSequence.prototype = new ObjectLikeSequence();
 
@@ -3877,6 +3914,21 @@
     }
 
     return true;
+  };
+
+  IndexedSequence.prototype = new ObjectLikeSequence();
+
+  IndexedSequence.prototype.each = function each(fn) {
+    var keyFn   = createCallback(this.keyFn),
+        indexed = {};
+
+    return this.parent.each(function(e) {
+      var key = keyFn(e);
+      if (!indexed[key]) {
+        indexed[key] = e;
+        return fn(e, key);
+      }
+    });
   };
 
   CountedSequence.prototype = new ObjectLikeSequence();
