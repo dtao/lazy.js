@@ -1202,7 +1202,18 @@
 
   /**
    * Creates a new sequence with the same elements as this one, but ordered
-   * according to the values returned by the specified function.
+   * using specified function.
+   *
+   * You can pass:
+   *
+   * - a *string*, to sort by the named property
+   * - a function that takes one argument, to sort by the result of calling the
+   *   function on each element
+   * - a function that takes two arguments and returns a number (i.e., -1, 0, or
+   *   1) to sort by comparing elements
+   *
+   * In the last case sorting will behave as from calling
+   * [`Array#sort`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort).
    *
    * @public
    * @param {Function} sortFn The function to call on the elements in this
@@ -1230,6 +1241,14 @@
    * Lazy(countries).sortBy(population).last(3).pluck('name') // sequence: ["Brazil", "USA", "China"]
    * Lazy(countries).sortBy(area).last(3).pluck('name')       // sequence: ["USA", "China", "Russia"]
    *
+   * // Sorting by 2-arity function
+   * Lazy(['a', 'ab', 'aa', 'ba', 'b', 'abc']).sortBy(function compare(x, y) {
+   *   if (x.length && (x.length !== y.length)) { return compare(x.length, y.length); }
+   *   if (x === y) { return 0; }
+   *   return x > y ? 1 : -1;
+   * });
+   * // => sequence: ['a', 'b', 'aa', 'ab', 'ba', 'abc']
+   *
    * @benchmarks
    * var randoms = Lazy.generate(Math.random).take(100).toArray();
    *
@@ -1251,11 +1270,11 @@
   SortedSequence.prototype = new Sequence();
 
   SortedSequence.prototype.each = function each(fn) {
-    var sortFn = createCallback(this.sortFn),
+    var sortFn = createComparator(this.sortFn),
         sorted = this.parent.toArray(),
         i = -1;
 
-    sorted.sort(function(x, y) { return compare(x, y, sortFn); });
+    sorted.sort(sortFn);
 
     return forEach(sorted, fn);
   };
@@ -5361,6 +5380,28 @@
 
       default:
         throw "Don't know how to make a callback from a " + typeof callback + "!";
+    }
+  }
+
+  /**
+   * Creates a comparator suitable for sorting arrays.
+   */
+  function createComparator(callback) {
+    if (!callback) {
+      return compare;
+    }
+
+    callback = createCallback(callback);
+
+    switch (callback.length) {
+      case 1:
+        return function(x, y) {
+          return compare(x, y, callback);
+        };
+
+      case 2:
+      default:
+        return callback;
     }
   }
 
