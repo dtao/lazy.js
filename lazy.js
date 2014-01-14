@@ -5405,7 +5405,11 @@
    */
   function createComparator(callback, descending) {
     if (!callback) {
-      return compare;
+      return descending ?
+        function(x, y) {
+          return compare(y, x);
+        } :
+        compare;
     }
 
     callback = createCallback(callback);
@@ -5414,17 +5418,17 @@
       case 1:
         return descending ?
           function(x, y) {
-            return compare(y, x, callback);
+            return compare(callback(y), callback(x));
           } :
           function(x, y) {
-            return compare(x, y, callback);
+            return compare(callback(x), callback(y));
           };
 
       case 2:
       default:
         return descending ?
           function(x, y) {
-            return callback.call(null, y, x);
+            return callback(y, x);
           } :
           callback;
     }
@@ -5451,8 +5455,6 @@
    * @private
    * @param {*} x The left element to compare.
    * @param {*} y The right element to compare.
-   * @param {Function=} fn An optional function to call on each element, to get
-   *     the values to compare.
    * @returns {number} 1 if x > y, -1 if x < y, or 0 if x and y are equal.
    *
    * @examples
@@ -5461,11 +5463,7 @@
    * compare(2, 1)     // => 1
    * compare('a', 'b') // => -1
    */
-  function compare(x, y, fn) {
-    if (typeof fn === "function") {
-      return compare(fn(x), fn(y));
-    }
-
+  function compare(x, y) {
     if (x === y) {
       return 0;
     }
