@@ -5402,6 +5402,24 @@
 
   /**
    * Creates a comparator suitable for sorting arrays.
+   *
+   * @private
+   * @param {Function|string|Object} callback A function, string, or object to
+   *     convert to a callback using `createCallback`.
+   * @param {boolean=} descending Whether or not the resulting comparator should
+   *     compare for descending order.
+   * @returns {Function} A function that accepts two values and returns 1 if
+   *     the first is greater, -1 if the second is greater, or 0 if they are
+   *     equivalent.
+   *
+   * @examples
+   * createComparator('a')({ a: 1 }, { a: 2 });       // => -1
+   * createComparator('a')({ a: 1 }, { a: 1 });       // => 0
+   * createComparator('a', true)({ a: 1 }, { a: 2 }); // => 1
+   * createComparator('a', true)({ a: 1 }, { a: 1 }); // => 0
+   * createComparator()(3, 5);                        // => -1
+   * createComparator(null, true)(3, 5);              // => 1
+   * createComparator()(3, 3);                        // => 0
    */
   function createComparator(callback, descending) {
     if (!callback) {
