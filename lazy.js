@@ -1218,6 +1218,8 @@
    * @public
    * @param {Function} sortFn The function to call on the elements in this
    *     sequence, in order to sort them.
+   * @param {boolean} descending Whether or not the resulting sequence should be
+   *     in descending order (defaults to `false`).
    * @returns {Sequence} The new sequence.
    *
    * @examples
@@ -1240,6 +1242,7 @@
    *
    * Lazy(countries).sortBy(population).last(3).pluck('name') // sequence: ["Brazil", "USA", "China"]
    * Lazy(countries).sortBy(area).last(3).pluck('name')       // sequence: ["USA", "China", "Russia"]
+   * Lazy(countries).sortBy(area, true).first(3).pluck('name') // sequence: ["Russia", "China", "USA"]
    *
    * // Sorting by 2-arity function
    * Lazy(['a', 'ab', 'aa', 'ba', 'b', 'abc']).sortBy(function compare(x, y) {
@@ -1255,28 +1258,42 @@
    * Lazy(randoms).sortBy(Lazy.identity).each(Lazy.noop) // lazy
    * _.each(_.sortBy(randoms, Lazy.identity), _.noop)    // lodash
    */
-  Sequence.prototype.sortBy = function sortBy(sortFn) {
-    return new SortedSequence(this, sortFn);
+  Sequence.prototype.sortBy = function sortBy(sortFn, descending) {
+    return new SortedSequence(this, sortFn, descending);
   };
 
   /**
    * @constructor
    */
-  function SortedSequence(parent, sortFn) {
-    this.parent = parent;
-    this.sortFn = sortFn;
+  function SortedSequence(parent, sortFn, descending) {
+    this.parent     = parent;
+    this.sortFn     = sortFn;
+    this.descending = descending;
   }
 
   SortedSequence.prototype = new Sequence();
 
   SortedSequence.prototype.each = function each(fn) {
-    var sortFn = createComparator(this.sortFn),
-        sorted = this.parent.toArray(),
-        i = -1;
+    var sortFn = createComparator(this.sortFn, this.descending),
+        sorted = this.parent.toArray();
 
     sorted.sort(sortFn);
 
     return forEach(sorted, fn);
+  };
+
+  /**
+   * @examples
+   * var items = [{ a: 4 }, { a: 3 }, { a: 5 }];
+   *
+   * Lazy(items).sortBy('a').reverse();
+   * // => sequence: [{ a: 5 }, { a: 4 }, { a: 3 }]
+   *
+   * Lazy(items).sortBy('a').reverse().reverse();
+   * // => sequence: [{ a: 3 }, { a: 4 }, { a: 5 }]
+   */
+  SortedSequence.prototype.reverse = function reverse() {
+    return new SortedSequence(this.parent, this.sortFn, !this.descending);
   };
 
   /**
@@ -5386,7 +5403,7 @@
   /**
    * Creates a comparator suitable for sorting arrays.
    */
-  function createComparator(callback) {
+  function createComparator(callback, descending) {
     if (!callback) {
       return compare;
     }
@@ -5395,13 +5412,21 @@
 
     switch (callback.length) {
       case 1:
-        return function(x, y) {
-          return compare(x, y, callback);
-        };
+        return descending ?
+          function(x, y) {
+            return compare(y, x, callback);
+          } :
+          function(x, y) {
+            return compare(x, y, callback);
+          };
 
       case 2:
       default:
-        return callback;
+        return descending ?
+          function(x, y) {
+            return callback.call(null, y, x);
+          } :
+          callback;
     }
   }
 
