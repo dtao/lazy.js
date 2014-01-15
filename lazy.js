@@ -1202,18 +1202,47 @@
 
   /**
    * Creates a new sequence with the same elements as this one, but ordered
-   * using specified function.
+   * using the specified comparison function.
+   *
+   * This has essentially the same behavior as calling
+   * [`Array#sort`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort),
+   * but obviously instead of modifying the collection it returns a new
+   * {@link Sequence} object.
+   *
+   * @public
+   * @param {Function=} sortFn The function used to compare elements in the
+   *     sequence. The function will be passed two elements and should return:
+   *     - 1 if the first is greater
+   *     - -1 if the second is greater
+   *     - 0 if the two values are the same
+   * @param {boolean} descending Whether or not the resulting sequence should be
+   *     in descending order (defaults to `false`).
+   * @returns {Sequence} The new sequence.
+   *
+   * @examples
+   * Lazy([5, 10, 1]).sort()     // sequence: [1, 5, 10]
+   * Lazy(['foo', 'bar']).sort() // sequence: ['bar', 'foo']
+   *
+   * // Sorting w/ custom comparison function
+   * Lazy(['a', 'ab', 'aa', 'ba', 'b', 'abc']).sort(function compare(x, y) {
+   *   if (x.length && (x.length !== y.length)) { return compare(x.length, y.length); }
+   *   if (x === y) { return 0; }
+   *   return x > y ? 1 : -1;
+   * });
+   * // => sequence: ['a', 'b', 'aa', 'ab', 'ba', 'abc']
+   */
+  Sequence.prototype.sort = function sort(sortFn, descending) {
+    return new SortedSequence(this, sortFn || compare, descending);
+  };
+
+  /**
+   * Creates a new sequence with the same elements as this one, but ordered by
+   * the results of the given function.
    *
    * You can pass:
    *
    * - a *string*, to sort by the named property
-   * - a function that takes one argument, to sort by the result of calling the
-   *   function on each element
-   * - a function that takes two arguments and returns a number (i.e., -1, 0, or
-   *   1) to sort by comparing elements
-   *
-   * In the last case sorting will behave as from calling
-   * [`Array#sort`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort).
+   * - a function, to sort by the result of calling the function on each element
    *
    * @public
    * @param {Function} sortFn The function to call on the elements in this
@@ -1244,14 +1273,6 @@
    * Lazy(countries).sortBy(area).last(3).pluck('name')       // sequence: ["USA", "China", "Russia"]
    * Lazy(countries).sortBy(area, true).first(3).pluck('name') // sequence: ["Russia", "China", "USA"]
    *
-   * // Sorting by 2-arity function
-   * Lazy(['a', 'ab', 'aa', 'ba', 'b', 'abc']).sortBy(function compare(x, y) {
-   *   if (x.length && (x.length !== y.length)) { return compare(x.length, y.length); }
-   *   if (x === y) { return 0; }
-   *   return x > y ? 1 : -1;
-   * });
-   * // => sequence: ['a', 'b', 'aa', 'ab', 'ba', 'abc']
-   *
    * @benchmarks
    * var randoms = Lazy.generate(Math.random).take(100).toArray();
    *
@@ -1259,7 +1280,7 @@
    * _.each(_.sortBy(randoms, Lazy.identity), _.noop)    // lodash
    */
   Sequence.prototype.sortBy = function sortBy(sortFn, descending) {
-    return new SortedSequence(this, sortFn, descending);
+    return new SortedSequence(this, createComparator(sortFn), descending);
   };
 
   /**
@@ -1274,12 +1295,12 @@
   SortedSequence.prototype = new Sequence();
 
   SortedSequence.prototype.each = function each(fn) {
-    var sortFn = createComparator(this.sortFn, this.descending),
-        sorted = this.parent.toArray();
+    var sortFn = this.descending ? reverseArguments(this.sortFn) : this.sortFn,
+        result = this.parent.toArray();
 
-    sorted.sort(sortFn);
+    result.sort(sortFn);
 
-    return forEach(sorted, fn);
+    return forEach(result, fn);
   };
 
   /**
@@ -5423,33 +5444,32 @@
    */
   function createComparator(callback, descending) {
     if (!callback) {
-      return descending ?
-        function(x, y) {
-          return compare(y, x);
-        } :
-        compare;
+      return descending ? reverseArguments(compare) : compare;
     }
 
     callback = createCallback(callback);
 
-    switch (callback.length) {
-      case 1:
-        return descending ?
-          function(x, y) {
-            return compare(callback(y), callback(x));
-          } :
-          function(x, y) {
-            return compare(callback(x), callback(y));
-          };
+    var comparator = function(x, y) {
+      return compare(callback(x), callback(y));
+    };
 
-      case 2:
-      default:
-        return descending ?
-          function(x, y) {
-            return callback(y, x);
-          } :
-          callback;
-    }
+    return descending ? reverseArguments(comparator) : comparator;
+  }
+
+  /**
+   * Takes a function and returns a function with the same logic but the
+   * arguments reversed. Only applies to functions w/ arity=2 as this is private
+   * and I can do what I want.
+   *
+   * @private
+   * @param {Function} fn The function to "reverse"
+   * @returns {Function} The "reversed" function
+   *
+   * @examples
+   * reverseArguments(function(x, y) { return x + y; })('a', 'b'); // => 'ba'
+   */
+  function reverseArguments(fn) {
+    return function(x, y) { return fn(y, x); };
   }
 
   /**
