@@ -2485,7 +2485,28 @@
    *
    * All methods of `ArrayLikeSequence` that conceptually should return
    * something like a array (with indexed access) return another
-   * `ArrayLikeSequence`.
+   * `ArrayLikeSequence`, for example:
+   *
+   * - {@link Sequence#map}
+   * - {@link ArrayLikeSequence#slice}
+   * - {@link Sequence#take} and {@link Sequence#drop}
+   * - {@link Sequence#reverse}
+   *
+   * The above is not an exhaustive list. There are also certain other cases
+   * where it might be possible to return an `ArrayLikeSequence` (e.g., calling
+   * {@link Sequence#concat} with a single array argument), but this is not
+   * guaranteed by the API.
+   *
+   * Note that in many cases, it is not possible to provide indexed access
+   * without first performing at least a partial iteration of the underlying
+   * sequence. In these cases an `ArrayLikeSequence` will not be returned:
+   *
+   * - {@link Sequence#filter}
+   * - {@link Sequence#uniq}
+   * - {@link Sequence#union}
+   * - {@link Sequence#intersect}
+   *
+   * etc. The above methods only return ordinary {@link Sequence} objects.
    *
    * Defining custom array-like sequences
    * ------------------------------------
