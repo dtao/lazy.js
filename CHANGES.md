@@ -6,7 +6,8 @@ This file includes at least a partial list of the major changes in each version.
 v0.3.3 (in progress)
 --------------------
 
-- `Sequence#sortBy` can now accept a 2-arity function for more customized sorting (see [#65](https://github.com/dtao/lazy.js/issues/65)), as well as a `descending` argument
+- added `Sequence#sort`, which can accept a 2-arity function for more customized sorting (see [#65](https://github.com/dtao/lazy.js/issues/65))
+- both `Sequence#sort` and `Sequence#sortBy` now accept a `descending` argument
 - added `Sequence#indexBy`
 
 v0.3.2
