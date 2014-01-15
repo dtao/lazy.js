@@ -1220,8 +1220,10 @@
    * @returns {Sequence} The new sequence.
    *
    * @examples
-   * Lazy([5, 10, 1]).sort()     // sequence: [1, 5, 10]
-   * Lazy(['foo', 'bar']).sort() // sequence: ['bar', 'foo']
+   * Lazy([5, 10, 1]).sort()                // sequence: [1, 5, 10]
+   * Lazy(['foo', 'bar']).sort()            // sequence: ['bar', 'foo']
+   * Lazy(['b', 'c', 'a']).sort(null, true) // sequence: ['c', 'b', 'a']
+   * Lazy([5, 10, 1]).sort(null, true)      // sequence: [10, 5, 1]
    *
    * // Sorting w/ custom comparison function
    * Lazy(['a', 'ab', 'aa', 'ba', 'b', 'abc']).sort(function compare(x, y) {
@@ -1232,7 +1234,9 @@
    * // => sequence: ['a', 'b', 'aa', 'ab', 'ba', 'abc']
    */
   Sequence.prototype.sort = function sort(sortFn, descending) {
-    return new SortedSequence(this, sortFn || compare, descending);
+    sortFn || (sortFn = compare);
+    if (descending) { sortFn = reverseArguments(sortFn); }
+    return new SortedSequence(this, sortFn);
   };
 
   /**
@@ -1280,22 +1284,23 @@
    * _.each(_.sortBy(randoms, Lazy.identity), _.noop)    // lodash
    */
   Sequence.prototype.sortBy = function sortBy(sortFn, descending) {
-    return new SortedSequence(this, createComparator(sortFn), descending);
+    sortFn = createComparator(sortFn);
+    if (descending) { sortFn = reverseArguments(sortFn); }
+    return new SortedSequence(this, sortFn);
   };
 
   /**
    * @constructor
    */
-  function SortedSequence(parent, sortFn, descending) {
-    this.parent     = parent;
-    this.sortFn     = sortFn;
-    this.descending = descending;
+  function SortedSequence(parent, sortFn) {
+    this.parent = parent;
+    this.sortFn = sortFn;
   }
 
   SortedSequence.prototype = new Sequence();
 
   SortedSequence.prototype.each = function each(fn) {
-    var sortFn = this.descending ? reverseArguments(this.sortFn) : this.sortFn,
+    var sortFn = this.sortFn,
         result = this.parent.toArray();
 
     result.sort(sortFn);
@@ -1314,7 +1319,7 @@
    * // => sequence: [{ a: 3 }, { a: 4 }, { a: 5 }]
    */
   SortedSequence.prototype.reverse = function reverse() {
-    return new SortedSequence(this.parent, this.sortFn, !this.descending);
+    return new SortedSequence(this.parent, reverseArguments(this.sortFn));
   };
 
   /**
@@ -5422,38 +5427,32 @@
   }
 
   /**
-   * Creates a comparator suitable for sorting arrays.
+   * Takes a function that returns a value for one argument and produces a
+   * function that compares two arguments.
    *
    * @private
    * @param {Function|string|Object} callback A function, string, or object to
    *     convert to a callback using `createCallback`.
-   * @param {boolean=} descending Whether or not the resulting comparator should
-   *     compare for descending order.
    * @returns {Function} A function that accepts two values and returns 1 if
    *     the first is greater, -1 if the second is greater, or 0 if they are
    *     equivalent.
    *
    * @examples
    * createComparator('a')({ a: 1 }, { a: 2 });       // => -1
+   * createComparator('a')({ a: 6 }, { a: 2 });       // => 1
    * createComparator('a')({ a: 1 }, { a: 1 });       // => 0
-   * createComparator('a', true)({ a: 1 }, { a: 2 }); // => 1
-   * createComparator('a', true)({ a: 1 }, { a: 1 }); // => 0
    * createComparator()(3, 5);                        // => -1
-   * createComparator(null, true)(3, 5);              // => 1
+   * createComparator()(7, 5);                        // => 1
    * createComparator()(3, 3);                        // => 0
    */
   function createComparator(callback, descending) {
-    if (!callback) {
-      return descending ? reverseArguments(compare) : compare;
-    }
+    if (!callback) { return compare; }
 
     callback = createCallback(callback);
 
-    var comparator = function(x, y) {
+    return function(x, y) {
       return compare(callback(x), callback(y));
     };
-
-    return descending ? reverseArguments(comparator) : comparator;
   }
 
   /**
