@@ -4,8 +4,120 @@
   // first (so we need to require Lazy right here right now).
   if (typeof require === 'function') {
     context.Lazy = require('../../lazy.node.js');
+
+    // Also need to load this for a nicer jasmine async interface
+    // (see https://github.com/derickbailey/jasmine.async).
+    context.AsyncSpec = require('jasmine-async')(context.jasmine);
+
+    // ...and also need this... at least until I refactor it on out of here.
     require('./person.js');
   }
+
+  context.testSequence = function(name, options) {
+    describe(name, function() {
+      var monitor, sequence;
+
+      beforeEach(function() {
+        monitor  = createMonitoredArray(options.input);
+        sequence = Lazy(monitor);
+      });
+
+      function createMonitoredArray(array) {
+        var monitor  = array.slice(0),
+            accesses = {};
+
+        function monitorProperty(i) {
+          Object.defineProperty(monitor, i, {
+            get: function() {
+              accesses[i] = true;
+              return array[i];
+            }
+          });
+        }
+
+        for (var i = 0, len = monitor.length; i < len; ++i) {
+          monitorProperty(i);
+        }
+
+        monitor.accessCount = function() {
+          return Object.keys(accesses).length;
+        };
+
+        monitor.accessedAt = function(i) {
+          return accesses[i];
+        };
+
+        return monitor;
+      }
+
+      function getResult() {
+        return options.apply(sequence);
+      }
+
+      function expectResult() {
+        expect(getResult()).toComprise(options.result);
+      }
+
+      it('works on an ArrayWrapper', function() {
+        expectResult();
+      });
+
+      it('works on an ArrayLikeSequence', function() {
+        sequence = sequence.map(Lazy.identity);
+        expectResult();
+      });
+
+      it('works on a Sequence w/o indexing', function() {
+        sequence = sequence.filter(alwaysTrue);
+        expectResult();
+      });
+
+      it('is actually lazy', function() {
+        getResult();
+        expect(monitor.accessCount()).toBe(0);
+      });
+
+      it('supports early termination', function() {
+        sequence = sequence.take(2);
+        expect(getResult()).toComprise(options.result.slice(0, 2));
+      });
+
+      describe('each', function() {
+        it('returns true if the entire sequence is iterated', function() {
+          var result = getResult().each(Lazy.noop);
+          expect(result).toBe(true);
+        });
+
+        it('returns false if iteration is terminated early', function() {
+          var result = getResult().each(alwaysFalse);
+          expect(result).toBe(false);
+        });
+      });
+
+      describe('async iteration', function() {
+        var async = new AsyncSpec(this);
+
+        function getAsyncResult() {
+          return getResult().async();
+        }
+
+        async.it('is supported', function(done) {
+          getAsyncResult().toArray().onComplete(function(result) {
+            expect(result).toEqual(options.result);
+            done();
+          });
+        });
+
+        async.it('supports early termination', function(done) {
+          sequence = sequence.take(2);
+          getAsyncResult().toArray().onComplete(function(result) {
+            expect(result).toEqual(options.result.slice(0, 2));
+            done();
+          });
+        });
+      });
+    });
+  };
 
   context.people        = null;
   context.david         = null;
@@ -131,11 +243,12 @@
 
   // ----- Helpers, to make specs more concise -----
 
-  context.add        = function(x, y) { return x + y; };
-  context.increment  = function(x) { return x + 1; };
-  context.isEven     = function(x) { return x % 2 === 0; };
-  context.identity   = function(x) { return x; };
-  context.alwaysTrue = function(x) { return true; };
+  context.add         = function(x, y) { return x + y; };
+  context.increment   = function(x) { return x + 1; };
+  context.isEven      = function(x) { return x % 2 === 0; };
+  context.identity    = function(x) { return x; };
+  context.alwaysTrue  = function(x) { return true; };
+  context.alwaysFalse = function(x) { return false; };
 
   // ----- Specifically for spies -----
 

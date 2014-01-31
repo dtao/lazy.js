@@ -1,3 +1,11 @@
+testSequence('map', {
+  input: [1, 2, 3],
+  apply: function(sequence) {
+    return sequence.map(function(x) { return x + 1; });
+  },
+  result: [2, 3, 4]
+});
+
 describe("map", function() {
   ensureLaziness(function() { Lazy(people).map(Person.getName); });
 

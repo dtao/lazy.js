@@ -27,6 +27,7 @@
   "devDependencies": {
     "autodoc": ">= 0.5.5",
     "deft": ">= 0.2.0",
+    "jasmine-async": "*",
     "jasmine-node": "1.7.x",
     "jsdoc": "3.2.x",
     "JSONStream": ">= 0.7.1",
