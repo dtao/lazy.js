@@ -1,9 +1,24 @@
-testSequence('map', {
-  input: [1, 2, 3],
-  apply: function(sequence) {
-    return sequence.map(function(x) { return x + 1; });
-  },
-  result: [2, 3, 4]
+testSequence(['map', 'pluck', 'collect'], {
+  cases: [
+    {
+      input: [1, 2, 3],
+      apply: function(sequence, method) {
+        return sequence[method](function(x) { return x + 1; });
+      },
+      result: [2, 3, 4]
+    },
+    {
+      label: 'pluck-style',
+      input: [{ foo: 1 }, { foo: 2 }, { foo: 3 }],
+      apply: function(sequence, method) {
+        return sequence[method]('foo');
+      },
+      result: [1, 2, 3]
+    }
+  ],
+
+  arrayLike: true,
+  supportsAsync: true
 });
 
 describe("map", function() {

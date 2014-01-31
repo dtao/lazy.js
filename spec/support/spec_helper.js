@@ -13,111 +13,174 @@
     require('./person.js');
   }
 
-  context.testSequence = function(name, options) {
-    describe(name, function() {
+  context.testSequence = function(names, options) {
+    if (typeof name === 'string') {
+      name = [name];
+    }
+
+    for (var i = 0; i < names.length; ++i) {
+      for (var testCase in options.cases) {
+        createComprehensiveTest(names[i], options.cases[testCase], options);
+      }
+    }
+  };
+
+  function createComprehensiveTest(name, testCase, options) {
+    var label = '#' + name;
+
+    if (testCase.label) {
+      label += ' (' + testCase.label + ')';
+    }
+
+    describe(label, function() {
       var monitor, sequence;
 
       beforeEach(function() {
-        monitor  = createMonitoredArray(options.input);
+        monitor  = createMonitoredArray(testCase.input);
         sequence = Lazy(monitor);
       });
 
-      function createMonitoredArray(array) {
-        var monitor  = array.slice(0),
-            accesses = {};
+      function getResult() {
+        return testCase.apply(sequence, name);
+      }
 
-        function monitorProperty(i) {
-          Object.defineProperty(monitor, i, {
-            get: function() {
-              accesses[i] = true;
-              return array[i];
+      function iterateResult() {
+        getResult().each(Lazy.noop);
+      }
+
+      function assertResult() {
+        expect(getResult()).toComprise(testCase.result);
+      }
+
+      var sequenceTypes = [
+        {
+          label: 'an ArrayWrapper',
+          transform: function() { return sequence; }
+        },
+        {
+          label: 'an ArrayLikeSequence',
+          transform: function() { return sequence.map(Lazy.identity); }
+        },
+        {
+          label: 'an ordinary sequence',
+          transform: function() { return sequence.filter(alwaysTrue); },
+          arrayLike: false
+        }
+      ];
+
+      for (var i = 0; i < sequenceTypes.length; ++i) {
+        (function(sequenceType) {
+          describe('for ' + sequenceType.label, function() {
+            beforeEach(function() {
+              sequence = sequenceType.transform();
+            });
+
+            it('works as expected', function() {
+              assertResult();
+            });
+
+            it('is actually lazy', function() {
+              getResult();
+              expect(monitor.accessCount()).toBe(0);
+            });
+
+            it('supports early termination', function() {
+              sequence = sequence.take(2);
+              expect(getResult()).toComprise(testCase.result.slice(0, 2));
+            });
+
+            it('accesses the minimum number of elements from the source', function() {
+              sequence = sequence.take(2);
+              iterateResult();
+              expect(monitor.accessCount()).toEqual(2);
+            });
+
+            describe('each', function() {
+              it('returns true if the entire sequence is iterated', function() {
+                var result = getResult().each(Lazy.noop);
+                expect(result).toBe(true);
+              });
+
+              it('returns false if iteration is terminated early', function() {
+                var result = getResult().each(alwaysFalse);
+                expect(result).toBe(false);
+              });
+            });
+
+            if (options.arrayLike && sequenceType.arrayLike !== false) {
+              describe('indexed access', function() {
+                it('is supported', function() {
+                  expect(getResult()).toBeInstanceOf(Lazy.ArrayLikeSequence);
+                });
+
+                it('does not invoke full iteration', function() {
+                  getResult().get(1);
+                  expect(monitor.accessCount()).toEqual(1);
+                });
+              });
+            }
+
+            if (options.supportsAsync) {
+              describe('async iteration', function() {
+                var async = new AsyncSpec(this);
+
+                function getAsyncResult() {
+                  return getResult().async();
+                }
+
+                // Currently this tests if blah().async() works.
+                // TODO: First, think about whether async().blah() should work.
+                // TODO: IF it should work, then make it work (better)!
+
+                async.it('is supported', function(done) {
+                  getAsyncResult().toArray().onComplete(function(result) {
+                    expect(result).toEqual(testCase.result);
+                    done();
+                  });
+                });
+
+                async.it('supports early termination', function(done) {
+                  sequence = sequence.take(2);
+                  getAsyncResult().toArray().onComplete(function(result) {
+                    expect(result).toEqual(testCase.result.slice(0, 2));
+                    done();
+                  });
+                });
+              });
             }
           });
-        }
-
-        for (var i = 0, len = monitor.length; i < len; ++i) {
-          monitorProperty(i);
-        }
-
-        monitor.accessCount = function() {
-          return Object.keys(accesses).length;
-        };
-
-        monitor.accessedAt = function(i) {
-          return accesses[i];
-        };
-
-        return monitor;
+        }(sequenceTypes[i]));
       }
-
-      function getResult() {
-        return options.apply(sequence);
-      }
-
-      function expectResult() {
-        expect(getResult()).toComprise(options.result);
-      }
-
-      it('works on an ArrayWrapper', function() {
-        expectResult();
-      });
-
-      it('works on an ArrayLikeSequence', function() {
-        sequence = sequence.map(Lazy.identity);
-        expectResult();
-      });
-
-      it('works on a Sequence w/o indexing', function() {
-        sequence = sequence.filter(alwaysTrue);
-        expectResult();
-      });
-
-      it('is actually lazy', function() {
-        getResult();
-        expect(monitor.accessCount()).toBe(0);
-      });
-
-      it('supports early termination', function() {
-        sequence = sequence.take(2);
-        expect(getResult()).toComprise(options.result.slice(0, 2));
-      });
-
-      describe('each', function() {
-        it('returns true if the entire sequence is iterated', function() {
-          var result = getResult().each(Lazy.noop);
-          expect(result).toBe(true);
-        });
-
-        it('returns false if iteration is terminated early', function() {
-          var result = getResult().each(alwaysFalse);
-          expect(result).toBe(false);
-        });
-      });
-
-      describe('async iteration', function() {
-        var async = new AsyncSpec(this);
-
-        function getAsyncResult() {
-          return getResult().async();
-        }
-
-        async.it('is supported', function(done) {
-          getAsyncResult().toArray().onComplete(function(result) {
-            expect(result).toEqual(options.result);
-            done();
-          });
-        });
-
-        async.it('supports early termination', function(done) {
-          sequence = sequence.take(2);
-          getAsyncResult().toArray().onComplete(function(result) {
-            expect(result).toEqual(options.result.slice(0, 2));
-            done();
-          });
-        });
-      });
     });
-  };
+  }
+
+  function createMonitoredArray(array) {
+    var monitor  = array.slice(0),
+        accesses = {};
+
+    function monitorProperty(i) {
+      Object.defineProperty(monitor, i, {
+        get: function() {
+          accesses[i] = true;
+          return array[i];
+        }
+      });
+    }
+
+    for (var i = 0, len = monitor.length; i < len; ++i) {
+      monitorProperty(i);
+    }
+
+    monitor.accessCount = function() {
+      return Object.keys(accesses).length;
+    };
+
+    monitor.accessedAt = function(i) {
+      return !!accesses[i];
+    };
+
+    return monitor;
+  }
 
   context.people        = null;
   context.david         = null;
