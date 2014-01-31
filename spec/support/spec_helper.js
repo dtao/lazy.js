@@ -294,7 +294,7 @@
     });
 
     it(description + " for an indexed sequence", function() {
-      var indexedSequence = Lazy(array).map(identity);
+      var indexedSequence = Lazy(array).map(Lazy.identity);
       expectation(indexedSequence);
     });
 
@@ -309,7 +309,6 @@
   context.add         = function(x, y) { return x + y; };
   context.increment   = function(x) { return x + 1; };
   context.isEven      = function(x) { return x % 2 === 0; };
-  context.identity    = function(x) { return x; };
   context.alwaysTrue  = function(x) { return true; };
   context.alwaysFalse = function(x) { return false; };
 
