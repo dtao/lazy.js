@@ -157,14 +157,14 @@
         return true;
       },
 
-      toBeASequence: function(sequenceType) {
+      toBeInstanceOf: function(type) {
         var actual = this.actual;
 
         this.message = function() {
-          return 'Expected ' + actual + ' to be a ' + (sequenceType.name || sequenceType);
+          return 'Expected ' + actual + ' to be a ' + (type.name || type);
         };
 
-        return actual instanceof sequenceType;
+        return actual instanceof type;
       },
 
       toPassToEach: function(argumentIndex, expectedValues) {
