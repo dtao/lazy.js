@@ -16,6 +16,19 @@ comprehensiveSequenceTest(['filter', 'select', 'where'], {
       },
       result: [{ foo: true }, { foo: true }],
       accessCountForTake2: 3
+    },
+    {
+      label: 'where-style',
+      input: [
+        { foo: 'blub', bar: 1 },
+        { foo: 'glub', bar: 2 },
+        { foo: 'blub', bar: 3 }
+      ],
+      apply: function(sequence, method) {
+        return sequence[method]({ foo: 'blub' });
+      },
+      result: [{ foo: 'blub', bar: 1 }, { foo: 'blub', bar: 3 }],
+      accessCountForTake2: 3
     }
   ],
 
@@ -43,16 +56,6 @@ describe("filter", function() {
     // step of 1 he/she can trivially produce that him-/herself.
     expect(Lazy(people).filter(Person.isMale)).toPassToEach(1, [0, 3, 4]);
   });
-
-  testAllSequenceTypes(
-    "acts like 'where' when an object is passed instead of a function",
-
-    [{ foo: 'blub', bar: 1 }, { foo: 'glub', bar: 2 }],
-
-    function(sequence) {
-      expect(sequence.filter({ foo: 'blub' })).toComprise([{ foo: 'blub', bar: 1 }]);
-    }
-  );
 });
 
 describe("filter -> reverse", function() {
