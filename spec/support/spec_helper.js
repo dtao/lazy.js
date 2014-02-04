@@ -13,19 +13,29 @@
     require('./person.js');
   }
 
-  context.testSequence = function(names, options) {
+  /**
+   * Tests many requirements of a sequence in one fell swoop:
+   *
+   * - the actual sequence behavior (input and expected output)
+   * - consistent behavior among different base sequence types (e.g., wrapped
+   *   array, array-like, and base)
+   * - verified laziness (does not iterate until `each` is called)
+   * - support for early termination
+   * - support for async iteration
+   */
+  context.comprehensiveSequenceTest = function(names, options) {
     if (typeof name === 'string') {
       name = [name];
     }
 
     for (var i = 0; i < names.length; ++i) {
       for (var testCase in options.cases) {
-        createComprehensiveTest(names[i], options.cases[testCase], options);
+        comprehensiveTestCase(names[i], options.cases[testCase], options);
       }
     }
   };
 
-  function createComprehensiveTest(name, testCase, options) {
+  function comprehensiveTestCase(name, testCase, options) {
     var label = '#' + name;
 
     if (testCase.label) {
@@ -161,6 +171,12 @@
     });
   }
 
+  /**
+   * Takes an object (e.g. an array) and returns a copy of that object that
+   * monitors its properties so that it can tell when one has been accessed.
+   * This is useful for tests that want to ensure certain elements of an array
+   * haven't been looked at.
+   */
   function createMonitor(target) {
     var monitor  = Lazy.clone(target),
         accesses = {};
@@ -189,6 +205,10 @@
     return monitor;
   }
 
+  /**
+   * Given the name of a property, iterates over a list of objects until finding
+   * one with the given property. Returns the first value found.
+   */
   function lookupValue(property, objects) {
     for (var i = 0; i < objects.length; ++i) {
       if (property in objects[i]) {

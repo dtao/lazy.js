@@ -1,4 +1,4 @@
-testSequence(['map', 'pluck', 'collect'], {
+comprehensiveSequenceTest(['map', 'pluck', 'collect'], {
   cases: [
     {
       input: [1, 2, 3],
