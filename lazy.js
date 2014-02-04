@@ -980,7 +980,7 @@
     var count = this.count,
         i     = 0;
 
-    this.parent.each(function(e) {
+    return this.parent.each(function(e) {
       var result;
       if (i < count) { result = fn(e, i); }
       if (++i >= count) { return false; }
@@ -1040,7 +1040,7 @@
   TakeWhileSequence.prototype.each = function each(fn) {
     var predicate = this.predicate;
 
-    this.parent.each(function(e) {
+    return this.parent.each(function(e) {
       return predicate(e) && fn(e);
     });
   };
@@ -1149,7 +1149,7 @@
         dropped = 0,
         i       = 0;
 
-    this.parent.each(function(e) {
+    return this.parent.each(function(e) {
       if (dropped++ < count) { return; }
       return fn(e, i++);
     });
@@ -1187,7 +1187,7 @@
     var predicate = this.predicate,
         done      = false;
 
-    this.parent.each(function(e) {
+    return this.parent.each(function(e) {
       if (!done) {
         if (predicate(e)) {
           return;
