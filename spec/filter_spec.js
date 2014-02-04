@@ -5,15 +5,17 @@ comprehensiveSequenceTest(['filter', 'select', 'where'], {
       apply: function(sequence, method) {
         return sequence[method](isEven);
       },
-      result: [2, 4]
+      result: [2, 4],
+      accessCountForTake2: 4
     },
     {
       label: 'pluck-style',
-      input: [{ foo: true }, { foo: false }, { foo: true }],
+      input: [{ foo: true }, { foo: false }, { foo: true }, { foo: false }],
       apply: function(sequence, method) {
         return sequence[method]('foo');
       },
-      result: [{ foo: true }, { foo: true }]
+      result: [{ foo: true }, { foo: true }],
+      accessCountForTake2: 3
     }
   ],
 
@@ -22,17 +24,6 @@ comprehensiveSequenceTest(['filter', 'select', 'where'], {
 });
 
 describe("filter", function() {
-  ensureLaziness(function() { Lazy(people).filter(Person.isMale); });
-
-  testAllSequenceTypes("can also be called as 'select'", [1, 2, 3, 4], function(sequence) {
-    expect(sequence.select(isEven)).toComprise([2, 4]);
-  });
-
-  it("selects values from the collection using a selector function", function() {
-    var boys = Lazy(people).filter(Person.isMale).toArray();
-    expect(boys).toEqual([david, adam, daniel]);
-  });
-
   it("combines with previous filters", function() {
     var sons = Lazy(people)
       .filter(Person.isMale)
@@ -52,27 +43,6 @@ describe("filter", function() {
     // step of 1 he/she can trivially produce that him-/herself.
     expect(Lazy(people).filter(Person.isMale)).toPassToEach(1, [0, 3, 4]);
   });
-
-  createAsyncTest("supports asynchronous iteration", {
-    getSequence: function() { return Lazy(people).filter(Person.isMale).async(); },
-    expected: function() { return [david, adam, daniel]; }
-  });
-
-  createAsyncTest("can exit early even when iterating asynchronously", {
-    getSequence: function() { return Lazy(people).filter(Person.isMale).async().take(1); },
-    expected: function() { return [david]; },
-    additionalExpectations: function() { expect(Person.accesses).toBe(1); }
-  });
-
-  testAllSequenceTypes(
-    "acts like 'pluck' when a string is passed instead of a function",
-
-    [{ foo: true, bar: 1 }, { foo: false, bar: 2 }],
-
-    function(sequence) {
-      expect(sequence.filter('foo')).toComprise([{ foo: true, bar: 1 }]);
-    }
-  );
 
   testAllSequenceTypes(
     "acts like 'where' when an object is passed instead of a function",

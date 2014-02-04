@@ -54,8 +54,12 @@
         return testCase.apply(sequence, name);
       }
 
+      function iterate(sequence) {
+        sequence.each(Lazy.noop);
+      }
+
       function iterateResult() {
-        getResult().each(Lazy.noop);
+        iterate(getResult());
       }
 
       function assertResult() {
@@ -95,14 +99,14 @@
             });
 
             it('supports early termination', function() {
-              sequence = sequence.take(2);
-              expect(getResult()).toComprise(testCase.result.slice(0, 2));
+              expect(getResult().take(2)).toComprise(testCase.result.slice(0, 2));
             });
 
             it('accesses the minimum number of elements from the source', function() {
-              sequence = sequence.take(2);
-              iterateResult();
-              expect(monitor.accessCount()).toEqual(2);
+              var expectedAccessCount = testCase.accessCountForTake2 || 2;
+
+              iterate(getResult().take(2));
+              expect(monitor.accessCount()).toEqual(expectedAccessCount);
             });
 
             if (lookupValue('arrayLike', [testCase, options])) {
@@ -157,8 +161,9 @@
                 });
 
                 async.it('supports early termination', function(done) {
-                  sequence = sequence.take(2);
-                  getAsyncResult().toArray().onComplete(function(result) {
+                  var expectedAccessCount = testCase.accessCountForTake2 || 2;
+
+                  getAsyncResult().take(2).toArray().onComplete(function(result) {
                     expect(result).toEqual(testCase.result.slice(0, 2));
                     done();
                   });
