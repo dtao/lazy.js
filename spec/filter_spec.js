@@ -1,3 +1,26 @@
+comprehensiveSequenceTest(['filter', 'select', 'where'], {
+  cases: [
+    {
+      input: [1, 2, 3, 4, 5],
+      apply: function(sequence, method) {
+        return sequence[method](isEven);
+      },
+      result: [2, 4]
+    },
+    {
+      label: 'pluck-style',
+      input: [{ foo: true }, { foo: false }, { foo: true }],
+      apply: function(sequence, method) {
+        return sequence[method]('foo');
+      },
+      result: [{ foo: true }, { foo: true }]
+    }
+  ],
+
+  arrayLike: false,
+  supportsAsync: true
+});
+
 describe("filter", function() {
   ensureLaziness(function() { Lazy(people).filter(Person.isMale); });
 
