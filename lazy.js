@@ -5387,6 +5387,25 @@
   /*** Useful utility methods ***/
 
   /**
+   * Creates a shallow copy of an array or object.
+   *
+   * @examples
+   * var array  = [1, 2, 3], clonedArray,
+   *     object = { foo: 1, bar: 2 }, clonedObject;
+   *
+   * clonedArray = Lazy.clone(array); // => [1, 2, 3]
+   * clonedArray.push(4); // clonedArray == [1, 2, 3, 4]
+   * array; // => [1, 2, 3]
+   *
+   * clonedObject = Lazy.clone(object); // => { foo: 1, bar: 2 }
+   * clonedObject.baz = 3; // clonedObject == { foo: 1, bar: 2, baz: 3 }
+   * object; // => { foo: 1, bar: 2 }
+   */
+  Lazy.clone = function clone(target) {
+    return Lazy(target).value();
+  };
+
+  /**
    * Marks a method as deprecated, so calling it will issue a console warning.
    */
   Lazy.deprecate = function deprecate(message, fn) {

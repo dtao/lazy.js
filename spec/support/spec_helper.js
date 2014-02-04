@@ -36,7 +36,7 @@
       var monitor, sequence;
 
       beforeEach(function() {
-        monitor  = createMonitoredArray(testCase.input);
+        monitor  = createMonitor(testCase.input);
         sequence = Lazy(monitor);
       });
 
@@ -95,6 +95,13 @@
               expect(monitor.accessCount()).toEqual(2);
             });
 
+            if (lookupValue('arrayLike', [testCase, options])) {
+              it('passes along the index with each element during iteration', function() {
+                indexes = getResult().map(function(e, i) { return i; }).toArray();
+                expect(indexes).toComprise(Lazy.range(indexes.length));
+              });
+            }
+
             describe('each', function() {
               it('returns true if the entire sequence is iterated', function() {
                 var result = getResult().each(Lazy.noop);
@@ -107,7 +114,7 @@
               });
             });
 
-            if (options.arrayLike && sequenceType.arrayLike !== false) {
+            if (lookupValue('arrayLike', [sequenceType, options])) {
               describe('indexed access', function() {
                 it('is supported', function() {
                   expect(getResult()).toBeInstanceOf(Lazy.ArrayLikeSequence);
@@ -120,7 +127,7 @@
               });
             }
 
-            if (options.supportsAsync) {
+            if (lookupValue('supportsAsync', [sequenceType, options])) {
               describe('async iteration', function() {
                 var async = new AsyncSpec(this);
 
@@ -154,32 +161,40 @@
     });
   }
 
-  function createMonitoredArray(array) {
-    var monitor  = array.slice(0),
+  function createMonitor(target) {
+    var monitor  = Lazy.clone(target),
         accesses = {};
 
-    function monitorProperty(i) {
-      Object.defineProperty(monitor, i, {
+    function monitorProperty(property) {
+      Object.defineProperty(monitor, property, {
         get: function() {
-          accesses[i] = true;
-          return array[i];
+          accesses[property] = true;
+          return target[property];
         }
       });
     }
 
-    for (var i = 0, len = monitor.length; i < len; ++i) {
-      monitorProperty(i);
-    }
+    Lazy(target).each(function(value, property) {
+      monitorProperty(property);
+    });
 
     monitor.accessCount = function() {
       return Object.keys(accesses).length;
     };
 
-    monitor.accessedAt = function(i) {
-      return !!accesses[i];
+    monitor.accessedAt = function(property) {
+      return !!accesses[property];
     };
 
     return monitor;
+  }
+
+  function lookupValue(property, objects) {
+    for (var i = 0; i < objects.length; ++i) {
+      if (property in objects[i]) {
+        return objects[i][property];
+      }
+    }
   }
 
   context.people        = null;
@@ -216,7 +231,18 @@
   beforeEach(function() {
     this.addMatchers({
       toComprise: function(elements) {
-        expect(this.actual.toArray()).toEqual(elements);
+        var actual = this.actual;
+
+        if (actual instanceof Lazy.Sequence) {
+          actual = actual.value();
+        }
+
+        if (elements instanceof Lazy.Sequence) {
+          elements = elements.value();
+        }
+
+        expect(actual).toEqual(elements);
+
         return true;
       },
 
