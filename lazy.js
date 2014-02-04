@@ -335,6 +335,17 @@
   };
 
   /**
+   * Whether or not the current sequence is an asynchronous one. This is more
+   * accurate than checking `instanceof {@link AsyncSequence}` because, for
+   * example, `Lazy([1, 2, 3]).async().map(Lazy.identity)` returns a sequence
+   * that iterates asynchronously even though it's not an instance of
+   * `AsyncSequence`.
+   */
+  Sequence.prototype.isAsync = function isAsync() {
+    return this.parent ? this.parent.isAsync() : false;
+  };
+
+  /**
    * Evaluates the sequence and produces an appropriate value (an array in most
    * cases, an object for {@link ObjectLikeSequence}s or a string for
    * {@link StringLikeSequence}s).
@@ -3081,6 +3092,10 @@
     return this;
   };
 
+  ArrayWrapper.prototype.isAsync = function isAsync() {
+    return false;
+  };
+
   /**
    * Returns the element at the specified index in the source array.
    *
@@ -4106,6 +4121,10 @@
     return this;
   };
 
+  ObjectWrapper.prototype.isAsync = function isAsync() {
+    return false;
+  };
+
   ObjectWrapper.prototype.get = function get(key) {
     return this.source[key];
   };
@@ -4713,6 +4732,10 @@
     return this;
   };
 
+  StringWrapper.prototype.isAsync = function isAsync() {
+    return false;
+  };
+
   StringWrapper.prototype.get = function get(i) {
     return this.source.charAt(i);
   };
@@ -4741,6 +4764,10 @@
   }
 
   GeneratedSequence.prototype = new Sequence();
+
+  GeneratedSequence.prototype.isAsync = function isAsync() {
+    return false;
+  };
 
   /**
    * Returns the length of this sequence.
@@ -4864,6 +4891,10 @@
   }
 
   AsyncSequence.prototype = new Sequence();
+
+  AsyncSequence.prototype.isAsync = function isAsync() {
+    return true;
+  };
 
   /**
    * Throws an exception. You cannot manually iterate over an asynchronous
@@ -5149,6 +5180,10 @@
   function StreamLikeSequence() {}
 
   StreamLikeSequence.prototype = new AsyncSequence();
+
+  StreamLikeSequence.prototype.isAsync = function isAsync() {
+    return true;
+  };
 
   StreamLikeSequence.prototype.split = function split(delimiter) {
     return new SplitStreamSequence(this, delimiter);
