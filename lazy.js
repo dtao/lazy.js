@@ -2042,6 +2042,11 @@
    * Aggregates a sequence into a single value according to some accumulator
    * function.
    *
+   * For an asynchronous sequence, instead of immediately returning a result
+   * (which it can't, obviously), this method returns an {@link AsyncHandle}
+   * whose `onComplete` method can be called to supply a callback to handle the
+   * final result once iteration has completed.
+   *
    * @public
    * @aka inject, foldl
    * @param {Function} aggregator The function through which to pass every element
@@ -2050,7 +2055,9 @@
    *     new aggregated result.
    * @param {*=} memo The starting value to use for the aggregated result
    *     (defaults to the first element in the sequence).
-   * @returns {*} The result of the aggregation.
+   * @returns {*} The result of the aggregation, or, for asynchronous sequences,
+   *     an {@link AsyncHandle} whose `onComplete` method accepts a callback to
+   *     handle the final result.
    *
    * @examples
    * function multiply(x, y) { return x * y; }
@@ -2064,9 +2071,22 @@
     if (arguments.length < 2) {
       return this.tail().reduce(aggregator, this.head());
     }
-    this.each(function(e, i) {
+
+    var eachResult = this.each(function(e, i) {
       memo = aggregator(memo, e, i);
     });
+
+    // TODO: Think of a way more efficient solution to this problem.
+    if (eachResult instanceof AsyncHandle) {
+      eachResult.then = eachResult.onComplete = function(callback) {
+        eachResult.completeCallback = function() {
+          callback(memo);
+        };
+      };
+
+      return eachResult;
+    }
+
     return memo;
   };
 
@@ -4976,42 +4996,6 @@
    */
   AsyncSequence.prototype.reverse = function reverse() {
     return this.parent.reverse().async();
-  };
-
-  /**
-   * A version of {@link Sequence#reduce} which, instead of immediately
-   * returning a result (which it can't, obviously, because this is an
-   * asynchronous sequence), returns an {@link AsyncHandle} whose `onComplete`
-   * method can be called to supply a callback to handle the final result once
-   * iteration has completed.
-   *
-   * @public
-   * @param {Function} aggregator The function through which to pass every element
-   *     in the sequence. For every element, the function will be passed the total
-   *     aggregated result thus far and the element itself, and should return a
-   *     new aggregated result.
-   * @param {*=} memo The starting value to use for the aggregated result
-   *     (defaults to the first element in the sequence).
-   * @returns {AsyncHandle} An {@link AsyncHandle} allowing you to cancel
-   *     iteration and/or handle errors, with an added `then` method providing
-   *     a promise-like thing allowing you to handle the result of aggregation.
-   */
-  AsyncSequence.prototype.reduce = function reduce(aggregator, memo) {
-    var handle = this.each(function(e, i) {
-      if (typeof memo === "undefined" && i === 0) {
-        memo = e;
-      } else {
-        memo = aggregator(memo, e, i);
-      }
-    });
-
-    handle.then = handle.onComplete = function(callback) {
-      handle.completeCallback = function() {
-        callback(memo);
-      };
-    };
-
-    return handle;
   };
 
   /**
