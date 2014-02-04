@@ -93,10 +93,15 @@
   function Lazy(source) {
     if (source instanceof Array) {
       return new ArrayWrapper(source);
+
     } else if (typeof source === "string") {
       return new StringWrapper(source);
+
     } else if (source instanceof Sequence) {
       return source;
+
+    } else if (isGenerator(source)) {
+      return new GeneratorWrapper(source);
     }
 
     if (Lazy.extensions) {
@@ -5252,6 +5257,27 @@
   };
 
   /**
+   * @constructor
+   */
+  function GeneratorWrapper(generator) {
+    this.generator = generator;
+  }
+
+  GeneratorWrapper.prototype = new Sequence();
+
+  GeneratorWrapper.prototype.each = function each(fn) {
+    var iterator = this.generator(),
+        result,
+        i = 0;
+
+    while (!(result = iterator.next()).done) {
+      if (fn(result.value, i++) === false) {
+        return false;
+      }
+    };
+  };
+
+  /**
    * Defines a wrapper for custom {@link StreamLikeSequence}s. This is useful
    * if you want a way to handle a stream of events as a sequence, but you can't
    * use Lazy's existing interface (i.e., you're wrapping an object from a
@@ -5699,6 +5725,31 @@
   function cloneRegex(pattern) {
     return eval("" + pattern + (!pattern.global ? "g" : ""));
   };
+
+  var GeneratorConstructor = (function() {
+    try {
+      var generator;
+      return eval('generator = function*() { yield 1; };').constructor;
+
+    } catch (e) {
+      // If the above throws a SyntaxError, that means generators aren't
+      // supported on the current platform, which means isGenerator should
+      // always return false. So we'll return an anonymous function here, so
+      // that instanceof checks will always return false.
+      return function() {};
+    }
+  }());
+
+  /**
+   * Checks whether a function is an ES6 Harmony generator.
+   *
+   * @private
+   * @param {Function} fn
+   * @returns {boolean}
+   */
+  function isGenerator(fn) {
+    return fn instanceof GeneratorConstructor;
+  }
 
   /**
    * A collection of unique elements.
