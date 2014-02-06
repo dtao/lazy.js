@@ -167,4 +167,9 @@
     }
   });
 
+  /*
+   * Also add `Lazy.isES6Generator` for convenience.
+   */
+  Lazy.isES6Generator = isES6Generator;
+
 }(typeof global !== 'undefined' ? global : this));

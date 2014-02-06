@@ -1,0 +1,56 @@
+<% content_for(:head) do %>
+    <title>Lazy.js ES6 Generators Demo</title>
+    <%= stylesheet_link_tag("demos/generators") %>
+    <%= javascript_include_tag("lib/lazy") %>
+    <%= javascript_include_tag("lib/lazy.es6") %>
+    <%= javascript_include_tag("demos/generators") %>
+<% end %>
+
+<% content_for(:body) do %>
+    <div id="input">
+        <header>
+            <h1>Lazy.js ES6 Generators Demo</h1>
+        </header>
+
+        <p>
+            In the <code>&lt;textarea&gt;</code> on the left, define an ES6
+            generator. In the middle, you can wrap this generator using
+            <code>Lazy(generator)</code> and then <code>map</code>,
+            <code>filter</code>, etc. to your heart's content. The resulting
+            sequence will be evaluated and shown on the right.
+        </p>
+
+        <p>
+            For more info on generators, see the
+            <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators#Generators.3A_a_better_way_to_build_Iterators">MDN article</a>.
+        </p>
+
+        <div id="workspace">
+            <div id="generator-wrapper">
+                <textarea id="generator">function *fibonacci() {
+  var x = 1, y = 1, z;
+
+  while (true) {
+    yield x;
+    z = x + y;
+    x = y;
+    y = z;
+  };
+
+}</textarea>
+            </div>
+
+            <div id="sequence-wrapper">
+                <textarea id="sequence">// First 25 values of the Fibonacci sequence
+// over 100
+Lazy(generator)
+  .filter(function(x) { return x > 100; })
+  .take(25);</textarea>
+            </div>
+
+            <div id="output-wrapper">
+                <pre id="output"></pre>
+            </div>
+        </div>
+    </div>
+<% end %>

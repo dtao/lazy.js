@@ -1,0 +1,29 @@
+#workspace {
+  position: relative;
+}
+
+#generator-wrapper {
+  position: absolute;
+  left: 10px;
+  right: calc(67% + 5px);
+}
+
+#sequence-wrapper {
+  position: absolute;
+  left: calc(33% + 5px);
+  right: calc(33% + 5px);
+}
+
+#output-wrapper {
+  position: absolute;
+  left: calc(67% + 5px);
+  right: 10px;
+}
+
+textarea {
+  min-height: 200px;
+  width: calc(100% - 34px);
+  padding: 8px;
+  margin: 8px;
+  border: 1px solid #bbb;
+}
