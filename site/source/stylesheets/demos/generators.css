@@ -1,3 +1,9 @@
+body {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 150%;
+  font-weight: 300;
+}
+
 #workspace {
   position: relative;
 }
@@ -20,10 +26,13 @@
   right: 10px;
 }
 
-textarea {
-  min-height: 200px;
-  width: calc(100% - 34px);
-  padding: 8px;
-  margin: 8px;
-  border: 1px solid #bbb;
+.CodeMirror {
+  font-size: 75%;
+  border: 1px solid #eee;
+  height: auto;
+}
+
+.CodeMirror-scroll {
+  overflow-y: hidden;
+  overflow-x: auto;
 }

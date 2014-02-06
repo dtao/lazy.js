@@ -1,25 +1,30 @@
 window.addEventListener('load', function() {
-  var generatorTxt = document.getElementById('generator'),
-      sequenceTxt  = document.getElementById('sequence'),
-      outputPre    = document.getElementById('output');
+  var generatorEditor = createEditor('generator'),
+      sequenceEditor  = createEditor('sequence'),
+      outputEditor    = createEditor('output', { readOnly: true });
+
+  function createEditor(elementId, options) {
+    options = Lazy({ mode: 'javascript', viewportMargin: Infinity }).merge(options || {}).toObject();
+    return CodeMirror.fromTextArea(document.getElementById(elementId), options);
+  }
 
   function evaluate() {
     tryGetGenerator(function(generator) {
       tryGetSequence(generator, function(sequence) {
-        outputPre.className = '';
-        outputPre.textContent = JSON.stringify(sequence.value(), null, 2);
+        outputEditor.getWrapperElement().classList.remove('error');
+        outputEditor.setValue(JSON.stringify(sequence.value(), null, 2));
       });
     });
   }
 
   function displayError(message) {
-    outputPre.className = 'error';
-    outputPre.textContent = message;
+    outputEditor.getWrapperElement().classList.add('error');
+    outputEditor.setValue(message);
   }
 
   function tryGetGenerator(callback) {
     try {
-      var generator = eval('(' + generatorTxt.value + ')');
+      var generator = eval('(' + generatorEditor.getValue() + ')');
       if (!Lazy.isES6Generator(generator)) {
         displayError('Expression on the left is not a generator.');
         return;
@@ -34,7 +39,7 @@ window.addEventListener('load', function() {
 
   function tryGetSequence(generator, callback) {
     try {
-      var sequence = eval(sequenceTxt.value);
+      var sequence = eval(sequenceEditor.getValue());
       if (!(sequence instanceof Lazy.Sequence)) {
         displayError('Expression in the middle is not a sequence.');
         return;
@@ -47,8 +52,8 @@ window.addEventListener('load', function() {
     }
   }
 
-  generatorTxt.addEventListener('keyup', evaluate);
-  sequenceTxt.addEventListener('keyup', evaluate);
+  generatorEditor.on('change', evaluate);
+  sequenceEditor.on('change', evaluate);
 
   evaluate();
 });

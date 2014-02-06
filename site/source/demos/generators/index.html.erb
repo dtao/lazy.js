@@ -1,8 +1,11 @@
 <% content_for(:head) do %>
     <title>Lazy.js ES6 Generators Demo</title>
+    <%= stylesheet_link_tag("lib/codemirror") %>
     <%= stylesheet_link_tag("demos/generators") %>
     <%= javascript_include_tag("lib/lazy") %>
     <%= javascript_include_tag("lib/lazy.es6") %>
+    <%= javascript_include_tag("lib/codemirror") %>
+    <%= javascript_include_tag("lib/codemirror/javascript") %>
     <%= javascript_include_tag("demos/generators") %>
 <% end %>
 
@@ -49,7 +52,7 @@ Lazy(generator)
             </div>
 
             <div id="output-wrapper">
-                <pre id="output"></pre>
+                <textarea id="output"></textarea>
             </div>
         </div>
     </div>

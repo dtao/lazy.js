@@ -41,6 +41,11 @@
     ["ludo/jquery-treetable", "3.0.1", [
       "javascripts/src/jquery.treetable.js",
       "stylesheets/jquery.treetable.css"
-    ]]
+    ]],
+    ["marijnh/codemirror", "v3.12", {
+      "lib/codemirror.js": "codemirror.js",
+      "lib/codemirror.css": "codemirror.css",
+      "mode/javascript/javascript.js": "codemirror/javascript.js"
+    }]
   ]
 }
