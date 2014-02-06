@@ -8,7 +8,7 @@
 
 <body>
     <%= yield_content(:body) %>
-    <%= javascript_include_tag("ga") %>
+    <%= javascript_include_tag("ga") unless development? %>
 </body>
 
 </html>
