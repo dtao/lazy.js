@@ -4,11 +4,13 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <%= yield_content(:head) %>
+    <%= stylesheet_link_tag("demo") %>
 </head>
 
 <body>
     <%= yield_content(:body) %>
     <%= javascript_include_tag("ga") unless development? %>
+    <a id="back-to-site-link" href="../">Back to the Lazy.js site</a>
 </body>
 
 </html>

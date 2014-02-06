@@ -1,0 +1,17 @@
+a#back-to-site-link {
+  position: fixed;
+
+  display: inline-block;
+  bottom: 0;
+  right: 0;
+  padding: 8px;
+  background-color: #000;
+  color: #fff;
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+  text-decoration: none;
+}
+
+a#back-to-site-link:hover {
+  color: #abc;
+}
