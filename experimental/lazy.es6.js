@@ -129,13 +129,13 @@
   /**
    * @constructor
    */
-  function IterableWrapper(iterable) {
+  function IteratorWrapper(iterable) {
     this.iterable = iterable;
   }
 
-  IterableWrapper.prototype = new Lazy.Sequence();
+  IteratorWrapper.prototype = new Lazy.Sequence();
 
-  IterableWrapper.prototype.each = function each(fn) {
+  IteratorWrapper.prototype.each = function each(fn) {
     var iterable = this.iterable;
 
     for (var item of iterable) {
