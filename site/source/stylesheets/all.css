@@ -10,6 +10,30 @@
   }
 }
 
+#demos ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+#demos ul li {
+  padding: 10px;
+  border-left: 3px solid black;
+}
+
+#demos ul li a {
+  color: #456;
+  text-decoration: none;
+}
+
+#demos ul li:hover {
+  background-color: #eee;
+  border-left: 3px solid #8bf;
+}
+
+#demos ul li:hover a {
+  color: #789;
+}
+
 body.full-comparisons {
   width: 100%;
   margin: 0;
