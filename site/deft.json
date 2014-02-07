@@ -14,7 +14,7 @@
       "release/sugar-full.development.js": "sugar.js"
     }],
     ["fitzgen/wu.js", "0.1.8", "lib/wu.js"],
-    ["suckgamoni/fromjs", "v2.1.6.1", { "from.src.js": "from.js" }],
+    ["nirvanfallacy/fromjs", "v2.1.6.1", { "from.src.js": "from.js" }],
     ["Reactive-Extensions/IxJS", "v1.0.6", ["l2o.js", "ix.js"]],
     ["Xaxis/boiler", "v0.9.0", "boiler.js"],
     ["rfw/sloth.js", "sloth.js"],
