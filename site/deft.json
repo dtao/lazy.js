@@ -36,6 +36,7 @@
     }],
 
     ["http://code.jquery.com/", { "jquery-1.10.1.js": "jquery.js" }],
+    ["derickbailey/jasmine.async", "lib/jasmine.async.js"],
     ["http://code.highcharts.com/", { "highcharts.src.js": "highcharts.js" }],
     ["dtao/HighTables", "0.1.1", "dist/hightables.js"],
     ["ludo/jquery-treetable", "3.0.1", [

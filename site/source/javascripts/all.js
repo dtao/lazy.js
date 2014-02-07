@@ -1,5 +1,6 @@
 // ----- UI dependencies -----
 //= require lib/jasmine
+//= require lib/jasmine.async
 //= require lib/benchmark
 //= require lib/jquery
 //= require lib/highcharts
