@@ -4,6 +4,11 @@ body {
   font-weight: 300;
 }
 
+.important {
+  background-color: #ff8;
+  padding: 8px;
+}
+
 #workspace {
   position: relative;
 }
