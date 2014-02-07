@@ -38,7 +38,7 @@ helpers do
     @spec_files ||= begin
       files = Dir.glob(path_to_file('site/source/javascripts/lib/spec/*_spec.js'))
       files.map!(&File.method(:basename))
-      files.reject! { |file| file =~ /node_spec\.js/ }
+      files.reject! { |file| file =~ /(?:node|es6)_spec\.js/ }
     end
   end
 
