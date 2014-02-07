@@ -1,55 +1,70 @@
 window.addEventListener('load', function() {
+  Lemming.options.fileName = '../javascripts/lib/lemming.js';
+  Lemming.options.scripts = ['lazy.js', 'lazy.es6.js'];
+
   var generatorEditor = createEditor('generator'),
       sequenceEditor  = createEditor('sequence'),
       outputEditor    = createEditor('output', { readOnly: true });
 
   function createEditor(elementId, options) {
-    options = Lazy({ mode: 'javascript', viewportMargin: Infinity }).merge(options || {}).toObject();
+    options = Lazy({ mode: 'javascript', viewportMargin: Infinity })
+      .merge(options || {})
+      .toObject();
     return CodeMirror.fromTextArea(document.getElementById(elementId), options);
   }
 
+  function addClassToEditor(editor, className) {
+    editor.getWrapperElement().classList.add(className);
+  }
+
+  function removeClassFromEditor(editor, className) {
+    editor.getWrapperElement().classList.remove(className);
+  }
+
   function evaluate() {
-    tryGetGenerator(function(generator) {
-      tryGetSequence(generator, function(sequence) {
-        outputEditor.getWrapperElement().classList.remove('error');
-        outputEditor.setValue(JSON.stringify(sequence.value(), null, 2));
-      });
+    var lemming = new Lemming(getSource());
+
+    lemming.onTimeout(function() {
+      displayError('Timed out.');
     });
+
+    lemming.onError(function(error) {
+      displayError(error);
+    });
+
+    lemming.onResult(function(result) {
+      displayMessage(result);
+    });
+
+    lemming.onCompleted(function() {
+      removeClassFromEditor(outputEditor, 'loading');
+    });
+
+    addClassToEditor(outputEditor, 'loading');
+
+    lemming.run();
+  }
+
+  function getSource() {
+    return [
+      generatorEditor.getValue(),
+      'var sequence = ' + sequenceEditor.getValue(),
+      'sequence.value()'
+    ].join('\n\n');
   }
 
   function displayError(message) {
-    outputEditor.getWrapperElement().classList.add('error');
+    addClassToEditor(outputEditor, 'error');
     outputEditor.setValue(message);
   }
 
-  function tryGetGenerator(callback) {
-    try {
-      var generator = eval('(' + generatorEditor.getValue() + ')');
-      if (!Lazy.isES6Generator(generator)) {
-        displayError('Expression on the left is not a generator.');
-        return;
-      }
-
-      callback(generator);
-
-    } catch (e) {
-      displayError(e.message || String(e));
+  function displayMessage(message) {
+    if (typeof message !== 'string') {
+      message = JSON.stringify(message, null, 2);
     }
-  }
 
-  function tryGetSequence(generator, callback) {
-    try {
-      var sequence = eval(sequenceEditor.getValue());
-      if (!(sequence instanceof Lazy.Sequence)) {
-        displayError('Expression in the middle is not a sequence.');
-        return;
-      }
-
-      callback(sequence);
-
-    } catch (e) {
-      displayError(e.message || String(e));
-    }
+    removeClassFromEditor(outputEditor, 'error');
+    outputEditor.setValue(message);
   }
 
   generatorEditor.on('change', evaluate);

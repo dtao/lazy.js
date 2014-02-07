@@ -46,6 +46,7 @@
       "lib/codemirror.js": "codemirror.js",
       "lib/codemirror.css": "codemirror.css",
       "mode/javascript/javascript.js": "codemirror/javascript.js"
-    }]
+    }],
+    ["dtao/lemming.js", "lemming.js"]
   ]
 }

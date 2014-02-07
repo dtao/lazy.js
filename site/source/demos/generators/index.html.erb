@@ -6,11 +6,12 @@
     <%= javascript_include_tag("lib/lazy.es6") %>
     <%= javascript_include_tag("lib/codemirror") %>
     <%= javascript_include_tag("lib/codemirror/javascript") %>
+    <%= javascript_include_tag("lib/lemming") %>
     <%= javascript_include_tag("demos/generators") %>
 <% end %>
 
 <% content_for(:body) do %>
-    <div id="input">
+    <div>
         <header>
             <h1>Lazy.js ES6 Generators Demo</h1>
         </header>
@@ -21,12 +22,6 @@
             <code>Lazy(generator)</code> and then <code>map</code>,
             <code>filter</code>, etc. to your heart's content. The resulting
             sequence will be evaluated and shown on the right.
-        </p>
-
-        <p>
-            Don't do anything stupid, because I'm not doing a whole lot of
-            validation here (so an ill-advised infinite loop may lock up your
-            browser).
         </p>
 
         <p class="important">
@@ -48,23 +43,24 @@
             <div id="generator-wrapper">
                 <textarea id="generator">function *fibonacci() {
   var x = 1, y = 1, z;
-
+  
   while (true) {
     yield x;
     z = x + y;
     x = y;
     y = z;
   };
-
-}</textarea>
+}
+</textarea>
             </div>
 
             <div id="sequence-wrapper">
                 <textarea id="sequence">// First 25 values of the Fibonacci sequence
 // over 100
-Lazy(generator)
+Lazy(fibonacci)
   .filter(function(x) { return x > 100; })
-  .take(25);</textarea>
+  .take(25);
+</textarea>
             </div>
 
             <div id="output-wrapper">

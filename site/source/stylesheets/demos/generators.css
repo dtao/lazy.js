@@ -4,6 +4,11 @@ body {
   font-weight: 300;
 }
 
+body > div {
+  max-width: 1600px;
+  margin: auto;
+}
+
 .important {
   background-color: #ff8;
   padding: 8px;
@@ -15,7 +20,7 @@ body {
 
 #generator-wrapper {
   position: absolute;
-  left: 10px;
+  left: 0;
   right: calc(67% + 5px);
 }
 
@@ -28,7 +33,7 @@ body {
 #output-wrapper {
   position: absolute;
   left: calc(67% + 5px);
-  right: 10px;
+  right: 0;
 }
 
 .CodeMirror {
@@ -40,4 +45,13 @@ body {
 .CodeMirror-scroll {
   overflow-y: hidden;
   overflow-x: auto;
+}
+
+.CodeMirror.error {
+  background-color: #fee;
+}
+
+.CodeMirror.loading {
+  opacity: 0.5;
+  filter: alpha(opacity = 50);
 }
