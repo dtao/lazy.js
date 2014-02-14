@@ -1,10 +1,10 @@
 this.exampleHandlers = [
   {
-    pattern: /sequence: \[(.*)\]$/,
+    pattern: /sequence: \[([\s\S]*)\]$/,
     template: 'sequenceEquality'
   },
   {
-    pattern: /sequence: \{(.*)\}$/,
+    pattern: /sequence: \{([\s\S]*)\}$/,
     template: 'objectSequenceEquality'
   },
   {

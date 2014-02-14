@@ -1357,6 +1357,17 @@
    * Lazy(numbers).groupBy(oddOrEven)            // sequence: { odd: [1, 3, 5], even: [2, 4] }
    * Lazy(numbers).groupBy(oddOrEven).get("odd") // => [1, 3, 5]
    * Lazy(numbers).groupBy(oddOrEven).get("foo") // => undefined
+   *
+   * Lazy([
+   *   { name: 'toString' },
+   *   { name: 'toString' }
+   * ]).groupBy('name');
+   * // => sequence: {
+   *   'toString': [
+   *     { name: 'toString' },
+   *     { name: 'toString' }
+   *   ]
+   * }
    */
   Sequence.prototype.groupBy = function groupBy(keyFn) {
     return new GroupedSequence(this, keyFn);
@@ -4020,7 +4031,7 @@
 
     this.parent.each(function(e) {
       var key = keyFn(e);
-      if (!grouped[key]) {
+      if (!(grouped[key] instanceof Array)) {
         grouped[key] = [e];
       } else {
         grouped[key].push(e);
