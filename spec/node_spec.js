@@ -151,6 +151,26 @@ describe("working with streams", function() {
           expect(lines[0]).toEqual("The quick brown fox jumped over the lazy dog.");
         });
       });
+
+      it("exposes an AsyncHandle for reduce()-style operations", function() {
+        var callback = jasmine.createSpy();
+
+        Lazy(fs.createReadStream("./spec/data/haiku.txt"))
+          .split(/\s+/)
+          .toArray()
+          .onComplete(function(arr) {
+            callback(arr);
+          });
+
+        waitsFor(toBeCalled(callback));
+
+        runs(function() {
+          var words = callback.calls[0].args[0];
+          expect(words.slice(0, 8)).toEqual([
+            'at', 'the', 'age', 'old', 'pond', 'a', 'frog', 'leaps'
+          ]);
+        });
+      });
     });
 
     describe("wrapping non-text streams", function() {
