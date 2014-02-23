@@ -17,21 +17,38 @@
    * Tests many requirements of a sequence in one fell swoop:
    *
    * - the actual sequence behavior (input and expected output)
+   * - aliases (not quite implemented yet)
    * - consistent behavior among different base sequence types (e.g., wrapped
    *   array, array-like, and base)
    * - verified laziness (does not iterate until `each` is called)
    * - support for early termination
    * - support for async iteration
+   *
+   * @param {string} name The name of the method under test.
+   * @param {Object} options A whole bunch of configuration options specifying
+   *     what should be tested. Here are the important ones:
+   *
+   *     {
+   *       cases: [
+   *         {
+   *           input:  (the object, e.g., an array, to serve as the underlying
+   *                    source of the sequence),
+   *           params: (the parameters to pass to the method, called on a
+   *                    sequence based on the underlying source),
+   *           result: (the expected result of applying this method to the
+   *                    sequence, after calling .value())
+   *         },
+   *         ...
+   *       ],
+   *
+   *       aliases: (an array of other names this method can be called by),
+   *       arrayLike: (whether the result should provide indexed access),
+   *       supportsAsync: (just what it sounds like)
+   *     }
    */
-  context.comprehensiveSequenceTest = function(names, options) {
-    if (typeof name === 'string') {
-      name = [name];
-    }
-
-    for (var i = 0; i < names.length; ++i) {
-      for (var testCase in options.cases) {
-        comprehensiveTestCase(names[i], options.cases[testCase], options);
-      }
+  context.comprehensiveSequenceTest = function(name, options) {
+    for (var testCase in options.cases) {
+      comprehensiveTestCase(name, options.cases[testCase], options);
     }
   };
 
@@ -51,7 +68,7 @@
       });
 
       function getResult() {
-        return testCase.apply(sequence, name);
+        return sequence[name].apply(sequence, testCase.params);
       }
 
       function iterate(sequence) {

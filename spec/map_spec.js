@@ -1,22 +1,19 @@
-comprehensiveSequenceTest(['map', 'pluck', 'collect'], {
+comprehensiveSequenceTest('map', {
   cases: [
     {
       input: [1, 2, 3],
-      apply: function(sequence, method) {
-        return sequence[method](function(x) { return x + 1; });
-      },
+      params: [function(x) { return x + 1; }],
       result: [2, 3, 4]
     },
     {
       label: 'pluck-style',
       input: [{ foo: 1 }, { foo: 2 }, { foo: 3 }],
-      apply: function(sequence, method) {
-        return sequence[method]('foo');
-      },
+      params: ['foo'],
       result: [1, 2, 3]
     }
   ],
 
+  aliases: ['collect', 'pluck'],
   arrayLike: true,
   supportsAsync: true
 });

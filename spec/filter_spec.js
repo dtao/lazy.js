@@ -1,19 +1,15 @@
-comprehensiveSequenceTest(['filter', 'select', 'where'], {
+comprehensiveSequenceTest('filter', {
   cases: [
     {
       input: [1, 2, 3, 4, 5],
-      apply: function(sequence, method) {
-        return sequence[method](isEven);
-      },
+      params: [isEven],
       result: [2, 4],
       accessCountForTake2: 4
     },
     {
       label: 'pluck-style',
       input: [{ foo: true }, { foo: false }, { foo: true }, { foo: false }],
-      apply: function(sequence, method) {
-        return sequence[method]('foo');
-      },
+      params: ['foo'],
       result: [{ foo: true }, { foo: true }],
       accessCountForTake2: 3
     },
@@ -24,14 +20,13 @@ comprehensiveSequenceTest(['filter', 'select', 'where'], {
         { foo: 'glub', bar: 2 },
         { foo: 'blub', bar: 3 }
       ],
-      apply: function(sequence, method) {
-        return sequence[method]({ foo: 'blub' });
-      },
+      params: [{ foo: 'blub' }],
       result: [{ foo: 'blub', bar: 1 }, { foo: 'blub', bar: 3 }],
       accessCountForTake2: 3
     }
   ],
 
+  aliases: ['select', 'where'],
   arrayLike: false,
   supportsAsync: true
 });
