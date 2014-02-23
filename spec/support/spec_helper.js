@@ -17,7 +17,7 @@
    * Tests many requirements of a sequence in one fell swoop:
    *
    * - the actual sequence behavior (input and expected output)
-   * - aliases (not quite implemented yet)
+   * - aliases
    * - consistent behavior among different base sequence types (e.g., wrapped
    *   array, array-like, and base)
    * - verified laziness (does not iterate until `each` is called)
@@ -47,9 +47,23 @@
    *     }
    */
   context.comprehensiveSequenceTest = function(name, options) {
-    for (var testCase in options.cases) {
-      comprehensiveTestCase(name, options.cases[testCase], options);
-    }
+    var cases = options.cases;
+    Lazy(cases).each(function(testCase) {
+      comprehensiveTestCase(name, testCase, options);
+    });
+
+    var aliases = options.aliases || [];
+    Lazy(aliases).each(function(alias) {
+      describe('#' + alias, function() {
+        it('is an alias for #' + name, function() {
+          var sequence = Lazy(cases[0].input);
+          spyOn(sequence, name).andCallThrough();
+          iterate(sequence[alias].apply(sequence, cases[0].params));
+
+          expect(sequence[name]).toHaveBeenCalled();
+        });
+      });
+    });
   };
 
   function comprehensiveTestCase(name, testCase, options) {
@@ -69,10 +83,6 @@
 
       function getResult() {
         return sequence[name].apply(sequence, testCase.params);
-      }
-
-      function iterate(sequence) {
-        sequence.each(Lazy.noop);
       }
 
       function iterateResult() {
@@ -225,6 +235,13 @@
     };
 
     return monitor;
+  }
+
+  /**
+   * Forces iteration over a sequence.
+   */
+  function iterate(sequence) {
+    sequence.each(Lazy.noop);
   }
 
   /**

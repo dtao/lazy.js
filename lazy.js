@@ -3138,24 +3138,21 @@
   /**
    * An optimized version of {@link Sequence#map}.
    */
-  ArrayWrapper.prototype.map =
-  ArrayWrapper.prototype.collect = function collect(mapFn) {
+  ArrayWrapper.prototype.map = function map(mapFn) {
     return new MappedArrayWrapper(this, createCallback(mapFn));
   };
 
   /**
    * An optimized version of {@link Sequence#filter}.
    */
-  ArrayWrapper.prototype.filter =
-  ArrayWrapper.prototype.select = function select(filterFn) {
+  ArrayWrapper.prototype.filter = function filter(filterFn) {
     return new FilteredArrayWrapper(this, createCallback(filterFn));
   };
 
   /**
    * An optimized version of {@link Sequence#uniq}.
    */
-  ArrayWrapper.prototype.uniq =
-  ArrayWrapper.prototype.unique = function unique(keyFn) {
+  ArrayWrapper.prototype.uniq = function uniq(keyFn) {
     return new UniqueArrayWrapper(this, keyFn);
   };
 
