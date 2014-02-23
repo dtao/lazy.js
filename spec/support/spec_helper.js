@@ -14,15 +14,9 @@
   }
 
   /**
-   * Tests many requirements of a sequence in one fell swoop:
-   *
-   * - the actual sequence behavior (input and expected output)
-   * - aliases
-   * - consistent behavior among different base sequence types (e.g., wrapped
-   *   array, array-like, and base)
-   * - verified laziness (does not iterate until `each` is called)
-   * - support for early termination
-   * - support for async iteration
+   * Tests many requirements of a sequence in one fell swoop. (See
+   * comprehensiveTestCase for more details.) Also verifies that aliases
+   * delegate properly.
    *
    * @param {string} name The name of the method under test.
    * @param {Object} options A whole bunch of configuration options specifying
@@ -56,16 +50,31 @@
     Lazy(aliases).each(function(alias) {
       describe('#' + alias, function() {
         it('is an alias for #' + name, function() {
-          var sequence = Lazy(cases[0].input);
-          spyOn(sequence, name).andCallThrough();
-          iterate(sequence[alias].apply(sequence, cases[0].params));
+          var verifyDelegation = function(sequence) {
+            spyOn(sequence, name).andCallThrough();
+            iterate(sequence[alias].apply(sequence, cases[0].params));
+            expect(sequence[name]).toHaveBeenCalled();
+          };
 
-          expect(sequence[name]).toHaveBeenCalled();
+          verifyDelegation(Lazy(cases[0].input));
+          verifyDelegation(Lazy(cases[0].input).map(Lazy.identity));
+          verifyDelegation(Lazy(cases[0].input).filter(alwaysTrue));
         });
       });
     });
   };
 
+  /**
+   * Verifies the following for a given sequence method, for a specified case
+   * (input/output):
+   *
+   * - the actual sequence behavior (result matches expected output)
+   * - consistent behavior among different base sequence types (e.g., wrapped
+   *   array, array-like, and vanilla Sequence)
+   * - true laziness (does not iterate until `each` is called)
+   * - support for early termination
+   * - support for async iteration
+   */
   function comprehensiveTestCase(name, testCase, options) {
     var label = '#' + name;
 
@@ -82,7 +91,7 @@
       });
 
       function getResult() {
-        return sequence[name].apply(sequence, testCase.params);
+        return sequence[name].apply(sequence, testCase.params || []);
       }
 
       function iterateResult() {
@@ -109,97 +118,95 @@
         }
       ];
 
-      for (var i = 0; i < sequenceTypes.length; ++i) {
-        (function(sequenceType) {
-          describe('for ' + sequenceType.label, function() {
-            beforeEach(function() {
-              sequence = sequenceType.transform();
-            });
-
-            it('works as expected', function() {
-              assertResult();
-            });
-
-            it('is actually lazy', function() {
-              getResult();
-              expect(monitor.accessCount()).toBe(0);
-            });
-
-            it('supports early termination', function() {
-              expect(getResult().take(2)).toComprise(testCase.result.slice(0, 2));
-            });
-
-            it('accesses the minimum number of elements from the source', function() {
-              var expectedAccessCount = testCase.accessCountForTake2 || 2;
-
-              iterate(getResult().take(2));
-              expect(monitor.accessCount()).toEqual(expectedAccessCount);
-            });
-
-            if (lookupValue('arrayLike', [testCase, options])) {
-              it('passes along the index with each element during iteration', function() {
-                indexes = getResult().map(function(e, i) { return i; }).toArray();
-                expect(indexes).toComprise(Lazy.range(indexes.length));
-              });
-            }
-
-            describe('each', function() {
-              it('returns true if the entire sequence is iterated', function() {
-                var result = getResult().each(Lazy.noop);
-                expect(result).toBe(true);
-              });
-
-              it('returns false if iteration is terminated early', function() {
-                var result = getResult().each(alwaysFalse);
-                expect(result).toBe(false);
-              });
-            });
-
-            if (lookupValue('arrayLike', [sequenceType, options])) {
-              describe('indexed access', function() {
-                it('is supported', function() {
-                  expect(getResult()).toBeInstanceOf(Lazy.ArrayLikeSequence);
-                });
-
-                it('does not invoke full iteration', function() {
-                  getResult().get(1);
-                  expect(monitor.accessCount()).toEqual(1);
-                });
-              });
-            }
-
-            if (lookupValue('supportsAsync', [sequenceType, options])) {
-              describe('async iteration', function() {
-                var async = new AsyncSpec(this);
-
-                function getAsyncResult() {
-                  return getResult().async();
-                }
-
-                // Currently this tests if blah().async() works.
-                // TODO: First, think about whether async().blah() should work.
-                // TODO: IF it should work, then make it work (better)!
-
-                async.it('is supported', function(done) {
-                  getAsyncResult().toArray().onComplete(function(result) {
-                    expect(result).toEqual(testCase.result);
-                    done();
-                  });
-                });
-
-                async.it('supports early termination', function(done) {
-                  var expectedAccessCount = testCase.accessCountForTake2 || 2;
-
-                  getAsyncResult().take(2).toArray().onComplete(function(result) {
-                    expect(result).toEqual(testCase.result.slice(0, 2));
-                    done();
-                  });
-                });
-              });
-            }
+      Lazy(sequenceTypes).each(function(sequenceType) {
+        describe('for ' + sequenceType.label, function() {
+          beforeEach(function() {
+            sequence = sequenceType.transform();
           });
-        }(sequenceTypes[i]));
-      }
+
+          it('works as expected', function() {
+            assertResult();
+          });
+
+          it('is actually lazy', function() {
+            getResult();
+            expect(monitor.accessCount()).toBe(0);
+          });
+
+          it('supports early termination', function() {
+            expect(getResult().take(2)).toComprise(testCase.result.slice(0, 2));
+          });
+
+          it('accesses the minimum number of elements from the source', function() {
+            var expectedAccessCount = testCase.accessCountForTake2 || 2;
+
+            iterate(getResult().take(2));
+            expect(monitor.accessCount()).toEqual(expectedAccessCount);
+          });
+
+          if (lookupValue('arrayLike', [testCase, options])) {
+            it('passes along the index with each element during iteration', function() {
+              indexes = getResult().map(function(e, i) { return i; }).toArray();
+              expect(indexes).toComprise(Lazy.range(indexes.length));
+            });
+          }
+
+          describe('each', function() {
+            it('returns true if the entire sequence is iterated', function() {
+              var result = getResult().each(Lazy.noop);
+              expect(result).toBe(true);
+            });
+
+            it('returns false if iteration is terminated early', function() {
+              var result = getResult().each(alwaysFalse);
+              expect(result).toBe(false);
+            });
+          });
+
+          if (lookupValue('arrayLike', [sequenceType, options])) {
+            describe('indexed access', function() {
+              it('is supported', function() {
+                expect(getResult()).toBeInstanceOf(Lazy.ArrayLikeSequence);
+              });
+
+              it('does not invoke full iteration', function() {
+                getResult().get(1);
+                expect(monitor.accessCount()).toEqual(1);
+              });
+            });
+          }
+
+          if (lookupValue('supportsAsync', [sequenceType, options])) {
+            describe('async iteration', function() {
+              var async = new AsyncSpec(this);
+
+              function getAsyncResult() {
+                return getResult().async();
+              }
+
+              // Currently this tests if blah().async() works.
+              // TODO: First, think about whether async().blah() should work.
+              // TODO: IF it should work, then make it work (better)!
+
+              async.it('is supported', function(done) {
+                getAsyncResult().toArray().onComplete(function(result) {
+                  expect(result).toEqual(testCase.result);
+                  done();
+                });
+              });
+
+              async.it('supports early termination', function(done) {
+                var expectedAccessCount = testCase.accessCountForTake2 || 2;
+
+                getAsyncResult().take(2).toArray().onComplete(function(result) {
+                  expect(result).toEqual(testCase.result.slice(0, 2));
+                  done();
+                });
+              });
+            });
+          }
+        });
+      });
     });
   }
 
