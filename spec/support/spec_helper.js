@@ -144,12 +144,10 @@
             expect(monitor.accessCount()).toEqual(expectedAccessCount);
           });
 
-          if (lookupValue('arrayLike', [testCase, options])) {
-            it('passes along the index with each element during iteration', function() {
-              indexes = getResult().map(function(e, i) { return i; }).toArray();
-              expect(indexes).toComprise(Lazy.range(indexes.length));
-            });
-          }
+          it('passes along the index with each element during iteration', function() {
+            indexes = getResult().map(function(e, i) { return i; }).toArray();
+            expect(indexes).toComprise(Lazy.range(indexes.length));
+          });
 
           describe('each', function() {
             it('returns true if the entire sequence is iterated', function() {

@@ -731,11 +731,22 @@
   FilteredSequence.prototype.each = function each(fn) {
     var filterFn = this.filterFn;
 
-    return this.parent.each(function(e, i) {
-      if (filterFn(e, i)) {
-        return fn(e, i);
-      }
-    });
+    // I'm not proud of this, but it'll get the job done for now.
+    if (this.parent instanceof ObjectLikeSequence) {
+      return this.parent.each(function(v, k) {
+        if (filterFn(v, k)) {
+          return fn(v, k);
+        }
+      });
+
+    } else {
+      var j = 0;
+      return this.parent.each(function(e, i) {
+        if (filterFn(e, i)) {
+          return fn(e, j++);
+        }
+      });
+    }
   };
 
   FilteredSequence.prototype.reverse = function reverse() {
@@ -2866,11 +2877,12 @@
         filterFn = this.filterFn,
         length = this.parent.length(),
         i = -1,
+        j = 0,
         e;
 
     while (++i < length) {
       e = parent.get(i);
-      if (filterFn(e, i) && fn(e, i) === false) {
+      if (filterFn(e, i) && fn(e, j++) === false) {
         return false;
       }
     }
@@ -3230,11 +3242,12 @@
         filterFn = this.filterFn,
         length = source.length,
         i = -1,
+        j = 0,
         e;
 
     while (++i < length) {
       e = source[i];
-      if (filterFn(e, i) && fn(e, i) === false) {
+      if (filterFn(e, i) && fn(e, j++) === false) {
         return false;
       }
     }

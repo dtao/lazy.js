@@ -39,18 +39,6 @@ describe("filter", function() {
       .toArray();
     expect(sons).toEqual([adam, daniel]);
   });
-
-  it("passes an index along with each element", function() {
-    // NOTE: So here Lazy deviates from Underscore/Lo-Dash in that filter
-    // will pass along the index *in the original array*, not an incrementing
-    // index starting from 0. This is to provide unified behavior between
-    // arrays and objects (when iterating over objects, the second argument is
-    // the *key*, which should be the same in the result as in the source).
-    //
-    // My reasoning here is that if a dev wants indexes starting from 0 w/ a
-    // step of 1 he/she can trivially produce that him-/herself.
-    expect(Lazy(people).filter(Person.isMale)).toPassToEach(1, [0, 3, 4]);
-  });
 });
 
 describe("filter -> reverse", function() {

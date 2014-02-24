@@ -76,7 +76,7 @@ describe("watch", function() {
     // Given the implementation, I don't think there's a great way around
     // this? (Having to pass the index of the assignment rather than the
     // "adjusted" index.)
-    expect(callback.calls[0].args).toEqual(['BAR', 1]);
+    expect(callback.calls[0].args).toEqual(['BAR', 0]);
   });
 
   it("works with multiple listeners", function() {
@@ -95,11 +95,11 @@ describe("watch", function() {
 
     expect(numberCallback.callCount).toBe(2);
     expect(numberCallback.calls[0].args).toEqual([5, 0]);
-    expect(numberCallback.calls[1].args).toEqual([10, 2]);
+    expect(numberCallback.calls[1].args).toEqual([10, 1]);
 
     expect(stringCallback.callCount).toBe(2);
-    expect(stringCallback.calls[0].args).toEqual(['bar', 1]);
-    expect(stringCallback.calls[1].args).toEqual(['baz', 3]);
+    expect(stringCallback.calls[0].args).toEqual(['bar', 0]);
+    expect(stringCallback.calls[1].args).toEqual(['baz', 1]);
   });
 
   it("defaults to all of an object's current properties", function() {
