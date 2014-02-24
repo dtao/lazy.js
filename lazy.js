@@ -4027,24 +4027,25 @@
 
   GroupedSequence.prototype.each = function each(fn) {
     var keyFn   = createCallback(this.keyFn),
-        grouped = {};
+        result;
 
-    this.parent.each(function(e) {
+    result = this.parent.reduce(function(grouped,e) {
       var key = keyFn(e);
       if (!(grouped[key] instanceof Array)) {
         grouped[key] = [e];
       } else {
         grouped[key].push(e);
       }
-    });
+      return grouped;
+    },{});
 
-    for (var key in grouped) {
-      if (fn(grouped[key], key) === false) {
-        return false;
+    return transform(function(grouped) {
+      for (var key in grouped) {
+        if (fn(grouped[key], key) === false) {
+          return false;
+        }
       }
-    }
-
-    return true;
+    },result);
   };
 
   IndexedSequence.prototype = new ObjectLikeSequence();
