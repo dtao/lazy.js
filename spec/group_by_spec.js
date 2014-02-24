@@ -9,6 +9,23 @@ describe("groupBy", function() {
     ]);
   });
 
+  it("groups the collection by a specified selector function for async sequences", function() {
+    var byGender;
+    var done = false;
+    var handle = Lazy(people).async().groupBy(Person.getGender).toArray();
+    waitsFor(function() { return done; });
+    handle.onComplete(function(result) {
+      byGender = result;
+      done = true;
+    });
+    runs(function() {
+      expect(byGender).toEqual([
+        ["M", [david, adam, daniel]],
+        ["F", [mary, lauren, happy]]
+      ]);
+    });
+  });
+
   testAllSequenceTypes(
     "uses a 'pluck'-style callback when a string is passed instead of a function",
 
