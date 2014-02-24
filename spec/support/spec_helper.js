@@ -95,7 +95,7 @@
       }
 
       function iterateResult() {
-        iterate(getResult());
+        return iterate(getResult());
       }
 
       function assertResult() {
@@ -151,7 +151,7 @@
 
           describe('each', function() {
             it('returns true if the entire sequence is iterated', function() {
-              var result = getResult().each(Lazy.noop);
+              var result = iterateResult();
               expect(result).toBe(true);
             });
 
@@ -246,7 +246,7 @@
    * Forces iteration over a sequence.
    */
   function iterate(sequence) {
-    sequence.each(Lazy.noop);
+    return sequence.each(Lazy.noop);
   }
 
   /**

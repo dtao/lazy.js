@@ -1,14 +1,16 @@
+comprehensiveSequenceTest('first', {
+  cases: [
+    {
+      input: [1, 2, 3, 4, 5],
+      params: [3],
+      result: [1, 2, 3]
+    }
+  ],
+
+  aliases: ['head', 'take']
+});
+
 describe("take", function() {
-  ensureLaziness(function() { Lazy(people).take(2); });
-
-  it("only selects the first N elements from the collection", function() {
-    expect(Lazy(people).take(2)).toComprise([david, mary]);
-  });
-
-  it("passes an index along with each element", function() {
-    expect(Lazy(people).take(2)).toPassToEach(1, [0, 1]);
-  });
-
   it("doesn't prematurely get the first element when given 0", function() {
     expect(Lazy.generate(function (i) {return i;}).take(0).toArray()).toEqual([]);
   })

@@ -1004,12 +1004,18 @@
     var count = this.count,
         i     = 0;
 
-    return this.parent.each(function(e) {
+    var handle = this.parent.each(function(e) {
       var result;
-      if (i < count) { result = fn(e, i); }
-      if (++i >= count) { return false; }
+      if (i < count) { result = fn(e, i++); }
+      if (i >= count) { return false; }
       return result;
     });
+
+    if (handle instanceof AsyncHandle) {
+      return handle;
+    }
+
+    return i === count;
   };
 
   /**
