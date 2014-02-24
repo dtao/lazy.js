@@ -1068,11 +1068,24 @@
   TakeWhileSequence.prototype = new Sequence();
 
   TakeWhileSequence.prototype.each = function each(fn) {
-    var predicate = this.predicate;
+    var predicate = this.predicate,
+        finished = false,
+        j = 0;
 
-    return this.parent.each(function(e) {
-      return predicate(e) && fn(e);
+    var result = this.parent.each(function(e, i) {
+      if (!predicate(e, i)) {
+        finished = true;
+        return false;
+      }
+
+      return fn(e, j++);
     });
+
+    if (result instanceof AsyncHandle) {
+      return result;
+    }
+
+    return finished;
   };
 
   /**
