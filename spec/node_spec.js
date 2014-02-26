@@ -94,6 +94,47 @@ describe("working with streams", function() {
     });
   });
 
+  it("can split the contents of the stream across chunks w/ a regex delimiter", function() {
+    var stream = new MemoryStream(),
+        pieces  = [];
+
+    Lazy(stream).split(/[aeiou]/).each(function(piece) {
+      pieces.push(piece);
+    });
+
+    // What an absurd test case I've chosen here.
+    stream.write('the');
+    stream.write(' quick ');
+    stream.write('brown ');
+    stream.write('fox\n');
+    stream.write('jumped');
+    stream.write(' over');
+    stream.write(' the lazy ');
+    stream.write("dog's back");
+    stream.end();
+
+    waitsFor(toBePopulated(pieces));
+
+    runs(function() {
+      expect(pieces).toEqual([
+        'th',
+        ' q',
+        '',
+        'ck br',
+        'wn f',
+        'x\nj',
+        'mp',
+        'd ',
+        'v',
+        'r th',
+        ' l',
+        'zy d',
+        "g's b",
+        'ck'
+      ]);
+    });
+  });
+
   it("can also do string-style matching on streams", function() {
     var stream = fs.createReadStream("./spec/data/haiku.txt"),
         words  = [];

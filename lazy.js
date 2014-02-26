@@ -5262,11 +5262,51 @@
   function SplitStreamSequence(parent, delimiter) {
     this.parent    = parent;
     this.delimiter = delimiter;
+    this.each      = this.getEachForDelimiter(delimiter);
   }
 
   SplitStreamSequence.prototype = new Sequence();
 
-  SplitStreamSequence.prototype.each = function each(fn) {
+  SplitStreamSequence.prototype.getEachForDelimiter = function getEachForDelimiter(delimiter) {
+    if (delimiter instanceof RegExp) {
+      return this.regexEach;
+    }
+
+    return this.stringEach;
+  };
+
+  SplitStreamSequence.prototype.regexEach = function each(fn) {
+    var delimiter = cloneRegex(this.delimiter),
+        buffer = '',
+        start = 0, end,
+        index = 0;
+
+    var handle = this.parent.each(function(chunk) {
+      buffer += chunk;
+
+      var match;
+      while (match = delimiter.exec(buffer)) {
+        end = match.index;
+        if (fn(buffer.substring(start, end), index++) === false) {
+          return false;
+        }
+        start = end + match[0].length;
+      }
+
+      buffer = buffer.substring(start);
+      start = 0;
+    });
+
+    handle.onComplete(function() {
+      if (buffer.length > 0) {
+        fn(buffer);
+      }
+    });
+
+    return handle;
+  };
+
+  SplitStreamSequence.prototype.stringEach = function each(fn) {
     var delimiter  = this.delimiter,
         pieceIndex = 0,
         buffer = '',
