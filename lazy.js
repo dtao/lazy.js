@@ -5267,20 +5267,32 @@
   SplitStreamSequence.prototype = new Sequence();
 
   SplitStreamSequence.prototype.each = function each(fn) {
-    var delimiter = this.delimiter,
-        done      = false,
-        i         = 0;
+    var delimiter  = this.delimiter,
+        pieceIndex = 0,
+        buffer = '',
+        bufferIndex = 0,
+        handle = new AsyncHandle(this.interval);
 
-    return this.parent.each(function(chunk) {
-      Lazy(chunk).split(delimiter).each(function(piece) {
-        if (fn(piece, i++) === false) {
-          done = true;
+    var parentHandle = this.parent.each(function(chunk) {
+      buffer += chunk;
+      var delimiterIndex;
+      while ((delimiterIndex = buffer.indexOf(delimiter)) >= 0) {
+        var piece = buffer.substr(0,delimiterIndex);
+        buffer = buffer.substr(delimiterIndex+delimiter.length);
+        if (fn(piece,pieceIndex++) === false) {
           return false;
         }
-      });
-
-      return !done;
+      }
+      return true;
     });
+    parentHandle.onComplete(function() {
+      fn(buffer,pieceIndex++);
+      handle.completeCallback();
+    });
+    parentHandle.onError(function() {
+      handle.errorCallback.apply(handle,arguments);
+    });
+    return handle;
   };
 
   StreamLikeSequence.prototype.lines = function lines() {
