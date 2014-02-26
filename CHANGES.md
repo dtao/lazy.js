@@ -6,6 +6,8 @@ This file includes at least a partial list of the major changes in each version.
 v0.3.3 (in progress)
 --------------------
 
+- fixed `Sequence#groupBy` to work for async sequences (see [#72](https://github.com/dtao/lazy.js/pull/72))
+- fixed `StreamLikeSequence#split` to split properly across chunks (see [#70](https://github.com/dtao/lazy.js/pull/70))
 - changed `Sequence#filter` so it passes a simple incrementing index with each element (like Underscore/Lo-Dash)
 - added `Lazy.clone` to create a shallow copy of an object or array
 - added `Sequence#sort`, which can accept a 2-arity function for more customized sorting (see [#65](https://github.com/dtao/lazy.js/issues/65))
