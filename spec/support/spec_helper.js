@@ -426,11 +426,19 @@
 
   context.toBePopulated = function(collection, length) {
     return function() {
-      if (length) {
-        return collection.length === length;
+      if (!collection) {
+        return false;
       }
 
-      return collection.length > 0;
+      var size = typeof collection.length === 'number' ?
+        collection.length :
+        Object.keys(collection).length;
+
+      if (length) {
+        return size === length;
+      }
+
+      return size > 0;
     };
   };
 

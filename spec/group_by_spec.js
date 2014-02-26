@@ -15,7 +15,7 @@ describe("groupBy", function() {
     Lazy(people)
       .async()
       .groupBy(Person.getGender)
-      .toArray()
+      .toObject()
       .onComplete(function(result) {
         populate(byGender, result);
       });
@@ -23,10 +23,10 @@ describe("groupBy", function() {
     waitsFor(toBePopulated(byGender));
 
     runs(function() {
-      expect(byGender).toEqual([
-        ['M', [david, adam, daniel]],
-        ['F', [mary, lauren, happy]]
-      ]);
+      expect(byGender).toEqual({
+        M: [david, adam, daniel],
+        F: [mary, lauren, happy]
+      });
     });
   });
 
