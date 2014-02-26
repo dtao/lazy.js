@@ -330,6 +330,22 @@
     });
   });
 
+  /**
+   * Populates a collection.
+   */
+  context.populate = function(collection, contents) {
+    if (collection instanceof Array) {
+      for (var i = 0, len = contents.length; i < len; ++i) {
+        collection.push(contents[i]);
+      }
+      return;
+    }
+
+    for (var key in contents) {
+      collection[key] = contents[key];
+    }
+  };
+
   context.ensureLaziness = function(action) {
     it("doesn't eagerly iterate the collection", function() {
       action();

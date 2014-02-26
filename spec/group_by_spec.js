@@ -10,18 +10,17 @@ describe("groupBy", function() {
   });
 
   it("groups the collection by a specified selector function for async sequences", function() {
-    var byGender, done;
+    var byGender = {};
 
     Lazy(people)
       .async()
       .groupBy(Person.getGender)
       .toArray()
       .onComplete(function(result) {
-        byGender = result;
-        done = true;
+        populate(byGender, result);
       });
 
-    waitsFor(function() { return done; });
+    waitsFor(toBePopulated(byGender));
 
     runs(function() {
       expect(byGender).toEqual([
