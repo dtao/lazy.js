@@ -73,6 +73,27 @@ describe("working with streams", function() {
     });
   });
 
+  it("can split the contents of the stream across chunks", function() {
+    var stream = new MemoryStream(),
+        pieces  = [];
+    Lazy(stream).split('to be').each(function(piece) {
+      pieces.push(piece);
+    });
+
+    stream.write('this ');
+    stream.write('needs ');
+    stream.write('to ');
+    stream.write('be ');
+    stream.write('split');
+    stream.end();
+
+    waitsFor(toBePopulated(pieces,2));
+
+    runs(function() {
+      expect(pieces).toEqual(['this needs ',' split']);
+    });
+  });
+
   it("can also do string-style matching on streams", function() {
     var stream = fs.createReadStream("./spec/data/haiku.txt"),
         words  = [];
