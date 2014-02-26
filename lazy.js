@@ -4056,24 +4056,25 @@
 
   GroupedSequence.prototype.each = function each(fn) {
     var keyFn   = createCallback(this.keyFn),
-        grouped = {};
+        result;
 
-    this.parent.each(function(e) {
+    result = this.parent.reduce(function(grouped,e) {
       var key = keyFn(e);
       if (!(grouped[key] instanceof Array)) {
         grouped[key] = [e];
       } else {
         grouped[key].push(e);
       }
-    });
+      return grouped;
+    },{});
 
-    for (var key in grouped) {
-      if (fn(grouped[key], key) === false) {
-        return false;
+    return transform(function(grouped) {
+      for (var key in grouped) {
+        if (fn(grouped[key], key) === false) {
+          return false;
+        }
       }
-    }
-
-    return true;
+    },result);
   };
 
   IndexedSequence.prototype = new ObjectLikeSequence();
@@ -5062,6 +5063,30 @@
     }
 
     return clearTimeout;
+  }
+
+  /**
+   * Transform a value, whether the value is retrieved asynchronously or
+   * directly.
+   * @private
+   * @param {Function} fn The function that transforms the value.
+   * @param {Any} value The value to be transformed. This can be AsyncHandle
+   * when the value is retrieved asynchronously, otherwise it can be anything.
+   * @returns {Any} An {@link AsyncHandle} when value is also {@link AsyncHandle}, otherwise
+   * this returns whatever fn resulted in.
+   */
+  function transform(fn,value) {
+    if (value instanceof AsyncHandle) {
+      var result = new AsyncHandle();
+      value.onComplete(function(value) {
+        result.completeCallback(fn(value));
+      });
+      value.onError(function() {
+        result.errorCallback.apply(result,arguments);
+      });
+      return result;
+    }
+    return fn(value);
   }
 
   /**
