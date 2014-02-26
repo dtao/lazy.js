@@ -10,18 +10,23 @@ describe("groupBy", function() {
   });
 
   it("groups the collection by a specified selector function for async sequences", function() {
-    var byGender;
-    var done = false;
-    var handle = Lazy(people).async().groupBy(Person.getGender).toArray();
+    var byGender, done;
+
+    Lazy(people)
+      .async()
+      .groupBy(Person.getGender)
+      .toArray()
+      .onComplete(function(result) {
+        byGender = result;
+        done = true;
+      });
+
     waitsFor(function() { return done; });
-    handle.onComplete(function(result) {
-      byGender = result;
-      done = true;
-    });
+
     runs(function() {
       expect(byGender).toEqual([
-        ["M", [david, adam, daniel]],
-        ["F", [mary, lauren, happy]]
+        ['M', [david, adam, daniel]],
+        ['F', [mary, lauren, happy]]
       ]);
     });
   });
