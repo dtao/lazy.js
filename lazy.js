@@ -1619,7 +1619,7 @@
    * @returns {Sequence} The new sequence.
    *
    * @examples
-   * Lazy([1, 2, 3, 4, 5]).shuffle() // the values [1, 2, 3, 4, 5] in any order
+   * Lazy([1, 2, 3, 4, 5]).shuffle().value() // =~ [1, 2, 3, 4, 5]
    */
   Sequence.prototype.shuffle = function shuffle() {
     return new ShuffledSequence(this);
