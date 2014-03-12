@@ -147,11 +147,11 @@
   Lazy.strict = function strict() {
     function StrictLazy(source) {
       if (source == null) {
-        throw "You cannot wrap null or undefined using Lazy.";
+        throw new Error("You cannot wrap null or undefined using Lazy.");
       }
 
       if (typeof source === "number" || typeof source === "boolean") {
-        throw "You cannot wrap primitive values using Lazy.";
+        throw new Error("You cannot wrap primitive values using Lazy.");
       }
 
       return Lazy(source);
@@ -275,7 +275,7 @@
    */
   Sequence.define = function define(methodName, overrides) {
     if (!overrides || (!overrides.getIterator && !overrides.each)) {
-      throw "A custom sequence must implement *at least* getIterator or each!";
+      throw new Error("A custom sequence must implement *at least* getIterator or each!");
     }
 
     return defineSequenceType(Sequence, methodName, overrides);
@@ -2234,7 +2234,7 @@
    */
   Sequence.prototype.chunk = function chunk(size) {
     if (size < 1) {
-      throw "You must specify a positive chunk size.";
+      throw new Error("You must specify a positive chunk size.");
     }
 
     return new ChunkedSequence(this, size);
@@ -2680,7 +2680,7 @@
    */
   ArrayLikeSequence.define = function define(methodName, overrides) {
     if (!overrides || typeof overrides.get !== 'function') {
-      throw "A custom array-like sequence must implement *at least* get!";
+      throw new Error("A custom array-like sequence must implement *at least* get!");
     }
 
     return defineSequenceType(ArrayLikeSequence, methodName, overrides);
@@ -3482,7 +3482,7 @@
    */
   ObjectLikeSequence.define = function define(methodName, overrides) {
     if (!overrides || typeof overrides.each !== 'function') {
-      throw "A custom object-like sequence must implement *at least* each!";
+      throw new Error("A custom object-like sequence must implement *at least* each!");
     }
 
     return defineSequenceType(ObjectLikeSequence, methodName, overrides);
@@ -3554,7 +3554,7 @@
    * Lazy({ foo: 'bar' }).async() // throws
    */
   ObjectLikeSequence.prototype.async = function async() {
-    throw 'An ObjectLikeSequence does not support asynchronous iteration.';
+    throw new Error('An ObjectLikeSequence does not support asynchronous iteration.');
   };
 
   /**
@@ -4148,7 +4148,7 @@
    * changes; // => [{ property: 'foo', value: 1 }, { property: 'foo', value: 3 }]
    */
   ObjectLikeSequence.prototype.watch = function watch(propertyNames) {
-    throw 'You can only call #watch on a directly wrapped object.';
+    throw new Error('You can only call #watch on a directly wrapped object.');
   };
 
   /**
@@ -4251,7 +4251,7 @@
    */
   StringLikeSequence.define = function define(methodName, overrides) {
     if (!overrides || typeof overrides.get !== 'function') {
-      throw "A custom string-like sequence must implement *at least* get!";
+      throw new Error("A custom string-like sequence must implement *at least* get!");
     }
 
     return defineSequenceType(StringLikeSequence, methodName, overrides);
@@ -4925,7 +4925,7 @@
    */
   function AsyncSequence(parent, interval) {
     if (parent instanceof AsyncSequence) {
-      throw "Sequence is already asynchronous!";
+      throw new Error("Sequence is already asynchronous!");
     }
 
     this.parent         = parent;
@@ -4948,7 +4948,7 @@
    * Lazy([1, 2, 3]).async().getIterator() // throws
    */
   AsyncSequence.prototype.getIterator = function getIterator() {
-    throw 'An AsyncSequence does not support synchronous iteration.';
+    throw new Error('An AsyncSequence does not support synchronous iteration.');
   };
 
   /**
@@ -5600,7 +5600,7 @@
           Lazy.identity;
 
       default:
-        throw "Don't know how to make a callback from a " + typeof callback + "!";
+        throw new Error("Don't know how to make a callback from a " + typeof callback + "!");
     }
   }
 
@@ -6047,11 +6047,11 @@
     var contents = this.contents,
         capacity = contents.length,
         start    = this.start;
-  
+
     if (this.count === capacity) {
       contents[start] = element;
       this.start = (start + 1) % capacity;
-  
+
     } else {
       contents[this.count++] = element;
     }
