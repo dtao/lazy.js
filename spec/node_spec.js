@@ -1,6 +1,7 @@
-var fs     = require("fs"),
-    path   = require("path"),
-    Stream = require("stream");
+var fs           = require("fs"),
+    path         = require("path"),
+    Stream       = require("stream"),
+    MemoryStream = require("memorystream");
 
 require("./lazy_spec.js");
 require("./map_spec.js");
@@ -261,8 +262,6 @@ describe("working with streams", function() {
   });
 
   if (typeof Stream.Readable !== "undefined") {
-    var MemoryStream = require('memorystream');
-
     describe('toStream', function() {
       it('creates a readable stream that you can use just like any other stream', function() {
         var stream = Lazy(fs.createReadStream('./spec/data/lines.txt'))
