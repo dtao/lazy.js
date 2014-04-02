@@ -5253,25 +5253,18 @@
   }
 
   /**
-   * Transform a value, whether the value is retrieved asynchronously or
-   * directly.
+   * Transform a value, whether the value is retrieved asynchronously or directly.
+   *
    * @private
    * @param {Function} fn The function that transforms the value.
-   * @param {Any} value The value to be transformed. This can be AsyncHandle
-   * when the value is retrieved asynchronously, otherwise it can be anything.
-   * @returns {Any} An {@link AsyncHandle} when value is also {@link AsyncHandle}, otherwise
-   * this returns whatever fn resulted in.
+   * @param {*} value The value to be transformed. This can be an {@link AsyncHandle} when the value
+   *     is retrieved asynchronously, otherwise it can be anything.
+   * @returns {*} An {@link AsyncHandle} when `value` is also an {@link AsyncHandle}, otherwise
+   *     whatever `fn` resulted in.
    */
-  function transform(fn,value) {
+  function transform(fn, value) {
     if (value instanceof AsyncHandle) {
-      var result = new AsyncHandle();
-      value.onComplete(function(value) {
-        result._resolve(fn(value));
-      });
-      value.onError(function(err) {
-        result._reject(err);
-      });
-      return result;
+      return value.then(function() { fn(value); });
     }
     return fn(value);
   }
