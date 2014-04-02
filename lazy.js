@@ -4927,6 +4927,7 @@
     this.parent         = parent;
     this.interval       = interval;
     this.onNextCallback = getOnNextCallback(interval);
+    this.cancelCallback = getCancelCallback(interval);
   }
 
   AsyncSequence.prototype = new Sequence();
@@ -4961,14 +4962,21 @@
   AsyncSequence.prototype.each = function each(fn) {
     var iterator = this.parent.getIterator(),
         onNextCallback = this.onNextCallback,
+        cancelCallback = this.cancelCallback,
         i = 0;
 
-    var handle = new AsyncHandle(this.interval);
+    var handle = new AsyncHandle(function cancel() {
+      if (cancellationId) {
+        cancelCallback(cancellationId);
+      }
+    });
 
-    handle.id = onNextCallback(function iterate() {
+    var cancellationId = onNextCallback(function iterate() {
+      cancellationId = null;
+
       try {
         if (iterator.moveNext() && fn(iterator.current(), i++) !== false) {
-          handle.id = onNextCallback(iterate);
+          cancellationId = onNextCallback(iterate);
 
         } else {
           handle._resolve();
@@ -4993,12 +5001,11 @@
    * @public
    * @constructor
    */
-  function AsyncHandle(interval) {
+  function AsyncHandle(cancelCallback) {
     this.resolveListeners = [];
     this.rejectListeners = [];
     this.state = PENDING;
-
-    this.cancelCallback = getCancelCallback(interval);
+    this.cancelCallback = cancelCallback;
   }
 
   // Async handle states
@@ -5006,9 +5013,9 @@
       RESOLVED = 2,
       REJECTED = 3;
 
-  AsyncHandle.prototype.then = function(onFulfilled, onRejected) {
+  AsyncHandle.prototype.then = function then(onFulfilled, onRejected) {
     // 2.2.7
-    var promise = new AsyncHandle();
+    var promise = new AsyncHandle(this.cancelCallback);
 
     this.resolveListeners.push(function(value) {
       try {
@@ -5053,24 +5060,18 @@
 
     // 2.2.2.1
     if (this.state === RESOLVED) {
-      // consume(this.resolveListeners, function(listener) {
-      //   listener(self.value);
-      // });
       this._resolve(this.value);
     }
 
     // 2.2.3.1
     if (this.state === REJECTED) {
-      // consume(this.rejectListeners, function(listener) {
-      //   listener(self.reason);
-      // });
       this._reject(this.reason);
     }
 
     return promise;
   };
 
-  AsyncHandle.prototype._resolve = function(value) {
+  AsyncHandle.prototype._resolve = function _resolve(value) {
     // 2.1.2.1
     if (this.state === REJECTED) {
       return;
@@ -5088,12 +5089,10 @@
     // 2.2.6.1
     // 2.2.5
     // 2.2.2.3
-    consume(this.resolveListeners, function(listener) {
-      listener(value);
-    });
+    consumeListeners(this.resolveListeners, value);
   };
 
-  AsyncHandle.prototype._reject = function(reason) {
+  AsyncHandle.prototype._reject = function _reject(reason) {
     // 2.1.3.1
     if (this.state === RESOLVED) {
       return;
@@ -5111,9 +5110,7 @@
     // 2.2.6.2
     // 2.2.5
     // 2.2.3.3
-    consume(this.rejectListeners, function(listener) {
-      listener(reason);
-    });
+    consumeListeners(this.rejectListeners, reason);
   };
 
   /**
@@ -5122,25 +5119,11 @@
    * @public
    */
   AsyncHandle.prototype.cancel = function cancel() {
-    var cancelCallback = this.cancelCallback;
-
-    if (this.id) {
-      cancelCallback(this.id);
-      this.id = null;
+    if (this.cancelCallback) {
+      this.cancelCallback();
+      this.cancelCallback = null;
+      this._resolve(false);
     }
-  };
-
-  /**
-   * Updates the handle with a callback to execute if/when any error is
-   * encountered during asynchronous iteration.
-   *
-   * @public
-   * @param {Function} callback The function to call, with any associated error
-   *     object, when an error occurs.
-   */
-  AsyncHandle.prototype.onError = function onError(callback) {
-    this.rejectListeners.push(callback);
-    return this;
   };
 
   /**
@@ -5153,6 +5136,19 @@
    */
   AsyncHandle.prototype.onComplete = function onComplete(callback) {
     this.resolveListeners.push(callback);
+    return this;
+  };
+
+  /**
+   * Updates the handle with a callback to execute if/when any error is
+   * encountered during asynchronous iteration.
+   *
+   * @public
+   * @param {Function} callback The function to call, with any associated error
+   *     object, when an error occurs.
+   */
+  AsyncHandle.prototype.onError = function onError(callback) {
+    this.rejectListeners.push(callback);
     return this;
   };
 
@@ -5222,18 +5218,15 @@
     promise._resolve(x);
   }
 
-  function consume(array, op) {
-    onEmptyExecutionContext(function() {
-      if (array.length > 0) {
-        op(array.shift());
-        consume(array, op);
+  function consumeListeners(listeners, value, callback) {
+    callback || (callback = getOnNextCallback());
+
+    callback(function() {
+      if (listeners.length > 0) {
+        listeners.shift()(value);
+        consumeListeners(listeners, value, callback);
       }
     });
-  }
-
-  // See http://es5.github.io/#x10.3
-  function onEmptyExecutionContext(callback) {
-    setImmediate(callback);
   }
 
   function getOnNextCallback(interval) {

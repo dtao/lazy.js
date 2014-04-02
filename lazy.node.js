@@ -31,24 +31,25 @@ StreamedSequence.prototype.openStream = function(callback) {
  *     the stream.
  */
 StreamedSequence.prototype.each = function(fn) {
-  var encoding = this.encoding || "utf-8";
+  var cancelled = false;
 
-  var handle = new Lazy.AsyncHandle();
+  var handle = new Lazy.AsyncHandle(function cancel() { cancelled = true; });
 
   this.openStream(function(stream) {
+    if (stream.setEncoding) {
+      stream.setEncoding(this.encoding || 'utf8');
+    }
+
     var listener = function(e) {
       try {
-        if (fn(e) === false) {
+        if (cancelled || fn(e) === false) {
           stream.removeListener("data", listener);
+          handle._resolve(false);
         }
       } catch (e) {
         handle._reject(e);
       }
     };
-
-    if (stream.setEncoding) {
-      stream.setEncoding(encoding);
-    }
 
     stream.on("data", listener);
 

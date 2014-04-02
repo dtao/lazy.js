@@ -62,7 +62,7 @@ describe("working with streams", function() {
       words.push(word);
     });
 
-    waitsFor(toBePopulated(words));
+    waitsFor(toBePopulated(words, 13));
 
     runs(function() {
       expect(words).toEqual([
