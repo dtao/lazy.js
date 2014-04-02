@@ -4998,8 +4998,127 @@
    * @constructor
    */
   function AsyncHandle(interval) {
+    this.resolveListeners = [];
+    this.rejectListeners = [];
+    this.state = PENDING;
+
     this.cancelCallback = getCancelCallback(interval);
   }
+
+  // Async handle states
+  var PENDING  = 1,
+      RESOLVED = 2,
+      REJECTED = 3;
+
+  AsyncHandle.prototype.then = function(onFulfilled, onRejected) {
+    // 2.2.7
+    var promise = new AsyncHandle();
+
+    this.resolveListeners.push(function(value) {
+      try {
+        // 2.2.1.1
+        if (typeof onFulfilled !== 'function') {
+          // 2.2.7.3
+          resolve(promise, value);
+          return;
+        }
+
+        var result = onFulfilled(value);
+
+        // 2.2.7.1
+        resolve(promise, result);
+
+      } catch (e) {
+        // 2.2.7.2
+        promise._reject(e);
+      }
+    });
+
+    this.rejectListeners.push(function(reason) {
+      try {
+        // 2.2.1.2
+        if (typeof onRejected !== 'function') {
+          promise._reject(reason);
+          return;
+        }
+
+        var result = onRejected(reason);
+
+        // 2.2.7.1
+        resolve(promise, result);
+
+      } catch (e) {
+        // 2.2.7.2
+        promise._reject(e);
+      }
+    });
+
+    // var self = this;
+
+    // 2.2.2.1
+    if (this.state === RESOLVED) {
+      // consume(this.resolveListeners, function(listener) {
+      //   listener(self.value);
+      // });
+      this._resolve(this.value);
+    }
+
+    // 2.2.3.1
+    if (this.state === REJECTED) {
+      // consume(this.rejectListeners, function(listener) {
+      //   listener(self.reason);
+      // });
+      this._reject(this.reason);
+    }
+
+    return promise;
+  };
+
+  AsyncHandle.prototype._resolve = function(value) {
+    // 2.1.2.1
+    if (this.state === REJECTED) {
+      return;
+    }
+
+    if (this.state === PENDING) {
+      this.state = RESOLVED;
+      this.value = value;
+    }
+
+    // 2.1.2.2
+    value = this.value;
+
+    // 2.2.4
+    // 2.2.6.1
+    // 2.2.5
+    // 2.2.2.3
+    consume(this.resolveListeners, function(listener) {
+      listener(value);
+    });
+  };
+
+  AsyncHandle.prototype._reject = function(reason) {
+    // 2.1.3.1
+    if (this.state === RESOLVED) {
+      return;
+    }
+
+    if (this.state === PENDING) {
+      this.state = REJECTED;
+      this.reason = reason;
+    }
+
+    // 2.1.3.2
+    reason = this.reason;
+
+    // 2.2.4
+    // 2.2.6.2
+    // 2.2.5
+    // 2.2.3.3
+    consume(this.rejectListeners, function(listener) {
+      listener(reason);
+    });
+  };
 
   /**
    * Cancels asynchronous iteration.
@@ -5041,6 +5160,86 @@
   };
 
   AsyncHandle.prototype.completeCallback = Lazy.noop;
+
+  // 2.3 - Promise resolution procedure
+  function resolve(promise, x) {
+    // 2.3.1
+    if (promise === x) {
+      promise._reject(new TypeError('Cannot resolve a promise to itself'));
+      return;
+    }
+
+    // 2.3.2
+    if (x instanceof AsyncHandle) {
+      x.then(
+        function(value) { resolve(promise, value); },
+        function(reason) { promise._reject(reason); }
+      );
+      return;
+    }
+
+    // 2.3.3.2
+    var then;
+    try {
+      then = (/function|object/).test(typeof x) && x != null && x.then;
+    } catch (e) {
+      promise._reject(e);
+      return;
+    }
+
+    // 2.3.3.3
+    var thenableState = PENDING;
+    if (typeof then === 'function') {
+      try {
+        then.call(
+          x,
+          function resolvePromise(value) {
+            // 2.3.3.3.3
+            if (thenableState !== PENDING) {
+              return;
+            }
+            thenableState = RESOLVED;
+            resolve(promise, value);
+          },
+          function rejectPromise(reason) {
+            // 2.3.3.3.3
+            if (thenableState !== PENDING) {
+              return;
+            }
+            thenableState = REJECTED;
+            promise._reject(reason);
+          }
+        );
+      } catch (e) {
+        // 2.3.3.3.4.1
+        if (thenableState !== PENDING) {
+          return;
+        }
+
+        // 2.3.3.3.4.2
+        promise._reject(e);
+      }
+
+      return;
+    }
+
+    // 2.3.3.4
+    promise._resolve(x);
+  }
+
+  function consume(array, op) {
+    onEmptyExecutionContext(function() {
+      if (array.length > 0) {
+        op(array.shift());
+        consume(array, op);
+      }
+    });
+  }
+
+  // See http://es5.github.io/#x10.3
+  function onEmptyExecutionContext(callback) {
+    setImmediate(callback);
+  }
 
   function getOnNextCallback(interval) {
     if (typeof interval === "undefined") {
