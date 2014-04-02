@@ -42,7 +42,7 @@ StreamedSequence.prototype.each = function(fn) {
           stream.removeListener("data", listener);
         }
       } catch (e) {
-        handle.errorCallback(e);
+        handle._reject(e);
       }
     };
 
@@ -53,7 +53,7 @@ StreamedSequence.prototype.each = function(fn) {
     stream.on("data", listener);
 
     stream.on("end", function() {
-      handle.completeCallback();
+      handle._resolve(true);
     });
   });
 

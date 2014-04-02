@@ -2132,13 +2132,9 @@
 
     // TODO: Think of a way more efficient solution to this problem.
     if (eachResult instanceof AsyncHandle) {
-      eachResult.then = eachResult.onComplete = function(callback) {
-        eachResult.completeCallback = function() {
-          callback(memo);
-        };
-      };
-
-      return eachResult;
+      return eachResult.then(function() {
+        return memo;
+      });
     }
 
     return memo;
@@ -4975,11 +4971,11 @@
           handle.id = onNextCallback(iterate);
 
         } else {
-          handle.completeCallback();
+          handle._resolve();
         }
 
       } catch (e) {
-        handle.errorCallback(e);
+        handle._reject(e);
       }
     });
 
@@ -5143,10 +5139,9 @@
    *     object, when an error occurs.
    */
   AsyncHandle.prototype.onError = function onError(callback) {
-    this.errorCallback = callback;
+    this.rejectListeners.push(callback);
+    return this;
   };
-
-  AsyncHandle.prototype.errorCallback = Lazy.noop;
 
   /**
    * Updates the handle with a callback to execute when iteration is completed.
@@ -5154,12 +5149,12 @@
    * @public
    * @param {Function} callback The function to call when the asynchronous
    *     iteration is completed.
+   * @returns {AsyncHandle}
    */
   AsyncHandle.prototype.onComplete = function onComplete(callback) {
-    this.completeCallback = callback;
+    this.resolveListeners.push(callback);
+    return this;
   };
-
-  AsyncHandle.prototype.completeCallback = Lazy.noop;
 
   // 2.3 - Promise resolution procedure
   function resolve(promise, x) {
@@ -5278,10 +5273,10 @@
     if (value instanceof AsyncHandle) {
       var result = new AsyncHandle();
       value.onComplete(function(value) {
-        result.completeCallback(fn(value));
+        result._resolve(fn(value));
       });
-      value.onError(function() {
-        result.errorCallback.apply(result,arguments);
+      value.onError(function(err) {
+        result._reject(err);
       });
       return result;
     }
@@ -5317,13 +5312,7 @@
       }
     });
 
-    handle.then = handle.onComplete = function(callback) {
-      handle.completeCallback = function() {
-        callback(found);
-      };
-    };
-
-    return handle;
+    return handle.then(function() { return found; });
   };
 
   /**
@@ -5346,13 +5335,9 @@
       }
     });
 
-    handle.then = handle.onComplete = function(callback) {
-      handle.completeCallback = function() {
-        callback(foundIndex);
-      };
-    };
-
-    return handle;
+    return handle.then(function() {
+      return foundIndex;
+    });
   };
 
   /**
@@ -5375,13 +5360,9 @@
       }
     });
 
-    handle.then = handle.onComplete = function(callback) {
-      handle.completeCallback = function() {
-        callback(found);
-      };
-    };
-
-    return handle;
+    return handle.then(function() {
+      return found;
+    });
   };
 
   /**
@@ -5509,10 +5490,9 @@
     var delimiter  = this.delimiter,
         pieceIndex = 0,
         buffer = '',
-        bufferIndex = 0,
-        handle = new AsyncHandle(this.interval);
+        bufferIndex = 0;
 
-    var parentHandle = this.parent.each(function(chunk) {
+    var handle = this.parent.each(function(chunk) {
       buffer += chunk;
       var delimiterIndex;
       while ((delimiterIndex = buffer.indexOf(delimiter)) >= 0) {
@@ -5524,13 +5504,11 @@
       }
       return true;
     });
-    parentHandle.onComplete(function() {
-      fn(buffer,pieceIndex++);
-      handle.completeCallback();
+
+    handle.onComplete(function() {
+      fn(buffer, pieceIndex++);
     });
-    parentHandle.onError(function() {
-      handle.errorCallback.apply(handle,arguments);
-    });
+
     return handle;
   };
 

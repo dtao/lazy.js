@@ -113,7 +113,7 @@ describe("working with streams", function() {
     stream.write("dog's back");
     stream.end();
 
-    waitsFor(toBePopulated(pieces));
+    waitsFor(toBePopulated(pieces, 14));
 
     runs(function() {
       expect(pieces).toEqual([
