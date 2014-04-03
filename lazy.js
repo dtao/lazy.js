@@ -4070,7 +4070,7 @@
           return false;
         }
       }
-    },result);
+    }, result);
   };
 
   IndexedSequence.prototype = new ObjectLikeSequence();
@@ -4991,21 +4991,50 @@
   };
 
   /**
-   * An `AsyncHandle` provides control over an {@link AsyncSequence} that is
-   * currently (or was) iterating over its elements asynchronously. In
-   * particular it provides the ability to {@link AsyncHandle#cancel} the
-   * iteration as well as execute a callback when either an error occurs or
-   * iteration is complete with {@link AsyncHandle#onError} and
-   * {@link AsyncHandle#onComplete}.
+   * An `AsyncHandle` provides a [Promises/A+](http://promises-aplus.github.io/promises-spec/)
+   * compliant interface for an {@link AsyncSequence} that is currently (or was)
+   * iterating over its elements.
+   *
+   * In addition to behaving as a promise, an `AsyncHandle` provides the ability
+   * to {@link AsyncHandle#cancel} iteration (if `cancelFn` is provided)
+   * and also offers convenient {@link AsyncHandle#onComplete} and
+   * {@link AsyncHandle#onError} methods to attach listeners for when iteration
+   * is complete or an error is thrown during iteration.
    *
    * @public
+   * @param {Function} cancelFn A function to cancel asynchronous iteration.
+   *     This is passed in to support different cancellation mechanisms for
+   *     different forms of asynchronous sequences (e.g., timeout-based
+   *     sequences, sequences based on I/O, etc.).
    * @constructor
+   *
+   * @example
+   * // Create a sequence of 100,000 random numbers, in chunks of 100.
+   * var sequence = Lazy.generate(Math.random)
+   *   .chunk(100)
+   *   .async()
+   *   .take(1000);
+   *
+   * // Reduce-style operations -- i.e., operations that return a *value* (as
+   * // opposed to a *sequence*) -- return an AsyncHandle for async sequences.
+   * var handle = sequence.toArray();
+   *
+   * handle.onComplete(function(array) {
+   *   console.log('Created array with ' + array.length + ' elements!');
+   * });
+   *
+   * // Since an AsyncHandle is a promise, you can also use it to create
+   * // subsequent promises using `then` (see the Promises/A+ spec for more
+   * // info).
+   * var flattened = handle.then(function(array) {
+   *   return Lazy(array).flatten();
+   * });
    */
-  function AsyncHandle(cancelCallback) {
+  function AsyncHandle(cancelFn) {
     this.resolveListeners = [];
     this.rejectListeners = [];
     this.state = PENDING;
-    this.cancelCallback = cancelCallback;
+    this.cancelFn = cancelFn;
   }
 
   // Async handle states
@@ -5015,7 +5044,7 @@
 
   AsyncHandle.prototype.then = function then(onFulfilled, onRejected) {
     // 2.2.7
-    var promise = new AsyncHandle(this.cancelCallback);
+    var promise = new AsyncHandle(this.cancelFn);
 
     this.resolveListeners.push(function(value) {
       try {
@@ -5119,9 +5148,9 @@
    * @public
    */
   AsyncHandle.prototype.cancel = function cancel() {
-    if (this.cancelCallback) {
-      this.cancelCallback();
-      this.cancelCallback = null;
+    if (this.cancelFn) {
+      this.cancelFn();
+      this.cancelFn = null;
       this._resolve(false);
     }
   };
@@ -5277,16 +5306,13 @@
   };
 
   /**
-   * A version of {@link Sequence#find} which returns a promise-y
-   * {@link AsyncHandle}.
+   * A version of {@link Sequence#find} which returns an {@link AsyncHandle}.
    *
    * @public
    * @param {Function} predicate A function to call on (potentially) every element
    *     in the sequence.
-   * @returns {AsyncHandle} An {@link AsyncHandle} allowing you to cancel
-   *     iteration and/or handle errors, with an added `then` method providing
-   *     a promise-like interface to handle the found element, once it is
-   *     detected.
+   * @returns {AsyncHandle} An {@link AsyncHandle} (promise) which resolves to
+   *     the found element, once it is detected, or else `undefined`.
    */
   AsyncSequence.prototype.find = function find(predicate) {
     var found;
@@ -5302,14 +5328,12 @@
   };
 
   /**
-   * A version of {@link Sequence#indexOf} which returns a promise-y
-   * {@link AsyncHandle}.
+   * A version of {@link Sequence#indexOf} which returns an {@link AsyncHandle}.
    *
    * @public
    * @param {*} value The element to search for in the sequence.
-   * @returns {AsyncHandle} An {@link AsyncHandle} with an added `then` method
-   *     providing a promise-like interface to handle the found index, once it
-   *     is detected, or -1.
+   * @returns {AsyncHandle} An {@link AsyncHandle} (promise) which resolves to
+   *     the found index, once it is detected, or -1.
    */
   AsyncSequence.prototype.indexOf = function indexOf(value) {
     var foundIndex = -1;
@@ -5327,14 +5351,12 @@
   };
 
   /**
-   * A version of {@link Sequence#contains} which returns a promise-y
-   * {@link AsyncHandle}.
+   * A version of {@link Sequence#contains} which returns an {@link AsyncHandle}.
    *
    * @public
    * @param {*} value The element to search for in the sequence.
-   * @returns {AsyncHandle} An {@link AsyncHandle} with an added `then` method
-   *     providing a promise-like interface to handle the result (either `true`
-   *     `false` to indicate whether the element was found).
+   * @returns {AsyncHandle} An {@link AsyncHandle} (promise) which resolves to
+   *     either `true` or `false` to indicate whether the element was found.
    */
   AsyncSequence.prototype.contains = function contains(value) {
     var found = false;
