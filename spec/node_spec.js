@@ -50,6 +50,7 @@ function isHarmonySupported() {
 // Sequence types
 require("./string_like_sequence_spec.js");
 require("./async_sequence_spec.js");
+require("./async_handle_spec.js");
 
 describe("working with streams", function() {
 
@@ -76,7 +77,7 @@ describe("working with streams", function() {
 
   it("can split the contents of the stream across chunks", function() {
     var stream = new MemoryStream(),
-        pieces  = [];
+        pieces = [];
     Lazy(stream).split('to be').each(function(piece) {
       pieces.push(piece);
     });
@@ -97,7 +98,7 @@ describe("working with streams", function() {
 
   it("can split the contents of the stream across chunks w/ a regex delimiter", function() {
     var stream = new MemoryStream(),
-        pieces  = [];
+        pieces = [];
 
     Lazy(stream).split(/[aeiou]/).each(function(piece) {
       pieces.push(piece);
@@ -190,6 +191,22 @@ describe("working with streams", function() {
         runs(function() {
           expect(lines).toEqual(Lazy.repeat("The quick brown fox jumped over the lazy dog.", 25).toArray());
         });
+      });
+
+      it("reads every line of a file (using a handle)", function() {
+        var done = jasmine.createSpy();
+
+        runs(function() {
+          Lazy.readFile("./spec/data/lines.txt")
+            .lines()
+            .toArray()
+            .onComplete(function(array) {
+              expect(array).toEqual(Lazy.repeat("The quick brown fox jumped over the lazy dog.", 25).toArray());
+              done();
+            });
+        });
+
+        waitsFor(toBeCalled(done));
       });
     });
 

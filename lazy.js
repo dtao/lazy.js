@@ -2132,9 +2132,7 @@
 
     // TODO: Think of a way more efficient solution to this problem.
     if (eachResult instanceof AsyncHandle) {
-      return eachResult.then(function() {
-        return memo;
-      });
+      return eachResult.then(function() { return memo; });
     }
 
     return memo;
