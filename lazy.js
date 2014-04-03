@@ -5043,56 +5043,40 @@
       REJECTED = 3;
 
   AsyncHandle.prototype.then = function then(onFulfilled, onRejected) {
-    // 2.2.7
     var promise = new AsyncHandle(this.cancelFn);
 
     this.resolveListeners.push(function(value) {
       try {
-        // 2.2.1.1
         if (typeof onFulfilled !== 'function') {
-          // 2.2.7.3
           resolve(promise, value);
           return;
         }
 
-        var result = onFulfilled(value);
-
-        // 2.2.7.1
-        resolve(promise, result);
+        resolve(promise, onFulfilled(value));
 
       } catch (e) {
-        // 2.2.7.2
         promise._reject(e);
       }
     });
 
     this.rejectListeners.push(function(reason) {
       try {
-        // 2.2.1.2
         if (typeof onRejected !== 'function') {
           promise._reject(reason);
           return;
         }
 
-        var result = onRejected(reason);
-
-        // 2.2.7.1
-        resolve(promise, result);
+        resolve(promise, onRejected(reason));
 
       } catch (e) {
-        // 2.2.7.2
         promise._reject(e);
       }
     });
 
-    // var self = this;
-
-    // 2.2.2.1
     if (this.state === RESOLVED) {
       this._resolve(this.value);
     }
 
-    // 2.2.3.1
     if (this.state === REJECTED) {
       this._reject(this.reason);
     }
@@ -5101,7 +5085,6 @@
   };
 
   AsyncHandle.prototype._resolve = function _resolve(value) {
-    // 2.1.2.1
     if (this.state === REJECTED) {
       return;
     }
@@ -5111,18 +5094,10 @@
       this.value = value;
     }
 
-    // 2.1.2.2
-    value = this.value;
-
-    // 2.2.4
-    // 2.2.6.1
-    // 2.2.5
-    // 2.2.2.3
-    consumeListeners(this.resolveListeners, value);
+    consumeListeners(this.resolveListeners, this.value);
   };
 
   AsyncHandle.prototype._reject = function _reject(reason) {
-    // 2.1.3.1
     if (this.state === RESOLVED) {
       return;
     }
@@ -5132,14 +5107,7 @@
       this.reason = reason;
     }
 
-    // 2.1.3.2
-    reason = this.reason;
-
-    // 2.2.4
-    // 2.2.6.2
-    // 2.2.5
-    // 2.2.3.3
-    consumeListeners(this.rejectListeners, reason);
+    consumeListeners(this.rejectListeners, this.reason);
   };
 
   /**
@@ -5161,7 +5129,7 @@
    * @public
    * @param {Function} callback The function to call when the asynchronous
    *     iteration is completed.
-   * @returns {AsyncHandle}
+   * @return {AsyncHandle} A reference to the handle (for chaining).
    */
   AsyncHandle.prototype.onComplete = function onComplete(callback) {
     this.resolveListeners.push(callback);
@@ -5175,21 +5143,23 @@
    * @public
    * @param {Function} callback The function to call, with any associated error
    *     object, when an error occurs.
+   * @return {AsyncHandle} A reference to the handle (for chaining).
    */
   AsyncHandle.prototype.onError = function onError(callback) {
     this.rejectListeners.push(callback);
     return this;
   };
 
-  // 2.3 - Promise resolution procedure
+  /**
+   * Promise resolution procedure:
+   * http://promises-aplus.github.io/promises-spec/#the_promise_resolution_procedure
+   */
   function resolve(promise, x) {
-    // 2.3.1
     if (promise === x) {
       promise._reject(new TypeError('Cannot resolve a promise to itself'));
       return;
     }
 
-    // 2.3.2
     if (x instanceof AsyncHandle) {
       x.then(
         function(value) { resolve(promise, value); },
@@ -5198,7 +5168,6 @@
       return;
     }
 
-    // 2.3.3.2
     var then;
     try {
       then = (/function|object/).test(typeof x) && x != null && x.then;
@@ -5207,14 +5176,12 @@
       return;
     }
 
-    // 2.3.3.3
     var thenableState = PENDING;
     if (typeof then === 'function') {
       try {
         then.call(
           x,
           function resolvePromise(value) {
-            // 2.3.3.3.3
             if (thenableState !== PENDING) {
               return;
             }
@@ -5222,7 +5189,6 @@
             resolve(promise, value);
           },
           function rejectPromise(reason) {
-            // 2.3.3.3.3
             if (thenableState !== PENDING) {
               return;
             }
@@ -5231,19 +5197,16 @@
           }
         );
       } catch (e) {
-        // 2.3.3.3.4.1
         if (thenableState !== PENDING) {
           return;
         }
 
-        // 2.3.3.3.4.2
         promise._reject(e);
       }
 
       return;
     }
 
-    // 2.3.3.4
     promise._resolve(x);
   }
 
