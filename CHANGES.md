@@ -3,6 +3,10 @@ Lazy.js Changelog
 
 This file includes at least a partial list of the major changes in each version.
 
+v0.4.0 (in progress)
+
+- now `Lazy.AsyncHandle` implements the Promises/A+ specification! (see [#71](https://github.com/dtao/lazy.js/issues/71))
+
 v0.3.3 (in progress)
 --------------------
 
