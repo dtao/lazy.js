@@ -101,7 +101,9 @@
       }
     };
 
-    this.element.addEventListener(this.eventName, listener);
+    for (var i=0; i < this.element.length; i++){
+        this.element[i].addEventListener(this.eventName, listener);
+    }
   };
 
   /**
