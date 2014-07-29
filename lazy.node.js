@@ -138,6 +138,15 @@ if (typeof Stream.Readable !== "undefined") {
 
     this.sequence = sequence;
     this.started  = false;
+    
+    // Find delimiter on a (parent) sequence object if set
+    while (sequence) {
+      if (sequence.delimiter) {
+        this.delimiter = sequence.delimiter;
+        break;
+      }
+      sequence = sequence.parent;
+    }
   }
 
   util.inherits(LazyStream, Stream.Readable);
@@ -146,8 +155,11 @@ if (typeof Stream.Readable !== "undefined") {
     var self = this;
 
     if (!this.started) {
-      var handle = this.sequence.each(function(e, i) {
-        return self.push(e, i);
+      var handle = this.sequence.each(function(line, i) {
+        if (self.delimiter != null) {
+          line += self.delimiter;
+        }
+        return self.push(line, i);
       });
       if (handle instanceof Lazy.AsyncHandle) {
         handle.onComplete(function() {

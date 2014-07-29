@@ -301,6 +301,26 @@ describe("working with streams", function() {
           expect(contents).toEqual(expected);
         });
       });
+
+      it('respects file delimiter set on the instance (e.g. by .lines())', function() {
+        var stream = Lazy.readFile('./spec/data/lines.txt')
+          .lines()
+          .take(5)
+          .toStream();
+
+        var finished = jasmine.createSpy();
+        var output = new MemoryStream(null, { readable: false });
+
+        stream.pipe(output);
+        stream.on('end', finished);
+
+        waitsFor(toBeCalled(finished));
+        runs(function() {
+          var contents = output.toString().replace(/\n$/, '');
+          var expected = Lazy.repeat('The quick brown fox jumped over the lazy dog.', 5).join('\n');
+          expect(contents).toEqual(expected);
+        });
+      });
     });
   }
 });
