@@ -4068,8 +4068,8 @@
         result;
 
     result = this.parent.reduce(function(grouped,e) {
-      var key = keyFn(e);
-      var val = valFn(e);
+      var key = keyFn(e),
+          val = valFn(e);
       if (!(grouped[key] instanceof Array)) {
         grouped[key] = [val];
       } else {
