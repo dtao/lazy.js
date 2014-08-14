@@ -1431,6 +1431,9 @@
    * @param {Function|string} keyFn The function to call on the elements in this
    *     sequence to obtain a key by which to index them, or a string
    *     representing a property to read from all the elements in this sequence.
+   * @param {Function|string} valFn (Optional) The function to call on the elements
+   *     in this sequence to assign to the value of the indexed object, or a string
+   *     representing a parameter to read from all the elements in this sequence.
    * @returns {Sequence} The new sequence.
    *
    * @examples
@@ -1443,17 +1446,19 @@
    *     fred = people[1];
    *
    * Lazy(people).indexBy('name') // sequence: { 'Bob': bob, 'Fred': fred }
+   * Lazy(people).indexBy('name', 'age') // sequence: { 'Bob': 25, 'Fred': 34 }
    */
-  Sequence.prototype.indexBy = function(keyFn) {
-    return new IndexedSequence(this, keyFn);
+  Sequence.prototype.indexBy = function(keyFn, valFn) {
+    return new IndexedSequence(this, keyFn, valFn);
   };
 
   /**
    * @constructor
    */
-  function IndexedSequence(parent, keyFn) {
+  function IndexedSequence(parent, keyFn, valFn) {
     this.parent = parent;
     this.keyFn  = keyFn;
+    this.valFn  = valFn;
   }
 
   // IndexedSequence must have its prototype set after ObjectLikeSequence has
@@ -4086,13 +4091,16 @@
 
   IndexedSequence.prototype.each = function each(fn) {
     var keyFn   = createCallback(this.keyFn),
+        valFn   = createCallback(this.valFn),
         indexed = {};
 
     return this.parent.each(function(e) {
-      var key = keyFn(e);
+      var key = keyFn(e),
+          val = valFn(e);
+
       if (!indexed[key]) {
-        indexed[key] = e;
-        return fn(e, key);
+        indexed[key] = val;
+        return fn(val, key);
       }
     });
   };
