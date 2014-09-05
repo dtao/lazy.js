@@ -59,7 +59,15 @@
  * [@dtao](https://github.com/dtao)
  */
 
-(function(context) {
+(function(root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    define(factory);
+  } else if (typeof exports === 'object') {
+    module.exports = factory();
+  } else {
+    root.Lazy = factory();
+  }
+})(this, function(context) {
   /**
    * Wraps an object and returns a {@link Sequence}. For `null` or `undefined`,
    * simply returns an empty sequence (see {@link Lazy.strict} for a stricter
@@ -6262,15 +6270,5 @@
     return ctor;
   }
 
-  /*** Exposing Lazy to the world ***/
-
-  // For Node.js
-  if (typeof module === "object" && module && module.exports === context) {
-    module.exports = Lazy;
-
-  // For browsers
-  } else {
-    context.Lazy = Lazy;
-  }
-
-}(this));
+  return Lazy;
+});
