@@ -1641,7 +1641,7 @@
         j = 0;
 
     for (var i = shuffled.length - 1; i > 0; --i) {
-      swap(shuffled, i, floor(random() * i) + 1);
+      swap(shuffled, i, floor(random() * i));
       if (fn(shuffled[i], j++) === false) {
         return;
       }
