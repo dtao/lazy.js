@@ -1,4 +1,6 @@
 require "json"
+require "rake"
+require "uglifier"
 
 def package_info
   JSON.parse(File.read('package.json'))
@@ -12,6 +14,21 @@ end
 
 def format_options(options)
   options.map { |key, value| "--#{key} #{value}" }.join(" ")
+end
+
+
+desc "Concat and uglify JavaScript"
+task :uglify do
+  # TODO: figure out a way to do this within Jekyll nicely
+  scripts = [
+    "lazy.js",
+  ]
+  files = scripts.map do |file|
+    File.read(file)
+  end
+  File.open("lazy.min.js", "w") do |file|
+    file.write Uglifier.new.compile(files.join)
+  end
 end
 
 desc "Update the library version in package.json, bower.json, and component.json"
