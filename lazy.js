@@ -2445,12 +2445,13 @@
    * Lazy(["a", "b", "c"]).join("") // => "abc"
    * Lazy([1, 2, 3]).join()         // => "1,2,3"
    * Lazy([1, 2, 3]).join("")       // => "123"
+   * Lazy(["", "", ""]).join(",")   // => ",,"
    */
   Sequence.prototype.join = function join(delimiter) {
     delimiter = typeof delimiter === "string" ? delimiter : ",";
 
-    return this.reduce(function(str, e) {
-      if (str.length > 0) {
+    return this.reduce(function(str, e, i) {
+      if (i > 0) {
         str += delimiter;
       }
       return str + e;
@@ -4833,7 +4834,7 @@
         i = 0;
 
     while (typeof length === "undefined" || i < length) {
-      if (fn(generatorFn(i++)) === false) {
+      if (fn(generatorFn(i), i++) === false) {
         return false;
       }
     }
@@ -5448,7 +5449,7 @@
 
     handle.onComplete(function() {
       if (buffer.length > 0) {
-        fn(buffer);
+        fn(buffer, index++);
       }
     });
 
