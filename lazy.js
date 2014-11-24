@@ -5019,7 +5019,7 @@
    * var handle = sequence.toArray();
    *
    * handle.onComplete(function(array) {
-   *   console.log('Created array with ' + array.length + ' elements!');
+   *   // Do something w/ 1,000-element array.
    * });
    *
    * // Since an AsyncHandle is a promise, you can also use it to create
