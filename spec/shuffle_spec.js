@@ -4,8 +4,7 @@ describe("shuffle", function() {
   // Not 100% sure of a great way to do this, so... let's just go with a
   // probabilistic test.
   it("shuffles the collection", function() {
-    var shuffledCollections = Lazy.generate(function() {})
-      .take(10)
+    var shuffledCollections = Lazy.range(10)
       .map(function() { return Lazy(people).shuffle().toArray(); });
 
     var firstResult = shuffledCollections.first();
@@ -18,17 +17,21 @@ describe("shuffle", function() {
       expect(resorted).toEqual(people);
     });
 
-    var differences = 0;
+    var differences = Lazy(people)
+      .map(function() { return 0; })
+      .toArray();
+
     shuffledCollections.drop(1).each(function(collection) {
       for (var i = 0; i < collection.length; ++i) {
         if (collection[i] !== firstResult[i]) {
-          ++differences;
-          return false;
+          differences[i]++;
         }
       }
     });
 
-    expect(differences).toBeGreaterThan(0);
+    for (var i = 0; i < people.length; ++i) {
+      expect(differences[i]).toBeGreaterThan(0, 'All elements at ' + i + ' are the same!');
+    }
   });
 
   it("passes an index along with each element", function() {
