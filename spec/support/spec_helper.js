@@ -137,6 +137,9 @@
             expect(getResult().take(2)).toComprise(testCase.result.slice(0, 2));
           });
 
+          // For something like Lazy([...]).take(N), we only need to access N
+          // elements; however, some sequence types may require > N accesses
+          // to produce N results. An obvious example is #filter.
           it('accesses the minimum number of elements from the source', function() {
             var expectedAccessCount = testCase.accessCountForTake2 || 2;
 
@@ -252,6 +255,10 @@
   /**
    * Given the name of a property, iterates over a list of objects until finding
    * one with the given property. Returns the first value found.
+   *
+   * This is to allow the options supplied to a call to
+   * #comprehensiveSequenceTest to include properties at the top level, and also
+   * to override those at the case level.
    */
   function lookupValue(property, objects) {
     for (var i = 0; i < objects.length; ++i) {
@@ -261,14 +268,10 @@
     }
   }
 
-  context.people        = null;
-  context.david         = null;
-  context.mary          = null;
-  context.lauren        = null;
-  context.adam          = null;
-  context.daniel        = null;
-  context.happy         = null;
-  context.arraysCreated = null;
+  // This is basically to allow verifying that certain methods don't create
+  // intermediate arrays. Not sure if it's really sensible to test this; but
+  // anyway, that's the purpose.
+  context.arraysCreated = 0;
 
   var originalToArray = Lazy.Sequence.prototype.toArray;
   Lazy.Sequence.prototype.toArray = function() {
@@ -345,6 +348,11 @@
       collection[key] = contents[key];
     }
   };
+
+  // --------------------------------------------------------------------------
+  // I think most of the stuff below here is deprecated. It's more specialized
+  // stuff duplicating what comprehensiveSequenceTest provides.
+  // --------------------------------------------------------------------------
 
   context.ensureLaziness = function(action) {
     it("doesn't eagerly iterate the collection", function() {
