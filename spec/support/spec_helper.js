@@ -164,18 +164,18 @@
             });
           });
 
-          if (lookupValue('arrayLike', [sequenceType, options])) {
-            describe('indexed access', function() {
-              it('is supported', function() {
-                expect(getResult()).toBeInstanceOf(Lazy.ArrayLikeSequence);
-              });
+          describe('indexed access', function() {
+            it('is supported', function() {
+              expect(getResult().get(1)).toEqual(testCase.result[1]);
+            });
 
+            if (lookupValue('arrayLike', [sequenceType, options])) {
               it('does not invoke full iteration', function() {
                 getResult().get(1);
                 expect(monitor.accessCount()).toEqual(1);
               });
-            });
-          }
+            }
+          });
 
           if (lookupValue('supportsAsync', [sequenceType, options])) {
             describe('async iteration', function() {

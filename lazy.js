@@ -473,6 +473,28 @@
   };
 
   /**
+   * Returns the element at the specified index. Note that, for sequences that
+   * are not {@link ArrayLikeSequence}s, this may require partially evaluating
+   * the sequence, iterating to reach the result. (In other words for such
+   * sequences this method is not O(1).)
+   *
+   * @public
+   * @param {number} i The index to access.
+   * @returns {*} The element.
+   *
+   */
+  Sequence.prototype.get = function get(i) {
+    var element;
+    this.each(function(e, index) {
+      if (index === i) {
+        element = e;
+        return false;
+      }
+    });
+    return element;
+  };
+
+  /**
    * Provides an indexed, memoized view into the sequence. This will cache the
    * result whenever the sequence is first iterated, so that subsequent
    * iterations will access the same element objects.
