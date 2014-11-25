@@ -6,6 +6,9 @@ This file includes at least a partial list of the major changes in each version.
 v0.4.0 (in progress)
 
 - now `Lazy.AsyncHandle` implements the Promises/A+ specification! (see [#71](https://github.com/dtao/lazy.js/issues/71))
+- made `Sequence#get` available to all sequences, not just `ArrayLikeSequence`s (see [#106](https://github.com/dtao/lazy.js/issues/106))
+- fixed issue with `Sequence#shuffle` always putting first element last ([#113](https://github.com/dtao/lazy.js/issues/106))
+- fixed issue with `Sequence#join` skipping empty strings ([#115](https://github.com/dtao/lazy.js/issues/115))
 
 v0.3.3 (in progress)
 --------------------
