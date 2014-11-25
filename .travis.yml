@@ -4,5 +4,4 @@ node_js:
   - "0.10"
   - "0.8"
 before_script:
-  - "npm install jasmine-node -g"
-  - "npm install autodoc -g"
+  - "npm update -g npm"
