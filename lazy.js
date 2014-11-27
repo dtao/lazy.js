@@ -455,8 +455,7 @@
    *
    * For sequences that are already indexed, this will simply return the
    * sequence. For non-indexed sequences, this will eagerly evaluate the
-   * sequence and cache the result (so subsequent calls will not create
-   * additional arrays).
+   * sequence.
    *
    * @returns {ArrayLikeSequence} A sequence containing the current contents of
    *     the sequence.
@@ -466,10 +465,7 @@
    * Lazy([1, 2, 3]).filter(isEven).getIndex() // instanceof Lazy.ArrayLikeSequence
    */
   Sequence.prototype.getIndex = function getIndex() {
-    if (!this.cachedIndex) {
-      this.cachedIndex = new ArrayWrapper(this.toArray());
-    }
-    return this.cachedIndex;
+    return new ArrayWrapper(this.toArray());
   };
 
   /**
@@ -899,18 +895,26 @@
   }
 
   ReversedIterator.prototype.current = function current() {
-    return this.sequence.getIndex().get(this.index);
+    return this.getIndex().get(this.index);
   };
 
   ReversedIterator.prototype.moveNext = function moveNext() {
-    var indexed = this.sequence.getIndex(),
-        length  = indexed.length();
+    var index  = this.getIndex(),
+        length = index.length();
 
     if (typeof this.index === "undefined") {
       this.index = length;
     }
 
     return (--this.index >= 0);
+  };
+
+  ReversedIterator.prototype.getIndex = function getIndex() {
+    if (!this.cachedIndex) {
+      this.cachedIndex = this.sequence.getIndex();
+    }
+
+    return this.cachedIndex;
   };
 
   /**
