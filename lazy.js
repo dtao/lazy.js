@@ -2201,8 +2201,9 @@
 
     // This bothers me... but frankly, calling reverse().reduce() is potentially
     // going to eagerly evaluate the sequence anyway; so it's really not an issue.
-    var i = this.getIndex().length() - 1;
-    return this.reverse().reduce(function(m, e) {
+    var indexed = this.getIndex(),
+        i = indexed.length() - 1;
+    return indexed.reverse().reduce(function(m, e) {
       return aggregator(m, e, i--);
     }, memo);
   };
