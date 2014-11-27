@@ -2058,9 +2058,10 @@
    * Lazy([2, 2, 1, 2, 4]).filter(isEven).lastIndexOf(2) // 2
    */
   Sequence.prototype.lastIndexOf = function lastIndexOf(value) {
-    var index = this.reverse().indexOf(value);
+    var reversed = this.getIndex().reverse(),
+        index    = reversed.indexOf(value);
     if (index !== -1) {
-      index = this.getIndex().length() - index - 1;
+      index = reversed.length() - index - 1;
     }
     return index;
   };
