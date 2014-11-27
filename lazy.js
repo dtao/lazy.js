@@ -1119,10 +1119,19 @@
    * Lazy([1, 2, 3]).filter(Lazy.identity).initial() // sequence: [1, 2]
    */
   Sequence.prototype.initial = function initial(count) {
-    if (typeof count === "undefined") {
-      count = 1;
-    }
-    return this.take(this.getIndex().length() - count);
+    return new InitialSequence(this, count);
+  };
+
+  function InitialSequence(parent, count) {
+    this.parent = parent;
+    this.count = typeof count === "number" ? count : 1;
+  }
+
+  InitialSequence.prototype = new Sequence();
+
+  InitialSequence.prototype.each = function each(fn) {
+    var index = this.parent.getIndex();
+    return index.take(index.length() - this.count).each(fn);
   };
 
   /**

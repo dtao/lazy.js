@@ -12,6 +12,7 @@ require("./concat_spec.js");
 require("./flatten_spec.js");
 require("./take_spec.js");
 require("./drop_spec.js");
+require("./initial_spec.js");
 require("./sort_by_spec.js");
 require("./group_by_spec.js");
 require("./count_by_spec.js");

@@ -140,12 +140,14 @@
           // For something like Lazy([...]).take(N), we only need to access N
           // elements; however, some sequence types may require > N accesses
           // to produce N results. An obvious example is #filter.
-          it('accesses the minimum number of elements from the source', function() {
-            var expectedAccessCount = testCase.accessCountForTake2 || 2;
+          if (!lookupValue('skipAccessCounts', [sequenceType, options])) {
+            it('accesses the minimum number of elements from the source', function() {
+              var expectedAccessCount = testCase.accessCountForTake2 || 2;
 
-            iterate(getResult().take(2));
-            expect(monitor.accessCount()).toEqual(expectedAccessCount);
-          });
+              iterate(getResult().take(2));
+              expect(monitor.accessCount()).toEqual(expectedAccessCount);
+            });
+          }
 
           it('passes along the index with each element during iteration', function() {
             indexes = getResult().map(function(e, i) { return i; }).toArray();
