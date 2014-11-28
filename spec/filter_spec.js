@@ -39,6 +39,32 @@ describe("filter", function() {
       .toArray();
     expect(sons).toEqual([adam, daniel]);
   });
+
+  describe("ObjectLikeSequence#filter", function() {
+    var object, result;
+
+    beforeEach(function() {
+      object = {
+        a: {a: 'a'},
+        b: {a: 'b'},
+        c: {a: 'a'}
+      };
+
+      result = Lazy(object).filter({a: 'a'});
+    });
+
+    it("produces an ObjectLikeSequence", function() {
+      expect(result.toObject()).toEqual({
+        a: {a: 'a'},
+        c: {a: 'a'}
+      });
+    });
+
+    it("result supports #get", function() {
+      expect(result.get('b')).toEqual(undefined);
+      expect(result.get('c')).toEqual({a: 'a'});
+    });
+  });
 });
 
 describe("filter -> reverse", function() {

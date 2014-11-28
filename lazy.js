@@ -751,24 +751,14 @@
   };
 
   FilteredSequence.prototype.each = function each(fn) {
-    var filterFn = this.filterFn;
+    var filterFn = this.filterFn,
+        j = 0;
 
-    // I'm not proud of this, but it'll get the job done for now.
-    if (this.parent instanceof ObjectLikeSequence) {
-      return this.parent.each(function(v, k) {
-        if (filterFn(v, k)) {
-          return fn(v, k);
-        }
-      });
-
-    } else {
-      var j = 0;
-      return this.parent.each(function(e, i) {
-        if (filterFn(e, i)) {
-          return fn(e, j++);
-        }
-      });
-    }
+    return this.parent.each(function(e, i) {
+      if (filterFn(e, i)) {
+        return fn(e, j++);
+      }
+    });
   };
 
   FilteredSequence.prototype.reverse = function reverse() {
@@ -3572,6 +3562,27 @@
    */
   ObjectLikeSequence.prototype.async = function async() {
     throw new Error('An ObjectLikeSequence does not support asynchronous iteration.');
+  };
+
+  ObjectLikeSequence.prototype.filter = function filter(filterFn) {
+    return new FilteredObjectLikeSequence(this, createCallback(filterFn));
+  };
+
+  function FilteredObjectLikeSequence(parent, filterFn) {
+    this.parent = parent;
+    this.filterFn = filterFn;
+  }
+
+  FilteredObjectLikeSequence.prototype = new ObjectLikeSequence();
+
+  FilteredObjectLikeSequence.prototype.each = function each(fn) {
+    var filterFn = this.filterFn;
+
+    return this.parent.each(function(v, k) {
+      if (filterFn(v, k)) {
+        return fn(v, k);
+      }
+    });
   };
 
   /**
