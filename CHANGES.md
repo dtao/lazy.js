@@ -3,7 +3,7 @@ Lazy.js Changelog
 
 This file includes at least a partial list of the major changes in each version.
 
-v0.4.0 (in progress)
+v0.4.0
 
 - now `Lazy.AsyncHandle` implements the Promises/A+ specification! (see [#71](https://github.com/dtao/lazy.js/issues/71))
 - made `Sequence#get` available to all sequences, not just `ArrayLikeSequence`s (see [#106](https://github.com/dtao/lazy.js/issues/106))
@@ -12,8 +12,8 @@ v0.4.0 (in progress)
 - fixed issue with `Sequence#join` skipping empty strings ([#115](https://github.com/dtao/lazy.js/issues/115))
 - fixed issue with `Lazy.range` sometimes providing one value too few ([#119](https://github.com/dtao/lazy.js/issues/119))
 
-v0.3.3 (in progress)
---------------------
+v0.3.3 (abandoned)
+------------------
 
 - fixed `Sequence#groupBy` to work for async sequences (see [#72](https://github.com/dtao/lazy.js/pull/72))
 - fixed `StreamLikeSequence#split` to split properly across chunks (see [#70](https://github.com/dtao/lazy.js/pull/70))
