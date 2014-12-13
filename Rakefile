@@ -54,7 +54,7 @@ task :symlinks do
   BASH
 end
 
-desc "Generate documentation using Breakneck"
+desc "Generate documentation using Autodoc"
 task :generate_docs do
   sequence_types = [
     "Lazy",
