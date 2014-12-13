@@ -50,6 +50,7 @@ task :symlinks do
     ln -s ../../../../lazy.js lazy.js
     ln -s ../../../../lazy.browser.js lazy.browser.js
     ln -s ../../../../experimental/lazy.json.js lazy.json.js
+    ln -s ../../../../experimental/lazy.es6.js lazy.es6.js
     ln -s ../../../../spec spec
   BASH
 end
