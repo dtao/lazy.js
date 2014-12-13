@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Lazy.js ES6 Generators Demo</title>
+    <link href="../../stylesheets/lib/codemirror.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="../../stylesheets/demos/generators.css" media="screen" rel="stylesheet" type="text/css" />
+    <script src="../../javascripts/lib/lazy.js" type="text/javascript"></script>
+    <script src="../../javascripts/lib/lazy.es6.js" type="text/javascript"></script>
+    <script src="../../javascripts/lib/codemirror.js" type="text/javascript"></script>
+    <script src="../../javascripts/lib/codemirror/javascript.js" type="text/javascript"></script>
+    <script src="../../javascripts/lib/lemming.js" type="text/javascript"></script>
+    <script src="../../javascripts/demos/generators.js" type="text/javascript"></script>
+
+    <link href="../../stylesheets/demo.css" media="screen" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+        <div>
+        <header>
+            <h1>Lazy.js ES6 Generators Demo</h1>
+        </header>
+
+        <p>
+            In the <code>&lt;textarea&gt;</code> on the left, define an ES6
+            generator. In the middle, you can wrap this generator using
+            <code>Lazy(generator)</code> and then <code>map</code>,
+            <code>filter</code>, etc. to your heart's content. The resulting
+            sequence will be evaluated and shown on the right.
+        </p>
+
+        <p class="important">
+            <strong>This demo requires a <em>very</em> recent release of a
+            modern browser</strong>, one which supports
+            <a href="https://wiki.mozilla.org/ES6_plans#Harmony_infrastructure">ECMAScript 6 "Harmony"</a>
+            features. One such browser that I'm aware of is
+            <a href="https://www.google.com/intl/en/chrome/browser/beta.html">the current beta release of Google Chrome</a>.
+            And even then you need to enable "Experimental JavaScript" at
+            chrome://flags.
+        </p>
+
+        <p>
+            For more info on generators, see the
+            <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators#Generators.3A_a_better_way_to_build_Iterators">MDN article</a>.
+        </p>
+
+        <p>
+            <small>Oh an by the way, in case you were wondering: this demo uses
+            <a href="https://github.com/dtao/lemming.js">lemming.js</a> to evaluate the code you
+            enter in the editors below. (And the editors use
+            <a href="http://codemirror.net">CodeMirror</a>.)</small>
+        </p>
+
+        <div id="workspace">
+            <div id="generator-wrapper">
+                <textarea id="generator">function *fibonacci() {
+  var x = 1, y = 1, z;
+  
+  while (true) {
+    yield x;
+    z = x + y;
+    x = y;
+    y = z;
+  };
+}
+</textarea>
+            </div>
+
+            <div id="sequence-wrapper">
+                <textarea id="sequence">// First 25 values of the Fibonacci sequence
+// over 100
+Lazy(fibonacci)
+  .filter(function(x) { return x > 100; })
+  .take(25);
+</textarea>
+            </div>
+
+            <div id="output-wrapper">
+                <textarea id="output"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../javascripts/ga.js" type="text/javascript"></script>
+    <a id="back-to-site-link" href="../../">Back to the Lazy.js site</a>
+</body>
+
+</html>
