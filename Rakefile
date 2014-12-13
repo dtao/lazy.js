@@ -15,8 +15,9 @@ def format_options(options)
   options.map { |key, value| "--#{key} #{value}" }.join(" ")
 end
 
-file "lazy.min.js" => [ "lazy.js" ] do |task|
-  File.open(task.name, 'w') { |f|
+desc "Concat and uglify JavaScript"
+task :uglify => [ 'lazy.js' ] do |task|
+  File.open('lazy.min.js', 'w') { |f|
     content = task.prerequisites.map { |prereq|
       if File.exist?(prereq)
         File.read(prereq)
@@ -27,9 +28,6 @@ file "lazy.min.js" => [ "lazy.js" ] do |task|
     f.write Uglifier.new.compile(content)
   }
 end
-
-desc "Concat and uglify JavaScript"
-task :uglify => [ "lazy.min.js" ]
 
 desc "Update the library version in package.json, bower.json, and component.json"
 task :update_version do
