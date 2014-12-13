@@ -8,7 +8,7 @@
     var leftElement   = document.querySelector("#dom-event-output .left p");
     var rightElement  = document.querySelector("#dom-event-output .right p");
 
-    var mouseEvents = Lazy.events(sourceElement, "mousemove");
+    var mouseEvents = Lazy(sourceElement).on("mousemove");
 
     var coordinates = mouseEvents.map(function(e) {
       var elementRect = sourceElement.getBoundingClientRect();
