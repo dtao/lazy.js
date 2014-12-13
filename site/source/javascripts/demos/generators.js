@@ -1,5 +1,5 @@
 window.addEventListener('load', function() {
-  Lemming.options.fileName = '../javascripts/lib/lemming.js';
+  Lemming.options.fileName = '../../javascripts/lib/lemming.js';
   Lemming.options.scripts = ['lazy.js', 'lazy.es6.js'];
 
   var generatorEditor = createEditor('generator'),
