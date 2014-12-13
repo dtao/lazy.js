@@ -18,7 +18,7 @@
     ["Reactive-Extensions/IxJS", "v1.0.6", ["l2o.js", "ix.js"]],
     ["Xaxis/boiler", "v0.9.0", "boiler.js"],
     ["rfw/sloth.js", "sloth.js"],
-    ["http://download-codeplex.sec.s-msft.com/Download/Release?ProjectName=linqjs&DownloadId=200633&FileTime=129400959544500000&Build=20841", {
+    ["http://download-codeplex.sec.s-msft.com/Download/Release?ProjectName=linqjs&DownloadId=200633&FileTime=129400959544500000&Build=20959", {
       "archive": {
         "type": "zip",
         "files": {
@@ -26,7 +26,7 @@
         }
       }
     }],
-    ["http://download-codeplex.sec.s-msft.com/Download/Release?ProjectName=jslinq&DownloadId=71965&FileTime=128896663145200000&Build=20841", {
+    ["http://download-codeplex.sec.s-msft.com/Download/Release?ProjectName=jslinq&DownloadId=71965&FileTime=128896663145200000&Build=20959", {
       "archive": {
         "type": "zip",
         "files": {
