@@ -94,8 +94,10 @@
   function Lazy(source) {
     if (source instanceof Array) {
       return new ArrayWrapper(source);
+
     } else if (typeof source === "string") {
       return new StringWrapper(source);
+
     } else if (source instanceof Sequence) {
       return source;
     }
@@ -113,7 +115,7 @@
     return new ObjectWrapper(source);
   }
 
-  Lazy.VERSION = '0.3.2';
+  Lazy.VERSION = '0.4.0';
 
   /*** Utility methods of questionable value ***/
 
@@ -146,11 +148,11 @@
   Lazy.strict = function strict() {
     function StrictLazy(source) {
       if (source == null) {
-        throw "You cannot wrap null or undefined using Lazy.";
+        throw new Error("You cannot wrap null or undefined using Lazy.");
       }
 
       if (typeof source === "number" || typeof source === "boolean") {
-        throw "You cannot wrap primitive values using Lazy.";
+        throw new Error("You cannot wrap primitive values using Lazy.");
       }
 
       return Lazy(source);
@@ -274,7 +276,7 @@
    */
   Sequence.define = function define(methodName, overrides) {
     if (!overrides || (!overrides.getIterator && !overrides.each)) {
-      throw "A custom sequence must implement *at least* getIterator or each!";
+      throw new Error("A custom sequence must implement *at least* getIterator or each!");
     }
 
     return defineSequenceType(Sequence, methodName, overrides);
@@ -333,6 +335,17 @@
    */
   Sequence.prototype.root = function root() {
     return this.parent.root();
+  };
+
+  /**
+   * Whether or not the current sequence is an asynchronous one. This is more
+   * accurate than checking `instanceof {@link AsyncSequence}` because, for
+   * example, `Lazy([1, 2, 3]).async().map(Lazy.identity)` returns a sequence
+   * that iterates asynchronously even though it's not an instance of
+   * `AsyncSequence`.
+   */
+  Sequence.prototype.isAsync = function isAsync() {
+    return this.parent ? this.parent.isAsync() : false;
   };
 
   /**
@@ -443,8 +456,7 @@
    *
    * For sequences that are already indexed, this will simply return the
    * sequence. For non-indexed sequences, this will eagerly evaluate the
-   * sequence and cache the result (so subsequent calls will not create
-   * additional arrays).
+   * sequence.
    *
    * @returns {ArrayLikeSequence} A sequence containing the current contents of
    *     the sequence.
@@ -454,10 +466,29 @@
    * Lazy([1, 2, 3]).filter(isEven).getIndex() // instanceof Lazy.ArrayLikeSequence
    */
   Sequence.prototype.getIndex = function getIndex() {
-    if (!this.cachedIndex) {
-      this.cachedIndex = new ArrayWrapper(this.toArray());
-    }
-    return this.cachedIndex;
+    return new ArrayWrapper(this.toArray());
+  };
+
+  /**
+   * Returns the element at the specified index. Note that, for sequences that
+   * are not {@link ArrayLikeSequence}s, this may require partially evaluating
+   * the sequence, iterating to reach the result. (In other words for such
+   * sequences this method is not O(1).)
+   *
+   * @public
+   * @param {number} i The index to access.
+   * @returns {*} The element.
+   *
+   */
+  Sequence.prototype.get = function get(i) {
+    var element;
+    this.each(function(e, index) {
+      if (index === i) {
+        element = e;
+        return false;
+      }
+    });
+    return element;
   };
 
   /**
@@ -717,11 +748,12 @@
   };
 
   FilteredSequence.prototype.each = function each(fn) {
-    var filterFn = this.filterFn;
+    var filterFn = this.filterFn,
+        j = 0;
 
     return this.parent.each(function(e, i) {
       if (filterFn(e, i)) {
-        return fn(e, i);
+        return fn(e, j++);
       }
     });
   };
@@ -864,18 +896,26 @@
   }
 
   ReversedIterator.prototype.current = function current() {
-    return this.sequence.getIndex().get(this.index);
+    return this.getIndex().get(this.index);
   };
 
   ReversedIterator.prototype.moveNext = function moveNext() {
-    var indexed = this.sequence.getIndex(),
-        length  = indexed.length();
+    var index  = this.getIndex(),
+        length = index.length();
 
     if (typeof this.index === "undefined") {
       this.index = length;
     }
 
     return (--this.index >= 0);
+  };
+
+  ReversedIterator.prototype.getIndex = function getIndex() {
+    if (!this.cachedIndex) {
+      this.cachedIndex = this.sequence.getIndex();
+    }
+
+    return this.cachedIndex;
   };
 
   /**
@@ -981,12 +1021,18 @@
     var count = this.count,
         i     = 0;
 
-    this.parent.each(function(e) {
+    var handle = this.parent.each(function(e) {
       var result;
-      if (i < count) { result = fn(e, i); }
-      if (++i >= count) { return false; }
+      if (i < count) { result = fn(e, i++); }
+      if (i >= count) { return false; }
       return result;
     });
+
+    if (handle instanceof AsyncHandle) {
+      return handle;
+    }
+
+    return i === count;
   };
 
   /**
@@ -1039,11 +1085,24 @@
   TakeWhileSequence.prototype = new Sequence();
 
   TakeWhileSequence.prototype.each = function each(fn) {
-    var predicate = this.predicate;
+    var predicate = this.predicate,
+        finished = false,
+        j = 0;
 
-    this.parent.each(function(e) {
-      return predicate(e) && fn(e);
+    var result = this.parent.each(function(e, i) {
+      if (!predicate(e, i)) {
+        finished = true;
+        return false;
+      }
+
+      return fn(e, j++);
     });
+
+    if (result instanceof AsyncHandle) {
+      return result;
+    }
+
+    return finished;
   };
 
   /**
@@ -1061,10 +1120,19 @@
    * Lazy([1, 2, 3]).filter(Lazy.identity).initial() // sequence: [1, 2]
    */
   Sequence.prototype.initial = function initial(count) {
-    if (typeof count === "undefined") {
-      count = 1;
-    }
-    return this.take(this.getIndex().length() - count);
+    return new InitialSequence(this, count);
+  };
+
+  function InitialSequence(parent, count) {
+    this.parent = parent;
+    this.count = typeof count === "number" ? count : 1;
+  }
+
+  InitialSequence.prototype = new Sequence();
+
+  InitialSequence.prototype.each = function each(fn) {
+    var index = this.parent.getIndex();
+    return index.take(index.length() - this.count).each(fn);
   };
 
   /**
@@ -1150,7 +1218,7 @@
         dropped = 0,
         i       = 0;
 
-    this.parent.each(function(e) {
+    return this.parent.each(function(e) {
       if (dropped++ < count) { return; }
       return fn(e, i++);
     });
@@ -1188,7 +1256,7 @@
     var predicate = this.predicate,
         done      = false;
 
-    this.parent.each(function(e) {
+    return this.parent.each(function(e) {
       if (!done) {
         if (predicate(e)) {
           return;
@@ -1203,11 +1271,57 @@
 
   /**
    * Creates a new sequence with the same elements as this one, but ordered
-   * according to the values returned by the specified function.
+   * using the specified comparison function.
+   *
+   * This has essentially the same behavior as calling
+   * [`Array#sort`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort),
+   * but obviously instead of modifying the collection it returns a new
+   * {@link Sequence} object.
+   *
+   * @public
+   * @param {Function=} sortFn The function used to compare elements in the
+   *     sequence. The function will be passed two elements and should return:
+   *     - 1 if the first is greater
+   *     - -1 if the second is greater
+   *     - 0 if the two values are the same
+   * @param {boolean} descending Whether or not the resulting sequence should be
+   *     in descending order (defaults to `false`).
+   * @returns {Sequence} The new sequence.
+   *
+   * @examples
+   * Lazy([5, 10, 1]).sort()                // sequence: [1, 5, 10]
+   * Lazy(['foo', 'bar']).sort()            // sequence: ['bar', 'foo']
+   * Lazy(['b', 'c', 'a']).sort(null, true) // sequence: ['c', 'b', 'a']
+   * Lazy([5, 10, 1]).sort(null, true)      // sequence: [10, 5, 1]
+   *
+   * // Sorting w/ custom comparison function
+   * Lazy(['a', 'ab', 'aa', 'ba', 'b', 'abc']).sort(function compare(x, y) {
+   *   if (x.length && (x.length !== y.length)) { return compare(x.length, y.length); }
+   *   if (x === y) { return 0; }
+   *   return x > y ? 1 : -1;
+   * });
+   * // => sequence: ['a', 'b', 'aa', 'ab', 'ba', 'abc']
+   */
+  Sequence.prototype.sort = function sort(sortFn, descending) {
+    sortFn || (sortFn = compare);
+    if (descending) { sortFn = reverseArguments(sortFn); }
+    return new SortedSequence(this, sortFn);
+  };
+
+  /**
+   * Creates a new sequence with the same elements as this one, but ordered by
+   * the results of the given function.
+   *
+   * You can pass:
+   *
+   * - a *string*, to sort by the named property
+   * - a function, to sort by the result of calling the function on each element
    *
    * @public
    * @param {Function} sortFn The function to call on the elements in this
    *     sequence, in order to sort them.
+   * @param {boolean} descending Whether or not the resulting sequence should be
+   *     in descending order (defaults to `false`).
    * @returns {Sequence} The new sequence.
    *
    * @examples
@@ -1230,6 +1344,7 @@
    *
    * Lazy(countries).sortBy(population).last(3).pluck('name') // sequence: ["Brazil", "USA", "China"]
    * Lazy(countries).sortBy(area).last(3).pluck('name')       // sequence: ["USA", "China", "Russia"]
+   * Lazy(countries).sortBy(area, true).first(3).pluck('name') // sequence: ["Russia", "China", "USA"]
    *
    * @benchmarks
    * var randoms = Lazy.generate(Math.random).take(100).toArray();
@@ -1237,7 +1352,9 @@
    * Lazy(randoms).sortBy(Lazy.identity).each(Lazy.noop) // lazy
    * _.each(_.sortBy(randoms, Lazy.identity), _.noop)    // lodash
    */
-  Sequence.prototype.sortBy = function sortBy(sortFn) {
+  Sequence.prototype.sortBy = function sortBy(sortFn, descending) {
+    sortFn = createComparator(sortFn);
+    if (descending) { sortFn = reverseArguments(sortFn); }
     return new SortedSequence(this, sortFn);
   };
 
@@ -1252,13 +1369,26 @@
   SortedSequence.prototype = new Sequence();
 
   SortedSequence.prototype.each = function each(fn) {
-    var sortFn = createCallback(this.sortFn),
-        sorted = this.parent.toArray(),
-        i = -1;
+    var sortFn = this.sortFn,
+        result = this.parent.toArray();
 
-    sorted.sort(function(x, y) { return compare(x, y, sortFn); });
+    result.sort(sortFn);
 
-    return forEach(sorted, fn);
+    return forEach(result, fn);
+  };
+
+  /**
+   * @examples
+   * var items = [{ a: 4 }, { a: 3 }, { a: 5 }];
+   *
+   * Lazy(items).sortBy('a').reverse();
+   * // => sequence: [{ a: 5 }, { a: 4 }, { a: 3 }]
+   *
+   * Lazy(items).sortBy('a').reverse().reverse();
+   * // => sequence: [{ a: 3 }, { a: 4 }, { a: 5 }]
+   */
+  SortedSequence.prototype.reverse = function reverse() {
+    return new SortedSequence(this.parent, reverseArguments(this.sortFn));
   };
 
   /**
@@ -1283,6 +1413,17 @@
    * Lazy(numbers).groupBy(oddOrEven)            // sequence: { odd: [1, 3, 5], even: [2, 4] }
    * Lazy(numbers).groupBy(oddOrEven).get("odd") // => [1, 3, 5]
    * Lazy(numbers).groupBy(oddOrEven).get("foo") // => undefined
+   *
+   * Lazy([
+   *   { name: 'toString' },
+   *   { name: 'toString' }
+   * ]).groupBy('name');
+   * // => sequence: {
+   *   'toString': [
+   *     { name: 'toString' },
+   *     { name: 'toString' }
+   *   ]
+   * }
    */
   Sequence.prototype.groupBy = function groupBy(keyFn) {
     return new GroupedSequence(this, keyFn);
@@ -1297,6 +1438,42 @@
   }
 
   // GroupedSequence must have its prototype set after ObjectLikeSequence has
+  // been fully initialized.
+
+  /**
+   * Creates a new {@link ObjectLikeSequence} comprising the elements in this
+   * one, indexed according to some key.
+   *
+   * @public
+   * @param {Function|string} keyFn The function to call on the elements in this
+   *     sequence to obtain a key by which to index them, or a string
+   *     representing a property to read from all the elements in this sequence.
+   * @returns {Sequence} The new sequence.
+   *
+   * @examples
+   * var people = [
+   *   { name: 'Bob', age: 25 },
+   *   { name: 'Fred', age: 34 }
+   * ];
+   *
+   * var bob  = people[0],
+   *     fred = people[1];
+   *
+   * Lazy(people).indexBy('name') // sequence: { 'Bob': bob, 'Fred': fred }
+   */
+  Sequence.prototype.indexBy = function(keyFn) {
+    return new IndexedSequence(this, keyFn);
+  };
+
+  /**
+   * @constructor
+   */
+  function IndexedSequence(parent, keyFn) {
+    this.parent = parent;
+    this.keyFn  = keyFn;
+  }
+
+  // IndexedSequence must have its prototype set after ObjectLikeSequence has
   // been fully initialized.
 
   /**
@@ -1468,7 +1645,7 @@
    * @returns {Sequence} The new sequence.
    *
    * @examples
-   * Lazy([1, 2, 3, 4, 5]).shuffle() // the values [1, 2, 3, 4, 5] in any order
+   * Lazy([1, 2, 3, 4, 5]).shuffle().value() // =~ [1, 2, 3, 4, 5]
    */
   Sequence.prototype.shuffle = function shuffle() {
     return new ShuffledSequence(this);
@@ -1490,7 +1667,7 @@
         j = 0;
 
     for (var i = shuffled.length - 1; i > 0; --i) {
-      swap(shuffled, i, floor(random() * i) + 1);
+      swap(shuffled, i, floor(random() * i));
       if (fn(shuffled[i], j++) === false) {
         return;
       }
@@ -1882,9 +2059,10 @@
    * Lazy([2, 2, 1, 2, 4]).filter(isEven).lastIndexOf(2) // 2
    */
   Sequence.prototype.lastIndexOf = function lastIndexOf(value) {
-    var index = this.reverse().indexOf(value);
+    var reversed = this.getIndex().reverse(),
+        index    = reversed.indexOf(value);
     if (index !== -1) {
-      index = this.getIndex().length() - index - 1;
+      index = reversed.length() - index - 1;
     }
     return index;
   };
@@ -1945,6 +2123,11 @@
    * Aggregates a sequence into a single value according to some accumulator
    * function.
    *
+   * For an asynchronous sequence, instead of immediately returning a result
+   * (which it can't, obviously), this method returns an {@link AsyncHandle}
+   * whose `onComplete` method can be called to supply a callback to handle the
+   * final result once iteration has completed.
+   *
    * @public
    * @aka inject, foldl
    * @param {Function} aggregator The function through which to pass every element
@@ -1953,7 +2136,9 @@
    *     new aggregated result.
    * @param {*=} memo The starting value to use for the aggregated result
    *     (defaults to the first element in the sequence).
-   * @returns {*} The result of the aggregation.
+   * @returns {*} The result of the aggregation, or, for asynchronous sequences,
+   *     an {@link AsyncHandle} whose `onComplete` method accepts a callback to
+   *     handle the final result.
    *
    * @examples
    * function multiply(x, y) { return x * y; }
@@ -1967,9 +2152,16 @@
     if (arguments.length < 2) {
       return this.tail().reduce(aggregator, this.head());
     }
-    this.each(function(e, i) {
+
+    var eachResult = this.each(function(e, i) {
       memo = aggregator(memo, e, i);
     });
+
+    // TODO: Think of a way more efficient solution to this problem.
+    if (eachResult instanceof AsyncHandle) {
+      return eachResult.then(function() { return memo; });
+    }
+
     return memo;
   };
 
@@ -2010,8 +2202,9 @@
 
     // This bothers me... but frankly, calling reverse().reduce() is potentially
     // going to eagerly evaluate the sequence anyway; so it's really not an issue.
-    var i = this.getIndex().length() - 1;
-    return this.reverse().reduce(function(m, e) {
+    var indexed = this.getIndex(),
+        i = indexed.length() - 1;
+    return indexed.reverse().reduce(function(m, e) {
       return aggregator(m, e, i--);
     }, memo);
   };
@@ -2063,7 +2256,7 @@
    */
   Sequence.prototype.chunk = function chunk(size) {
     if (size < 1) {
-      throw "You must specify a positive chunk size.";
+      throw new Error("You must specify a positive chunk size.");
     }
 
     return new ChunkedSequence(this, size);
@@ -2280,12 +2473,13 @@
    * Lazy(["a", "b", "c"]).join("") // => "abc"
    * Lazy([1, 2, 3]).join()         // => "1,2,3"
    * Lazy([1, 2, 3]).join("")       // => "123"
+   * Lazy(["", "", ""]).join(",")   // => ",,"
    */
   Sequence.prototype.join = function join(delimiter) {
     delimiter = typeof delimiter === "string" ? delimiter : ",";
 
-    return this.reduce(function(str, e) {
-      if (str.length > 0) {
+    return this.reduce(function(str, e, i) {
+      if (i > 0) {
         str += delimiter;
       }
       return str + e;
@@ -2388,7 +2582,28 @@
    *
    * All methods of `ArrayLikeSequence` that conceptually should return
    * something like a array (with indexed access) return another
-   * `ArrayLikeSequence`.
+   * `ArrayLikeSequence`, for example:
+   *
+   * - {@link Sequence#map}
+   * - {@link ArrayLikeSequence#slice}
+   * - {@link Sequence#take} and {@link Sequence#drop}
+   * - {@link Sequence#reverse}
+   *
+   * The above is not an exhaustive list. There are also certain other cases
+   * where it might be possible to return an `ArrayLikeSequence` (e.g., calling
+   * {@link Sequence#concat} with a single array argument), but this is not
+   * guaranteed by the API.
+   *
+   * Note that in many cases, it is not possible to provide indexed access
+   * without first performing at least a partial iteration of the underlying
+   * sequence. In these cases an `ArrayLikeSequence` will not be returned:
+   *
+   * - {@link Sequence#filter}
+   * - {@link Sequence#uniq}
+   * - {@link Sequence#union}
+   * - {@link Sequence#intersect}
+   *
+   * etc. The above methods only return ordinary {@link Sequence} objects.
    *
    * Defining custom array-like sequences
    * ------------------------------------
@@ -2488,7 +2703,7 @@
    */
   ArrayLikeSequence.define = function define(methodName, overrides) {
     if (!overrides || typeof overrides.get !== 'function') {
-      throw "A custom array-like sequence must implement *at least* get!";
+      throw new Error("A custom array-like sequence must implement *at least* get!");
     }
 
     return defineSequenceType(ArrayLikeSequence, methodName, overrides);
@@ -2704,11 +2919,12 @@
         filterFn = this.filterFn,
         length = this.parent.length(),
         i = -1,
+        j = 0,
         e;
 
     while (++i < length) {
       e = parent.get(i);
-      if (filterFn(e, i) && fn(e, i) === false) {
+      if (filterFn(e, i) && fn(e, j++) === false) {
         return false;
       }
     }
@@ -2943,6 +3159,10 @@
     return this;
   };
 
+  ArrayWrapper.prototype.isAsync = function isAsync() {
+    return false;
+  };
+
   /**
    * Returns the element at the specified index in the source array.
    *
@@ -2972,24 +3192,21 @@
   /**
    * An optimized version of {@link Sequence#map}.
    */
-  ArrayWrapper.prototype.map =
-  ArrayWrapper.prototype.collect = function collect(mapFn) {
+  ArrayWrapper.prototype.map = function map(mapFn) {
     return new MappedArrayWrapper(this, createCallback(mapFn));
   };
 
   /**
    * An optimized version of {@link Sequence#filter}.
    */
-  ArrayWrapper.prototype.filter =
-  ArrayWrapper.prototype.select = function select(filterFn) {
+  ArrayWrapper.prototype.filter = function filter(filterFn) {
     return new FilteredArrayWrapper(this, createCallback(filterFn));
   };
 
   /**
    * An optimized version of {@link Sequence#uniq}.
    */
-  ArrayWrapper.prototype.uniq =
-  ArrayWrapper.prototype.unique = function unique(keyFn) {
+  ArrayWrapper.prototype.uniq = function uniq(keyFn) {
     return new UniqueArrayWrapper(this, keyFn);
   };
 
@@ -3067,11 +3284,12 @@
         filterFn = this.filterFn,
         length = source.length,
         i = -1,
+        j = 0,
         e;
 
     while (++i < length) {
       e = source[i];
-      if (filterFn(e, i) && fn(e, i) === false) {
+      if (filterFn(e, i) && fn(e, j++) === false) {
         return false;
       }
     }
@@ -3287,7 +3505,7 @@
    */
   ObjectLikeSequence.define = function define(methodName, overrides) {
     if (!overrides || typeof overrides.each !== 'function') {
-      throw "A custom object-like sequence must implement *at least* each!";
+      throw new Error("A custom object-like sequence must implement *at least* each!");
     }
 
     return defineSequenceType(ObjectLikeSequence, methodName, overrides);
@@ -3359,7 +3577,28 @@
    * Lazy({ foo: 'bar' }).async() // throws
    */
   ObjectLikeSequence.prototype.async = function async() {
-    throw 'An ObjectLikeSequence does not support asynchronous iteration.';
+    throw new Error('An ObjectLikeSequence does not support asynchronous iteration.');
+  };
+
+  ObjectLikeSequence.prototype.filter = function filter(filterFn) {
+    return new FilteredObjectLikeSequence(this, createCallback(filterFn));
+  };
+
+  function FilteredObjectLikeSequence(parent, filterFn) {
+    this.parent = parent;
+    this.filterFn = filterFn;
+  }
+
+  FilteredObjectLikeSequence.prototype = new ObjectLikeSequence();
+
+  FilteredObjectLikeSequence.prototype.each = function each(fn) {
+    var filterFn = this.filterFn;
+
+    return this.parent.each(function(v, k) {
+      if (filterFn(v, k)) {
+        return fn(v, k);
+      }
+    });
   };
 
   /**
@@ -3854,30 +4093,47 @@
   };
 
   // Now that we've fully initialized the ObjectLikeSequence prototype, we can
-  // actually set the prototype for GroupedSequence and CountedSequence.
+  // actually set the prototypes for GroupedSequence, IndexedSequence, and
+  // CountedSequence.
 
   GroupedSequence.prototype = new ObjectLikeSequence();
 
   GroupedSequence.prototype.each = function each(fn) {
     var keyFn   = createCallback(this.keyFn),
-        grouped = {};
+        result;
 
-    this.parent.each(function(e) {
+    result = this.parent.reduce(function(grouped,e) {
       var key = keyFn(e);
-      if (!grouped[key]) {
+      if (!(grouped[key] instanceof Array)) {
         grouped[key] = [e];
       } else {
         grouped[key].push(e);
       }
-    });
+      return grouped;
+    },{});
 
-    for (var key in grouped) {
-      if (fn(grouped[key], key) === false) {
-        return false;
+    return transform(function(grouped) {
+      for (var key in grouped) {
+        if (fn(grouped[key], key) === false) {
+          return false;
+        }
       }
-    }
+    }, result);
+  };
 
-    return true;
+  IndexedSequence.prototype = new ObjectLikeSequence();
+
+  IndexedSequence.prototype.each = function each(fn) {
+    var keyFn   = createCallback(this.keyFn),
+        indexed = {};
+
+    return this.parent.each(function(e) {
+      var key = keyFn(e);
+      if (!indexed[key]) {
+        indexed[key] = e;
+        return fn(e, key);
+      }
+    });
   };
 
   CountedSequence.prototype = new ObjectLikeSequence();
@@ -3936,7 +4192,7 @@
    * changes; // => [{ property: 'foo', value: 1 }, { property: 'foo', value: 3 }]
    */
   ObjectLikeSequence.prototype.watch = function watch(propertyNames) {
-    throw 'You can only call #watch on a directly wrapped object.';
+    throw new Error('You can only call #watch on a directly wrapped object.');
   };
 
   /**
@@ -3950,6 +4206,10 @@
 
   ObjectWrapper.prototype.root = function root() {
     return this;
+  };
+
+  ObjectWrapper.prototype.isAsync = function isAsync() {
+    return false;
   };
 
   ObjectWrapper.prototype.get = function get(key) {
@@ -4035,7 +4295,7 @@
    */
   StringLikeSequence.define = function define(methodName, overrides) {
     if (!overrides || typeof overrides.get !== 'function') {
-      throw "A custom string-like sequence must implement *at least* get!";
+      throw new Error("A custom string-like sequence must implement *at least* get!");
     }
 
     return defineSequenceType(StringLikeSequence, methodName, overrides);
@@ -4559,6 +4819,10 @@
     return this;
   };
 
+  StringWrapper.prototype.isAsync = function isAsync() {
+    return false;
+  };
+
   StringWrapper.prototype.get = function get(i) {
     return this.source.charAt(i);
   };
@@ -4588,6 +4852,10 @@
 
   GeneratedSequence.prototype = new Sequence();
 
+  GeneratedSequence.prototype.isAsync = function isAsync() {
+    return false;
+  };
+
   /**
    * Returns the length of this sequence.
    *
@@ -4615,7 +4883,7 @@
         i = 0;
 
     while (typeof length === "undefined" || i < length) {
-      if (fn(generatorFn(i++)) === false) {
+      if (fn(generatorFn(i), i++) === false) {
         return false;
       }
     }
@@ -4701,15 +4969,20 @@
    */
   function AsyncSequence(parent, interval) {
     if (parent instanceof AsyncSequence) {
-      throw "Sequence is already asynchronous!";
+      throw new Error("Sequence is already asynchronous!");
     }
 
     this.parent         = parent;
     this.interval       = interval;
     this.onNextCallback = getOnNextCallback(interval);
+    this.cancelCallback = getCancelCallback(interval);
   }
 
   AsyncSequence.prototype = new Sequence();
+
+  AsyncSequence.prototype.isAsync = function isAsync() {
+    return true;
+  };
 
   /**
    * Throws an exception. You cannot manually iterate over an asynchronous
@@ -4720,7 +4993,7 @@
    * Lazy([1, 2, 3]).async().getIterator() // throws
    */
   AsyncSequence.prototype.getIterator = function getIterator() {
-    throw 'An AsyncSequence does not support synchronous iteration.';
+    throw new Error('An AsyncSequence does not support synchronous iteration.');
   };
 
   /**
@@ -4737,21 +5010,28 @@
   AsyncSequence.prototype.each = function each(fn) {
     var iterator = this.parent.getIterator(),
         onNextCallback = this.onNextCallback,
+        cancelCallback = this.cancelCallback,
         i = 0;
 
-    var handle = new AsyncHandle(this.interval);
+    var handle = new AsyncHandle(function cancel() {
+      if (cancellationId) {
+        cancelCallback(cancellationId);
+      }
+    });
 
-    handle.id = onNextCallback(function iterate() {
+    var cancellationId = onNextCallback(function iterate() {
+      cancellationId = null;
+
       try {
         if (iterator.moveNext() && fn(iterator.current(), i++) !== false) {
-          handle.id = onNextCallback(iterate);
+          cancellationId = onNextCallback(iterate);
 
         } else {
-          handle.completeCallback();
+          handle._resolve();
         }
 
       } catch (e) {
-        handle.errorCallback(e);
+        handle._reject(e);
       }
     });
 
@@ -4759,19 +5039,124 @@
   };
 
   /**
-   * An `AsyncHandle` provides control over an {@link AsyncSequence} that is
-   * currently (or was) iterating over its elements asynchronously. In
-   * particular it provides the ability to {@link AsyncHandle#cancel} the
-   * iteration as well as execute a callback when either an error occurs or
-   * iteration is complete with {@link AsyncHandle#onError} and
-   * {@link AsyncHandle#onComplete}.
+   * An `AsyncHandle` provides a [Promises/A+](http://promises-aplus.github.io/promises-spec/)
+   * compliant interface for an {@link AsyncSequence} that is currently (or was)
+   * iterating over its elements.
+   *
+   * In addition to behaving as a promise, an `AsyncHandle` provides the ability
+   * to {@link AsyncHandle#cancel} iteration (if `cancelFn` is provided)
+   * and also offers convenient {@link AsyncHandle#onComplete} and
+   * {@link AsyncHandle#onError} methods to attach listeners for when iteration
+   * is complete or an error is thrown during iteration.
    *
    * @public
+   * @param {Function} cancelFn A function to cancel asynchronous iteration.
+   *     This is passed in to support different cancellation mechanisms for
+   *     different forms of asynchronous sequences (e.g., timeout-based
+   *     sequences, sequences based on I/O, etc.).
    * @constructor
+   *
+   * @example
+   * // Create a sequence of 100,000 random numbers, in chunks of 100.
+   * var sequence = Lazy.generate(Math.random)
+   *   .chunk(100)
+   *   .async()
+   *   .take(1000);
+   *
+   * // Reduce-style operations -- i.e., operations that return a *value* (as
+   * // opposed to a *sequence*) -- return an AsyncHandle for async sequences.
+   * var handle = sequence.toArray();
+   *
+   * handle.onComplete(function(array) {
+   *   // Do something w/ 1,000-element array.
+   * });
+   *
+   * // Since an AsyncHandle is a promise, you can also use it to create
+   * // subsequent promises using `then` (see the Promises/A+ spec for more
+   * // info).
+   * var flattened = handle.then(function(array) {
+   *   return Lazy(array).flatten();
+   * });
    */
-  function AsyncHandle(interval) {
-    this.cancelCallback = getCancelCallback(interval);
+  function AsyncHandle(cancelFn) {
+    this.resolveListeners = [];
+    this.rejectListeners = [];
+    this.state = PENDING;
+    this.cancelFn = cancelFn;
   }
+
+  // Async handle states
+  var PENDING  = 1,
+      RESOLVED = 2,
+      REJECTED = 3;
+
+  AsyncHandle.prototype.then = function then(onFulfilled, onRejected) {
+    var promise = new AsyncHandle(this.cancelFn);
+
+    this.resolveListeners.push(function(value) {
+      try {
+        if (typeof onFulfilled !== 'function') {
+          resolve(promise, value);
+          return;
+        }
+
+        resolve(promise, onFulfilled(value));
+
+      } catch (e) {
+        promise._reject(e);
+      }
+    });
+
+    this.rejectListeners.push(function(reason) {
+      try {
+        if (typeof onRejected !== 'function') {
+          promise._reject(reason);
+          return;
+        }
+
+        resolve(promise, onRejected(reason));
+
+      } catch (e) {
+        promise._reject(e);
+      }
+    });
+
+    if (this.state === RESOLVED) {
+      this._resolve(this.value);
+    }
+
+    if (this.state === REJECTED) {
+      this._reject(this.reason);
+    }
+
+    return promise;
+  };
+
+  AsyncHandle.prototype._resolve = function _resolve(value) {
+    if (this.state === REJECTED) {
+      return;
+    }
+
+    if (this.state === PENDING) {
+      this.state = RESOLVED;
+      this.value = value;
+    }
+
+    consumeListeners(this.resolveListeners, this.value);
+  };
+
+  AsyncHandle.prototype._reject = function _reject(reason) {
+    if (this.state === RESOLVED) {
+      return;
+    }
+
+    if (this.state === PENDING) {
+      this.state = REJECTED;
+      this.reason = reason;
+    }
+
+    consumeListeners(this.rejectListeners, this.reason);
+  };
 
   /**
    * Cancels asynchronous iteration.
@@ -4779,12 +5164,24 @@
    * @public
    */
   AsyncHandle.prototype.cancel = function cancel() {
-    var cancelCallback = this.cancelCallback;
-
-    if (this.id) {
-      cancelCallback(this.id);
-      this.id = null;
+    if (this.cancelFn) {
+      this.cancelFn();
+      this.cancelFn = null;
+      this._resolve(false);
     }
+  };
+
+  /**
+   * Updates the handle with a callback to execute when iteration is completed.
+   *
+   * @public
+   * @param {Function} callback The function to call when the asynchronous
+   *     iteration is completed.
+   * @return {AsyncHandle} A reference to the handle (for chaining).
+   */
+  AsyncHandle.prototype.onComplete = function onComplete(callback) {
+    this.resolveListeners.push(callback);
+    return this;
   };
 
   /**
@@ -4794,25 +5191,83 @@
    * @public
    * @param {Function} callback The function to call, with any associated error
    *     object, when an error occurs.
+   * @return {AsyncHandle} A reference to the handle (for chaining).
    */
   AsyncHandle.prototype.onError = function onError(callback) {
-    this.errorCallback = callback;
+    this.rejectListeners.push(callback);
+    return this;
   };
-
-  AsyncHandle.prototype.errorCallback = Lazy.noop;
 
   /**
-   * Updates the handle with a callback to execute when iteration is completed.
-   *
-   * @public
-   * @param {Function} callback The function to call when the asynchronous
-   *     iteration is completed.
+   * Promise resolution procedure:
+   * http://promises-aplus.github.io/promises-spec/#the_promise_resolution_procedure
    */
-  AsyncHandle.prototype.onComplete = function onComplete(callback) {
-    this.completeCallback = callback;
-  };
+  function resolve(promise, x) {
+    if (promise === x) {
+      promise._reject(new TypeError('Cannot resolve a promise to itself'));
+      return;
+    }
 
-  AsyncHandle.prototype.completeCallback = Lazy.noop;
+    if (x instanceof AsyncHandle) {
+      x.then(
+        function(value) { resolve(promise, value); },
+        function(reason) { promise._reject(reason); }
+      );
+      return;
+    }
+
+    var then;
+    try {
+      then = (/function|object/).test(typeof x) && x != null && x.then;
+    } catch (e) {
+      promise._reject(e);
+      return;
+    }
+
+    var thenableState = PENDING;
+    if (typeof then === 'function') {
+      try {
+        then.call(
+          x,
+          function resolvePromise(value) {
+            if (thenableState !== PENDING) {
+              return;
+            }
+            thenableState = RESOLVED;
+            resolve(promise, value);
+          },
+          function rejectPromise(reason) {
+            if (thenableState !== PENDING) {
+              return;
+            }
+            thenableState = REJECTED;
+            promise._reject(reason);
+          }
+        );
+      } catch (e) {
+        if (thenableState !== PENDING) {
+          return;
+        }
+
+        promise._reject(e);
+      }
+
+      return;
+    }
+
+    promise._resolve(x);
+  }
+
+  function consumeListeners(listeners, value, callback) {
+    callback || (callback = getOnNextCallback());
+
+    callback(function() {
+      if (listeners.length > 0) {
+        listeners.shift()(value);
+        consumeListeners(listeners, value, callback);
+      }
+    });
+  }
 
   function getOnNextCallback(interval) {
     if (typeof interval === "undefined") {
@@ -4838,6 +5293,23 @@
   }
 
   /**
+   * Transform a value, whether the value is retrieved asynchronously or directly.
+   *
+   * @private
+   * @param {Function} fn The function that transforms the value.
+   * @param {*} value The value to be transformed. This can be an {@link AsyncHandle} when the value
+   *     is retrieved asynchronously, otherwise it can be anything.
+   * @returns {*} An {@link AsyncHandle} when `value` is also an {@link AsyncHandle}, otherwise
+   *     whatever `fn` resulted in.
+   */
+  function transform(fn, value) {
+    if (value instanceof AsyncHandle) {
+      return value.then(function() { fn(value); });
+    }
+    return fn(value);
+  }
+
+  /**
    * An async version of {@link Sequence#reverse}.
    */
   AsyncSequence.prototype.reverse = function reverse() {
@@ -4845,52 +5317,13 @@
   };
 
   /**
-   * A version of {@link Sequence#reduce} which, instead of immediately
-   * returning a result (which it can't, obviously, because this is an
-   * asynchronous sequence), returns an {@link AsyncHandle} whose `onComplete`
-   * method can be called to supply a callback to handle the final result once
-   * iteration has completed.
-   *
-   * @public
-   * @param {Function} aggregator The function through which to pass every element
-   *     in the sequence. For every element, the function will be passed the total
-   *     aggregated result thus far and the element itself, and should return a
-   *     new aggregated result.
-   * @param {*=} memo The starting value to use for the aggregated result
-   *     (defaults to the first element in the sequence).
-   * @returns {AsyncHandle} An {@link AsyncHandle} allowing you to cancel
-   *     iteration and/or handle errors, with an added `then` method providing
-   *     a promise-like thing allowing you to handle the result of aggregation.
-   */
-  AsyncSequence.prototype.reduce = function reduce(aggregator, memo) {
-    var handle = this.each(function(e, i) {
-      if (typeof memo === "undefined" && i === 0) {
-        memo = e;
-      } else {
-        memo = aggregator(memo, e, i);
-      }
-    });
-
-    handle.then = handle.onComplete = function(callback) {
-      handle.completeCallback = function() {
-        callback(memo);
-      };
-    };
-
-    return handle;
-  };
-
-  /**
-   * A version of {@link Sequence#find} which returns a promise-y
-   * {@link AsyncHandle}.
+   * A version of {@link Sequence#find} which returns an {@link AsyncHandle}.
    *
    * @public
    * @param {Function} predicate A function to call on (potentially) every element
    *     in the sequence.
-   * @returns {AsyncHandle} An {@link AsyncHandle} allowing you to cancel
-   *     iteration and/or handle errors, with an added `then` method providing
-   *     a promise-like interface to handle the found element, once it is
-   *     detected.
+   * @returns {AsyncHandle} An {@link AsyncHandle} (promise) which resolves to
+   *     the found element, once it is detected, or else `undefined`.
    */
   AsyncSequence.prototype.find = function find(predicate) {
     var found;
@@ -4902,24 +5335,16 @@
       }
     });
 
-    handle.then = handle.onComplete = function(callback) {
-      handle.completeCallback = function() {
-        callback(found);
-      };
-    };
-
-    return handle;
+    return handle.then(function() { return found; });
   };
 
   /**
-   * A version of {@link Sequence#indexOf} which returns a promise-y
-   * {@link AsyncHandle}.
+   * A version of {@link Sequence#indexOf} which returns an {@link AsyncHandle}.
    *
    * @public
    * @param {*} value The element to search for in the sequence.
-   * @returns {AsyncHandle} An {@link AsyncHandle} with an added `then` method
-   *     providing a promise-like interface to handle the found index, once it
-   *     is detected, or -1.
+   * @returns {AsyncHandle} An {@link AsyncHandle} (promise) which resolves to
+   *     the found index, once it is detected, or -1.
    */
   AsyncSequence.prototype.indexOf = function indexOf(value) {
     var foundIndex = -1;
@@ -4931,24 +5356,18 @@
       }
     });
 
-    handle.then = handle.onComplete = function(callback) {
-      handle.completeCallback = function() {
-        callback(foundIndex);
-      };
-    };
-
-    return handle;
+    return handle.then(function() {
+      return foundIndex;
+    });
   };
 
   /**
-   * A version of {@link Sequence#contains} which returns a promise-y
-   * {@link AsyncHandle}.
+   * A version of {@link Sequence#contains} which returns an {@link AsyncHandle}.
    *
    * @public
    * @param {*} value The element to search for in the sequence.
-   * @returns {AsyncHandle} An {@link AsyncHandle} with an added `then` method
-   *     providing a promise-like interface to handle the result (either `true`
-   *     `false` to indicate whether the element was found).
+   * @returns {AsyncHandle} An {@link AsyncHandle} (promise) which resolves to
+   *     either `true` or `false` to indicate whether the element was found.
    */
   AsyncSequence.prototype.contains = function contains(value) {
     var found = false;
@@ -4960,13 +5379,9 @@
       }
     });
 
-    handle.then = handle.onComplete = function(callback) {
-      handle.completeCallback = function() {
-        callback(found);
-      };
-    };
-
-    return handle;
+    return handle.then(function() {
+      return found;
+    });
   };
 
   /**
@@ -5032,6 +5447,10 @@
 
   StreamLikeSequence.prototype = new AsyncSequence();
 
+  StreamLikeSequence.prototype.isAsync = function isAsync() {
+    return true;
+  };
+
   StreamLikeSequence.prototype.split = function split(delimiter) {
     return new SplitStreamSequence(this, delimiter);
   };
@@ -5042,25 +5461,74 @@
   function SplitStreamSequence(parent, delimiter) {
     this.parent    = parent;
     this.delimiter = delimiter;
+    this.each      = this.getEachForDelimiter(delimiter);
   }
 
   SplitStreamSequence.prototype = new Sequence();
 
-  SplitStreamSequence.prototype.each = function each(fn) {
-    var delimiter = this.delimiter,
-        done      = false,
-        i         = 0;
+  SplitStreamSequence.prototype.getEachForDelimiter = function getEachForDelimiter(delimiter) {
+    if (delimiter instanceof RegExp) {
+      return this.regexEach;
+    }
 
-    return this.parent.each(function(chunk) {
-      Lazy(chunk).split(delimiter).each(function(piece) {
-        if (fn(piece, i++) === false) {
-          done = true;
+    return this.stringEach;
+  };
+
+  SplitStreamSequence.prototype.regexEach = function each(fn) {
+    var delimiter = cloneRegex(this.delimiter),
+        buffer = '',
+        start = 0, end,
+        index = 0;
+
+    var handle = this.parent.each(function(chunk) {
+      buffer += chunk;
+
+      var match;
+      while (match = delimiter.exec(buffer)) {
+        end = match.index;
+        if (fn(buffer.substring(start, end), index++) === false) {
           return false;
         }
-      });
+        start = end + match[0].length;
+      }
 
-      return !done;
+      buffer = buffer.substring(start);
+      start = 0;
     });
+
+    handle.onComplete(function() {
+      if (buffer.length > 0) {
+        fn(buffer, index++);
+      }
+    });
+
+    return handle;
+  };
+
+  SplitStreamSequence.prototype.stringEach = function each(fn) {
+    var delimiter  = this.delimiter,
+        pieceIndex = 0,
+        buffer = '',
+        bufferIndex = 0;
+
+    var handle = this.parent.each(function(chunk) {
+      buffer += chunk;
+      var delimiterIndex;
+      while ((delimiterIndex = buffer.indexOf(delimiter)) >= 0) {
+        var piece = buffer.substr(0,delimiterIndex);
+        buffer = buffer.substr(delimiterIndex+delimiter.length);
+        if (fn(piece,pieceIndex++) === false) {
+          return false;
+        }
+      }
+      return true;
+    });
+
+    handle.onComplete(function() {
+      fn(buffer, pieceIndex++);
+    });
+
+    return handle;
   };
 
   StreamLikeSequence.prototype.lines = function lines() {
@@ -5201,7 +5669,8 @@
 
   /**
    * Creates a sequence from a given starting value, up to a specified stopping
-   * value, incrementing by a given step.
+   * value, incrementing by a given step. Invalid values for any of these
+   * arguments (e.g., a step of 0) result in an empty sequence.
    *
    * @public
    * @returns {GeneratedSequence} The sequence defined by the given ranges.
@@ -5212,13 +5681,26 @@
    * Lazy.range(2, 10, 2)  // sequence: [2, 4, 6, 8]
    * Lazy.range(5, 1, 2)   // sequence: []
    * Lazy.range(5, 15, -2) // sequence: []
+   * Lazy.range(3, 10, 3)  // sequence: [3, 6, 9]
+   * Lazy.range(5, 2)      // sequence: [5, 4, 3]
+   * Lazy.range(7, 2, -2)  // sequence: [7, 5, 3]
+   * Lazy.range(3, 5, 0)   // sequence: []
    */
   Lazy.range = function range() {
     var start = arguments.length > 1 ? arguments[0] : 0,
         stop  = arguments.length > 1 ? arguments[1] : arguments[0],
-        step  = arguments.length > 2 ? arguments[2] : 1;
-    return this.generate(function(i) { return start + (step * i); })
-      .take(Math.floor((stop - start) / step));
+        step  = arguments.length > 2 && arguments[2];
+
+    if (step === false) {
+      step = stop > start ? 1 : -1;
+    }
+
+    if (step === 0) {
+      return Lazy([]);
+    }
+
+    return Lazy.generate(function(i) { return start + (step * i); })
+      .take(Math.ceil((stop - start) / step));
   };
 
   /**
@@ -5251,6 +5733,25 @@
   Lazy.AsyncHandle        = AsyncHandle;
 
   /*** Useful utility methods ***/
+
+  /**
+   * Creates a shallow copy of an array or object.
+   *
+   * @examples
+   * var array  = [1, 2, 3], clonedArray,
+   *     object = { foo: 1, bar: 2 }, clonedObject;
+   *
+   * clonedArray = Lazy.clone(array); // => [1, 2, 3]
+   * clonedArray.push(4); // clonedArray == [1, 2, 3, 4]
+   * array; // => [1, 2, 3]
+   *
+   * clonedObject = Lazy.clone(object); // => { foo: 1, bar: 2 }
+   * clonedObject.baz = 3; // clonedObject == { foo: 1, bar: 2, baz: 3 }
+   * object; // => { foo: 1, bar: 2 }
+   */
+  Lazy.clone = function clone(target) {
+    return Lazy(target).value();
+  };
 
   /**
    * Marks a method as deprecated, so calling it will issue a console warning.
@@ -5309,8 +5810,53 @@
           Lazy.identity;
 
       default:
-        throw "Don't know how to make a callback from a " + typeof callback + "!";
+        throw new Error("Don't know how to make a callback from a " + typeof callback + "!");
     }
+  }
+
+  /**
+   * Takes a function that returns a value for one argument and produces a
+   * function that compares two arguments.
+   *
+   * @private
+   * @param {Function|string|Object} callback A function, string, or object to
+   *     convert to a callback using `createCallback`.
+   * @returns {Function} A function that accepts two values and returns 1 if
+   *     the first is greater, -1 if the second is greater, or 0 if they are
+   *     equivalent.
+   *
+   * @examples
+   * createComparator('a')({ a: 1 }, { a: 2 });       // => -1
+   * createComparator('a')({ a: 6 }, { a: 2 });       // => 1
+   * createComparator('a')({ a: 1 }, { a: 1 });       // => 0
+   * createComparator()(3, 5);                        // => -1
+   * createComparator()(7, 5);                        // => 1
+   * createComparator()(3, 3);                        // => 0
+   */
+  function createComparator(callback, descending) {
+    if (!callback) { return compare; }
+
+    callback = createCallback(callback);
+
+    return function(x, y) {
+      return compare(callback(x), callback(y));
+    };
+  }
+
+  /**
+   * Takes a function and returns a function with the same logic but the
+   * arguments reversed. Only applies to functions w/ arity=2 as this is private
+   * and I can do what I want.
+   *
+   * @private
+   * @param {Function} fn The function to "reverse"
+   * @returns {Function} The "reversed" function
+   *
+   * @examples
+   * reverseArguments(function(x, y) { return x + y; })('a', 'b'); // => 'ba'
+   */
+  function reverseArguments(fn) {
+    return function(x, y) { return fn(y, x); };
   }
 
   /**
@@ -5334,8 +5880,6 @@
    * @private
    * @param {*} x The left element to compare.
    * @param {*} y The right element to compare.
-   * @param {Function=} fn An optional function to call on each element, to get
-   *     the values to compare.
    * @returns {number} 1 if x > y, -1 if x < y, or 0 if x and y are equal.
    *
    * @examples
@@ -5344,11 +5888,7 @@
    * compare(2, 1)     // => 1
    * compare('a', 'b') // => -1
    */
-  function compare(x, y, fn) {
-    if (typeof fn === "function") {
-      return compare(fn(x), fn(y));
-    }
-
+  function compare(x, y) {
     if (x === y) {
       return 0;
     }
@@ -5717,11 +6257,11 @@
     var contents = this.contents,
         capacity = contents.length,
         start    = this.start;
-  
+
     if (this.count === capacity) {
       contents[start] = element;
       this.start = (start + 1) % capacity;
-  
+
     } else {
       contents[this.count++] = element;
     }

@@ -78,8 +78,8 @@
     return new DomEventSequence(this.source, eventName);
   };
 
-  function DomEventSequence(element, eventName) {
-    this.element = element;
+  function DomEventSequence(elements, eventName) {
+    this.elements = elements;
     this.eventName = eventName;
   }
 
@@ -92,16 +92,20 @@
    *     sequence. Return false from the function to stop handling the events.
    */
   DomEventSequence.prototype.each = function(fn) {
-    var element = this.element,
+    var elements = this.elements,
         eventName = this.eventName;
 
     var listener = function(e) {
       if (fn(e) === false) {
-        element.removeEventListener(eventName, listener);
+        for (var i = 0; i < elements.length; ++i) {
+          elements.removeEventListener(eventName, listener);
+        }
       }
     };
 
-    this.element.addEventListener(this.eventName, listener);
+    for (var i = 0; i < elements.length; ++i) {
+      elements[i].addEventListener(this.eventName, listener);
+    }
   };
 
   /**
@@ -115,7 +119,7 @@
    * @return {Sequence} The sequence of events.
    */
   Lazy.events = Lazy.deprecate(
-    "Lazy.events is deprecated. Use Lazy('selector').on('event') instead",
+    "Lazy.events is deprecated. Use Lazy(element[s]).on('event') instead",
     function(element, eventName) {
       return new DomEventSequence(element, eventName);
     }
@@ -167,6 +171,8 @@
   Lazy.extensions.push(function(source) {
     if (source instanceof NodeList || source instanceof HTMLCollection) {
       return new DomSequence(source);
+    } else if (source instanceof Element) {
+      return new DomSequence([source]);
     }
   });
 
