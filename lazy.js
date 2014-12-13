@@ -5668,7 +5668,8 @@
 
   /**
    * Creates a sequence from a given starting value, up to a specified stopping
-   * value, incrementing by a given step.
+   * value, incrementing by a given step. Invalid values for any of these
+   * arguments (e.g., a step of 0) result in an empty sequence.
    *
    * @public
    * @returns {GeneratedSequence} The sequence defined by the given ranges.
@@ -5679,13 +5680,26 @@
    * Lazy.range(2, 10, 2)  // sequence: [2, 4, 6, 8]
    * Lazy.range(5, 1, 2)   // sequence: []
    * Lazy.range(5, 15, -2) // sequence: []
+   * Lazy.range(3, 10, 3)  // sequence: [3, 6, 9]
+   * Lazy.range(5, 2)      // sequence: [5, 4, 3]
+   * Lazy.range(7, 2, -2)  // sequence: [7, 5, 3]
+   * Lazy.range(3, 5, 0)   // sequence: []
    */
   Lazy.range = function range() {
     var start = arguments.length > 1 ? arguments[0] : 0,
         stop  = arguments.length > 1 ? arguments[1] : arguments[0],
-        step  = arguments.length > 2 ? arguments[2] : 1;
-    return this.generate(function(i) { return start + (step * i); })
-      .take(Math.floor((stop - start) / step));
+        step  = arguments.length > 2 && arguments[2];
+
+    if (step === false) {
+      step = stop > start ? 1 : -1;
+    }
+
+    if (step === 0) {
+      return Lazy([]);
+    }
+
+    return Lazy.generate(function(i) { return start + (step * i); })
+      .take(Math.ceil((stop - start) / step));
   };
 
   /**

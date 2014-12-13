@@ -10,6 +10,7 @@ v0.4.0 (in progress)
 - made `ObjectLikeSequence#filter` return an `ObjectLikeSequence` (see [#75](https://github.com/dtao/lazy.js/issues/75))
 - fixed issue with `Sequence#shuffle` always putting first element last ([#113](https://github.com/dtao/lazy.js/issues/106))
 - fixed issue with `Sequence#join` skipping empty strings ([#115](https://github.com/dtao/lazy.js/issues/115))
+- fixed issue with `Lazy.range` sometimes providing one value too few ([#119](https://github.com/dtao/lazy.js/issues/119))
 
 v0.3.3 (in progress)
 --------------------
