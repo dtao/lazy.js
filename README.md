@@ -5,9 +5,9 @@ Like Underscore, but lazier
 [![Bower version](https://badge.fury.io/bo/lazy.js.svg)](http://badge.fury.io/bo/lazy.js)
 [![NPM version](https://badge.fury.io/js/lazy.js.svg)](http://badge.fury.io/js/lazy.js)
 
-**Lazy.js** it a utility library for JavaScript, similar to [Underscore](http://underscorejs.org/) and [Lo-Dash](http://lodash.com/) but with one important difference: **lazy evaluation** (also known as deferred execution). This can translate to superior performance in many cases, *especially* when dealing with large arrays and/or "chaining" together multiple methods. For simple cases (`map`, `filter`, etc.) on small arrays, Lazy's performance should be similar to Underscore or Lo-Dash.
+**Lazy.js** is a functional utility library for JavaScript, similar to [Underscore](http://underscorejs.org/) and [Lo-Dash](http://lodash.com/), but with an underlying engine that supports many more use cases than those libraries, while offering comparable or superior performance in most scenarios.
 
-The following chart illustrates the performance of Lazy.js versus Underscore and Lo-Dash for several common operations using arrays with 10 elements each on Chrome:
+The following chart illustrates the performance of Lazy.js versus Underscore and Lo-Dash for several common operations using arrays with 10 elements each on Chrome 39:
 
 ![Lazy.js versus Underscore/Lo-Dash](http://i.imgur.com/9vP6sVG.png)
 
@@ -35,42 +35,35 @@ Now let's look at what you can do with Lazy.js. (For more thorough information, 
 Introduction
 ------------
 
-We'll start with an array containing 1000 integers. Incidentally, generating such an array using Lazy.js is quite trivial:
+Let's start with an array of objects representing people.
 
 ```javascript
-var array = Lazy.range(1000).toArray();
+var people = getBigArrayOfPeople();
 ```
 
-Note the `toArray` call; without it, what you'll get from `Lazy.range` won't be an actual *array* but rather a `Lazy.Sequence` object, which you can iterate over using `each`. But we'll get to that in a moment.
-
-Now let's say we want to take the *squares* of each of these numbers, increment them, and then take the first five even results. We'll use these helper functions, to keep the code concise:
+Now let's suppose we're using this array to back some sort of search-as-you-type functionality, where users can search for people by their last names. Naturally we want to put some reasonable constraints on our problem space, so we'll provide up to 5 results at a time. Supposing the user types "Smith", we could therefore fetch results using something like this (using Underscore):
 
 ```javascript
-function square(x) { return x * x; }
-function inc(x) { return x + 1; }
-function isEven(x) { return x % 2 === 0; }
-```
-
-Yes, this is admittedly a very arbitrary goal. (Later I'll get around to thinking of a more realistic scenario.) Anyway, here's one way you might accomplish it using Underscore and its convenient `chain` method:
-
-```javascript
-var result = _.chain(array).map(square).map(inc).filter(isEven).take(5).value();
+var results = _.chain(people)
+  .pluck('lastName')
+  .filter(function(name) { return name.startsWith('Smith'); })
+  .take(5)
+  .value();
 ```
 
 This query does a lot of stuff:
 
-- `map(square)`: iterates over the array and creates a new 1000-element array
-- `map(inc)`: iterates over the new array, creating *another* new 1000-element array
-- `filter(isEven)`: iterates over *that* array, creating yet *another* new (500-element) array
+- `pluck('lastName')`: iterates over the array and creates a new (potentially giant) array
+- `filter(...)`: iterates over the new array, creating yet *another* (potentially giant) array
 - `take(5)`: all that just for 5 elements!
 
 So if performance and/or efficiency were a concern for you, you would probably *not* do things that way using Underscore. Instead, you'd likely go the procedural route:
 
 ```javascript
 var results = [];
-for (var i = 0; i < array.length; ++i) {
-  var value = (array[i] * array[i]) + 1;
-  if (value % 2 === 0) {
+for (var i = 0; i < people.length; ++i) {
+  var lastName = people[i].lastName;
+  if (lastName.startsWith('Smith')) {
     results.push(value);
     if (results.length === 5) {
       break;
@@ -88,28 +81,33 @@ Well, yeah. The main problem is that this is one-off code, which isn't reusable 
 That's where Lazy.js comes in! Here's how we'd write the above query using Lazy.js:
 
 ```javascript
-var result = Lazy(array).map(square).map(inc).filter(isEven).take(5);
+var result = Lazy(people)
+  .pluck('lastName')
+  .filter(function(name) { return name.startsWith('Smith'); })
+  .take(5);
 ```
 
-Looks almost identical, right? That's the idea: Lazy.js aims to be completely familiar to experienced JavaScript devs. Every method from Underscore should have the same name and identical behavior in Lazy.js, except that instead of returning a fully-populated array on every call, it creates a *sequence* object with an `each` method.
+Looks almost identical, right? That's the idea: Lazy.js aims to be completely familiar to experienced JavaScript devs. Every method from Underscore should have the same name and (almost) identical behavior in Lazy.js, except that instead of returning a fully-populated array on every call, it creates a *sequence* object with an `each` method.
 
-What's important here is that **no iteration takes place until you call `each`**, and **no intermediate arrays are created**. Essentially Lazy.js combines all query operations into a sequence that behaves quite a bit like the procedural code we wrote a moment ago.
+What's important here is that **no iteration takes place until you call `each`**, and **no intermediate arrays are created**. Essentially Lazy.js combines all query operations into a sequence that behaves quite a bit like the procedural code we wrote a moment ago. (If you ever *do* want an array, simply call `toArray` on the resulting sequence.)
 
 Of course, *unlike* the procedural approach, Lazy.js lets you keep your code clean and functional, and focus on building an application instead of optimizing array traversals.
 
 Features
 --------
 
-OK, cool. What else can Lazy.js do?
+So, Lazy.js is basically Underscore with lazy evaluation. Is that it?
+
+Of course not!
 
 ### Indefinite sequence generation
 
 The sequence-based paradigm of Lazy.js lets you do some pretty cool things that simply aren't possible with Underscore's array-based approach. One of these is the generation of **indefinite sequences**, which can go on forever, yet still support all of Lazy's built-in mapping and filtering capabilities.
 
-Want an example? Sure thing! Let's say we want 300 unique random numbers between 1 and 1000.
+Here's an example. Let's say we want 300 unique random numbers between 1 and 1000.
 
 ```javascript
-var uniqueRandsFrom1To1000 = Lazy.generate(function() { return Math.random(); })
+var uniqueRandsFrom1To1000 = Lazy.generate(Math.random)
   .map(function(e) { return Math.floor(e * 1000) + 1; })
   .uniq()
   .take(300);
@@ -118,7 +116,7 @@ var uniqueRandsFrom1To1000 = Lazy.generate(function() { return Math.random(); })
 uniqueRandsFrom1To1000.each(function(e) { console.log(e); });
 ```
 
-Pretty neat. How about a slightly more advanced example? Let's use Lazy.js to make a [Fibonacci sequence](http://en.wikipedia.org/wiki/Fibonacci_number).
+Here's a slightly more advanced example: let's use Lazy.js to make a [Fibonacci sequence](http://en.wikipedia.org/wiki/Fibonacci_number).
 
 ```javascript
 var fibonacci = Lazy.generate(function() {
@@ -135,8 +133,8 @@ var fibonacci = Lazy.generate(function() {
 // Output: undefined
 var length = fibonacci.length();
 
-// Output: [2, 2, 3, 4, 6, 9, 14, 22, 35, 56]
-var firstTenFibsPlusOne = fibonacci.map(inc).take(10).toArray();
+// Output: [1, 1, 2, 3, 5, 8, 13, 21, 34, 55]
+fibonacci.take(10).toArray();
 ```
 
 OK, what else?
