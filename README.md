@@ -95,7 +95,7 @@ Looks almost identical, right? That's the idea: Lazy.js aims to be completely fa
 
 What's important here is that **no iteration takes place until you call `each`**, and **no intermediate arrays are created**. Essentially Lazy.js combines all query operations into a sequence that behaves quite a bit like the procedural code we wrote a moment ago.
 
-Of course, *unlike* the procedural approach, Lazy.js lets you keep your code clean and functional, and focus on buliding an application instead of optimizing array traversals.
+Of course, *unlike* the procedural approach, Lazy.js lets you keep your code clean and functional, and focus on building an application instead of optimizing array traversals.
 
 Features
 --------
@@ -104,7 +104,7 @@ OK, cool. What else can Lazy.js do?
 
 ### Indefinite sequence generation
 
-The sequence-based paradigm of Lazy.js lets you do some pretty cool things that simply aren't possible with Underscore's array-based approach. One of these is the generation of **indefinite sequences**, which can go on forever, yet still support all of Lazy's built-in mapping and filtering capablities.
+The sequence-based paradigm of Lazy.js lets you do some pretty cool things that simply aren't possible with Underscore's array-based approach. One of these is the generation of **indefinite sequences**, which can go on forever, yet still support all of Lazy's built-in mapping and filtering capabilities.
 
 Want an example? Sure thing! Let's say we want 300 unique random numbers between 1 and 1000.
 
