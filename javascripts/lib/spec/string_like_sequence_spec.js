@@ -11,7 +11,7 @@ describe("StringLikeSequence", function() {
 
   describe("mapString", function() {
     it("returns a StringLikeSequence", function() {
-      expect(Lazy("foo").mapString(upcase)).toBeASequence(Lazy.StringLikeSequence);
+      expect(Lazy("foo").mapString(upcase)).toBeInstanceOf(Lazy.StringLikeSequence);
     });
   });
 

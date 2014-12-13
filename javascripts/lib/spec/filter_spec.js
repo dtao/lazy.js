@@ -1,15 +1,37 @@
+comprehensiveSequenceTest('filter', {
+  cases: [
+    {
+      input: [1, 2, 3, 4, 5],
+      params: [isEven],
+      result: [2, 4],
+      accessCountForTake2: 4
+    },
+    {
+      label: 'pluck-style',
+      input: [{ foo: true }, { foo: false }, { foo: true }, { foo: false }],
+      params: ['foo'],
+      result: [{ foo: true }, { foo: true }],
+      accessCountForTake2: 3
+    },
+    {
+      label: 'where-style',
+      input: [
+        { foo: 'blub', bar: 1 },
+        { foo: 'glub', bar: 2 },
+        { foo: 'blub', bar: 3 }
+      ],
+      params: [{ foo: 'blub' }],
+      result: [{ foo: 'blub', bar: 1 }, { foo: 'blub', bar: 3 }],
+      accessCountForTake2: 3
+    }
+  ],
+
+  aliases: ['select', 'where'],
+  arrayLike: false,
+  supportsAsync: true
+});
+
 describe("filter", function() {
-  ensureLaziness(function() { Lazy(people).filter(Person.isMale); });
-
-  testAllSequenceTypes("can also be called as 'select'", [1, 2, 3, 4], function(sequence) {
-    expect(sequence.select(isEven)).toComprise([2, 4]);
-  });
-
-  it("selects values from the collection using a selector function", function() {
-    var boys = Lazy(people).filter(Person.isMale).toArray();
-    expect(boys).toEqual([david, adam, daniel]);
-  });
-
   it("combines with previous filters", function() {
     var sons = Lazy(people)
       .filter(Person.isMale)
@@ -18,48 +40,31 @@ describe("filter", function() {
     expect(sons).toEqual([adam, daniel]);
   });
 
-  it("passes an index along with each element", function() {
-    // NOTE: So here Lazy deviates from Underscore/Lo-Dash in that filter
-    // will pass along the index *in the original array*, not an incrementing
-    // index starting from 0. This is to provide unified behavior between
-    // arrays and objects (when iterating over objects, the second argument is
-    // the *key*, which should be the same in the result as in the source).
-    //
-    // My reasoning here is that if a dev wants indexes starting from 0 w/ a
-    // step of 1 he/she can trivially produce that him-/herself.
-    expect(Lazy(people).filter(Person.isMale)).toPassToEach(1, [0, 3, 4]);
+  describe("ObjectLikeSequence#filter", function() {
+    var object, result;
+
+    beforeEach(function() {
+      object = {
+        a: {a: 'a'},
+        b: {a: 'b'},
+        c: {a: 'a'}
+      };
+
+      result = Lazy(object).filter({a: 'a'});
+    });
+
+    it("produces an ObjectLikeSequence", function() {
+      expect(result.toObject()).toEqual({
+        a: {a: 'a'},
+        c: {a: 'a'}
+      });
+    });
+
+    it("result supports #get", function() {
+      expect(result.get('b')).toEqual(undefined);
+      expect(result.get('c')).toEqual({a: 'a'});
+    });
   });
-
-  createAsyncTest("supports asynchronous iteration", {
-    getSequence: function() { return Lazy(people).filter(Person.isMale).async(); },
-    expected: function() { return [david, adam, daniel]; }
-  });
-
-  createAsyncTest("can exit early even when iterating asynchronously", {
-    getSequence: function() { return Lazy(people).filter(Person.isMale).async().take(1); },
-    expected: function() { return [david]; },
-    additionalExpectations: function() { expect(Person.accesses).toBe(1); }
-  });
-
-  testAllSequenceTypes(
-    "acts like 'pluck' when a string is passed instead of a function",
-
-    [{ foo: true, bar: 1 }, { foo: false, bar: 2 }],
-
-    function(sequence) {
-      expect(sequence.filter('foo')).toComprise([{ foo: true, bar: 1 }]);
-    }
-  );
-
-  testAllSequenceTypes(
-    "acts like 'where' when an object is passed instead of a function",
-
-    [{ foo: 'blub', bar: 1 }, { foo: 'glub', bar: 2 }],
-
-    function(sequence) {
-      expect(sequence.filter({ foo: 'blub' })).toComprise([{ foo: 'blub', bar: 1 }]);
-    }
-  );
 });
 
 describe("filter -> reverse", function() {

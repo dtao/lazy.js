@@ -1,29 +1,35 @@
+comprehensiveSequenceTest('first', {
+  cases: [
+    {
+      input: [1, 2, 3, 4, 5],
+      params: [3],
+      result: [1, 2, 3]
+    }
+  ],
+
+  aliases: ['head', 'take']
+});
+
 describe("take", function() {
-  ensureLaziness(function() { Lazy(people).take(2); });
-
-  it("only selects the first N elements from the collection", function() {
-    expect(Lazy(people).take(2)).toComprise([david, mary]);
-  });
-
-  it("passes an index along with each element", function() {
-    expect(Lazy(people).take(2)).toPassToEach(1, [0, 1]);
-  });
-
   it("doesn't prematurely get the first element when given 0", function() {
     expect(Lazy.generate(function (i) {return i;}).take(0).toArray()).toEqual([]);
   })
 });
 
 describe("takeWhile", function() {
-  ensureLaziness(function() { Lazy(people).takeWhile(Person.isMale); });
-
-  it("selects elements while they satisfy some condition", function() {
-    expect(Lazy([2, 4, 6, 7, 8, 9]).takeWhile(isEven)).toComprise([2, 4, 6]);
-  });
-
   it("exits immediately if the very first element doesn't satisfy the condition", function() {
     expect(Lazy([1, 2, 3]).takeWhile(isEven)).toComprise([]);
   });
+});
+
+comprehensiveSequenceTest('takeWhile', {
+  cases: [
+    {
+      input: [2, 4, 6, 7, 8, 9],
+      params: [isEven],
+      result: [2, 4, 6]
+    }
+  ]
 });
 
 describe("initial", function() {

@@ -108,7 +108,7 @@ describe("Lazy", function() {
           });
           runs(function() {
             expect(context.setImmediate).toHaveBeenCalled();
-            expect(context.setImmediate.callCount).toBe(people.length + 1);
+            expect(context.setImmediate.callCount).toBeGreaterThan(people.length);
           });
         });
 
@@ -124,7 +124,7 @@ describe("Lazy", function() {
           });
           runs(function() {
             expect(context.setTimeout).toHaveBeenCalled();
-            expect(context.setTimeout.callCount).toBe(people.length + 1);
+            expect(context.setTimeout.callCount).toBeGreaterThan(people.length);
           });
         });
       }
