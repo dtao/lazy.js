@@ -15,6 +15,17 @@ describe("StringLikeSequence", function() {
     });
   });
 
+  describe("first",function() {
+    it("slices string",function() {
+      var result = Lazy("hello").first(3).toString();
+      expect(result).toEqual("hel");
+    });
+    it("returns again a StringLikeSequence and methods like split work",function() {
+      var result = Lazy("hello").first(3).split(",");
+      expect(result).toEqual(["hel"]);
+    });
+  });
+
   describe("split", function() {
     var values = Lazy.range(10).join(", ");
 
