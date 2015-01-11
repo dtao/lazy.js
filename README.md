@@ -154,6 +154,9 @@ var asyncSequence = Lazy(array)
 asyncSequence.each(function(e) {
   console.log(new Date().getMilliseconds() + ": " + e);
 });
+
+function inc(x) { return x + 1; }
+function isEven(x) { return x % 2 === 0; }
 ```
 
 All right... what else?
