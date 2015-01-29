@@ -579,16 +579,16 @@
    * @public
    * @aka collect
    * @param {Function} mapFn The mapping function used to project this sequence's
-   *     elements onto a new sequence.  mapFn may take up to two arguments.  First
-   *     being the iterated element, second being the current index.
+   *     elements onto a new sequence. This function takes up to two arguments:
+   *     the element, and the current index.
    * @returns {Sequence} The new sequence.
    *
    * @examples
-   * Lazy([]).map(increment)        // sequence: []
-   * Lazy([1, 2, 3]).map(increment) // sequence: [2, 3, 4]
-   *
    * function addIndexToValue(e, i) { return e + i; }
-   * Lazy([1, 2, 3]).map(addIndexToValue) // sequence [1, 3, 5]
+   *
+   * Lazy([]).map(increment)              // sequence: []
+   * Lazy([1, 2, 3]).map(increment)       // sequence: [2, 3, 4]
+   * Lazy([1, 2, 3]).map(addIndexToValue) // sequence: [1, 3, 5]
    *
    * @benchmarks
    * function increment(x) { return x + 1; }
