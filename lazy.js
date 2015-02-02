@@ -1522,10 +1522,18 @@
    *
    * @public
    * @aka unique
+   * @param {Function} keyFn An optional function to produce the key for each
+   *     object. This key is then tested for uniqueness as  opposed to the
+   *     object reference.
    * @returns {Sequence} The new sequence.
    *
    * @examples
    * Lazy([1, 2, 2, 3, 3, 3]).uniq() // sequence: [1, 2, 3]
+   * Lazy([{ name: 'mike' }, 
+   * 	{ name: 'sarah' }, 
+   * 	{ name: 'mike' }
+   * ]).uniq('name')
+   * // sequence: [{ name: 'mike' }, { name: 'sarah' }]
    *
    * @benchmarks
    * function randomOf(array) {
