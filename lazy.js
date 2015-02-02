@@ -1519,6 +1519,10 @@
   /**
    * Creates a new sequence with every unique element from this one appearing
    * exactly once (i.e., with duplicates removed).
+   * 
+   * If evaluating an array of objects, you may pass a function that generates
+   * the key for each object.  This key is then tested for uniqueness as 
+   * opposed to the object reference.  Example given below.
    *
    * @public
    * @aka unique
@@ -1526,6 +1530,13 @@
    *
    * @examples
    * Lazy([1, 2, 2, 3, 3, 3]).uniq() // sequence: [1, 2, 3]
+   * Lazy([{ name: 'mike' }, 
+   * 	{ name: 'sarah' }, 
+   * 	{ name: 'mike' }
+   * ]).uniq(function(person) { 
+   * 	return person.name; 
+   * })
+   * // sequence: [{ name: 'mike' }, { name: 'sarah' }]
    *
    * @benchmarks
    * function randomOf(array) {
