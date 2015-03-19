@@ -546,6 +546,7 @@
 
   /**
    * Iterates over this sequence and executes a function for every element.
+   * Returns true or false depending on whether every element was iterated.
    *
    * @public
    * @aka forEach
