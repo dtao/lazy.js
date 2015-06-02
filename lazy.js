@@ -3896,19 +3896,27 @@
    * mergeObjects({ foo: { bar: 1 } }, { foo: { baz: 2 } }); // => { foo: { bar: 1, baz: 2 } }
    * mergeObjects({ foo: { bar: 1 } }, { foo: undefined }); // => { foo: { bar: 1 } }
    * mergeObjects({ foo: { bar: 1 } }, { foo: null }); // => { foo: null }
+   * mergeObjects({ array: [0, 1, 2] },              { array: [3, 4, 5] }).array.constructor.name;                // => 'Array'
+   * mergeObjects({ date: new Date() },              { date: new Date() }).date.constructor.name;                 // => 'Date'
+   * mergeObjects({ buffer: new Buffer([1, 2, 3]) }, { buffer: new Buffer([4, 5, 6]) }).buffer.constructor.name;  // => 'Buffer'
    */
   function mergeObjects(a, b) {
+    var prop, merged;
+
     if (typeof b === 'undefined') {
       return a;
     }
 
     // Unless we're dealing with two objects, there's no merging to do --
     // just replace a w/ b.
-    if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null) {
+    if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null ||
+        b.constructor === Date || Buffer.isBuffer(b)) {
+
       return b;
     }
 
-    var merged = {}, prop;
+    // if one is an array, make it an array
+    merged = Array.isArray(a) || Array.isArray(b) ? [] : {};
     for (prop in a) {
       merged[prop] = mergeObjects(a[prop], b[prop]);
     }
