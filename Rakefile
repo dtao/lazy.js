@@ -16,7 +16,9 @@ def format_options(options)
 end
 
 desc "Concat and uglify JavaScript"
-task :uglify => [ 'lazy.js' ] do |task|
+task :build => [ 'lazy.js' ] do |task|
+  version = package_info['version']
+
   File.open('lazy.min.js', 'w') { |f|
     content = task.prerequisites.map { |prereq|
       if File.exist?(prereq)
@@ -25,7 +27,10 @@ task :uglify => [ 'lazy.js' ] do |task|
         raise "Prerequisite #{prereq} does not exist."
       end
     }.compact.join("\n")
-    f.write Uglifier.new.compile(content)
+
+    header = "/*! lazy.js #{version} (c)#{Time.now.year} Dan Tao @license MIT */"
+    minified = Uglifier.new.compile(content)
+    f.write(header + "\n" + minified + "\n")
   }
 end
 
