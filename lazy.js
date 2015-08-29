@@ -342,22 +342,28 @@
    * example, `Lazy([1, 2, 3]).async().map(Lazy.identity)` returns a sequence
    * that iterates asynchronously even though it's not an instance of
    * `AsyncSequence`.
+   *
+   * @returns {boolean} Whether or not the current sequence is an asynchronous one.
    */
   Sequence.prototype.isAsync = function isAsync() {
     return this.parent ? this.parent.isAsync() : false;
   };
 
   /**
-   * Evaluates the sequence and produces an appropriate value (an array in most
+   * Evaluates the sequence and produces the appropriate value (an array in most
    * cases, an object for {@link ObjectLikeSequence}s or a string for
    * {@link StringLikeSequence}s).
+   *
+   * @returns {Array|string|Object} The value resulting from fully evaluating
+   *     the sequence.
    */
   Sequence.prototype.value = function value() {
     return this.toArray();
   };
 
   /**
-   * Applies the current transformation chain to a given source.
+   * Applies the current transformation chain to a given source, returning the
+   * resulting value.
    *
    * @examples
    * var sequence = Lazy([])
@@ -551,6 +557,8 @@
    * @aka forEach
    * @param {Function} fn The function to call on each element in the sequence.
    *     Return false from the function to end the iteration.
+   * @returns {boolean} `true` if the iteration evaluated the entire sequence,
+   *     or `false` if iteration was ended early.
    *
    * @examples
    * Lazy([1, 2, 3, 4]).each(fn) // calls fn 4 times
