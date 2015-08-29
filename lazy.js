@@ -354,7 +354,8 @@
    * cases, an object for {@link ObjectLikeSequence}s or a string for
    * {@link StringLikeSequence}s).
    *
-   * @returns {Array|string|Object} The wrapped "value".
+   * @returns {Array|string|Object} The value resulting from fully evaluating
+   *     the sequence.
    */
   Sequence.prototype.value = function value() {
     return this.toArray();
@@ -556,7 +557,8 @@
    * @aka forEach
    * @param {Function} fn The function to call on each element in the sequence.
    *     Return false from the function to end the iteration.
-   * @returns {boolean} Whether the iteration was ended early.
+   * @returns {boolean} `true` if the iteration evaluated the entire sequence,
+   *     or `false` if iteration was ended early.
    *
    * @examples
    * Lazy([1, 2, 3, 4]).each(fn) // calls fn 4 times
