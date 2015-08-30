@@ -3801,11 +3801,19 @@
    * Produces an {@link ObjectLikeSequence} consisting of all the recursively
    * merged values from this and the given object(s) or sequence(s).
    *
+   * Note that by default this method only merges "vanilla" objects (bags of
+   * key/value pairs), not arrays or any other custom object types. To customize
+   * how merging works, you can provide the mergeFn argument, e.g. to handling
+   * merging arrays, strings, or other types of objects.
+   *
    * @public
    * @param {...Object|ObjectLikeSequence} others The other object(s) or
    *     sequence(s) whose values will be merged into this one.
    * @param {Function=} mergeFn An optional function used to customize merging
-   *     behavior.
+   *     behavior. The function should take two values as parameters and return
+   *     whatever the "merged" form of those values is. If the function returns
+   *     undefined then the new value will simply replace the old one in the
+   *     final result.
    * @returns {ObjectLikeSequence} The new sequence consisting of merged values.
    *
    * @examples
@@ -3926,27 +3934,27 @@
    * mergeObjects({ foo: { bar: 1 } }, { foo: { baz: 2 } }); // => { foo: { bar: 1, baz: 2 } }
    * mergeObjects({ foo: { bar: 1 } }, { foo: undefined }); // => { foo: { bar: 1 } }
    * mergeObjects({ foo: { bar: 1 } }, { foo: null }); // => { foo: null }
-   * mergeObjects({ array: [0, 1, 2] },              { array: [3, 4, 5] }).array.constructor.name;                // => 'Array'
-   * mergeObjects({ date: new Date() },              { date: new Date() }).date.constructor.name;                 // => 'Date'
-   * mergeObjects({ buffer: new Buffer([1, 2, 3]) }, { buffer: new Buffer([4, 5, 6]) }).buffer.constructor.name;  // => 'Buffer'
+   * mergeObjects({ array: [0, 1, 2] }, { array: [3, 4, 5] }).array; // instanceof Array
+   * mergeObjects({ date: new Date() }, { date: new Date() }).date; // instanceof Date
+   * mergeObjects([{ foo: 1 }], [{ bar: 2 }]); // => [{ foo: 1, bar: 2 }]
    */
   function mergeObjects(a, b) {
-    var prop, merged;
+    var merged, prop;
 
     if (typeof b === 'undefined') {
       return a;
     }
 
-    // Unless we're dealing with two objects, there's no merging to do --
-    // just replace a w/ b.
-    if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null ||
-        b.constructor === Date || Buffer.isBuffer(b)) {
-
+    // Check that we're dealing with two objects or two arrays.
+    if (isVanillaObject(a) && isVanillaObject(b)) {
+      merged = {};
+    } else if (a instanceof Array && b instanceof Array) {
+      merged = [];
+    } else {
+      // Otherwise there's no merging to do -- just replace a w/ b.
       return b;
     }
 
-    // if one is an array, make it an array
-    merged = Array.isArray(a) || Array.isArray(b) ? [] : {};
     for (prop in a) {
       merged[prop] = mergeObjects(a[prop], b[prop]);
     }
@@ -3956,6 +3964,20 @@
       }
     }
     return merged;
+  }
+
+  /**
+   * Checks whether an object is a "vanilla" object, i.e. {'foo': 'bar'} as
+   * opposed to an array, date, etc.
+   *
+   * @private
+   * @examples
+   * isVanillaObject({foo: 'bar'}); // => true
+   * isVanillaObject(new Date());   // => false
+   * isVanillaObject([1, 2, 3]);    // => false
+   */
+  function isVanillaObject(object) {
+    return object && object.constructor === Object;
   }
 
   /**
