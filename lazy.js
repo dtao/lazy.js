@@ -1428,10 +1428,10 @@
    *
    * var numbers = [1, 2, 3, 4, 5];
    *
-   * Lazy(numbers).groupBy(oddOrEven)                        // sequence: { odd: [1, 3, 5], even: [2, 4] }
-   * Lazy(numbers).groupBy(oddOrEven).get("odd")             // => [1, 3, 5]
-   * Lazy(numbers).groupBy(oddOrEven).get("foo")             // => undefined
-   * Lazy(numbers).groupBy(oddOrEven, square).get("even")    // => [4, 16]
+   * Lazy(numbers).groupBy(oddOrEven)                     // sequence: { odd: [1, 3, 5], even: [2, 4] }
+   * Lazy(numbers).groupBy(oddOrEven).get("odd")          // => [1, 3, 5]
+   * Lazy(numbers).groupBy(oddOrEven).get("foo")          // => undefined
+   * Lazy(numbers).groupBy(oddOrEven, square).get("even") // => [4, 16]
    *
    * Lazy([
    *   { name: 'toString' },
@@ -1482,7 +1482,7 @@
    * var bob  = people[0],
    *     fred = people[1];
    *
-   * Lazy(people).indexBy('name') // sequence: { 'Bob': bob, 'Fred': fred }
+   * Lazy(people).indexBy('name')        // sequence: { 'Bob': bob, 'Fred': fred }
    * Lazy(people).indexBy('name', 'age') // sequence: { 'Bob': 25, 'Fred': 34 }
    */
   Sequence.prototype.indexBy = function(keyFn, valFn) {
