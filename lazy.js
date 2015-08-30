@@ -4441,6 +4441,11 @@
     this.parent = parent;
     this.start  = Math.max(0, start);
     this.stop   = stop;
+    Object.defineProperty(this, "source", {
+      get: function() {
+        return this.toString();
+      }
+    });
   }
 
   StringSegment.prototype = new StringLikeSequence();
