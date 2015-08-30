@@ -205,6 +205,15 @@ section.method h3 {
   font-weight: normal;
 }
 
+section.method h1 .aliases {
+  font-size: 40%;
+  color: #888;
+}
+
+section.method h1 .aliases .alias:not(:last-child):after {
+  content: ", ";
+}
+
 section.method h2 {
   font-size: 34px;
 }

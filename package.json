@@ -27,7 +27,7 @@
   ],
   "devDependencies": {
     "JSONStream": ">= 0.7.1",
-    "autodoc": ">= 0.6.2",
+    "autodoc": ">= 0.6.3",
     "benchmark": "1.0.0",
     "deft": ">= 0.2.0",
     "jasmine-async": "*",

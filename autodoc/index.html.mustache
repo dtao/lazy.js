@@ -68,6 +68,14 @@
                     <h1>
                         {{shortName}}
                         <small>{{name}}</small>
+                        {{#aliases.length}}
+                        <div class="aliases">
+                            aliases:
+                            {{#aliases}}
+                            <span class="alias">{{.}}</span>
+                            {{/aliases}}
+                        </div>
+                        {{/aliases.length}}
                     </h1>
 
                     {{{description}}}
