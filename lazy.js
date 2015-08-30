@@ -4441,11 +4441,6 @@
     this.parent = parent;
     this.start  = Math.max(0, start);
     this.stop   = stop;
-    Object.defineProperty(this, "source", {
-      get: function() {
-        return this.toString();
-      }
-    });
   }
 
   StringSegment.prototype = new StringLikeSequence();
@@ -4709,21 +4704,21 @@
    * Lazy("hello").match(/xyz/)          // sequence: []
    */
   StringLikeSequence.prototype.match = function match(pattern) {
-    return new StringMatchSequence(this.source, pattern);
+    return new StringMatchSequence(this, pattern);
   };
 
   /**
    * @constructor
    */
-  function StringMatchSequence(source, pattern) {
-    this.source = source;
+  function StringMatchSequence(parent, pattern) {
+    this.parent = parent;
     this.pattern = pattern;
   }
 
   StringMatchSequence.prototype = new Sequence();
 
   StringMatchSequence.prototype.getIterator = function getIterator() {
-    return new StringMatchIterator(this.source, this.pattern);
+    return new StringMatchIterator(this.parent.toString(), this.pattern);
   };
 
   /**
@@ -4759,30 +4754,32 @@
    * Lazy("bah bah\tblack  sheep").split(/\s+/) // sequence: ["bah", "bah", "black", "sheep"]
    */
   StringLikeSequence.prototype.split = function split(delimiter) {
-    return new SplitStringSequence(this.source, delimiter);
+    return new SplitStringSequence(this, delimiter);
   };
 
   /**
    * @constructor
    */
-  function SplitStringSequence(source, pattern) {
-    this.source = source;
+  function SplitStringSequence(parent, pattern) {
+    this.parent = parent;
     this.pattern = pattern;
   }
 
   SplitStringSequence.prototype = new Sequence();
 
   SplitStringSequence.prototype.getIterator = function getIterator() {
+    var source = this.parent.toString();
+
     if (this.pattern instanceof RegExp) {
       if (this.pattern.source === "" || this.pattern.source === "(?:)") {
-        return new CharIterator(this.source);
+        return new CharIterator(source);
       } else {
-        return new SplitWithRegExpIterator(this.source, this.pattern);
+        return new SplitWithRegExpIterator(source, this.pattern);
       }
     } else if (this.pattern === "") {
-      return new CharIterator(this.source);
+      return new CharIterator(source);
     } else {
-      return new SplitWithStringIterator(this.source, this.pattern);
+      return new SplitWithStringIterator(source, this.pattern);
     }
   };
 
@@ -4880,6 +4877,10 @@
 
   StringWrapper.prototype.length = function length() {
     return this.source.length;
+  };
+
+  StringWrapper.prototype.toString = function toString() {
+    return this.source;
   };
 
   /**

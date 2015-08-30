@@ -20,6 +20,7 @@ describe("StringLikeSequence", function() {
       var result = Lazy("hello").first(3).toString();
       expect(result).toEqual("hel");
     });
+
     it("returns again a StringLikeSequence and methods like split work",function() {
       var result = Lazy("hello").first(3).split(",").toArray();
       expect(result).toEqual(["hel"]);
