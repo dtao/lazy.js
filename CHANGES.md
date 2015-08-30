@@ -3,7 +3,18 @@ Lazy.js Changelog
 
 This file includes at least a partial list of the major changes in each version.
 
+v0.4.1
+------
+
+- dropped support for node 0.8
+- Lazy is now exposed as a UMD module
+- added value transform function to `groupBy`/`indexBy` ([#97](https://github.com/dtao/lazy.js/pull/97))
+- fixed biased implementation of `shuffle` (see [#142](https://github.com/dtao/lazy.js/pull/142))
+- fixed bug where `split` couldn't be called on `StringSegments` (see [#123](https://github.com/dtao/lazy.js/pull/123))
+- fixed `merge` to better handle arrays, dates, and other object types (see [#154](https://github.com/dtao/lazy.js/pull/154))
+
 v0.4.0
+------
 
 - now `Lazy.AsyncHandle` implements the Promises/A+ specification! (see [#71](https://github.com/dtao/lazy.js/issues/71))
 - made `Sequence#get` available to all sequences, not just `ArrayLikeSequence`s (see [#106](https://github.com/dtao/lazy.js/issues/106))
