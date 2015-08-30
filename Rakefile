@@ -34,7 +34,7 @@ task :build => [ 'lazy.js' ] do |task|
   }
 end
 
-desc "Update the library version in package.json, bower.json, and component.json"
+desc "Update the library version in package.json and component.json"
 task :update_version do
   if (version = ENV['VERSION']).nil?
     puts "Set the VERSION environment variable for this Rake task."
@@ -42,7 +42,6 @@ task :update_version do
   end
 
   update_json('package.json', { 'version' => version })
-  update_json('bower.json', { 'version' => version })
   update_json('component.json', { 'version' => version })
 end
 
