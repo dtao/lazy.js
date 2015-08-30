@@ -3,7 +3,7 @@ Lazy.js Changelog
 
 This file includes at least a partial list of the major changes in each version.
 
-v0.4.1
+v0.4.2
 ------
 
 - dropped support for node 0.8
