@@ -1040,8 +1040,8 @@
     var count = this.count,
         i     = 0;
 
+    var result;
     var handle = this.parent.each(function(e) {
-      var result;
       if (i < count) { result = fn(e, i++); }
       if (i >= count) { return false; }
       return result;
@@ -1051,7 +1051,7 @@
       return handle;
     }
 
-    return i === count;
+    return i === count && result !== false;
   };
 
   /**
