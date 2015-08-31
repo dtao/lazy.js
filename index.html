@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>Lazy.js - v0.4.0</title>
+  <title>Lazy.js - v0.4.2</title>
 
   <link href="stylesheets/all.css" media="screen" rel="stylesheet" type="text/css" />
   <script src="javascripts/all.js" type="text/javascript"></script>
@@ -36,6 +36,8 @@
   
   <script src="javascripts/lib/spec/max_spec.js" type="text/javascript"></script>
   
+  <script src="javascripts/lib/spec/merge_spec.js" type="text/javascript"></script>
+  
   <script src="javascripts/lib/spec/min_spec.js" type="text/javascript"></script>
   
   <script src="javascripts/lib/spec/reverse_spec.js" type="text/javascript"></script>
@@ -64,7 +66,7 @@
 
 <body>
   <header>
-    <h1><a href="./">lazy.js</a> <small class="version">0.4.0</small></h1>
+    <h1><a href="./">lazy.js</a> <small class="version">0.4.2</small></h1>
     <a href="https://github.com/dtao/lazy.js" class="github-ribbon"></a>
   </header>
 
@@ -82,6 +84,7 @@
     <h1>Like Underscore, but lazier</h1>
 
 <p class="sharing"><a href="https://travis-ci.org/dtao/lazy.js"><img src="https://travis-ci.org/dtao/lazy.js.svg?branch=master" alt="Build Status"></a>
+<!-- GitHub stars & forks -->
 <iframe src="http://ghbtns.com/github-btn.html?user=dtao&amp;repo=lazy.js&amp;type=watch&amp;count=true" allowtransparency="true" frameborder="0" scrolling="0" height="20" style="width: 100px;">
 </iframe>
 <iframe src="http://ghbtns.com/github-btn.html?user=dtao&amp;repo=lazy.js&amp;type=fork&amp;count=true" allowtransparency="true" frameborder="0" scrolling="0" height="20">
@@ -247,6 +250,9 @@
 <span class="nx">asyncSequence</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
   <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getMilliseconds</span><span class="p">()</span> <span class="o">+</span> <span class="s2">": "</span> <span class="o">+</span> <span class="nx">e</span><span class="p">);</span>
 <span class="p">});</span>
+
+<span class="kd">function</span> <span class="nx">inc</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="p">}</span>
+<span class="kd">function</span> <span class="nx">isEven</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">0</span><span class="p">;</span> <span class="p">}</span>
 </pre></div>
 <p>All right... what else?</p>
 

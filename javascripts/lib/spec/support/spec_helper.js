@@ -164,6 +164,16 @@
               var result = getResult().each(alwaysFalse);
               expect(result).toBe(false);
             });
+
+            it('returns false if the last iteration returns false', function() {
+              var length = getResult().value().length;
+              var result = getResult().each(function(e, i) {
+                if (i === length - 1) {
+                  return false;
+                }
+              });
+              expect(result).toBe(false);
+            });
           });
 
           describe('indexed access', function() {

@@ -5,7 +5,8 @@ describe("shuffle", function() {
   // probabilistic test.
   it("shuffles the collection", function() {
     var shuffledCollections = Lazy.range(10)
-      .map(function() { return Lazy(people).shuffle().toArray(); });
+      .map(function() { return Lazy(people).shuffle().toArray(); })
+      .memoize();
 
     var firstResult = shuffledCollections.first();
     shuffledCollections.each(function(collection) {
@@ -32,6 +33,16 @@ describe("shuffle", function() {
     for (var i = 0; i < people.length; ++i) {
       expect(differences[i]).toBeGreaterThan(0, 'All elements at ' + i + ' are the same!');
     }
+  });
+
+  it("is unbiased", function() {
+    var firsts = Lazy.range(100)
+      .map(function() { return Lazy(people).shuffle().first(); })
+      .memoize();
+
+    expect(firsts.uniq().sortBy(Person.getName)).toComprise([
+      adam, daniel, david, happy, lauren, mary
+    ]);
   });
 
   it("passes an index along with each element", function() {

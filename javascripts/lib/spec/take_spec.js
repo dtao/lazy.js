@@ -13,7 +13,7 @@ comprehensiveSequenceTest('first', {
 describe("take", function() {
   it("doesn't prematurely get the first element when given 0", function() {
     expect(Lazy.generate(function (i) {return i;}).take(0).toArray()).toEqual([]);
-  })
+  });
 });
 
 describe("takeWhile", function() {
