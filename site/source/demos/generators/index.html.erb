@@ -48,25 +48,21 @@
 
         <div id="workspace">
             <div id="generator-wrapper">
-                <textarea id="generator">function *fibonacci() {
-  var x = 1, y = 1, z;
-  
-  while (true) {
-    yield x;
-    z = x + y;
-    x = y;
-    y = z;
+                <textarea id="generator">function generateRandoms(min, max) {
+  return function *randoms() {
+    while (true) {
+      yield min + Math.floor(Math.random() * (max - min));
+    };
   };
 }
 </textarea>
             </div>
 
             <div id="sequence-wrapper">
-                <textarea id="sequence">// First 25 values of the Fibonacci sequence
-// over 100
-Lazy(fibonacci)
-  .filter(function(x) { return x > 100; })
-  .take(25);
+                <textarea id="sequence">// The numbers from 1-100 in random order
+Lazy(generateRandoms(1, 100))
+  .uniq()
+  .take(100);
 </textarea>
             </div>
 
