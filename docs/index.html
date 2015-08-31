@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Lazy.js API Docs - v0.4.0</title>
+    <title>Lazy.js API Docs - v0.4.2</title>
 
     <link rel="stylesheet" type="text/css" href="../stylesheets/docs.css" />
 
@@ -22,7 +22,7 @@
 <body>
     <main>
         <header>
-            <h1><a href="../">Lazy.js <small class="version">0.4.0</small></a></h1>
+            <h1><a href="../">Lazy.js <small class="version">0.4.2</small></a></h1>
         </header>
 
         <!-- Notification area for failing specs -->
@@ -339,7 +339,7 @@ if (!(actual instanceof Lazy.ArrayLikeSequence)) {
     spec.actual       = 'Lazy([1, 2, 4])';
     spec.expected     = 'instanceof Lazy.ArrayLikeSequence';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 86;
+    spec.absoluteLine = 94;
   }());
   (function() {
     var spec = it('Lazy({ foo: \"bar\" }) => instanceof Lazy.ObjectLikeSequence', function() {
@@ -355,7 +355,7 @@ if (!(actual instanceof Lazy.ObjectLikeSequence)) {
     spec.actual       = 'Lazy({ foo: \"bar\" })';
     spec.expected     = 'instanceof Lazy.ObjectLikeSequence';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 87;
+    spec.absoluteLine = 95;
   }());
   (function() {
     var spec = it('Lazy(\"hello, world!\") => instanceof Lazy.StringLikeSequence', function() {
@@ -371,7 +371,7 @@ if (!(actual instanceof Lazy.StringLikeSequence)) {
     spec.actual       = 'Lazy(\"hello, world!\")';
     spec.expected     = 'instanceof Lazy.StringLikeSequence';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 88;
+    spec.absoluteLine = 96;
   }());
   (function() {
     var spec = it('Lazy() => sequence: []', function() {
@@ -385,7 +385,7 @@ expect(actual.value()).toEqual([]);
     spec.actual       = 'Lazy()';
     spec.expected     = 'sequence: []';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 89;
+    spec.absoluteLine = 97;
   }());
   (function() {
     var spec = it('Lazy(null) => sequence: []', function() {
@@ -399,7 +399,7 @@ expect(actual.value()).toEqual([]);
     spec.actual       = 'Lazy(null)';
     spec.expected     = 'sequence: []';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 90;
+    spec.absoluteLine = 98;
   }());
 });
                     </script>
@@ -566,7 +566,7 @@ eventEmitter.triggerEvent('bar');
     spec.actual       = 'events';
     spec.expected     = '[\'foo\', \'bar\']';
     spec.lineNumber   = 27;
-    spec.absoluteLine = 5613;
+    spec.absoluteLine = 5696;
   }());
 });
                     </script>
@@ -666,7 +666,7 @@ if (!(actual instanceof Lazy.GeneratedSequence)) {
     spec.actual       = 'randomNumbers';
     spec.expected     = 'instanceof Lazy.GeneratedSequence';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 5659;
+    spec.absoluteLine = 5742;
   }());
   (function() {
     var spec = it('randomNumbers.length() => undefined', function() {
@@ -680,7 +680,7 @@ if (!(actual instanceof Lazy.GeneratedSequence)) {
     spec.actual       = 'randomNumbers.length()';
     spec.expected     = 'undefined';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 5660;
+    spec.absoluteLine = 5743;
   }());
   (function() {
     var spec = it('countingNumbers => sequence: [1, 2, 3, 4, 5]', function() {
@@ -694,7 +694,7 @@ expect(actual.value()).toEqual([1, 2, 3, 4, 5]);
     spec.actual       = 'countingNumbers';
     spec.expected     = 'sequence: [1, 2, 3, 4, 5]';
     spec.lineNumber   = 5;
-    spec.absoluteLine = 5661;
+    spec.absoluteLine = 5744;
   }());
   (function() {
     var spec = it('countingNumbers.length() => 5', function() {
@@ -708,7 +708,7 @@ expect(actual.value()).toEqual([1, 2, 3, 4, 5]);
     spec.actual       = 'countingNumbers.length()';
     spec.expected     = '5';
     spec.lineNumber   = 6;
-    spec.absoluteLine = 5662;
+    spec.absoluteLine = 5745;
   }());
 });
                     </script>
@@ -806,7 +806,7 @@ expect(actual.value()).toEqual([0, 1, 2]);
     spec.actual       = 'Lazy.range(3)';
     spec.expected     = 'sequence: [0, 1, 2]';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 5677;
+    spec.absoluteLine = 5760;
   }());
   (function() {
     var spec = it('Lazy.range(1, 4) => sequence: [1, 2, 3]', function() {
@@ -820,7 +820,7 @@ expect(actual.value()).toEqual([1, 2, 3]);
     spec.actual       = 'Lazy.range(1, 4)';
     spec.expected     = 'sequence: [1, 2, 3]';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 5678;
+    spec.absoluteLine = 5761;
   }());
   (function() {
     var spec = it('Lazy.range(2, 10, 2) => sequence: [2, 4, 6, 8]', function() {
@@ -834,7 +834,7 @@ expect(actual.value()).toEqual([2, 4, 6, 8]);
     spec.actual       = 'Lazy.range(2, 10, 2)';
     spec.expected     = 'sequence: [2, 4, 6, 8]';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 5679;
+    spec.absoluteLine = 5762;
   }());
   (function() {
     var spec = it('Lazy.range(5, 1, 2) => sequence: []', function() {
@@ -848,7 +848,7 @@ expect(actual.value()).toEqual([]);
     spec.actual       = 'Lazy.range(5, 1, 2)';
     spec.expected     = 'sequence: []';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 5680;
+    spec.absoluteLine = 5763;
   }());
   (function() {
     var spec = it('Lazy.range(5, 15, -2) => sequence: []', function() {
@@ -862,7 +862,7 @@ expect(actual.value()).toEqual([]);
     spec.actual       = 'Lazy.range(5, 15, -2)';
     spec.expected     = 'sequence: []';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 5681;
+    spec.absoluteLine = 5764;
   }());
   (function() {
     var spec = it('Lazy.range(3, 10, 3) => sequence: [3, 6, 9]', function() {
@@ -876,7 +876,7 @@ expect(actual.value()).toEqual([3, 6, 9]);
     spec.actual       = 'Lazy.range(3, 10, 3)';
     spec.expected     = 'sequence: [3, 6, 9]';
     spec.lineNumber   = 5;
-    spec.absoluteLine = 5682;
+    spec.absoluteLine = 5765;
   }());
   (function() {
     var spec = it('Lazy.range(5, 2) => sequence: [5, 4, 3]', function() {
@@ -890,7 +890,7 @@ expect(actual.value()).toEqual([5, 4, 3]);
     spec.actual       = 'Lazy.range(5, 2)';
     spec.expected     = 'sequence: [5, 4, 3]';
     spec.lineNumber   = 6;
-    spec.absoluteLine = 5683;
+    spec.absoluteLine = 5766;
   }());
   (function() {
     var spec = it('Lazy.range(7, 2, -2) => sequence: [7, 5, 3]', function() {
@@ -904,7 +904,7 @@ expect(actual.value()).toEqual([7, 5, 3]);
     spec.actual       = 'Lazy.range(7, 2, -2)';
     spec.expected     = 'sequence: [7, 5, 3]';
     spec.lineNumber   = 7;
-    spec.absoluteLine = 5684;
+    spec.absoluteLine = 5767;
   }());
   (function() {
     var spec = it('Lazy.range(3, 5, 0) => sequence: []', function() {
@@ -918,7 +918,7 @@ expect(actual.value()).toEqual([]);
     spec.actual       = 'Lazy.range(3, 5, 0)';
     spec.expected     = 'sequence: []';
     spec.lineNumber   = 8;
-    spec.absoluteLine = 5685;
+    spec.absoluteLine = 5768;
   }());
 });
                     </script>
@@ -1010,7 +1010,7 @@ expect(actual.value()).toEqual(["hi", "hi", "hi"]);
     spec.actual       = 'Lazy.repeat(\"hi\", 3)';
     spec.expected     = 'sequence: [\"hi\", \"hi\", \"hi\"]';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 5715;
+    spec.absoluteLine = 5798;
   }());
   (function() {
     var spec = it('Lazy.repeat(\"young\") => instanceof Lazy.GeneratedSequence', function() {
@@ -1026,7 +1026,7 @@ if (!(actual instanceof Lazy.GeneratedSequence)) {
     spec.actual       = 'Lazy.repeat(\"young\")';
     spec.expected     = 'instanceof Lazy.GeneratedSequence';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 5716;
+    spec.absoluteLine = 5799;
   }());
   (function() {
     var spec = it('Lazy.repeat(\"young\").length() => undefined', function() {
@@ -1040,7 +1040,7 @@ if (!(actual instanceof Lazy.GeneratedSequence)) {
     spec.actual       = 'Lazy.repeat(\"young\").length()';
     spec.expected     = 'undefined';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 5717;
+    spec.absoluteLine = 5800;
   }());
   (function() {
     var spec = it('Lazy.repeat(\"young\").take(3) => sequence: [\"young\", \"young\", \"young\"]', function() {
@@ -1054,7 +1054,7 @@ expect(actual.value()).toEqual(["young", "young", "young"]);
     spec.actual       = 'Lazy.repeat(\"young\").take(3)';
     spec.expected     = 'sequence: [\"young\", \"young\", \"young\"]';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 5718;
+    spec.absoluteLine = 5801;
   }());
 });
                     </script>
@@ -1157,7 +1157,7 @@ describe('strict', function() {
     spec.actual       = 'Strict()';
     spec.expected     = 'throws';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 134;
+    spec.absoluteLine = 142;
   }());
   (function() {
     var spec = it('Strict(null) => throws', function() {
@@ -1169,7 +1169,7 @@ describe('strict', function() {
     spec.actual       = 'Strict(null)';
     spec.expected     = 'throws';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 135;
+    spec.absoluteLine = 143;
   }());
   (function() {
     var spec = it('Strict(true) => throws', function() {
@@ -1181,7 +1181,7 @@ describe('strict', function() {
     spec.actual       = 'Strict(true)';
     spec.expected     = 'throws';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 136;
+    spec.absoluteLine = 144;
   }());
   (function() {
     var spec = it('Strict(5) => throws', function() {
@@ -1193,7 +1193,7 @@ describe('strict', function() {
     spec.actual       = 'Strict(5)';
     spec.expected     = 'throws';
     spec.lineNumber   = 5;
-    spec.absoluteLine = 137;
+    spec.absoluteLine = 145;
   }());
   (function() {
     var spec = it('Strict([1, 2, 3]) => instanceof Lazy.ArrayLikeSequence', function() {
@@ -1209,7 +1209,7 @@ if (!(actual instanceof Lazy.ArrayLikeSequence)) {
     spec.actual       = 'Strict([1, 2, 3])';
     spec.expected     = 'instanceof Lazy.ArrayLikeSequence';
     spec.lineNumber   = 6;
-    spec.absoluteLine = 138;
+    spec.absoluteLine = 146;
   }());
   (function() {
     var spec = it('Strict({ foo: \"bar\" }) => instanceof Lazy.ObjectLikeSequence', function() {
@@ -1225,7 +1225,7 @@ if (!(actual instanceof Lazy.ObjectLikeSequence)) {
     spec.actual       = 'Strict({ foo: \"bar\" })';
     spec.expected     = 'instanceof Lazy.ObjectLikeSequence';
     spec.lineNumber   = 7;
-    spec.absoluteLine = 139;
+    spec.absoluteLine = 147;
   }());
   (function() {
     var spec = it('Strict(\"hello, world!\") => instanceof Lazy.StringLikeSequence', function() {
@@ -1241,7 +1241,7 @@ if (!(actual instanceof Lazy.StringLikeSequence)) {
     spec.actual       = 'Strict(\"hello, world!\")';
     spec.expected     = 'instanceof Lazy.StringLikeSequence';
     spec.lineNumber   = 8;
-    spec.absoluteLine = 140;
+    spec.absoluteLine = 148;
   }());
   (function() {
     var spec = it('Strict.range(3) => sequence: [0, 1, 2]', function() {
@@ -1255,7 +1255,7 @@ expect(actual.value()).toEqual([0, 1, 2]);
     spec.actual       = 'Strict.range(3)';
     spec.expected     = 'sequence: [0, 1, 2]';
     spec.lineNumber   = 11;
-    spec.absoluteLine = 143;
+    spec.absoluteLine = 151;
   }());
   (function() {
     var spec = it('Strict.generate(Date.now) => instanceof Lazy.GeneratedSequence', function() {
@@ -1271,7 +1271,7 @@ if (!(actual instanceof Lazy.GeneratedSequence)) {
     spec.actual       = 'Strict.generate(Date.now)';
     spec.expected     = 'instanceof Lazy.GeneratedSequence';
     spec.lineNumber   = 12;
-    spec.absoluteLine = 144;
+    spec.absoluteLine = 152;
   }());
 });
                     </script>
@@ -1474,7 +1474,7 @@ expect(logger.calls.length).toEqual(3,
     spec.actual       = 'Lazy([1, 2, 3]).verbose(logger).each(Lazy.noop)';
     spec.expected     = 'calls logger 3 times';
     spec.lineNumber   = 16;
-    spec.absoluteLine = 273;
+    spec.absoluteLine = 281;
   }());
 });
                     </script>
@@ -1571,7 +1571,7 @@ runs(function() {
     spec.actual       = 'Lazy([1, 2, 3]).async(100).each(fn)';
     spec.expected     = 'calls fn 3 times asynchronously';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 2502;
+    spec.absoluteLine = 2544;
   }());
 });
                     </script>
@@ -1660,7 +1660,7 @@ expect(actual.value()).toEqual([]);
     spec.actual       = 'Lazy([]).chunk(2)';
     spec.expected     = 'sequence: []';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 2249;
+    spec.absoluteLine = 2291;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).chunk(2) => sequence: [[1, 2], [3]]', function() {
@@ -1674,7 +1674,7 @@ expect(actual.value()).toEqual([[1, 2], [3]]);
     spec.actual       = 'Lazy([1, 2, 3]).chunk(2)';
     spec.expected     = 'sequence: [[1, 2], [3]]';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 2250;
+    spec.absoluteLine = 2292;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).chunk(1) => sequence: [[1], [2], [3]]', function() {
@@ -1688,7 +1688,7 @@ expect(actual.value()).toEqual([[1], [2], [3]]);
     spec.actual       = 'Lazy([1, 2, 3]).chunk(1)';
     spec.expected     = 'sequence: [[1], [2], [3]]';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 2251;
+    spec.absoluteLine = 2293;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).chunk(4) => sequence: [[1, 2, 3]]', function() {
@@ -1702,7 +1702,7 @@ expect(actual.value()).toEqual([[1, 2, 3]]);
     spec.actual       = 'Lazy([1, 2, 3]).chunk(4)';
     spec.expected     = 'sequence: [[1, 2, 3]]';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 2252;
+    spec.absoluteLine = 2294;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).chunk(0) => throws', function() {
@@ -1714,7 +1714,7 @@ expect(actual.value()).toEqual([[1, 2, 3]]);
     spec.actual       = 'Lazy([1, 2, 3]).chunk(0)';
     spec.expected     = 'throws';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 2253;
+    spec.absoluteLine = 2295;
   }());
 });
                     </script>
@@ -1790,7 +1790,7 @@ expect(actual.value()).toEqual(["foo", "bar"]);
     spec.actual       = 'Lazy([\"foo\", null, \"bar\", undefined]).compact()';
     spec.expected     = 'sequence: [\"foo\", \"bar\"]';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 1725;
+    spec.absoluteLine = 1767;
   }());
 });
                     </script>
@@ -1879,7 +1879,7 @@ expect(actual.value()).toEqual([1, 2, 3, 4, 5, 6]);
     spec.actual       = 'Lazy(left).concat(right)';
     spec.expected     = 'sequence: [1, 2, 3, 4, 5, 6]';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 932;
+    spec.absoluteLine = 952;
   }());
   (function() {
     var spec = it('Lazy(left).concat(Lazy(right)) => sequence: [1, 2, 3, 4, 5, 6]', function() {
@@ -1893,7 +1893,7 @@ expect(actual.value()).toEqual([1, 2, 3, 4, 5, 6]);
     spec.actual       = 'Lazy(left).concat(Lazy(right))';
     spec.expected     = 'sequence: [1, 2, 3, 4, 5, 6]';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 933;
+    spec.absoluteLine = 953;
   }());
   (function() {
     var spec = it('Lazy(left).concat(right, [7, 8]) => sequence: [1, 2, 3, 4, 5, 6, 7, 8]', function() {
@@ -1907,7 +1907,7 @@ expect(actual.value()).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
     spec.actual       = 'Lazy(left).concat(right, [7, 8])';
     spec.expected     = 'sequence: [1, 2, 3, 4, 5, 6, 7, 8]';
     spec.lineNumber   = 5;
-    spec.absoluteLine = 934;
+    spec.absoluteLine = 954;
   }());
 });
                     </script>
@@ -2001,7 +2001,7 @@ expect(actual.value()).toEqual([]);
     spec.actual       = 'Lazy([]).consecutive(2)';
     spec.expected     = 'sequence: []';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 2224;
+    spec.absoluteLine = 2266;
   }());
   (function() {
     var spec = it('Lazy([1]).consecutive(2) => sequence: []', function() {
@@ -2015,7 +2015,7 @@ expect(actual.value()).toEqual([]);
     spec.actual       = 'Lazy([1]).consecutive(2)';
     spec.expected     = 'sequence: []';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 2225;
+    spec.absoluteLine = 2267;
   }());
   (function() {
     var spec = it('Lazy([1, 2]).consecutive(2) => sequence: [[1, 2]]', function() {
@@ -2029,7 +2029,7 @@ expect(actual.value()).toEqual([[1, 2]]);
     spec.actual       = 'Lazy([1, 2]).consecutive(2)';
     spec.expected     = 'sequence: [[1, 2]]';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 2226;
+    spec.absoluteLine = 2268;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).consecutive(2) => sequence: [[1, 2], [2, 3]]', function() {
@@ -2043,7 +2043,7 @@ expect(actual.value()).toEqual([[1, 2], [2, 3]]);
     spec.actual       = 'Lazy([1, 2, 3]).consecutive(2)';
     spec.expected     = 'sequence: [[1, 2], [2, 3]]';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 2227;
+    spec.absoluteLine = 2269;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).consecutive(0) => sequence: [[]]', function() {
@@ -2057,7 +2057,7 @@ expect(actual.value()).toEqual([[]]);
     spec.actual       = 'Lazy([1, 2, 3]).consecutive(0)';
     spec.expected     = 'sequence: [[]]';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 2228;
+    spec.absoluteLine = 2270;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).consecutive(1) => sequence: [[1], [2], [3]]', function() {
@@ -2071,7 +2071,7 @@ expect(actual.value()).toEqual([[1], [2], [3]]);
     spec.actual       = 'Lazy([1, 2, 3]).consecutive(1)';
     spec.expected     = 'sequence: [[1], [2], [3]]';
     spec.lineNumber   = 5;
-    spec.absoluteLine = 2229;
+    spec.absoluteLine = 2271;
   }());
 });
                     </script>
@@ -2155,7 +2155,7 @@ describe('contains', function() {
     spec.actual       = 'Lazy(numbers).contains(15)';
     spec.expected     = 'true';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 2113;
+    spec.absoluteLine = 2155;
   }());
   (function() {
     var spec = it('Lazy(numbers).contains(13) => false', function() {
@@ -2169,7 +2169,7 @@ describe('contains', function() {
     spec.actual       = 'Lazy(numbers).contains(13)';
     spec.expected     = 'false';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 2114;
+    spec.absoluteLine = 2156;
   }());
 });
                     </script>
@@ -2266,7 +2266,7 @@ expect(actual.value()).toEqual({ odd: 3, even: 2 });
     spec.actual       = 'Lazy(numbers).countBy(oddOrEven)';
     spec.expected     = 'sequence: { odd: 3, even: 2 }';
     spec.lineNumber   = 6;
-    spec.absoluteLine = 1495;
+    spec.absoluteLine = 1529;
   }());
   (function() {
     var spec = it('Lazy(numbers).countBy(oddOrEven).get(\"odd\") => 3', function() {
@@ -2280,7 +2280,7 @@ expect(actual.value()).toEqual({ odd: 3, even: 2 });
     spec.actual       = 'Lazy(numbers).countBy(oddOrEven).get(\"odd\")';
     spec.expected     = '3';
     spec.lineNumber   = 7;
-    spec.absoluteLine = 1496;
+    spec.absoluteLine = 1530;
   }());
   (function() {
     var spec = it('Lazy(numbers).countBy(oddOrEven).get(\"foo\") => undefined', function() {
@@ -2294,7 +2294,7 @@ expect(actual.value()).toEqual({ odd: 3, even: 2 });
     spec.actual       = 'Lazy(numbers).countBy(oddOrEven).get(\"foo\")';
     spec.expected     = 'undefined';
     spec.lineNumber   = 8;
-    spec.absoluteLine = 1497;
+    spec.absoluteLine = 1531;
   }());
 });
                     </script>
@@ -2303,6 +2303,10 @@ expect(actual.value()).toEqual({ odd: 3, even: 2 });
                     <h1>
                         dropWhile
                         <small>Sequence#dropWhile</small>
+                        <div class="aliases">
+                            aliases:
+                            <span class="alias">skipWhile</span>
+                        </div>
                     </h1>
 
                     <p>Creates a new sequence comprising the elements from this sequence <em>after</em>
@@ -2363,6 +2367,10 @@ function isNegative(x) { return x < 0; }
                     <h1>
                         each
                         <small>Sequence#each</small>
+                        <div class="aliases">
+                            aliases:
+                            <span class="alias">forEach</span>
+                        </div>
                     </h1>
 
                     <p>Iterates over this sequence and executes a function for every element.</p>
@@ -2407,6 +2415,13 @@ function isNegative(x) { return x < 0; }
                             </tbody>
 
                             <tfoot>
+                                <tr>
+                                    <td>returns</td>
+                                    <td>boolean</td>
+                                    <td><p><code>true</code> if the iteration evaluated the entire sequence,
+    or <code>false</code> if iteration was ended early.</p>
+</td>
+                                </tr>
                             </tfoot>
                         </table>
                     </div>
@@ -2441,7 +2456,7 @@ expect(fn.calls.length).toEqual(4,
     spec.actual       = 'Lazy([1, 2, 3, 4]).each(fn)';
     spec.expected     = 'calls fn 4 times';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 555;
+    spec.absoluteLine = 571;
   }());
 });
                     </script>
@@ -2450,6 +2465,10 @@ expect(fn.calls.length).toEqual(4,
                     <h1>
                         every
                         <small>Sequence#every</small>
+                        <div class="aliases">
+                            aliases:
+                            <span class="alias">all</span>
+                        </div>
                     </h1>
 
                     <p>Checks whether every element in this sequence satisfies a given predicate.</p>
@@ -2538,7 +2557,7 @@ var objects = [{ foo: true }, { foo: false, bar: true }];
     spec.actual       = 'Lazy(numbers).every(isEven)';
     spec.expected     = 'false';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 1923;
+    spec.absoluteLine = 1965;
   }());
   (function() {
     var spec = it('Lazy(numbers).every(isPositive) => true', function() {
@@ -2552,7 +2571,7 @@ var objects = [{ foo: true }, { foo: false, bar: true }];
     spec.actual       = 'Lazy(numbers).every(isPositive)';
     spec.expected     = 'true';
     spec.lineNumber   = 5;
-    spec.absoluteLine = 1924;
+    spec.absoluteLine = 1966;
   }());
   (function() {
     var spec = it('Lazy(objects).all(\'foo\') => false', function() {
@@ -2566,7 +2585,7 @@ var objects = [{ foo: true }, { foo: false, bar: true }];
     spec.actual       = 'Lazy(objects).all(\'foo\')';
     spec.expected     = 'false';
     spec.lineNumber   = 6;
-    spec.absoluteLine = 1925;
+    spec.absoluteLine = 1967;
   }());
   (function() {
     var spec = it('Lazy(objects).all(\'bar\') => false', function() {
@@ -2580,7 +2599,7 @@ var objects = [{ foo: true }, { foo: false, bar: true }];
     spec.actual       = 'Lazy(objects).all(\'bar\')';
     spec.expected     = 'false';
     spec.lineNumber   = 7;
-    spec.absoluteLine = 1926;
+    spec.absoluteLine = 1968;
   }());
 });
                     </script>
@@ -2589,6 +2608,10 @@ var objects = [{ foo: true }, { foo: false, bar: true }];
                     <h1>
                         filter
                         <small>Sequence#filter</small>
+                        <div class="aliases">
+                            aliases:
+                            <span class="alias">select</span>
+                        </div>
                     </h1>
 
                     <p>Creates a new sequence whose values are the elements of this sequence which
@@ -2699,7 +2722,7 @@ expect(actual.value()).toEqual([2, 4, 6]);
     spec.actual       = 'Lazy(numbers).filter(isEven)';
     spec.expected     = 'sequence: [2, 4, 6]';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 713;
+    spec.absoluteLine = 733;
   }());
 });
 (function() {
@@ -2780,6 +2803,10 @@ var smArr = Lazy.range(10).toArray(),
                     <h1>
                         find
                         <small>Sequence#find</small>
+                        <div class="aliases">
+                            aliases:
+                            <span class="alias">detect</span>
+                        </div>
                     </h1>
 
                     <p>Seaches for the first element in the sequence satisfying a given predicate.</p>
@@ -2865,7 +2892,7 @@ var numbers = [5, 6, 7, 8, 9, 10];
     spec.actual       = 'Lazy(numbers).find(divisibleBy3)';
     spec.expected     = '6';
     spec.lineNumber   = 6;
-    spec.absoluteLine = 2360;
+    spec.absoluteLine = 2402;
   }());
   (function() {
     var spec = it('Lazy(numbers).find(isNegative) => undefined', function() {
@@ -2879,7 +2906,7 @@ var numbers = [5, 6, 7, 8, 9, 10];
     spec.actual       = 'Lazy(numbers).find(isNegative)';
     spec.expected     = 'undefined';
     spec.lineNumber   = 7;
-    spec.absoluteLine = 2361;
+    spec.absoluteLine = 2403;
   }());
 });
                     </script>
@@ -2966,7 +2993,7 @@ describe('findWhere', function() {
     spec.actual       = 'Lazy(words).findWhere({ 0: \"f\" });';
     spec.expected     = '\"foo\"';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 1171;
+    spec.absoluteLine = 1191;
   }());
   (function() {
     var spec = it('Lazy(words).findWhere({ 0: \"z\" }); => undefined', function() {
@@ -2980,7 +3007,7 @@ describe('findWhere', function() {
     spec.actual       = 'Lazy(words).findWhere({ 0: \"z\" });';
     spec.expected     = 'undefined';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 1172;
+    spec.absoluteLine = 1192;
   }());
 });
                     </script>
@@ -2989,6 +3016,11 @@ describe('findWhere', function() {
                     <h1>
                         first
                         <small>Sequence#first</small>
+                        <div class="aliases">
+                            aliases:
+                            <span class="alias">head</span>
+                            <span class="alias">take</span>
+                        </div>
                     </h1>
 
                     <p>Creates a new sequence comprising the first N elements from this sequence, OR
@@ -3077,7 +3109,7 @@ describe('first', function() {
     spec.actual       = 'Lazy.generate(powerOfTwo).first()';
     spec.expected     = '1';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 987;
+    spec.absoluteLine = 1007;
   }());
   (function() {
     var spec = it('Lazy.generate(powerOfTwo).first(5) => sequence: [1, 2, 4, 8, 16]', function() {
@@ -3091,7 +3123,7 @@ expect(actual.value()).toEqual([1, 2, 4, 8, 16]);
     spec.actual       = 'Lazy.generate(powerOfTwo).first(5)';
     spec.expected     = 'sequence: [1, 2, 4, 8, 16]';
     spec.lineNumber   = 5;
-    spec.absoluteLine = 988;
+    spec.absoluteLine = 1008;
   }());
   (function() {
     var spec = it('Lazy.generate(powerOfTwo).skip(2).first() => 4', function() {
@@ -3105,7 +3137,7 @@ expect(actual.value()).toEqual([1, 2, 4, 8, 16]);
     spec.actual       = 'Lazy.generate(powerOfTwo).skip(2).first()';
     spec.expected     = '4';
     spec.lineNumber   = 6;
-    spec.absoluteLine = 989;
+    spec.absoluteLine = 1009;
   }());
   (function() {
     var spec = it('Lazy.generate(powerOfTwo).skip(2).first(2) => sequence: [4, 8]', function() {
@@ -3119,7 +3151,7 @@ expect(actual.value()).toEqual([4, 8]);
     spec.actual       = 'Lazy.generate(powerOfTwo).skip(2).first(2)';
     spec.expected     = 'sequence: [4, 8]';
     spec.lineNumber   = 7;
-    spec.absoluteLine = 990;
+    spec.absoluteLine = 1010;
   }());
 });
                     </script>
@@ -3197,7 +3229,7 @@ expect(actual.value()).toEqual([1, 2, 3, 4, 5]);
     spec.actual       = 'Lazy([1, [2, 3], [4, [5]]]).flatten()';
     spec.expected     = 'sequence: [1, 2, 3, 4, 5]';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 1685;
+    spec.absoluteLine = 1727;
   }());
   (function() {
     var spec = it('Lazy([1, Lazy([2, 3])]).flatten() => sequence: [1, 2, 3]', function() {
@@ -3211,7 +3243,7 @@ expect(actual.value()).toEqual([1, 2, 3]);
     spec.actual       = 'Lazy([1, Lazy([2, 3])]).flatten()';
     spec.expected     = 'sequence: [1, 2, 3]';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 1686;
+    spec.absoluteLine = 1728;
   }());
 });
                     </script>
@@ -3369,7 +3401,7 @@ describe('getIterator', function() {
     spec.actual       = 'iterator.moveNext();';
     spec.expected     = 'true';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 321;
+    spec.absoluteLine = 329;
   }());
   (function() {
     var spec = it('iterator.current(); => 1', function() {
@@ -3383,7 +3415,7 @@ describe('getIterator', function() {
     spec.actual       = 'iterator.current();';
     spec.expected     = '1';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 322;
+    spec.absoluteLine = 330;
   }());
   (function() {
     var spec = it('iterator.moveNext(); => true', function() {
@@ -3397,7 +3429,7 @@ describe('getIterator', function() {
     spec.actual       = 'iterator.moveNext();';
     spec.expected     = 'true';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 323;
+    spec.absoluteLine = 331;
   }());
   (function() {
     var spec = it('iterator.current(); => 2', function() {
@@ -3411,7 +3443,7 @@ describe('getIterator', function() {
     spec.actual       = 'iterator.current();';
     spec.expected     = '2';
     spec.lineNumber   = 5;
-    spec.absoluteLine = 324;
+    spec.absoluteLine = 332;
   }());
   (function() {
     var spec = it('iterator.moveNext(); => false', function() {
@@ -3425,7 +3457,7 @@ describe('getIterator', function() {
     spec.actual       = 'iterator.moveNext();';
     spec.expected     = 'false';
     spec.lineNumber   = 6;
-    spec.absoluteLine = 325;
+    spec.absoluteLine = 333;
   }());
 });
                     </script>
@@ -3445,10 +3477,10 @@ the elements in this sequence with that key.</p>
                     <div class="signature">
                         <h3>Signature</h3>
 
-                        <pre><span class="line" data-line-no="0"><span class="cm-variable">Sequence</span>.<span class="cm-property">groupBy</span> = <span class="cm-keyword">function</span>(<span class="cm-def">keyFn</span>) { <span class="cm-comment"><a class="reveal-source" href="#source-Sequence-groupBy">/*...*/</a></span> }</span></pre>
+                        <pre><span class="line" data-line-no="0"><span class="cm-variable">Sequence</span>.<span class="cm-property">groupBy</span> = <span class="cm-keyword">function</span>(<span class="cm-def">keyFn</span>, <span class="cm-def">valFn</span>) { <span class="cm-comment"><a class="reveal-source" href="#source-Sequence-groupBy">/*...*/</a></span> }</span></pre>
 
-                        <pre class="function-source" id="source-Sequence-groupBy"><span class="line" data-line-no="0"><span class="cm-variable">Sequence</span>.<span class="cm-property">groupBy</span> = <span class="cm-keyword">function</span> <span class="cm-variable">groupBy</span>(<span class="cm-def">keyFn</span>) {</span>
-<span class="line" data-line-no="1">  <span class="cm-keyword">return</span> <span class="cm-keyword">new</span> <span class="cm-variable">GroupedSequence</span>(<span class="cm-keyword">this</span>, <span class="cm-variable-2">keyFn</span>);</span>
+                        <pre class="function-source" id="source-Sequence-groupBy"><span class="line" data-line-no="0"><span class="cm-variable">Sequence</span>.<span class="cm-property">groupBy</span> = <span class="cm-keyword">function</span> <span class="cm-variable">groupBy</span>(<span class="cm-def">keyFn</span>, <span class="cm-def">valFn</span>) {</span>
+<span class="line" data-line-no="1">  <span class="cm-keyword">return</span> <span class="cm-keyword">new</span> <span class="cm-variable">GroupedSequence</span>(<span class="cm-keyword">this</span>, <span class="cm-variable-2">keyFn</span>, <span class="cm-variable-2">valFn</span>);</span>
 <span class="line" data-line-no="2">}</span></pre>
 
                         <table id="Sequence#groupBy-parameters">
@@ -3469,13 +3501,22 @@ the elements in this sequence with that key.</p>
     a parameter to read from all the elements in this sequence.</p>
 </td>
                                 </tr>
+                                <tr>
+                                    <td>valFn</td>
+                                    <td>Function|string</td>
+                                    <td><p>(Optional) The function to call on the elements
+    in this sequence to assign to the value for each instance to appear in the
+    group, or a string representing a parameter to read from all the elements
+    in this sequence.</p>
+</td>
+                                </tr>
 
                             </tbody>
 
                             <tfoot>
                                 <tr>
                                     <td>returns</td>
-                                    <td>Sequence</td>
+                                    <td>ObjectLikeSequence</td>
                                     <td><p>The new sequence.</p>
 </td>
                                 </tr>
@@ -3489,23 +3530,27 @@ the elements in this sequence with that key.</p>
                         <pre class="source-examples" id="examples-Sequence-groupBy"><span class="line" data-line-no="0"><span class="cm-keyword">function</span> <span class="cm-variable">oddOrEven</span>(<span class="cm-def">x</span>) {</span>
 <span class="line" data-line-no="1">  <span class="cm-keyword">return</span> <span class="cm-variable-2">x</span> % <span class="cm-number">2</span> === <span class="cm-number">0</span> ? <span class="cm-string">&#39;even&#39;</span> : <span class="cm-string">&#39;odd&#39;</span>;</span>
 <span class="line" data-line-no="2">}</span>
-<span class="line" data-line-no="3"></span>
-<span class="line" data-line-no="4"><span class="cm-keyword">var</span> <span class="cm-variable">numbers</span> = [<span class="cm-number">1</span>, <span class="cm-number">2</span>, <span class="cm-number">3</span>, <span class="cm-number">4</span>, <span class="cm-number">5</span>];</span>
-<span class="line" data-line-no="5"></span>
-<span class="line" data-line-no="6"><span class="cm-variable">Lazy</span>(<span class="cm-variable">numbers</span>).<span class="cm-property">groupBy</span>(<span class="cm-variable">oddOrEven</span>)            <span class="cm-comment">// sequence: { odd: [1, 3, 5], even: [2, 4] }</span></span>
-<span class="line" data-line-no="7"><span class="cm-variable">Lazy</span>(<span class="cm-variable">numbers</span>).<span class="cm-property">groupBy</span>(<span class="cm-variable">oddOrEven</span>).<span class="cm-property">get</span>(<span class="cm-string">&quot;odd&quot;</span>) <span class="cm-comment">// =&gt; [1, 3, 5]</span></span>
-<span class="line" data-line-no="8"><span class="cm-variable">Lazy</span>(<span class="cm-variable">numbers</span>).<span class="cm-property">groupBy</span>(<span class="cm-variable">oddOrEven</span>).<span class="cm-property">get</span>(<span class="cm-string">&quot;foo&quot;</span>) <span class="cm-comment">// =&gt; undefined</span></span>
-<span class="line" data-line-no="9"></span>
-<span class="line" data-line-no="10"><span class="cm-variable">Lazy</span>([</span>
-<span class="line" data-line-no="11">  { <span class="cm-property">name</span>: <span class="cm-string">&#39;toString&#39;</span> },</span>
-<span class="line" data-line-no="12">  { <span class="cm-property">name</span>: <span class="cm-string">&#39;toString&#39;</span> }</span>
-<span class="line" data-line-no="13">]).<span class="cm-property">groupBy</span>(<span class="cm-string">&#39;name&#39;</span>);</span>
-<span class="line" data-line-no="14"><span class="cm-comment">// =&gt; sequence: {</span></span>
-<span class="line" data-line-no="15">  <span class="cm-string">&#39;toString&#39;</span>: [</span>
-<span class="line" data-line-no="16">    { <span class="cm-property">name</span>: <span class="cm-string">&#39;toString&#39;</span> },</span>
-<span class="line" data-line-no="17">    { <span class="cm-property">name</span>: <span class="cm-string">&#39;toString&#39;</span> }</span>
-<span class="line" data-line-no="18">  ]</span>
-<span class="line" data-line-no="19">}</span></pre>
+<span class="line" data-line-no="3"><span class="cm-keyword">function</span> <span class="cm-variable">square</span>(<span class="cm-def">x</span>) {</span>
+<span class="line" data-line-no="4">  <span class="cm-keyword">return</span> <span class="cm-variable-2">x</span>*<span class="cm-variable-2">x</span>;</span>
+<span class="line" data-line-no="5">}</span>
+<span class="line" data-line-no="6"></span>
+<span class="line" data-line-no="7"><span class="cm-keyword">var</span> <span class="cm-variable">numbers</span> = [<span class="cm-number">1</span>, <span class="cm-number">2</span>, <span class="cm-number">3</span>, <span class="cm-number">4</span>, <span class="cm-number">5</span>];</span>
+<span class="line" data-line-no="8"></span>
+<span class="line" data-line-no="9"><span class="cm-variable">Lazy</span>(<span class="cm-variable">numbers</span>).<span class="cm-property">groupBy</span>(<span class="cm-variable">oddOrEven</span>)                     <span class="cm-comment">// sequence: { odd: [1, 3, 5], even: [2, 4] }</span></span>
+<span class="line" data-line-no="10"><span class="cm-variable">Lazy</span>(<span class="cm-variable">numbers</span>).<span class="cm-property">groupBy</span>(<span class="cm-variable">oddOrEven</span>).<span class="cm-property">get</span>(<span class="cm-string">&quot;odd&quot;</span>)          <span class="cm-comment">// =&gt; [1, 3, 5]</span></span>
+<span class="line" data-line-no="11"><span class="cm-variable">Lazy</span>(<span class="cm-variable">numbers</span>).<span class="cm-property">groupBy</span>(<span class="cm-variable">oddOrEven</span>).<span class="cm-property">get</span>(<span class="cm-string">&quot;foo&quot;</span>)          <span class="cm-comment">// =&gt; undefined</span></span>
+<span class="line" data-line-no="12"><span class="cm-variable">Lazy</span>(<span class="cm-variable">numbers</span>).<span class="cm-property">groupBy</span>(<span class="cm-variable">oddOrEven</span>, <span class="cm-variable">square</span>).<span class="cm-property">get</span>(<span class="cm-string">&quot;even&quot;</span>) <span class="cm-comment">// =&gt; [4, 16]</span></span>
+<span class="line" data-line-no="13"></span>
+<span class="line" data-line-no="14"><span class="cm-variable">Lazy</span>([</span>
+<span class="line" data-line-no="15">  { <span class="cm-property">name</span>: <span class="cm-string">&#39;toString&#39;</span> },</span>
+<span class="line" data-line-no="16">  { <span class="cm-property">name</span>: <span class="cm-string">&#39;toString&#39;</span> }</span>
+<span class="line" data-line-no="17">]).<span class="cm-property">groupBy</span>(<span class="cm-string">&#39;name&#39;</span>);</span>
+<span class="line" data-line-no="18"><span class="cm-comment">// =&gt; sequence: {</span></span>
+<span class="line" data-line-no="19">  <span class="cm-string">&#39;toString&#39;</span>: [</span>
+<span class="line" data-line-no="20">    { <span class="cm-property">name</span>: <span class="cm-string">&#39;toString&#39;</span> },</span>
+<span class="line" data-line-no="21">    { <span class="cm-property">name</span>: <span class="cm-string">&#39;toString&#39;</span> }</span>
+<span class="line" data-line-no="22">  ]</span>
+<span class="line" data-line-no="23">}</span></pre>
                     </div>
 
 
@@ -3520,6 +3565,9 @@ describe('groupBy', function() {
   function oddOrEven(x) {
   return x % 2 === 0 ? 'even' : 'odd';
 }
+function square(x) {
+  return x*x;
+}
 
 var numbers = [1, 2, 3, 4, 5];
   (function() {
@@ -3533,8 +3581,8 @@ expect(actual.value()).toEqual({ odd: [1, 3, 5], even: [2, 4] });
     spec.exampleId    = 'Sequence-groupBy-1';
     spec.actual       = 'Lazy(numbers).groupBy(oddOrEven)';
     spec.expected     = 'sequence: { odd: [1, 3, 5], even: [2, 4] }';
-    spec.lineNumber   = 6;
-    spec.absoluteLine = 1411;
+    spec.lineNumber   = 9;
+    spec.absoluteLine = 1438;
   }());
   (function() {
     var spec = it('Lazy(numbers).groupBy(oddOrEven).get(\"odd\") => [1, 3, 5]', function() {
@@ -3547,8 +3595,8 @@ expect(actual.value()).toEqual({ odd: [1, 3, 5], even: [2, 4] });
     spec.exampleId    = 'Sequence-groupBy-2';
     spec.actual       = 'Lazy(numbers).groupBy(oddOrEven).get(\"odd\")';
     spec.expected     = '[1, 3, 5]';
-    spec.lineNumber   = 7;
-    spec.absoluteLine = 1412;
+    spec.lineNumber   = 10;
+    spec.absoluteLine = 1439;
   }());
   (function() {
     var spec = it('Lazy(numbers).groupBy(oddOrEven).get(\"foo\") => undefined', function() {
@@ -3561,8 +3609,22 @@ expect(actual.value()).toEqual({ odd: [1, 3, 5], even: [2, 4] });
     spec.exampleId    = 'Sequence-groupBy-3';
     spec.actual       = 'Lazy(numbers).groupBy(oddOrEven).get(\"foo\")';
     spec.expected     = 'undefined';
-    spec.lineNumber   = 8;
-    spec.absoluteLine = 1413;
+    spec.lineNumber   = 11;
+    spec.absoluteLine = 1440;
+  }());
+  (function() {
+    var spec = it('Lazy(numbers).groupBy(oddOrEven, square).get(\"even\") => [4, 16]', function() {
+      var actual = Lazy(numbers).groupBy(oddOrEven, square).get("even");
+      var expected = [4, 16];
+      expect(actual).toEqual(expected);
+    });
+
+    spec.suiteId      = 'Sequence-groupBy';
+    spec.exampleId    = 'Sequence-groupBy-4';
+    spec.actual       = 'Lazy(numbers).groupBy(oddOrEven, square).get(\"even\")';
+    spec.expected     = '[4, 16]';
+    spec.lineNumber   = 12;
+    spec.absoluteLine = 1441;
   }());
   (function() {
     var spec = it('Lazy([\n  { name: \'toString\' },\n  { name: \'toString\' }\n]).groupBy(\'name\'); => sequence: {\n  \'toString\': [\n    { name: \'toString\' },\n    { name: \'toString\' }\n  ]\n}', function() {
@@ -3580,11 +3642,11 @@ expect(actual.value()).toEqual({
     });
 
     spec.suiteId      = 'Sequence-groupBy';
-    spec.exampleId    = 'Sequence-groupBy-4';
+    spec.exampleId    = 'Sequence-groupBy-5';
     spec.actual       = 'Lazy([\n  { name: \'toString\' },\n  { name: \'toString\' }\n]).groupBy(\'name\');';
     spec.expected     = 'sequence: {\n  \'toString\': [\n    { name: \'toString\' },\n    { name: \'toString\' }\n  ]\n}';
-    spec.lineNumber   = 14;
-    spec.absoluteLine = 1419;
+    spec.lineNumber   = 18;
+    spec.absoluteLine = 1447;
   }());
 });
                     </script>
@@ -3602,10 +3664,10 @@ one, indexed according to some key.</p>
                     <div class="signature">
                         <h3>Signature</h3>
 
-                        <pre><span class="line" data-line-no="0"><span class="cm-variable">Sequence</span>.<span class="cm-property">indexBy</span> = <span class="cm-keyword">function</span>(<span class="cm-def">keyFn</span>) { <span class="cm-comment"><a class="reveal-source" href="#source-Sequence-indexBy">/*...*/</a></span> }</span></pre>
+                        <pre><span class="line" data-line-no="0"><span class="cm-variable">Sequence</span>.<span class="cm-property">indexBy</span> = <span class="cm-keyword">function</span>(<span class="cm-def">keyFn</span>, <span class="cm-def">valFn</span>) { <span class="cm-comment"><a class="reveal-source" href="#source-Sequence-indexBy">/*...*/</a></span> }</span></pre>
 
-                        <pre class="function-source" id="source-Sequence-indexBy"><span class="line" data-line-no="0"><span class="cm-variable">Sequence</span>.<span class="cm-property">indexBy</span> = <span class="cm-keyword">function</span>(<span class="cm-def">keyFn</span>) {</span>
-<span class="line" data-line-no="1">  <span class="cm-keyword">return</span> <span class="cm-keyword">new</span> <span class="cm-variable">IndexedSequence</span>(<span class="cm-keyword">this</span>, <span class="cm-variable-2">keyFn</span>);</span>
+                        <pre class="function-source" id="source-Sequence-indexBy"><span class="line" data-line-no="0"><span class="cm-variable">Sequence</span>.<span class="cm-property">indexBy</span> = <span class="cm-keyword">function</span>(<span class="cm-def">keyFn</span>, <span class="cm-def">valFn</span>) {</span>
+<span class="line" data-line-no="1">  <span class="cm-keyword">return</span> <span class="cm-keyword">new</span> <span class="cm-variable">IndexedSequence</span>(<span class="cm-keyword">this</span>, <span class="cm-variable-2">keyFn</span>, <span class="cm-variable-2">valFn</span>);</span>
 <span class="line" data-line-no="2">}</span></pre>
 
                         <table id="Sequence#indexBy-parameters">
@@ -3624,6 +3686,14 @@ one, indexed according to some key.</p>
                                     <td><p>The function to call on the elements in this
     sequence to obtain a key by which to index them, or a string
     representing a property to read from all the elements in this sequence.</p>
+</td>
+                                </tr>
+                                <tr>
+                                    <td>valFn</td>
+                                    <td>Function|string</td>
+                                    <td><p>(Optional) The function to call on the elements
+    in this sequence to assign to the value of the indexed object, or a string
+    representing a parameter to read from all the elements in this sequence.</p>
 </td>
                                 </tr>
 
@@ -3651,7 +3721,8 @@ one, indexed according to some key.</p>
 <span class="line" data-line-no="5"><span class="cm-keyword">var</span> <span class="cm-variable">bob</span>  = <span class="cm-variable">people</span>[<span class="cm-number">0</span>],</span>
 <span class="line" data-line-no="6">    <span class="cm-variable">fred</span> = <span class="cm-variable">people</span>[<span class="cm-number">1</span>];</span>
 <span class="line" data-line-no="7"></span>
-<span class="line" data-line-no="8"><span class="cm-variable">Lazy</span>(<span class="cm-variable">people</span>).<span class="cm-property">indexBy</span>(<span class="cm-string">&#39;name&#39;</span>) <span class="cm-comment">// sequence: { &#39;Bob&#39;: bob, &#39;Fred&#39;: fred }</span></span></pre>
+<span class="line" data-line-no="8"><span class="cm-variable">Lazy</span>(<span class="cm-variable">people</span>).<span class="cm-property">indexBy</span>(<span class="cm-string">&#39;name&#39;</span>)        <span class="cm-comment">// sequence: { &#39;Bob&#39;: bob, &#39;Fred&#39;: fred }</span></span>
+<span class="line" data-line-no="9"><span class="cm-variable">Lazy</span>(<span class="cm-variable">people</span>).<span class="cm-property">indexBy</span>(<span class="cm-string">&#39;name&#39;</span>, <span class="cm-string">&#39;age&#39;</span>) <span class="cm-comment">// sequence: { &#39;Bob&#39;: 25, &#39;Fred&#39;: 34 }</span></span></pre>
                     </div>
 
 
@@ -3682,7 +3753,21 @@ expect(actual.value()).toEqual({ 'Bob': bob, 'Fred': fred });
     spec.actual       = 'Lazy(people).indexBy(\'name\')';
     spec.expected     = 'sequence: { \'Bob\': bob, \'Fred\': fred }';
     spec.lineNumber   = 8;
-    spec.absoluteLine = 1460;
+    spec.absoluteLine = 1492;
+  }());
+  (function() {
+    var spec = it('Lazy(people).indexBy(\'name\', \'age\') => sequence: { \'Bob\': 25, \'Fred\': 34 }', function() {
+      var actual = Lazy(people).indexBy('name', 'age');
+expect(actual.value()).toEqual({ 'Bob': 25, 'Fred': 34 });
+
+    });
+
+    spec.suiteId      = 'Sequence-indexBy';
+    spec.exampleId    = 'Sequence-indexBy-2';
+    spec.actual       = 'Lazy(people).indexBy(\'name\', \'age\')';
+    spec.expected     = 'sequence: { \'Bob\': 25, \'Fred\': 34 }';
+    spec.lineNumber   = 9;
+    spec.absoluteLine = 1493;
   }());
 });
                     </script>
@@ -3776,7 +3861,7 @@ describe('indexOf', function() {
     spec.actual       = 'Lazy([\"foo\", \"bar\", \"baz\"]).indexOf(\"bar\")';
     spec.expected     = '1';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 2030;
+    spec.absoluteLine = 2072;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).indexOf(4) => -1', function() {
@@ -3790,7 +3875,7 @@ describe('indexOf', function() {
     spec.actual       = 'Lazy([1, 2, 3]).indexOf(4)';
     spec.expected     = '-1';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 2031;
+    spec.absoluteLine = 2073;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).map(reciprocal).indexOf(0.5) => 1', function() {
@@ -3804,7 +3889,7 @@ describe('indexOf', function() {
     spec.actual       = 'Lazy([1, 2, 3]).map(reciprocal).indexOf(0.5)';
     spec.expected     = '1';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 2032;
+    spec.absoluteLine = 2074;
   }());
 });
                     </script>
@@ -3889,7 +3974,7 @@ expect(actual.value()).toEqual([1, 2, 3]);
     spec.actual       = 'Lazy([1, 2, 3, 4]).initial()';
     spec.expected     = 'sequence: [1, 2, 3]';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 1116;
+    spec.absoluteLine = 1136;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3, 4]).initial(2) => sequence: [1, 2]', function() {
@@ -3903,7 +3988,7 @@ expect(actual.value()).toEqual([1, 2]);
     spec.actual       = 'Lazy([1, 2, 3, 4]).initial(2)';
     spec.expected     = 'sequence: [1, 2]';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 1117;
+    spec.absoluteLine = 1137;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).filter(Lazy.identity).initial() => sequence: [1, 2]', function() {
@@ -3917,7 +4002,7 @@ expect(actual.value()).toEqual([1, 2]);
     spec.actual       = 'Lazy([1, 2, 3]).filter(Lazy.identity).initial()';
     spec.expected     = 'sequence: [1, 2]';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 1118;
+    spec.absoluteLine = 1138;
   }());
 });
                     </script>
@@ -4005,7 +4090,7 @@ expect(actual.value()).toEqual([]);
     spec.actual       = 'Lazy([\"foo\", \"bar\"]).intersection([])';
     spec.expected     = 'sequence: []';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 1800;
+    spec.absoluteLine = 1842;
   }());
   (function() {
     var spec = it('Lazy([\"foo\", \"bar\"]).intersection([\"bar\", \"baz\"]) => sequence: [\"bar\"]', function() {
@@ -4019,7 +4104,7 @@ expect(actual.value()).toEqual(["bar"]);
     spec.actual       = 'Lazy([\"foo\", \"bar\"]).intersection([\"bar\", \"baz\"])';
     spec.expected     = 'sequence: [\"bar\"]';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 1801;
+    spec.absoluteLine = 1843;
   }());
 });
                     </script>
@@ -4124,7 +4209,7 @@ expect(actual.value()).toEqual(["Dan Tao", "Bob Smith"]);
     spec.actual       = 'Lazy(people).invoke(\"fullName\")';
     spec.expected     = 'sequence: [\"Dan Tao\", \"Bob Smith\"]';
     spec.lineNumber   = 11;
-    spec.absoluteLine = 692;
+    spec.absoluteLine = 712;
   }());
 });
                     </script>
@@ -4201,7 +4286,7 @@ describe('isEmpty', function() {
     spec.actual       = 'Lazy([]).isEmpty()';
     spec.expected     = 'true';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 2011;
+    spec.absoluteLine = 2053;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).isEmpty() => false', function() {
@@ -4215,7 +4300,7 @@ describe('isEmpty', function() {
     spec.actual       = 'Lazy([1, 2, 3]).isEmpty()';
     spec.expected     = 'false';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 2012;
+    spec.absoluteLine = 2054;
   }());
 });
                     </script>
@@ -4224,6 +4309,10 @@ describe('isEmpty', function() {
                     <h1>
                         join
                         <small>Sequence#join</small>
+                        <div class="aliases">
+                            aliases:
+                            <span class="alias">toString</span>
+                        </div>
                     </h1>
 
                     <p>Creates a string from joining together all of the elements in this sequence,
@@ -4310,7 +4399,7 @@ describe('join', function() {
     spec.actual       = 'Lazy([6, 29, 1984]).join(\"/\")';
     spec.expected     = '\"6/29/1984\"';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 2469;
+    spec.absoluteLine = 2511;
   }());
   (function() {
     var spec = it('Lazy([\"a\", \"b\", \"c\"]).join() => \"a,b,c\"', function() {
@@ -4324,7 +4413,7 @@ describe('join', function() {
     spec.actual       = 'Lazy([\"a\", \"b\", \"c\"]).join()';
     spec.expected     = '\"a,b,c\"';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 2470;
+    spec.absoluteLine = 2512;
   }());
   (function() {
     var spec = it('Lazy([\"a\", \"b\", \"c\"]).join(\"\") => \"abc\"', function() {
@@ -4338,7 +4427,7 @@ describe('join', function() {
     spec.actual       = 'Lazy([\"a\", \"b\", \"c\"]).join(\"\")';
     spec.expected     = '\"abc\"';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 2471;
+    spec.absoluteLine = 2513;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).join() => \"1,2,3\"', function() {
@@ -4352,7 +4441,7 @@ describe('join', function() {
     spec.actual       = 'Lazy([1, 2, 3]).join()';
     spec.expected     = '\"1,2,3\"';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 2472;
+    spec.absoluteLine = 2514;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).join(\"\") => \"123\"', function() {
@@ -4366,7 +4455,7 @@ describe('join', function() {
     spec.actual       = 'Lazy([1, 2, 3]).join(\"\")';
     spec.expected     = '\"123\"';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 2473;
+    spec.absoluteLine = 2515;
   }());
   (function() {
     var spec = it('Lazy([\"\", \"\", \"\"]).join(\",\") => \",,\"', function() {
@@ -4380,7 +4469,7 @@ describe('join', function() {
     spec.actual       = 'Lazy([\"\", \"\", \"\"]).join(\",\")';
     spec.expected     = '\",,\"';
     spec.lineNumber   = 5;
-    spec.absoluteLine = 2474;
+    spec.absoluteLine = 2516;
   }());
 });
                     </script>
@@ -4469,7 +4558,7 @@ describe('last', function() {
     spec.actual       = 'Lazy([1, 2, 3]).last()';
     spec.expected     = '3';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 1147;
+    spec.absoluteLine = 1167;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).last(2) => sequence: [2, 3]', function() {
@@ -4483,7 +4572,7 @@ expect(actual.value()).toEqual([2, 3]);
     spec.actual       = 'Lazy([1, 2, 3]).last(2)';
     spec.expected     = 'sequence: [2, 3]';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 1148;
+    spec.absoluteLine = 1168;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).filter(isEven).last(2) => sequence: [2]', function() {
@@ -4497,7 +4586,7 @@ expect(actual.value()).toEqual([2]);
     spec.actual       = 'Lazy([1, 2, 3]).filter(isEven).last(2)';
     spec.expected     = 'sequence: [2]';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 1149;
+    spec.absoluteLine = 1169;
   }());
 });
                     </script>
@@ -4587,7 +4676,7 @@ describe('lastIndexOf', function() {
     spec.actual       = 'Lazy([\"a\", \"b\", \"c\", \"b\", \"a\"]).lastIndexOf(\"b\")';
     spec.expected     = '3';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 2055;
+    spec.absoluteLine = 2097;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).lastIndexOf(0) => -1', function() {
@@ -4601,7 +4690,7 @@ describe('lastIndexOf', function() {
     spec.actual       = 'Lazy([1, 2, 3]).lastIndexOf(0)';
     spec.expected     = '-1';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 2056;
+    spec.absoluteLine = 2098;
   }());
   (function() {
     var spec = it('Lazy([2, 2, 1, 2, 4]).filter(isEven).lastIndexOf(2) => 2', function() {
@@ -4615,7 +4704,7 @@ describe('lastIndexOf', function() {
     spec.actual       = 'Lazy([2, 2, 1, 2, 4]).filter(isEven).lastIndexOf(2)';
     spec.expected     = '2';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 2057;
+    spec.absoluteLine = 2099;
   }());
 });
                     </script>
@@ -4624,6 +4713,10 @@ describe('lastIndexOf', function() {
                     <h1>
                         map
                         <small>Sequence#map</small>
+                        <div class="aliases">
+                            aliases:
+                            <span class="alias">collect</span>
+                        </div>
                     </h1>
 
                     <p>Creates a new sequence whose values are calculated by passing this sequence&#39;s
@@ -4653,7 +4746,8 @@ elements through some mapping function.</p>
                                     <td>mapFn</td>
                                     <td>Function</td>
                                     <td><p>The mapping function used to project this sequence&#39;s
-    elements onto a new sequence.</p>
+    elements onto a new sequence. This function takes up to two arguments:
+    the element, and the current index.</p>
 </td>
                                 </tr>
 
@@ -4673,8 +4767,11 @@ elements through some mapping function.</p>
                     <div class="examples">
                         <h3>Examples</h3>
 
-                        <pre class="source-examples" id="examples-Sequence-map"><span class="line" data-line-no="0"><span class="cm-variable">Lazy</span>([]).<span class="cm-variable">map</span>(<span class="cm-variable">increment</span>)        <span class="cm-comment">// sequence: []</span></span>
-<span class="line" data-line-no="1"><span class="cm-variable">Lazy</span>([<span class="cm-number">1</span>, <span class="cm-number">2</span>, <span class="cm-number">3</span>]).<span class="cm-property">map</span>(<span class="cm-variable">increment</span>) <span class="cm-comment">// sequence: [2, 3, 4]</span></span></pre>
+                        <pre class="source-examples" id="examples-Sequence-map"><span class="line" data-line-no="0"><span class="cm-keyword">function</span> <span class="cm-variable">addIndexToValue</span>(<span class="cm-def">e</span>, <span class="cm-def">i</span>) { <span class="cm-keyword">return</span> <span class="cm-variable-2">e</span> + <span class="cm-variable-2">i</span>; }</span>
+<span class="line" data-line-no="1"></span>
+<span class="line" data-line-no="2"><span class="cm-variable">Lazy</span>([]).<span class="cm-variable">map</span>(<span class="cm-variable">increment</span>)              <span class="cm-comment">// sequence: []</span></span>
+<span class="line" data-line-no="3"><span class="cm-variable">Lazy</span>([<span class="cm-number">1</span>, <span class="cm-number">2</span>, <span class="cm-number">3</span>]).<span class="cm-property">map</span>(<span class="cm-variable">increment</span>)       <span class="cm-comment">// sequence: [2, 3, 4]</span></span>
+<span class="line" data-line-no="4"><span class="cm-variable">Lazy</span>([<span class="cm-number">1</span>, <span class="cm-number">2</span>, <span class="cm-number">3</span>]).<span class="cm-property">map</span>(<span class="cm-variable">addIndexToValue</span>) <span class="cm-comment">// sequence: [1, 3, 5]</span></span></pre>
                     </div>
 
                     <div class="perf">
@@ -4720,7 +4817,7 @@ function isPositive(x) { return x > 0; }
 function isNegative(x) { return x < 0; }
 
 describe('map', function() {
-  
+  function addIndexToValue(e, i) { return e + i; }
   (function() {
     var spec = it('Lazy([]).map(increment) => sequence: []', function() {
       var actual = Lazy([]).map(increment);
@@ -4732,8 +4829,8 @@ expect(actual.value()).toEqual([]);
     spec.exampleId    = 'Sequence-map-1';
     spec.actual       = 'Lazy([]).map(increment)';
     spec.expected     = 'sequence: []';
-    spec.lineNumber   = 0;
-    spec.absoluteLine = 585;
+    spec.lineNumber   = 2;
+    spec.absoluteLine = 604;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).map(increment) => sequence: [2, 3, 4]', function() {
@@ -4746,8 +4843,22 @@ expect(actual.value()).toEqual([2, 3, 4]);
     spec.exampleId    = 'Sequence-map-2';
     spec.actual       = 'Lazy([1, 2, 3]).map(increment)';
     spec.expected     = 'sequence: [2, 3, 4]';
-    spec.lineNumber   = 1;
-    spec.absoluteLine = 586;
+    spec.lineNumber   = 3;
+    spec.absoluteLine = 605;
+  }());
+  (function() {
+    var spec = it('Lazy([1, 2, 3]).map(addIndexToValue) => sequence: [1, 3, 5]', function() {
+      var actual = Lazy([1, 2, 3]).map(addIndexToValue);
+expect(actual.value()).toEqual([1, 3, 5]);
+
+    });
+
+    spec.suiteId      = 'Sequence-map';
+    spec.exampleId    = 'Sequence-map-3';
+    spec.actual       = 'Lazy([1, 2, 3]).map(addIndexToValue)';
+    spec.expected     = 'sequence: [1, 3, 5]';
+    spec.lineNumber   = 4;
+    spec.absoluteLine = 606;
   }());
 });
 (function() {
@@ -4914,7 +5025,7 @@ describe('max', function() {
     spec.actual       = 'Lazy([]).max()';
     spec.expected     = '-Infinity';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 2414;
+    spec.absoluteLine = 2456;
   }());
   (function() {
     var spec = it('Lazy([6, 18, 2, 48, 29]).max() => 48', function() {
@@ -4928,7 +5039,7 @@ describe('max', function() {
     spec.actual       = 'Lazy([6, 18, 2, 48, 29]).max()';
     spec.expected     = '48';
     spec.lineNumber   = 5;
-    spec.absoluteLine = 2415;
+    spec.absoluteLine = 2457;
   }());
   (function() {
     var spec = it('Lazy([6, 18, 2, 48, 29]).max(reverseDigits) => 29', function() {
@@ -4942,7 +5053,7 @@ describe('max', function() {
     spec.actual       = 'Lazy([6, 18, 2, 48, 29]).max(reverseDigits)';
     spec.expected     = '29';
     spec.lineNumber   = 6;
-    spec.absoluteLine = 2416;
+    spec.absoluteLine = 2458;
   }());
 });
                     </script>
@@ -5029,7 +5140,7 @@ var plain    = Lazy.generate(createObject, 10),
     spec.actual       = 'plain.toArray()[0] === plain.toArray()[0];';
     spec.expected     = 'false';
     spec.lineNumber   = 5;
-    spec.absoluteLine = 507;
+    spec.absoluteLine = 521;
   }());
   (function() {
     var spec = it('memoized.toArray()[0] === memoized.toArray()[0]; => true', function() {
@@ -5043,7 +5154,7 @@ var plain    = Lazy.generate(createObject, 10),
     spec.actual       = 'memoized.toArray()[0] === memoized.toArray()[0];';
     spec.expected     = 'true';
     spec.lineNumber   = 6;
-    spec.absoluteLine = 508;
+    spec.absoluteLine = 522;
   }());
 });
                     </script>
@@ -5134,7 +5245,7 @@ describe('min', function() {
     spec.actual       = 'Lazy([]).min()';
     spec.expected     = 'Infinity';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 2383;
+    spec.absoluteLine = 2425;
   }());
   (function() {
     var spec = it('Lazy([6, 18, 2, 49, 34]).min() => 2', function() {
@@ -5148,7 +5259,7 @@ describe('min', function() {
     spec.actual       = 'Lazy([6, 18, 2, 49, 34]).min()';
     spec.expected     = '2';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 2384;
+    spec.absoluteLine = 2426;
   }());
   (function() {
     var spec = it('Lazy([6, 18, 2, 49, 34]).min(negate) => 49', function() {
@@ -5162,7 +5273,7 @@ describe('min', function() {
     spec.actual       = 'Lazy([6, 18, 2, 49, 34]).min(negate)';
     spec.expected     = '49';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 2385;
+    spec.absoluteLine = 2427;
   }());
 });
                     </script>
@@ -5254,7 +5365,7 @@ describe('none', function() {
     spec.actual       = 'Lazy(numbers).none()';
     spec.expected     = 'false';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 1992;
+    spec.absoluteLine = 2034;
   }());
   (function() {
     var spec = it('Lazy(numbers).none(isEven) => false', function() {
@@ -5268,7 +5379,7 @@ describe('none', function() {
     spec.actual       = 'Lazy(numbers).none(isEven)';
     spec.expected     = 'false';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 1993;
+    spec.absoluteLine = 2035;
   }());
   (function() {
     var spec = it('Lazy(numbers).none(isNegative) => true', function() {
@@ -5282,7 +5393,7 @@ describe('none', function() {
     spec.actual       = 'Lazy(numbers).none(isNegative)';
     spec.expected     = 'true';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 1994;
+    spec.absoluteLine = 2036;
   }());
   (function() {
     var spec = it('Lazy([]).none(isEven) => true', function() {
@@ -5296,7 +5407,7 @@ describe('none', function() {
     spec.actual       = 'Lazy([]).none(isEven)';
     spec.expected     = 'true';
     spec.lineNumber   = 5;
-    spec.absoluteLine = 1995;
+    spec.absoluteLine = 2037;
   }());
   (function() {
     var spec = it('Lazy([]).none(isNegative) => true', function() {
@@ -5310,7 +5421,7 @@ describe('none', function() {
     spec.actual       = 'Lazy([]).none(isNegative)';
     spec.expected     = 'true';
     spec.lineNumber   = 6;
-    spec.absoluteLine = 1996;
+    spec.absoluteLine = 2038;
   }());
   (function() {
     var spec = it('Lazy([]).none() => true', function() {
@@ -5324,7 +5435,7 @@ describe('none', function() {
     spec.actual       = 'Lazy([]).none()';
     spec.expected     = 'true';
     spec.lineNumber   = 7;
-    spec.absoluteLine = 1997;
+    spec.absoluteLine = 2039;
   }());
 });
                     </script>
@@ -5410,7 +5521,7 @@ expect(actual.value()).toEqual([1, 2]);
     spec.actual       = 'Lazy([1, 2, \'foo\', \'bar\']).ofType(\'number\')';
     spec.expected     = 'sequence: [1, 2]';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 823;
+    spec.absoluteLine = 843;
   }());
   (function() {
     var spec = it('Lazy([1, 2, \'foo\', \'bar\']).ofType(\'string\') => sequence: [\'foo\', \'bar\']', function() {
@@ -5424,7 +5535,7 @@ expect(actual.value()).toEqual(['foo', 'bar']);
     spec.actual       = 'Lazy([1, 2, \'foo\', \'bar\']).ofType(\'string\')';
     spec.expected     = 'sequence: [\'foo\', \'bar\']';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 824;
+    spec.absoluteLine = 844;
   }());
   (function() {
     var spec = it('Lazy([1, 2, \'foo\', \'bar\']).ofType(\'boolean\') => sequence: []', function() {
@@ -5438,7 +5549,7 @@ expect(actual.value()).toEqual([]);
     spec.actual       = 'Lazy([1, 2, \'foo\', \'bar\']).ofType(\'boolean\')';
     spec.expected     = 'sequence: []';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 825;
+    spec.absoluteLine = 845;
   }());
 });
                     </script>
@@ -5529,7 +5640,7 @@ expect(actual.value()).toEqual(["Tao", "Smith"]);
     spec.actual       = 'Lazy(people).pluck(\"last\")';
     spec.expected     = 'sequence: [\"Tao\", \"Smith\"]';
     spec.lineNumber   = 5;
-    spec.absoluteLine = 665;
+    spec.absoluteLine = 685;
   }());
 });
                     </script>
@@ -5538,6 +5649,11 @@ expect(actual.value()).toEqual(["Tao", "Smith"]);
                     <h1>
                         reduce
                         <small>Sequence#reduce</small>
+                        <div class="aliases">
+                            aliases:
+                            <span class="alias">inject</span>
+                            <span class="alias">foldl</span>
+                        </div>
                     </h1>
 
                     <p>Aggregates a sequence into a single value according to some accumulator
@@ -5647,7 +5763,7 @@ var numbers = [1, 2, 3, 4];
     spec.actual       = 'Lazy(numbers).reduce(multiply)';
     spec.expected     = '24';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 2146;
+    spec.absoluteLine = 2188;
   }());
   (function() {
     var spec = it('Lazy(numbers).reduce(multiply, 5) => 120', function() {
@@ -5661,7 +5777,7 @@ var numbers = [1, 2, 3, 4];
     spec.actual       = 'Lazy(numbers).reduce(multiply, 5)';
     spec.expected     = '120';
     spec.lineNumber   = 5;
-    spec.absoluteLine = 2147;
+    spec.absoluteLine = 2189;
   }());
 });
                     </script>
@@ -5670,6 +5786,10 @@ var numbers = [1, 2, 3, 4];
                     <h1>
                         reduceRight
                         <small>Sequence#reduceRight</small>
+                        <div class="aliases">
+                            aliases:
+                            <span class="alias">foldr</span>
+                        </div>
                     </h1>
 
                     <p>Aggregates a sequence, from the tail, into a single value according to some
@@ -5777,7 +5897,7 @@ function isVowel(str) {
     spec.actual       = 'Lazy(\"abcde\").reduceRight(append)';
     spec.expected     = '\"edcba\"';
     spec.lineNumber   = 8;
-    spec.absoluteLine = 2193;
+    spec.absoluteLine = 2235;
   }());
   (function() {
     var spec = it('Lazy(\"abcde\").filter(isVowel).reduceRight(append) => \"ea\"', function() {
@@ -5791,7 +5911,7 @@ function isVowel(str) {
     spec.actual       = 'Lazy(\"abcde\").filter(isVowel).reduceRight(append)';
     spec.expected     = '\"ea\"';
     spec.lineNumber   = 9;
-    spec.absoluteLine = 2194;
+    spec.absoluteLine = 2236;
   }());
 });
                     </script>
@@ -5877,7 +5997,7 @@ expect(actual.value()).toEqual([1, 3, 5]);
     spec.actual       = 'Lazy([1, 2, 3, 4, 5]).reject(isEven)';
     spec.expected     = 'sequence: [1, 3, 5]';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 803;
+    spec.absoluteLine = 823;
   }());
   (function() {
     var spec = it('Lazy([{ foo: 1 }, { bar: 2 }]).reject(\'foo\') => sequence: [{ bar: 2 }]', function() {
@@ -5891,7 +6011,7 @@ expect(actual.value()).toEqual([{ bar: 2 }]);
     spec.actual       = 'Lazy([{ foo: 1 }, { bar: 2 }]).reject(\'foo\')';
     spec.expected     = 'sequence: [{ bar: 2 }]';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 804;
+    spec.absoluteLine = 824;
   }());
   (function() {
     var spec = it('Lazy([{ foo: 1 }, { foo: 2 }]).reject({ foo: 2 }) => sequence: [{ foo: 1 }]', function() {
@@ -5905,7 +6025,7 @@ expect(actual.value()).toEqual([{ foo: 1 }]);
     spec.actual       = 'Lazy([{ foo: 1 }, { foo: 2 }]).reject({ foo: 2 })';
     spec.expected     = 'sequence: [{ foo: 1 }]';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 805;
+    spec.absoluteLine = 825;
   }());
 });
                     </script>
@@ -5914,6 +6034,12 @@ expect(actual.value()).toEqual([{ foo: 1 }]);
                     <h1>
                         rest
                         <small>Sequence#rest</small>
+                        <div class="aliases">
+                            aliases:
+                            <span class="alias">skip</span>
+                            <span class="alias">tail</span>
+                            <span class="alias">rest</span>
+                        </div>
                     </h1>
 
                     <p>Creates a new sequence comprising all but the first N elements of this
@@ -5991,7 +6117,7 @@ expect(actual.value()).toEqual([2, 3, 4]);
     spec.actual       = 'Lazy([1, 2, 3, 4]).rest()';
     spec.expected     = 'sequence: [2, 3, 4]';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 1189;
+    spec.absoluteLine = 1209;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3, 4]).rest(0) => sequence: [1, 2, 3, 4]', function() {
@@ -6005,7 +6131,7 @@ expect(actual.value()).toEqual([1, 2, 3, 4]);
     spec.actual       = 'Lazy([1, 2, 3, 4]).rest(0)';
     spec.expected     = 'sequence: [1, 2, 3, 4]';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 1190;
+    spec.absoluteLine = 1210;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3, 4]).rest(2) => sequence: [3, 4]', function() {
@@ -6019,7 +6145,7 @@ expect(actual.value()).toEqual([3, 4]);
     spec.actual       = 'Lazy([1, 2, 3, 4]).rest(2)';
     spec.expected     = 'sequence: [3, 4]';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 1191;
+    spec.absoluteLine = 1211;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3, 4]).rest(5) => sequence: []', function() {
@@ -6033,7 +6159,7 @@ expect(actual.value()).toEqual([]);
     spec.actual       = 'Lazy([1, 2, 3, 4]).rest(5)';
     spec.expected     = 'sequence: []';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 1192;
+    spec.absoluteLine = 1212;
   }());
 });
                     </script>
@@ -6112,7 +6238,7 @@ expect(actual.value()).toEqual([3, 2, 1]);
     spec.actual       = 'Lazy([1, 2, 3]).reverse()';
     spec.expected     = 'sequence: [3, 2, 1]';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 869;
+    spec.absoluteLine = 889;
   }());
   (function() {
     var spec = it('Lazy([]).reverse() => sequence: []', function() {
@@ -6126,7 +6252,7 @@ expect(actual.value()).toEqual([]);
     spec.actual       = 'Lazy([]).reverse()';
     spec.expected     = 'sequence: []';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 870;
+    spec.absoluteLine = 890;
   }());
 });
                     </script>
@@ -6203,7 +6329,7 @@ expect(actual.sort()).toEqual([1, 2, 3, 4, 5].sort(),
     spec.actual       = 'Lazy([1, 2, 3, 4, 5]).shuffle().value()';
     spec.expected     = '=~ [1, 2, 3, 4, 5]';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 1646;
+    spec.absoluteLine = 1688;
   }());
 });
                     </script>
@@ -6284,7 +6410,7 @@ describe('size', function() {
     spec.actual       = 'Lazy([1, 2, 3]).size();';
     spec.expected     = '3';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 291;
+    spec.absoluteLine = 299;
   }());
   (function() {
     var spec = it('Lazy([1, 2]).map(Lazy.identity).size(); => 2', function() {
@@ -6298,7 +6424,7 @@ describe('size', function() {
     spec.actual       = 'Lazy([1, 2]).map(Lazy.identity).size();';
     spec.expected     = '2';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 292;
+    spec.absoluteLine = 300;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).reject(isEven).size(); => 2', function() {
@@ -6312,7 +6438,7 @@ describe('size', function() {
     spec.actual       = 'Lazy([1, 2, 3]).reject(isEven).size();';
     spec.expected     = '2';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 293;
+    spec.absoluteLine = 301;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).take(1).size(); => 1', function() {
@@ -6326,7 +6452,7 @@ describe('size', function() {
     spec.actual       = 'Lazy([1, 2, 3]).take(1).size();';
     spec.expected     = '1';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 294;
+    spec.absoluteLine = 302;
   }());
   (function() {
     var spec = it('Lazy({ foo: 1, bar: 2 }).size(); => 2', function() {
@@ -6340,7 +6466,7 @@ describe('size', function() {
     spec.actual       = 'Lazy({ foo: 1, bar: 2 }).size();';
     spec.expected     = '2';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 295;
+    spec.absoluteLine = 303;
   }());
   (function() {
     var spec = it('Lazy(\'hello\').size(); => 5', function() {
@@ -6354,7 +6480,7 @@ describe('size', function() {
     spec.actual       = 'Lazy(\'hello\').size();';
     spec.expected     = '5';
     spec.lineNumber   = 5;
-    spec.absoluteLine = 296;
+    spec.absoluteLine = 304;
   }());
 });
                     </script>
@@ -6363,6 +6489,10 @@ describe('size', function() {
                     <h1>
                         some
                         <small>Sequence#some</small>
+                        <div class="aliases">
+                            aliases:
+                            <span class="alias">any</span>
+                        </div>
                     </h1>
 
                     <p>Checks whether at least one element in this sequence satisfies a given
@@ -6454,7 +6584,7 @@ describe('some', function() {
     spec.actual       = 'Lazy(numbers).some()';
     spec.expected     = 'true';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 1956;
+    spec.absoluteLine = 1998;
   }());
   (function() {
     var spec = it('Lazy(numbers).some(isEven) => true', function() {
@@ -6468,7 +6598,7 @@ describe('some', function() {
     spec.actual       = 'Lazy(numbers).some(isEven)';
     spec.expected     = 'true';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 1957;
+    spec.absoluteLine = 1999;
   }());
   (function() {
     var spec = it('Lazy(numbers).some(isNegative) => false', function() {
@@ -6482,7 +6612,7 @@ describe('some', function() {
     spec.actual       = 'Lazy(numbers).some(isNegative)';
     spec.expected     = 'false';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 1958;
+    spec.absoluteLine = 2000;
   }());
   (function() {
     var spec = it('Lazy([]).some() => false', function() {
@@ -6496,7 +6626,7 @@ describe('some', function() {
     spec.actual       = 'Lazy([]).some()';
     spec.expected     = 'false';
     spec.lineNumber   = 5;
-    spec.absoluteLine = 1959;
+    spec.absoluteLine = 2001;
   }());
 });
                     </script>
@@ -6606,7 +6736,7 @@ expect(actual.value()).toEqual([1, 5, 10]);
     spec.actual       = 'Lazy([5, 10, 1]).sort()';
     spec.expected     = 'sequence: [1, 5, 10]';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 1290;
+    spec.absoluteLine = 1310;
   }());
   (function() {
     var spec = it('Lazy([\'foo\', \'bar\']).sort() => sequence: [\'bar\', \'foo\']', function() {
@@ -6620,7 +6750,7 @@ expect(actual.value()).toEqual(['bar', 'foo']);
     spec.actual       = 'Lazy([\'foo\', \'bar\']).sort()';
     spec.expected     = 'sequence: [\'bar\', \'foo\']';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 1291;
+    spec.absoluteLine = 1311;
   }());
   (function() {
     var spec = it('Lazy([\'b\', \'c\', \'a\']).sort(null, true) => sequence: [\'c\', \'b\', \'a\']', function() {
@@ -6634,7 +6764,7 @@ expect(actual.value()).toEqual(['c', 'b', 'a']);
     spec.actual       = 'Lazy([\'b\', \'c\', \'a\']).sort(null, true)';
     spec.expected     = 'sequence: [\'c\', \'b\', \'a\']';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 1292;
+    spec.absoluteLine = 1312;
   }());
   (function() {
     var spec = it('Lazy([5, 10, 1]).sort(null, true) => sequence: [10, 5, 1]', function() {
@@ -6648,7 +6778,7 @@ expect(actual.value()).toEqual([10, 5, 1]);
     spec.actual       = 'Lazy([5, 10, 1]).sort(null, true)';
     spec.expected     = 'sequence: [10, 5, 1]';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 1293;
+    spec.absoluteLine = 1313;
   }());
   (function() {
     var spec = it('Lazy([\'a\', \'ab\', \'aa\', \'ba\', \'b\', \'abc\']).sort(function compare(x, y) {\n  if (x.length && (x.length !== y.length)) { return compare(x.length, y.length); }\n  if (x === y) { return 0; }\n  return x > y ? 1 : -1;\n}); => sequence: [\'a\', \'b\', \'aa\', \'ab\', \'ba\', \'abc\']', function() {
@@ -6666,7 +6796,7 @@ expect(actual.value()).toEqual(['a', 'b', 'aa', 'ab', 'ba', 'abc']);
     spec.actual       = 'Lazy([\'a\', \'ab\', \'aa\', \'ba\', \'b\', \'abc\']).sort(function compare(x, y) {\n  if (x.length && (x.length !== y.length)) { return compare(x.length, y.length); }\n  if (x === y) { return 0; }\n  return x > y ? 1 : -1;\n});';
     spec.expected     = 'sequence: [\'a\', \'b\', \'aa\', \'ab\', \'ba\', \'abc\']';
     spec.lineNumber   = 11;
-    spec.absoluteLine = 1301;
+    spec.absoluteLine = 1321;
   }());
 });
                     </script>
@@ -6823,7 +6953,7 @@ expect(actual.value()).toEqual(["Brazil", "USA", "China"]);
     spec.actual       = 'Lazy(countries).sortBy(population).last(3).pluck(\'name\')';
     spec.expected     = 'sequence: [\"Brazil\", \"USA\", \"China\"]';
     spec.lineNumber   = 17;
-    spec.absoluteLine = 1343;
+    spec.absoluteLine = 1363;
   }());
   (function() {
     var spec = it('Lazy(countries).sortBy(area).last(3).pluck(\'name\') => sequence: [\"USA\", \"China\", \"Russia\"]', function() {
@@ -6837,7 +6967,7 @@ expect(actual.value()).toEqual(["USA", "China", "Russia"]);
     spec.actual       = 'Lazy(countries).sortBy(area).last(3).pluck(\'name\')';
     spec.expected     = 'sequence: [\"USA\", \"China\", \"Russia\"]';
     spec.lineNumber   = 18;
-    spec.absoluteLine = 1344;
+    spec.absoluteLine = 1364;
   }());
   (function() {
     var spec = it('Lazy(countries).sortBy(area, true).first(3).pluck(\'name\') => sequence: [\"Russia\", \"China\", \"USA\"]', function() {
@@ -6851,7 +6981,7 @@ expect(actual.value()).toEqual(["Russia", "China", "USA"]);
     spec.actual       = 'Lazy(countries).sortBy(area, true).first(3).pluck(\'name\')';
     spec.expected     = 'sequence: [\"Russia\", \"China\", \"USA\"]';
     spec.lineNumber   = 19;
-    spec.absoluteLine = 1345;
+    spec.absoluteLine = 1365;
   }());
 });
 (function() {
@@ -6991,7 +7121,7 @@ describe('sortedIndex', function() {
     spec.actual       = 'Lazy([1, 3, 6, 9]).sortedIndex(3)';
     spec.expected     = '1';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 2081;
+    spec.absoluteLine = 2123;
   }());
   (function() {
     var spec = it('Lazy([1, 3, 6, 9]).sortedIndex(7) => 3', function() {
@@ -7005,7 +7135,7 @@ describe('sortedIndex', function() {
     spec.actual       = 'Lazy([1, 3, 6, 9]).sortedIndex(7)';
     spec.expected     = '3';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 2082;
+    spec.absoluteLine = 2124;
   }());
   (function() {
     var spec = it('Lazy([5, 10, 15, 20]).filter(isEven).sortedIndex(10) => 0', function() {
@@ -7019,7 +7149,7 @@ describe('sortedIndex', function() {
     spec.actual       = 'Lazy([5, 10, 15, 20]).filter(isEven).sortedIndex(10)';
     spec.expected     = '0';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 2083;
+    spec.absoluteLine = 2125;
   }());
   (function() {
     var spec = it('Lazy([5, 10, 15, 20]).filter(isEven).sortedIndex(12) => 1', function() {
@@ -7033,7 +7163,7 @@ describe('sortedIndex', function() {
     spec.actual       = 'Lazy([5, 10, 15, 20]).filter(isEven).sortedIndex(12)';
     spec.expected     = '1';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 2084;
+    spec.absoluteLine = 2126;
   }());
 });
                     </script>
@@ -7122,7 +7252,7 @@ describe('sum', function() {
     spec.actual       = 'Lazy([]).sum()';
     spec.expected     = '0';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 2440;
+    spec.absoluteLine = 2482;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3, 4]).sum() => 10', function() {
@@ -7136,7 +7266,7 @@ describe('sum', function() {
     spec.actual       = 'Lazy([1, 2, 3, 4]).sum()';
     spec.expected     = '10';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 2441;
+    spec.absoluteLine = 2483;
   }());
   (function() {
     var spec = it('Lazy([1.2, 3.4]).sum(Math.floor) => 4', function() {
@@ -7150,7 +7280,7 @@ describe('sum', function() {
     spec.actual       = 'Lazy([1.2, 3.4]).sum(Math.floor)';
     spec.expected     = '4';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 2442;
+    spec.absoluteLine = 2484;
   }());
   (function() {
     var spec = it('Lazy([\'foo\', \'bar\']).sum(\'length\') => 6', function() {
@@ -7164,7 +7294,7 @@ describe('sum', function() {
     spec.actual       = 'Lazy([\'foo\', \'bar\']).sum(\'length\')';
     spec.expected     = '6';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 2443;
+    spec.absoluteLine = 2485;
   }());
 });
                     </script>
@@ -7257,7 +7387,7 @@ expect(actual.value()).toEqual([1, 2]);
     spec.actual       = 'Lazy([1, 2, 3, 4]).takeWhile(lessThan(3))';
     spec.expected     = 'sequence: [1, 2]';
     spec.lineNumber   = 6;
-    spec.absoluteLine = 1068;
+    spec.absoluteLine = 1088;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3, 4]).takeWhile(lessThan(0)) => sequence: []', function() {
@@ -7271,7 +7401,7 @@ expect(actual.value()).toEqual([]);
     spec.actual       = 'Lazy([1, 2, 3, 4]).takeWhile(lessThan(0))';
     spec.expected     = 'sequence: []';
     spec.lineNumber   = 7;
-    spec.absoluteLine = 1069;
+    spec.absoluteLine = 1089;
   }());
 });
                     </script>
@@ -7359,7 +7489,7 @@ expect(fn.calls.length).toEqual(3,
     spec.actual       = 'Lazy([1, 2, 3]).tap(fn).each(Lazy.noop);';
     spec.expected     = 'calls fn 3 times';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 2319;
+    spec.absoluteLine = 2361;
   }());
 });
                     </script>
@@ -7439,7 +7569,7 @@ describe('toArray', function() {
     spec.actual       = 'Lazy([1, 2, 3]).toArray()';
     spec.expected     = '[1, 2, 3]';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 443;
+    spec.absoluteLine = 457;
   }());
 });
                     </script>
@@ -7528,7 +7658,7 @@ describe('toObject', function() {
     spec.actual       = 'Lazy(details).toObject()';
     spec.expected     = '{ first: \"Dan\", last: \"Tao\", age: 29 }';
     spec.lineNumber   = 6;
-    spec.absoluteLine = 537;
+    spec.absoluteLine = 551;
   }());
 });
                     </script>
@@ -7612,7 +7742,7 @@ expect(actual.value()).toEqual(["foo", "bar"]);
     spec.actual       = 'Lazy([\"foo\", \"bar\"]).union([])';
     spec.expected     = 'sequence: [\"foo\", \"bar\"]';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 1783;
+    spec.absoluteLine = 1825;
   }());
   (function() {
     var spec = it('Lazy([\"foo\", \"bar\"]).union([\"bar\", \"baz\"]) => sequence: [\"foo\", \"bar\", \"baz\"]', function() {
@@ -7626,7 +7756,7 @@ expect(actual.value()).toEqual(["foo", "bar", "baz"]);
     spec.actual       = 'Lazy([\"foo\", \"bar\"]).union([\"bar\", \"baz\"])';
     spec.expected     = 'sequence: [\"foo\", \"bar\", \"baz\"]';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 1784;
+    spec.absoluteLine = 1826;
   }());
 });
                     </script>
@@ -7635,6 +7765,10 @@ expect(actual.value()).toEqual(["foo", "bar", "baz"]);
                     <h1>
                         uniq
                         <small>Sequence#uniq</small>
+                        <div class="aliases">
+                            aliases:
+                            <span class="alias">unique</span>
+                        </div>
                     </h1>
 
                     <p>Creates a new sequence with every unique element from this one appearing
@@ -7644,7 +7778,7 @@ exactly once (i.e., with duplicates removed).</p>
                     <div class="signature">
                         <h3>Signature</h3>
 
-                        <pre><span class="line" data-line-no="0"><span class="cm-variable">Sequence</span>.<span class="cm-property">uniq</span> = <span class="cm-keyword">function</span>() { <span class="cm-comment"><a class="reveal-source" href="#source-Sequence-uniq">/*...*/</a></span> }</span></pre>
+                        <pre><span class="line" data-line-no="0"><span class="cm-variable">Sequence</span>.<span class="cm-property">uniq</span> = <span class="cm-keyword">function</span>(<span class="cm-def">keyFn</span>) { <span class="cm-comment"><a class="reveal-source" href="#source-Sequence-uniq">/*...*/</a></span> }</span></pre>
 
                         <pre class="function-source" id="source-Sequence-uniq"><span class="line" data-line-no="0"><span class="cm-variable">Sequence</span>.<span class="cm-property">uniq</span> = <span class="cm-keyword">function</span> <span class="cm-variable">uniq</span>(<span class="cm-def">keyFn</span>) {</span>
 <span class="line" data-line-no="1">  <span class="cm-keyword">return</span> <span class="cm-keyword">new</span> <span class="cm-variable">UniqueSequence</span>(<span class="cm-keyword">this</span>, <span class="cm-variable-2">keyFn</span>);</span>
@@ -7660,6 +7794,14 @@ exactly once (i.e., with duplicates removed).</p>
                             </thead>
 
                             <tbody>
+                                <tr>
+                                    <td>keyFn</td>
+                                    <td>Function</td>
+                                    <td><p>An optional function to produce the key for each
+    object. This key is then tested for uniqueness as  opposed to the
+    object reference.</p>
+</td>
+                                </tr>
 
                             </tbody>
 
@@ -7677,7 +7819,12 @@ exactly once (i.e., with duplicates removed).</p>
                     <div class="examples">
                         <h3>Examples</h3>
 
-                        <pre class="source-examples" id="examples-Sequence-uniq"><span class="line" data-line-no="0"><span class="cm-variable">Lazy</span>([<span class="cm-number">1</span>, <span class="cm-number">2</span>, <span class="cm-number">2</span>, <span class="cm-number">3</span>, <span class="cm-number">3</span>, <span class="cm-number">3</span>]).<span class="cm-property">uniq</span>() <span class="cm-comment">// sequence: [1, 2, 3]</span></span></pre>
+                        <pre class="source-examples" id="examples-Sequence-uniq"><span class="line" data-line-no="0"><span class="cm-variable">Lazy</span>([<span class="cm-number">1</span>, <span class="cm-number">2</span>, <span class="cm-number">2</span>, <span class="cm-number">3</span>, <span class="cm-number">3</span>, <span class="cm-number">3</span>]).<span class="cm-property">uniq</span>() <span class="cm-comment">// sequence: [1, 2, 3]</span></span>
+<span class="line" data-line-no="1"><span class="cm-variable">Lazy</span>([{ <span class="cm-property">name</span>: <span class="cm-string">&#39;mike&#39;</span> }, </span>
+<span class="line" data-line-no="2">    { <span class="cm-property">name</span>: <span class="cm-string">&#39;sarah&#39;</span> }, </span>
+<span class="line" data-line-no="3">    { <span class="cm-property">name</span>: <span class="cm-string">&#39;mike&#39;</span> }</span>
+<span class="line" data-line-no="4">]).<span class="cm-property">uniq</span>(<span class="cm-string">&#39;name&#39;</span>)</span>
+<span class="line" data-line-no="5"><span class="cm-comment">// sequence: [{ name: &#39;mike&#39; }, { name: &#39;sarah&#39; }]</span></span></pre>
                     </div>
 
                     <div class="perf">
@@ -7746,7 +7893,24 @@ expect(actual.value()).toEqual([1, 2, 3]);
     spec.actual       = 'Lazy([1, 2, 2, 3, 3, 3]).uniq()';
     spec.expected     = 'sequence: [1, 2, 3]';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 1523;
+    spec.absoluteLine = 1560;
+  }());
+  (function() {
+    var spec = it('Lazy([{ name: \'mike\' }, \n	{ name: \'sarah\' }, \n	{ name: \'mike\' }\n]).uniq(\'name\') => sequence: [{ name: \'mike\' }, { name: \'sarah\' }]', function() {
+      var actual = Lazy([{ name: 'mike' }, 
+	{ name: 'sarah' }, 
+	{ name: 'mike' }
+]).uniq('name');
+expect(actual.value()).toEqual([{ name: 'mike' }, { name: 'sarah' }]);
+
+    });
+
+    spec.suiteId      = 'Sequence-uniq';
+    spec.exampleId    = 'Sequence-uniq-2';
+    spec.actual       = 'Lazy([{ name: \'mike\' }, \n	{ name: \'sarah\' }, \n	{ name: \'mike\' }\n]).uniq(\'name\')';
+    spec.expected     = 'sequence: [{ name: \'mike\' }, { name: \'sarah\' }]';
+    spec.lineNumber   = 5;
+    spec.absoluteLine = 1565;
   }());
 });
 (function() {
@@ -7970,7 +8134,7 @@ expect(actual.value()).toEqual([{ first: "Dan", last: "Tao" }]);
     spec.actual       = 'Lazy(people).where({ first: \"Dan\" })';
     spec.expected     = 'sequence: [{ first: \"Dan\", last: \"Tao\" }]';
     spec.lineNumber   = 5;
-    spec.absoluteLine = 846;
+    spec.absoluteLine = 866;
   }());
 });
 (function() {
@@ -8018,6 +8182,10 @@ expect(actual.value()).toEqual([{ first: "Dan", last: "Tao" }]);
                     <h1>
                         without
                         <small>Sequence#without</small>
+                        <div class="aliases">
+                            aliases:
+                            <span class="alias">difference</span>
+                        </div>
                     </h1>
 
                     <p>Creates a new sequence with all the elements of this sequence that are not
@@ -8093,7 +8261,7 @@ expect(actual.value()).toEqual([1, 4, 5]);
     spec.actual       = 'Lazy([1, 2, 3, 4, 5]).without(2, 3)';
     spec.expected     = 'sequence: [1, 4, 5]';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 1742;
+    spec.absoluteLine = 1784;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3, 4, 5]).without([4, 5]) => sequence: [1, 2, 3]', function() {
@@ -8107,7 +8275,7 @@ expect(actual.value()).toEqual([1, 2, 3]);
     spec.actual       = 'Lazy([1, 2, 3, 4, 5]).without([4, 5])';
     spec.expected     = 'sequence: [1, 2, 3]';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 1743;
+    spec.absoluteLine = 1785;
   }());
 });
                     </script>
@@ -8228,7 +8396,7 @@ expect(actual.value()).toEqual([[1, 3], [2, 4]]);
     spec.actual       = 'Lazy([1, 2]).zip([3, 4])';
     spec.expected     = 'sequence: [[1, 3], [2, 4]]';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 1593;
+    spec.absoluteLine = 1635;
   }());
 });
 (function() {
@@ -8415,7 +8583,7 @@ if (!(actual instanceof Lazy.ArrayLikeSequence)) {
     spec.actual       = 'Lazy([1, 2, 3])';
     spec.expected     = 'instanceof Lazy.ArrayLikeSequence';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 2662;
+    spec.absoluteLine = 2704;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).map(Lazy.identity) => instanceof Lazy.ArrayLikeSequence', function() {
@@ -8431,7 +8599,7 @@ if (!(actual instanceof Lazy.ArrayLikeSequence)) {
     spec.actual       = 'Lazy([1, 2, 3]).map(Lazy.identity)';
     spec.expected     = 'instanceof Lazy.ArrayLikeSequence';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 2663;
+    spec.absoluteLine = 2705;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).take(2) => instanceof Lazy.ArrayLikeSequence', function() {
@@ -8447,7 +8615,7 @@ if (!(actual instanceof Lazy.ArrayLikeSequence)) {
     spec.actual       = 'Lazy([1, 2, 3]).take(2)';
     spec.expected     = 'instanceof Lazy.ArrayLikeSequence';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 2664;
+    spec.absoluteLine = 2706;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).drop(2) => instanceof Lazy.ArrayLikeSequence', function() {
@@ -8463,7 +8631,7 @@ if (!(actual instanceof Lazy.ArrayLikeSequence)) {
     spec.actual       = 'Lazy([1, 2, 3]).drop(2)';
     spec.expected     = 'instanceof Lazy.ArrayLikeSequence';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 2665;
+    spec.absoluteLine = 2707;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).reverse() => instanceof Lazy.ArrayLikeSequence', function() {
@@ -8479,7 +8647,7 @@ if (!(actual instanceof Lazy.ArrayLikeSequence)) {
     spec.actual       = 'Lazy([1, 2, 3]).reverse()';
     spec.expected     = 'instanceof Lazy.ArrayLikeSequence';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 2666;
+    spec.absoluteLine = 2708;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).slice(1, 2) => instanceof Lazy.ArrayLikeSequence', function() {
@@ -8495,7 +8663,7 @@ if (!(actual instanceof Lazy.ArrayLikeSequence)) {
     spec.actual       = 'Lazy([1, 2, 3]).slice(1, 2)';
     spec.expected     = 'instanceof Lazy.ArrayLikeSequence';
     spec.lineNumber   = 5;
-    spec.absoluteLine = 2667;
+    spec.absoluteLine = 2709;
   }());
 });
                     </script>
@@ -8612,7 +8780,7 @@ expect(actual.value()).toEqual([2, 3, 1]);
     spec.actual       = 'Lazy([1, 2, 3]).offset(1)';
     spec.expected     = 'sequence: [2, 3, 1]';
     spec.lineNumber   = 10;
-    spec.absoluteLine = 2700;
+    spec.absoluteLine = 2742;
   }());
 });
                     </script>
@@ -8694,7 +8862,7 @@ if (!(actual instanceof Lazy.ArrayLikeSequence)) {
     spec.actual       = 'Lazy([1, 2]).concat([3, 4])';
     spec.expected     = 'instanceof Lazy.ArrayLikeSequence';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 3031;
+    spec.absoluteLine = 3073;
   }());
   (function() {
     var spec = it('Lazy([1, 2]).concat([3, 4]) => sequence: [1, 2, 3, 4]', function() {
@@ -8708,7 +8876,7 @@ expect(actual.value()).toEqual([1, 2, 3, 4]);
     spec.actual       = 'Lazy([1, 2]).concat([3, 4])';
     spec.expected     = 'sequence: [1, 2, 3, 4]';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 3032;
+    spec.absoluteLine = 3074;
   }());
 });
                     </script>
@@ -8754,7 +8922,7 @@ if (!(actual instanceof Lazy.ArrayLikeSequence)) {
     spec.actual       = 'Lazy([1, 2, 3]).first(2)';
     spec.expected     = 'instanceof Lazy.ArrayLikeSequence';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 2966;
+    spec.absoluteLine = 3008;
   }());
 });
                     </script>
@@ -8839,7 +9007,7 @@ describe('get', function() {
     spec.actual       = 'Lazy([1, 2, 3]).get(1)';
     spec.expected     = '2';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 2720;
+    spec.absoluteLine = 2762;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).get(-1) => undefined', function() {
@@ -8853,7 +9021,7 @@ describe('get', function() {
     spec.actual       = 'Lazy([1, 2, 3]).get(-1)';
     spec.expected     = 'undefined';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 2721;
+    spec.absoluteLine = 2763;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).map(increment).get(1) => 3', function() {
@@ -8867,7 +9035,7 @@ describe('get', function() {
     spec.actual       = 'Lazy([1, 2, 3]).map(increment).get(1)';
     spec.expected     = '3';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 2722;
+    spec.absoluteLine = 2764;
   }());
 });
                     </script>
@@ -8946,7 +9114,7 @@ describe('length', function() {
     spec.actual       = 'Lazy([]).length()';
     spec.expected     = '0';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 2737;
+    spec.absoluteLine = 2779;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).length() => 3', function() {
@@ -8960,7 +9128,7 @@ describe('length', function() {
     spec.actual       = 'Lazy([1, 2, 3]).length()';
     spec.expected     = '3';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 2738;
+    spec.absoluteLine = 2780;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3]).map(increment).length() => 3', function() {
@@ -8974,7 +9142,7 @@ describe('length', function() {
     spec.actual       = 'Lazy([1, 2, 3]).map(increment).length()';
     spec.expected     = '3';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 2739;
+    spec.absoluteLine = 2781;
   }());
 });
                     </script>
@@ -9020,7 +9188,7 @@ if (!(actual instanceof Lazy.ArrayLikeSequence)) {
     spec.actual       = 'Lazy([1, 2, 3]).map(Lazy.identity)';
     spec.expected     = 'instanceof Lazy.ArrayLikeSequence';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 2874;
+    spec.absoluteLine = 2916;
   }());
 });
                     </script>
@@ -9097,7 +9265,7 @@ expect(actual.value()).toEqual([1, 2]);
     spec.actual       = 'Lazy([1, 2, 3]).pop()';
     spec.expected     = 'sequence: [1, 2]';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 2808;
+    spec.absoluteLine = 2850;
   }());
   (function() {
     var spec = it('Lazy([]).pop() => sequence: []', function() {
@@ -9111,7 +9279,7 @@ expect(actual.value()).toEqual([]);
     spec.actual       = 'Lazy([]).pop()';
     spec.expected     = 'sequence: []';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 2809;
+    spec.absoluteLine = 2851;
   }());
 });
                     </script>
@@ -9157,7 +9325,7 @@ if (!(actual instanceof Lazy.ArrayLikeSequence)) {
     spec.actual       = 'Lazy([1, 2, 3]).rest()';
     spec.expected     = 'instanceof Lazy.ArrayLikeSequence';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 2998;
+    spec.absoluteLine = 3040;
   }());
 });
                     </script>
@@ -9203,7 +9371,7 @@ if (!(actual instanceof Lazy.ArrayLikeSequence)) {
     spec.actual       = 'Lazy([1, 2, 3]).reverse()';
     spec.expected     = 'instanceof Lazy.ArrayLikeSequence';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 2940;
+    spec.absoluteLine = 2982;
   }());
 });
                     </script>
@@ -9280,7 +9448,7 @@ expect(actual.value()).toEqual([2, 3]);
     spec.actual       = 'Lazy([1, 2, 3]).shift()';
     spec.expected     = 'sequence: [2, 3]';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 2823;
+    spec.absoluteLine = 2865;
   }());
   (function() {
     var spec = it('Lazy([]).shift() => sequence: []', function() {
@@ -9294,7 +9462,7 @@ expect(actual.value()).toEqual([]);
     spec.actual       = 'Lazy([]).shift()';
     spec.expected     = 'sequence: []';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 2824;
+    spec.absoluteLine = 2866;
   }());
 });
                     </script>
@@ -9403,7 +9571,7 @@ expect(actual.value()).toEqual([1, 2, 3, 4, 5]);
     spec.actual       = 'Lazy([1, 2, 3, 4, 5]).slice(0)';
     spec.expected     = 'sequence: [1, 2, 3, 4, 5]';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 2841;
+    spec.absoluteLine = 2883;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3, 4, 5]).slice(2) => sequence: [3, 4, 5]', function() {
@@ -9417,7 +9585,7 @@ expect(actual.value()).toEqual([3, 4, 5]);
     spec.actual       = 'Lazy([1, 2, 3, 4, 5]).slice(2)';
     spec.expected     = 'sequence: [3, 4, 5]';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 2842;
+    spec.absoluteLine = 2884;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3, 4, 5]).slice(2, 4) => sequence: [3, 4]', function() {
@@ -9431,7 +9599,7 @@ expect(actual.value()).toEqual([3, 4]);
     spec.actual       = 'Lazy([1, 2, 3, 4, 5]).slice(2, 4)';
     spec.expected     = 'sequence: [3, 4]';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 2843;
+    spec.absoluteLine = 2885;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3, 4, 5]).slice(-1) => sequence: [5]', function() {
@@ -9445,7 +9613,7 @@ expect(actual.value()).toEqual([5]);
     spec.actual       = 'Lazy([1, 2, 3, 4, 5]).slice(-1)';
     spec.expected     = 'sequence: [5]';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 2844;
+    spec.absoluteLine = 2886;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3, 4, 5]).slice(1, -1) => sequence: [2, 3, 4]', function() {
@@ -9459,7 +9627,7 @@ expect(actual.value()).toEqual([2, 3, 4]);
     spec.actual       = 'Lazy([1, 2, 3, 4, 5]).slice(1, -1)';
     spec.expected     = 'sequence: [2, 3, 4]';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 2845;
+    spec.absoluteLine = 2887;
   }());
   (function() {
     var spec = it('Lazy([1, 2, 3, 4, 5]).slice(0, 10) => sequence: [1, 2, 3, 4, 5]', function() {
@@ -9473,7 +9641,7 @@ expect(actual.value()).toEqual([1, 2, 3, 4, 5]);
     spec.actual       = 'Lazy([1, 2, 3, 4, 5]).slice(0, 10)';
     spec.expected     = 'sequence: [1, 2, 3, 4, 5]';
     spec.lineNumber   = 5;
-    spec.absoluteLine = 2846;
+    spec.absoluteLine = 2888;
   }());
 });
                     </script>
@@ -9526,7 +9694,7 @@ if (!(actual instanceof Lazy.ObjectLikeSequence)) {
     spec.actual       = 'Lazy(obj).assign({ bar: \'baz\' })';
     spec.expected     = 'instanceof Lazy.ObjectLikeSequence';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 3455;
+    spec.absoluteLine = 3497;
   }());
   (function() {
     var spec = it('Lazy(obj).defaults({ bar: \'baz\' }) => instanceof Lazy.ObjectLikeSequence', function() {
@@ -9542,7 +9710,7 @@ if (!(actual instanceof Lazy.ObjectLikeSequence)) {
     spec.actual       = 'Lazy(obj).defaults({ bar: \'baz\' })';
     spec.expected     = 'instanceof Lazy.ObjectLikeSequence';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 3456;
+    spec.absoluteLine = 3498;
   }());
   (function() {
     var spec = it('Lazy(obj).invert() => instanceof Lazy.ObjectLikeSequence', function() {
@@ -9558,7 +9726,7 @@ if (!(actual instanceof Lazy.ObjectLikeSequence)) {
     spec.actual       = 'Lazy(obj).invert()';
     spec.expected     = 'instanceof Lazy.ObjectLikeSequence';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 3457;
+    spec.absoluteLine = 3499;
   }());
 });
                     </script>
@@ -9698,7 +9866,7 @@ expect(actual.value()).toEqual({ foo: 'bar' });
     spec.actual       = 'Lazy({ Foo: \'bar\' }).caseInsensitive()';
     spec.expected     = 'sequence: { foo: \'bar\' }';
     spec.lineNumber   = 21;
-    spec.absoluteLine = 3500;
+    spec.absoluteLine = 3542;
   }());
   (function() {
     var spec = it('Lazy({ FOO: \'bar\' }).caseInsensitive().get(\'foo\') => \'bar\'', function() {
@@ -9712,7 +9880,7 @@ expect(actual.value()).toEqual({ foo: 'bar' });
     spec.actual       = 'Lazy({ FOO: \'bar\' }).caseInsensitive().get(\'foo\')';
     spec.expected     = '\'bar\'';
     spec.lineNumber   = 22;
-    spec.absoluteLine = 3501;
+    spec.absoluteLine = 3543;
   }());
   (function() {
     var spec = it('Lazy({ FOO: \'bar\' }).caseInsensitive().get(\'FOO\') => \'bar\'', function() {
@@ -9726,7 +9894,7 @@ expect(actual.value()).toEqual({ foo: 'bar' });
     spec.actual       = 'Lazy({ FOO: \'bar\' }).caseInsensitive().get(\'FOO\')';
     spec.expected     = '\'bar\'';
     spec.lineNumber   = 23;
-    spec.absoluteLine = 3502;
+    spec.absoluteLine = 3544;
   }());
 });
                     </script>
@@ -9735,6 +9903,10 @@ expect(actual.value()).toEqual({ foo: 'bar' });
                     <h1>
                         assign
                         <small>ObjectLikeSequence#assign</small>
+                        <div class="aliases">
+                            aliases:
+                            <span class="alias">extend</span>
+                        </div>
                     </h1>
 
                     <p>Returns an <a href="#ObjectLikeSequence">ObjectLikeSequence</a> whose elements are the combination of
@@ -9812,7 +9984,7 @@ expect(actual.value()).toEqual({ uno: 1, dos: 2, tres: 3 });
     spec.actual       = 'Lazy({ \"uno\": 1, \"dos\": 2 }).assign({ \"tres\": 3 })';
     spec.expected     = 'sequence: { uno: 1, dos: 2, tres: 3 }';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 3623;
+    spec.absoluteLine = 3665;
   }());
   (function() {
     var spec = it('Lazy({ foo: \"bar\" }).assign({ foo: \"baz\" }); => sequence: { foo: \"baz\" }', function() {
@@ -9826,7 +9998,7 @@ expect(actual.value()).toEqual({ foo: "baz" });
     spec.actual       = 'Lazy({ foo: \"bar\" }).assign({ foo: \"baz\" });';
     spec.expected     = 'sequence: { foo: \"baz\" }';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 3624;
+    spec.absoluteLine = 3666;
   }());
 });
                     </script>
@@ -9868,7 +10040,7 @@ describe('async', function() {
     spec.actual       = 'Lazy({ foo: \'bar\' }).async()';
     spec.expected     = 'throws';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 3575;
+    spec.absoluteLine = 3617;
   }());
 });
                     </script>
@@ -9954,7 +10126,7 @@ expect(actual.value()).toEqual({ name: "Dan", password: "passw0rd" });
     spec.actual       = 'Lazy({ name: \"Dan\" }).defaults({ name: \"User\", password: \"passw0rd\" })';
     spec.expected     = 'sequence: { name: \"Dan\", password: \"passw0rd\" }';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 3683;
+    spec.absoluteLine = 3725;
   }());
 });
                     </script>
@@ -9963,6 +10135,10 @@ expect(actual.value()).toEqual({ name: "Dan", password: "passw0rd" });
                     <h1>
                         functions
                         <small>ObjectLikeSequence#functions</small>
+                        <div class="aliases">
+                            aliases:
+                            <span class="alias">methods</span>
+                        </div>
                     </h1>
 
                     <p>Creates a <a href="#Sequence">Sequence</a> consisting of the keys from this sequence whose
@@ -10044,7 +10220,7 @@ expect(actual.value()).toEqual(["bark", "wagTail"]);
     spec.actual       = 'Lazy(dog).functions()';
     spec.expected     = 'sequence: [\"bark\", \"wagTail\"]';
     spec.lineNumber   = 7;
-    spec.absoluteLine = 3926;
+    spec.absoluteLine = 3998;
   }());
 });
                     </script>
@@ -10136,7 +10312,7 @@ describe('get', function() {
     spec.actual       = 'Lazy({ foo: \"bar\" }).get(\"foo\")';
     spec.expected     = '\"bar\"';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 3524;
+    spec.absoluteLine = 3566;
   }());
   (function() {
     var spec = it('Lazy({ foo: \"bar\" }).extend({ foo: \"baz\" }).get(\"foo\") => \"baz\"', function() {
@@ -10150,7 +10326,7 @@ describe('get', function() {
     spec.actual       = 'Lazy({ foo: \"bar\" }).extend({ foo: \"baz\" }).get(\"foo\")';
     spec.expected     = '\"baz\"';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 3525;
+    spec.absoluteLine = 3567;
   }());
   (function() {
     var spec = it('Lazy({ foo: \"bar\" }).defaults({ bar: \"baz\" }).get(\"bar\") => \"baz\"', function() {
@@ -10164,7 +10340,7 @@ describe('get', function() {
     spec.actual       = 'Lazy({ foo: \"bar\" }).defaults({ bar: \"baz\" }).get(\"bar\")';
     spec.expected     = '\"baz\"';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 3526;
+    spec.absoluteLine = 3568;
   }());
   (function() {
     var spec = it('Lazy({ foo: \"bar\" }).invert().get(\"bar\") => \"foo\"', function() {
@@ -10178,7 +10354,7 @@ describe('get', function() {
     spec.actual       = 'Lazy({ foo: \"bar\" }).invert().get(\"bar\")';
     spec.expected     = '\"foo\"';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 3527;
+    spec.absoluteLine = 3569;
   }());
   (function() {
     var spec = it('Lazy({ foo: 1, bar: 2 }).pick([\"foo\"]).get(\"foo\") => 1', function() {
@@ -10192,7 +10368,7 @@ describe('get', function() {
     spec.actual       = 'Lazy({ foo: 1, bar: 2 }).pick([\"foo\"]).get(\"foo\")';
     spec.expected     = '1';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 3528;
+    spec.absoluteLine = 3570;
   }());
   (function() {
     var spec = it('Lazy({ foo: 1, bar: 2 }).pick([\"foo\"]).get(\"bar\") => undefined', function() {
@@ -10206,7 +10382,7 @@ describe('get', function() {
     spec.actual       = 'Lazy({ foo: 1, bar: 2 }).pick([\"foo\"]).get(\"bar\")';
     spec.expected     = 'undefined';
     spec.lineNumber   = 5;
-    spec.absoluteLine = 3529;
+    spec.absoluteLine = 3571;
   }());
   (function() {
     var spec = it('Lazy({ foo: 1, bar: 2 }).omit([\"foo\"]).get(\"bar\") => 2', function() {
@@ -10220,7 +10396,7 @@ describe('get', function() {
     spec.actual       = 'Lazy({ foo: 1, bar: 2 }).omit([\"foo\"]).get(\"bar\")';
     spec.expected     = '2';
     spec.lineNumber   = 6;
-    spec.absoluteLine = 3530;
+    spec.absoluteLine = 3572;
   }());
   (function() {
     var spec = it('Lazy({ foo: 1, bar: 2 }).omit([\"foo\"]).get(\"foo\") => undefined', function() {
@@ -10234,7 +10410,7 @@ describe('get', function() {
     spec.actual       = 'Lazy({ foo: 1, bar: 2 }).omit([\"foo\"]).get(\"foo\")';
     spec.expected     = 'undefined';
     spec.lineNumber   = 7;
-    spec.absoluteLine = 3531;
+    spec.absoluteLine = 3573;
   }());
 });
                     </script>
@@ -10311,7 +10487,7 @@ expect(actual.value()).toEqual({ Dan: "first", Tao: "last" });
     spec.actual       = 'Lazy({ first: \"Dan\", last: \"Tao\" }).invert()';
     spec.expected     = 'sequence: { Dan: \"first\", Tao: \"last\" }';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 3736;
+    spec.absoluteLine = 3778;
   }());
 });
                     </script>
@@ -10387,7 +10563,7 @@ expect(actual.value()).toEqual(["hello", "goodbye"]);
     spec.actual       = 'Lazy({ hello: \"hola\", goodbye: \"hasta luego\" }).keys()';
     spec.expected     = 'sequence: [\"hello\", \"goodbye\"]';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 3549;
+    spec.absoluteLine = 3591;
   }());
 });
                     </script>
@@ -10400,6 +10576,10 @@ expect(actual.value()).toEqual(["hello", "goodbye"]);
 
                     <p>Produces an <a href="#ObjectLikeSequence">ObjectLikeSequence</a> consisting of all the recursively
 merged values from this and the given object(s) or sequence(s).</p>
+<p>Note that by default this method only merges &quot;vanilla&quot; objects (bags of
+key/value pairs), not arrays or any other custom object types. To customize
+how merging works, you can provide the mergeFn argument, e.g. to handling
+merging arrays, strings, or other types of objects.</p>
 
 
                     <div class="signature">
@@ -10434,7 +10614,10 @@ merged values from this and the given object(s) or sequence(s).</p>
                                     <td>mergeFn</td>
                                     <td>Function?</td>
                                     <td><p>An optional function used to customize merging
-    behavior.</p>
+    behavior. The function should take two values as parameters and return
+    whatever the &quot;merged&quot; form of those values is. If the function returns
+    undefined then the new value will simply replace the old one in the
+    final result.</p>
 </td>
                                 </tr>
 
@@ -10563,7 +10746,7 @@ expect(actual.value()).toEqual({ 'characters': [{ 'name': 'barney', 'age': 36 },
     spec.actual       = 'Lazy(names).merge(ages);';
     spec.expected     = 'sequence: { \'characters\': [{ \'name\': \'barney\', \'age\': 36 }, { \'name\': \'fred\', \'age\': 40 }] }';
     spec.lineNumber   = 31;
-    spec.absoluteLine = 3800;
+    spec.absoluteLine = 3850;
   }());
   (function() {
     var spec = it('Lazy(food).merge(otherFood, mergeArrays); => sequence: { \'fruits\': [\'apple\', \'banana\'], \'vegetables\': [\'beet\', \'carrot\'] }', function() {
@@ -10577,7 +10760,7 @@ expect(actual.value()).toEqual({ 'fruits': ['apple', 'banana'], 'vegetables': ['
     spec.actual       = 'Lazy(food).merge(otherFood, mergeArrays);';
     spec.expected     = 'sequence: { \'fruits\': [\'apple\', \'banana\'], \'vegetables\': [\'beet\', \'carrot\'] }';
     spec.lineNumber   = 32;
-    spec.absoluteLine = 3801;
+    spec.absoluteLine = 3851;
   }());
   (function() {
     var spec = it('Lazy({ foo: 1 }).merge({ foo: 2 }); => sequence: { foo: 2 }', function() {
@@ -10591,7 +10774,7 @@ expect(actual.value()).toEqual({ foo: 2 });
     spec.actual       = 'Lazy({ foo: 1 }).merge({ foo: 2 });';
     spec.expected     = 'sequence: { foo: 2 }';
     spec.lineNumber   = 37;
-    spec.absoluteLine = 3806;
+    spec.absoluteLine = 3856;
   }());
   (function() {
     var spec = it('Lazy({ foo: 1 }).merge({ bar: 2 }); => sequence: { foo: 1, bar: 2 }', function() {
@@ -10605,7 +10788,7 @@ expect(actual.value()).toEqual({ foo: 1, bar: 2 });
     spec.actual       = 'Lazy({ foo: 1 }).merge({ bar: 2 });';
     spec.expected     = 'sequence: { foo: 1, bar: 2 }';
     spec.lineNumber   = 38;
-    spec.absoluteLine = 3807;
+    spec.absoluteLine = 3857;
   }());
   (function() {
     var spec = it('Lazy({ foo: { bar: 1 } }).merge({ foo: { bar: 2 } }); => sequence: { foo: { bar: 2 } }', function() {
@@ -10619,7 +10802,7 @@ expect(actual.value()).toEqual({ foo: { bar: 2 } });
     spec.actual       = 'Lazy({ foo: { bar: 1 } }).merge({ foo: { bar: 2 } });';
     spec.expected     = 'sequence: { foo: { bar: 2 } }';
     spec.lineNumber   = 41;
-    spec.absoluteLine = 3810;
+    spec.absoluteLine = 3860;
   }());
   (function() {
     var spec = it('Lazy({ foo: { bar: 1 } }).merge({ foo: { baz: 2 } }); => sequence: { foo: { bar: 1, baz: 2 } }', function() {
@@ -10633,7 +10816,7 @@ expect(actual.value()).toEqual({ foo: { bar: 1, baz: 2 } });
     spec.actual       = 'Lazy({ foo: { bar: 1 } }).merge({ foo: { baz: 2 } });';
     spec.expected     = 'sequence: { foo: { bar: 1, baz: 2 } }';
     spec.lineNumber   = 42;
-    spec.absoluteLine = 3811;
+    spec.absoluteLine = 3861;
   }());
   (function() {
     var spec = it('Lazy({ foo: { bar: 1 } }).merge({ foo: { baz: 2 } }); => sequence: { foo: { bar: 1, baz: 2 } }', function() {
@@ -10647,7 +10830,7 @@ expect(actual.value()).toEqual({ foo: { bar: 1, baz: 2 } });
     spec.actual       = 'Lazy({ foo: { bar: 1 } }).merge({ foo: { baz: 2 } });';
     spec.expected     = 'sequence: { foo: { bar: 1, baz: 2 } }';
     spec.lineNumber   = 43;
-    spec.absoluteLine = 3812;
+    spec.absoluteLine = 3862;
   }());
   (function() {
     var spec = it('Lazy({ foo: 1 }).merge({ bar: 2 }, { bar: 3 }); => sequence: { foo: 1, bar: 3 }', function() {
@@ -10661,7 +10844,7 @@ expect(actual.value()).toEqual({ foo: 1, bar: 3 });
     spec.actual       = 'Lazy({ foo: 1 }).merge({ bar: 2 }, { bar: 3 });';
     spec.expected     = 'sequence: { foo: 1, bar: 3 }';
     spec.lineNumber   = 46;
-    spec.absoluteLine = 3815;
+    spec.absoluteLine = 3865;
   }());
   (function() {
     var spec = it('Lazy({ foo: 1 }).merge({ foo: undefined }); => sequence: { foo: 1 }', function() {
@@ -10675,7 +10858,7 @@ expect(actual.value()).toEqual({ foo: 1 });
     spec.actual       = 'Lazy({ foo: 1 }).merge({ foo: undefined });';
     spec.expected     = 'sequence: { foo: 1 }';
     spec.lineNumber   = 49;
-    spec.absoluteLine = 3818;
+    spec.absoluteLine = 3868;
   }());
   (function() {
     var spec = it('Lazy({ foo: 1 }).merge({ foo: null }); => sequence: { foo: null }', function() {
@@ -10689,7 +10872,7 @@ expect(actual.value()).toEqual({ foo: null });
     spec.actual       = 'Lazy({ foo: 1 }).merge({ foo: null });';
     spec.expected     = 'sequence: { foo: null }';
     spec.lineNumber   = 52;
-    spec.absoluteLine = 3821;
+    spec.absoluteLine = 3871;
   }());
   (function() {
     var spec = it('Lazy({ foo: [{ bar: 1 }] }).merge({ foo: [{ baz: 2 }] }); => sequence: { foo: [{ bar: 1, baz: 2}] }', function() {
@@ -10703,7 +10886,7 @@ expect(actual.value()).toEqual({ foo: [{ bar: 1, baz: 2}] });
     spec.actual       = 'Lazy({ foo: [{ bar: 1 }] }).merge({ foo: [{ baz: 2 }] });';
     spec.expected     = 'sequence: { foo: [{ bar: 1, baz: 2}] }';
     spec.lineNumber   = 55;
-    spec.absoluteLine = 3824;
+    spec.absoluteLine = 3874;
   }());
 });
                     </script>
@@ -10796,7 +10979,7 @@ expect(actual.value()).toEqual({ "i don't know": "third" });
     spec.actual       = 'Lazy(players).omit([\"who\", \"what\"])';
     spec.expected     = 'sequence: { \"i don\'t know\": \"third\" }';
     spec.lineNumber   = 6;
-    spec.absoluteLine = 4001;
+    spec.absoluteLine = 4073;
   }());
 });
                     </script>
@@ -10805,6 +10988,10 @@ expect(actual.value()).toEqual({ "i don't know": "third" });
                     <h1>
                         pairs
                         <small>ObjectLikeSequence#pairs</small>
+                        <div class="aliases">
+                            aliases:
+                            <span class="alias">toArray</span>
+                        </div>
                     </h1>
 
                     <p>Maps the key/value pairs in this sequence to arrays.</p>
@@ -10881,7 +11068,7 @@ expect(actual.value()).toEqual([["red", "#f00"], ["green", "#0f0"], ["blue", "#0
     spec.actual       = 'Lazy(colorCodes).pairs()';
     spec.expected     = 'sequence: [[\"red\", \"#f00\"], [\"green\", \"#0f0\"], [\"blue\", \"#00f\"]]';
     spec.lineNumber   = 6;
-    spec.absoluteLine = 4046;
+    spec.absoluteLine = 4118;
   }());
 });
                     </script>
@@ -10974,7 +11161,7 @@ expect(actual.value()).toEqual({ who: "first", what: "second" });
     spec.actual       = 'Lazy(players).pick([\"who\", \"what\"])';
     spec.expected     = 'sequence: { who: \"first\", what: \"second\" }';
     spec.lineNumber   = 6;
-    spec.absoluteLine = 3954;
+    spec.absoluteLine = 4026;
   }());
 });
                     </script>
@@ -11059,7 +11246,7 @@ describe('toArray', function() {
     spec.actual       = 'Lazy(colorCodes).toArray()';
     spec.expected     = '[[\"red\", \"#f00\"], [\"green\", \"#0f0\"], [\"blue\", \"#00f\"]]';
     spec.lineNumber   = 6;
-    spec.absoluteLine = 4065;
+    spec.absoluteLine = 4137;
   }());
 });
                     </script>
@@ -11147,7 +11334,7 @@ describe('toObject', function() {
     spec.actual       = 'Lazy(colorCodes).toObject()';
     spec.expected     = '{ red: \"#f00\", green: \"#0f0\", blue: \"#00f\" }';
     spec.lineNumber   = 6;
-    spec.absoluteLine = 4084;
+    spec.absoluteLine = 4156;
   }());
 });
                     </script>
@@ -11223,7 +11410,7 @@ expect(actual.value()).toEqual(["hola", "hasta luego"]);
     spec.actual       = 'Lazy({ hello: \"hola\", goodbye: \"hasta luego\" }).values()';
     spec.expected     = 'sequence: [\"hola\", \"hasta luego\"]';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 3563;
+    spec.absoluteLine = 3605;
   }());
 });
                     </script>
@@ -11333,7 +11520,7 @@ obj.foo = 3;
     spec.actual       = 'obj.foo;';
     spec.expected     = '3';
     spec.lineNumber   = 11;
-    spec.absoluteLine = 4189;
+    spec.absoluteLine = 4266;
   }());
   (function() {
     var spec = it('changes; => [{ property: \'foo\', value: 1 }, { property: \'foo\', value: 3 }]', function() {
@@ -11347,7 +11534,7 @@ obj.foo = 3;
     spec.actual       = 'changes;';
     spec.expected     = '[{ property: \'foo\', value: 1 }, { property: \'foo\', value: 3 }]';
     spec.lineNumber   = 12;
-    spec.absoluteLine = 4190;
+    spec.absoluteLine = 4267;
   }());
 });
                     </script>
@@ -11410,7 +11597,7 @@ if (!(actual instanceof Lazy.StringLikeSequence)) {
     spec.actual       = 'Lazy(\'foo\')';
     spec.expected     = 'instanceof Lazy.StringLikeSequence';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 4245;
+    spec.absoluteLine = 4322;
   }());
   (function() {
     var spec = it('Lazy(\'foo\').toUpperCase() => instanceof Lazy.StringLikeSequence', function() {
@@ -11426,7 +11613,7 @@ if (!(actual instanceof Lazy.StringLikeSequence)) {
     spec.actual       = 'Lazy(\'foo\').toUpperCase()';
     spec.expected     = 'instanceof Lazy.StringLikeSequence';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 4246;
+    spec.absoluteLine = 4323;
   }());
   (function() {
     var spec = it('Lazy(\'foo\').reverse() => instanceof Lazy.StringLikeSequence', function() {
@@ -11442,7 +11629,7 @@ if (!(actual instanceof Lazy.StringLikeSequence)) {
     spec.actual       = 'Lazy(\'foo\').reverse()';
     spec.expected     = 'instanceof Lazy.StringLikeSequence';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 4247;
+    spec.absoluteLine = 4324;
   }());
   (function() {
     var spec = it('Lazy(\'foo\').take(2) => instanceof Lazy.StringLikeSequence', function() {
@@ -11458,7 +11645,7 @@ if (!(actual instanceof Lazy.StringLikeSequence)) {
     spec.actual       = 'Lazy(\'foo\').take(2)';
     spec.expected     = 'instanceof Lazy.StringLikeSequence';
     spec.lineNumber   = 5;
-    spec.absoluteLine = 4248;
+    spec.absoluteLine = 4325;
   }());
   (function() {
     var spec = it('Lazy(\'foo\').drop(1) => instanceof Lazy.StringLikeSequence', function() {
@@ -11474,7 +11661,7 @@ if (!(actual instanceof Lazy.StringLikeSequence)) {
     spec.actual       = 'Lazy(\'foo\').drop(1)';
     spec.expected     = 'instanceof Lazy.StringLikeSequence';
     spec.lineNumber   = 6;
-    spec.absoluteLine = 4249;
+    spec.absoluteLine = 4326;
   }());
   (function() {
     var spec = it('Lazy(\'foo\').substring(1) => instanceof Lazy.StringLikeSequence', function() {
@@ -11490,7 +11677,7 @@ if (!(actual instanceof Lazy.StringLikeSequence)) {
     spec.actual       = 'Lazy(\'foo\').substring(1)';
     spec.expected     = 'instanceof Lazy.StringLikeSequence';
     spec.lineNumber   = 7;
-    spec.absoluteLine = 4250;
+    spec.absoluteLine = 4327;
   }());
   (function() {
     var spec = it('Lazy(\'foo\').map(Lazy.identity) => instanceof Lazy.ArrayLikeSequence', function() {
@@ -11506,7 +11693,7 @@ if (!(actual instanceof Lazy.ArrayLikeSequence)) {
     spec.actual       = 'Lazy(\'foo\').map(Lazy.identity)';
     spec.expected     = 'instanceof Lazy.ArrayLikeSequence';
     spec.lineNumber   = 13;
-    spec.absoluteLine = 4256;
+    spec.absoluteLine = 4333;
   }());
   (function() {
     var spec = it('Lazy(\'foo\').mapString(Lazy.identity) => instanceof Lazy.StringLikeSequence', function() {
@@ -11522,7 +11709,7 @@ if (!(actual instanceof Lazy.StringLikeSequence)) {
     spec.actual       = 'Lazy(\'foo\').mapString(Lazy.identity)';
     spec.expected     = 'instanceof Lazy.StringLikeSequence';
     spec.lineNumber   = 14;
-    spec.absoluteLine = 4257;
+    spec.absoluteLine = 4334;
   }());
 });
                     </script>
@@ -11644,7 +11831,7 @@ expect(actual.value()).toEqual("foo!!ZOMG!!!1");
     spec.actual       = 'Lazy(\'foo\').zomg()';
     spec.expected     = 'sequence: \"foo!!ZOMG!!!1\"';
     spec.lineNumber   = 13;
-    spec.absoluteLine = 4292;
+    spec.absoluteLine = 4369;
   }());
 });
                     </script>
@@ -11728,7 +11915,7 @@ describe('charAt', function() {
     spec.actual       = 'Lazy(\"foo\").charAt(0)';
     spec.expected     = '\"f\"';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 4341;
+    spec.absoluteLine = 4418;
   }());
   (function() {
     var spec = it('Lazy(\"foo\").charAt(-1) => \"\"', function() {
@@ -11742,7 +11929,7 @@ describe('charAt', function() {
     spec.actual       = 'Lazy(\"foo\").charAt(-1)';
     spec.expected     = '\"\"';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 4342;
+    spec.absoluteLine = 4419;
   }());
   (function() {
     var spec = it('Lazy(\"foo\").charAt(10) => \"\"', function() {
@@ -11756,7 +11943,7 @@ describe('charAt', function() {
     spec.actual       = 'Lazy(\"foo\").charAt(10)';
     spec.expected     = '\"\"';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 4343;
+    spec.absoluteLine = 4420;
   }());
 });
                     </script>
@@ -11843,7 +12030,7 @@ describe('charCodeAt', function() {
     spec.actual       = 'Lazy(\"abc\").charCodeAt(0)';
     spec.expected     = '97';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 4358;
+    spec.absoluteLine = 4435;
   }());
   (function() {
     var spec = it('Lazy(\"abc\").charCodeAt(-1) => NaN', function() {
@@ -11855,7 +12042,7 @@ describe('charCodeAt', function() {
     spec.actual       = 'Lazy(\"abc\").charCodeAt(-1)';
     spec.expected     = 'NaN';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 4359;
+    spec.absoluteLine = 4436;
   }());
   (function() {
     var spec = it('Lazy(\"abc\").charCodeAt(10) => NaN', function() {
@@ -11867,7 +12054,7 @@ describe('charCodeAt', function() {
     spec.actual       = 'Lazy(\"abc\").charCodeAt(10)';
     spec.expected     = 'NaN';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 4360;
+    spec.absoluteLine = 4437;
   }());
 });
                     </script>
@@ -11950,7 +12137,7 @@ describe('contains', function() {
     spec.actual       = 'Lazy(\'hello\').contains(\'ell\')';
     spec.expected     = 'true';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 4506;
+    spec.absoluteLine = 4583;
   }());
   (function() {
     var spec = it('Lazy(\'hello\').contains(\'\') => true', function() {
@@ -11964,7 +12151,7 @@ describe('contains', function() {
     spec.actual       = 'Lazy(\'hello\').contains(\'\')';
     spec.expected     = 'true';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 4507;
+    spec.absoluteLine = 4584;
   }());
   (function() {
     var spec = it('Lazy(\'hello\').contains(\'abc\') => false', function() {
@@ -11978,7 +12165,7 @@ describe('contains', function() {
     spec.actual       = 'Lazy(\'hello\').contains(\'abc\')';
     spec.expected     = 'false';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 4508;
+    spec.absoluteLine = 4585;
   }());
 });
                     </script>
@@ -12061,7 +12248,7 @@ describe('endsWith', function() {
     spec.actual       = 'Lazy(\'foo\').endsWith(\'oo\')';
     spec.expected     = 'true';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 4522;
+    spec.absoluteLine = 4599;
   }());
   (function() {
     var spec = it('Lazy(\'foo\').endsWith(\'\') => true', function() {
@@ -12075,7 +12262,7 @@ describe('endsWith', function() {
     spec.actual       = 'Lazy(\'foo\').endsWith(\'\')';
     spec.expected     = 'true';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 4523;
+    spec.absoluteLine = 4600;
   }());
   (function() {
     var spec = it('Lazy(\'foo\').endsWith(\'abc\') => false', function() {
@@ -12089,7 +12276,7 @@ describe('endsWith', function() {
     spec.actual       = 'Lazy(\'foo\').endsWith(\'abc\')';
     spec.expected     = 'false';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 4524;
+    spec.absoluteLine = 4601;
   }());
 });
                     </script>
@@ -12138,7 +12325,7 @@ describe('first', function() {
     spec.actual       = 'Lazy(\'foo\').first()';
     spec.expected     = '\'f\'';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 4415;
+    spec.absoluteLine = 4492;
   }());
   (function() {
     var spec = it('Lazy(\'fo\').first(2) => sequence: \'fo\'', function() {
@@ -12152,7 +12339,7 @@ expect(actual.value()).toEqual('fo');
     spec.actual       = 'Lazy(\'fo\').first(2)';
     spec.expected     = 'sequence: \'fo\'';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 4416;
+    spec.absoluteLine = 4493;
   }());
   (function() {
     var spec = it('Lazy(\'foo\').first(10) => sequence: \'foo\'', function() {
@@ -12166,7 +12353,7 @@ expect(actual.value()).toEqual('foo');
     spec.actual       = 'Lazy(\'foo\').first(10)';
     spec.expected     = 'sequence: \'foo\'';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 4417;
+    spec.absoluteLine = 4494;
   }());
   (function() {
     var spec = it('Lazy(\'foo\').toUpperCase().first() => \'F\'', function() {
@@ -12180,7 +12367,7 @@ expect(actual.value()).toEqual('foo');
     spec.actual       = 'Lazy(\'foo\').toUpperCase().first()';
     spec.expected     = '\'F\'';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 4418;
+    spec.absoluteLine = 4495;
   }());
   (function() {
     var spec = it('Lazy(\'foo\').toUpperCase().first(2) => sequence: \'FO\'', function() {
@@ -12194,7 +12381,7 @@ expect(actual.value()).toEqual('FO');
     spec.actual       = 'Lazy(\'foo\').toUpperCase().first(2)';
     spec.expected     = 'sequence: \'FO\'';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 4419;
+    spec.absoluteLine = 4496;
   }());
 });
                     </script>
@@ -12288,7 +12475,7 @@ describe('indexOf', function() {
     spec.actual       = 'Lazy(\'canal\').indexOf(\'a\')';
     spec.expected     = '1';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 4466;
+    spec.absoluteLine = 4543;
   }());
   (function() {
     var spec = it('Lazy(\'canal\').indexOf(\'a\', 2) => 3', function() {
@@ -12302,7 +12489,7 @@ describe('indexOf', function() {
     spec.actual       = 'Lazy(\'canal\').indexOf(\'a\', 2)';
     spec.expected     = '3';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 4467;
+    spec.absoluteLine = 4544;
   }());
   (function() {
     var spec = it('Lazy(\'canal\').indexOf(\'ana\') => 1', function() {
@@ -12316,7 +12503,7 @@ describe('indexOf', function() {
     spec.actual       = 'Lazy(\'canal\').indexOf(\'ana\')';
     spec.expected     = '1';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 4468;
+    spec.absoluteLine = 4545;
   }());
   (function() {
     var spec = it('Lazy(\'canal\').indexOf(\'andy\') => -1', function() {
@@ -12330,7 +12517,7 @@ describe('indexOf', function() {
     spec.actual       = 'Lazy(\'canal\').indexOf(\'andy\')';
     spec.expected     = '-1';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 4469;
+    spec.absoluteLine = 4546;
   }());
   (function() {
     var spec = it('Lazy(\'canal\').indexOf(\'x\') => -1', function() {
@@ -12344,7 +12531,7 @@ describe('indexOf', function() {
     spec.actual       = 'Lazy(\'canal\').indexOf(\'x\')';
     spec.expected     = '-1';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 4470;
+    spec.absoluteLine = 4547;
   }());
 });
                     </script>
@@ -12393,7 +12580,7 @@ describe('last', function() {
     spec.actual       = 'Lazy(\'foo\').last()';
     spec.expected     = '\'o\'';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 4436;
+    spec.absoluteLine = 4513;
   }());
   (function() {
     var spec = it('Lazy(\'foo\').last(2) => sequence: \'oo\'', function() {
@@ -12407,7 +12594,7 @@ expect(actual.value()).toEqual('oo');
     spec.actual       = 'Lazy(\'foo\').last(2)';
     spec.expected     = 'sequence: \'oo\'';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 4437;
+    spec.absoluteLine = 4514;
   }());
   (function() {
     var spec = it('Lazy(\'foo\').last(10) => sequence: \'foo\'', function() {
@@ -12421,7 +12608,7 @@ expect(actual.value()).toEqual('foo');
     spec.actual       = 'Lazy(\'foo\').last(10)';
     spec.expected     = 'sequence: \'foo\'';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 4438;
+    spec.absoluteLine = 4515;
   }());
   (function() {
     var spec = it('Lazy(\'foo\').toUpperCase().last() => \'O\'', function() {
@@ -12435,7 +12622,7 @@ expect(actual.value()).toEqual('foo');
     spec.actual       = 'Lazy(\'foo\').toUpperCase().last()';
     spec.expected     = '\'O\'';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 4439;
+    spec.absoluteLine = 4516;
   }());
   (function() {
     var spec = it('Lazy(\'foo\').toUpperCase().last(2) => sequence: \'OO\'', function() {
@@ -12449,7 +12636,7 @@ expect(actual.value()).toEqual('OO');
     spec.actual       = 'Lazy(\'foo\').toUpperCase().last(2)';
     spec.expected     = 'sequence: \'OO\'';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 4440;
+    spec.absoluteLine = 4517;
   }());
 });
                     </script>
@@ -12543,7 +12730,7 @@ describe('lastIndexOf', function() {
     spec.actual       = 'Lazy(\'canal\').lastIndexOf(\'a\')';
     spec.expected     = '3';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 4488;
+    spec.absoluteLine = 4565;
   }());
   (function() {
     var spec = it('Lazy(\'canal\').lastIndexOf(\'a\', 2) => 1', function() {
@@ -12557,7 +12744,7 @@ describe('lastIndexOf', function() {
     spec.actual       = 'Lazy(\'canal\').lastIndexOf(\'a\', 2)';
     spec.expected     = '1';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 4489;
+    spec.absoluteLine = 4566;
   }());
   (function() {
     var spec = it('Lazy(\'canal\').lastIndexOf(\'ana\') => 1', function() {
@@ -12571,7 +12758,7 @@ describe('lastIndexOf', function() {
     spec.actual       = 'Lazy(\'canal\').lastIndexOf(\'ana\')';
     spec.expected     = '1';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 4490;
+    spec.absoluteLine = 4567;
   }());
   (function() {
     var spec = it('Lazy(\'canal\').lastIndexOf(\'andy\') => -1', function() {
@@ -12585,7 +12772,7 @@ describe('lastIndexOf', function() {
     spec.actual       = 'Lazy(\'canal\').lastIndexOf(\'andy\')';
     spec.expected     = '-1';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 4491;
+    spec.absoluteLine = 4568;
   }());
   (function() {
     var spec = it('Lazy(\'canal\').lastIndexOf(\'x\') => -1', function() {
@@ -12599,7 +12786,7 @@ describe('lastIndexOf', function() {
     spec.actual       = 'Lazy(\'canal\').lastIndexOf(\'x\')';
     spec.expected     = '-1';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 4492;
+    spec.absoluteLine = 4569;
   }());
 });
                     </script>
@@ -12686,7 +12873,7 @@ expect(actual.value()).toEqual("FOO");
     spec.actual       = 'Lazy(\"foo\").mapString(upcase)';
     spec.expected     = 'sequence: \"FOO\"';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 4597;
+    spec.absoluteLine = 4674;
   }());
   (function() {
     var spec = it('Lazy(\"foo\").mapString(upcase).charAt(0) => \"F\"', function() {
@@ -12700,7 +12887,7 @@ expect(actual.value()).toEqual("FOO");
     spec.actual       = 'Lazy(\"foo\").mapString(upcase).charAt(0)';
     spec.expected     = '\"F\"';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 4598;
+    spec.absoluteLine = 4675;
   }());
   (function() {
     var spec = it('Lazy(\"foo\").mapString(upcase).charCodeAt(0) => 70', function() {
@@ -12714,7 +12901,7 @@ expect(actual.value()).toEqual("FOO");
     spec.actual       = 'Lazy(\"foo\").mapString(upcase).charCodeAt(0)';
     spec.expected     = '70';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 4599;
+    spec.absoluteLine = 4676;
   }());
   (function() {
     var spec = it('Lazy(\"foo\").mapString(upcase).substring(1) => sequence: \"OO\"', function() {
@@ -12728,7 +12915,7 @@ expect(actual.value()).toEqual("OO");
     spec.actual       = 'Lazy(\"foo\").mapString(upcase).substring(1)';
     spec.expected     = 'sequence: \"OO\"';
     spec.lineNumber   = 5;
-    spec.absoluteLine = 4600;
+    spec.absoluteLine = 4677;
   }());
 });
                     </script>
@@ -12749,7 +12936,7 @@ pattern in the underlying string.</p>
                         <pre><span class="line" data-line-no="0"><span class="cm-variable">StringLikeSequence</span>.<span class="cm-property">match</span> = <span class="cm-keyword">function</span>(<span class="cm-def">pattern</span>) { <span class="cm-comment"><a class="reveal-source" href="#source-StringLikeSequence-match">/*...*/</a></span> }</span></pre>
 
                         <pre class="function-source" id="source-StringLikeSequence-match"><span class="line" data-line-no="0"><span class="cm-variable">StringLikeSequence</span>.<span class="cm-property">match</span> = <span class="cm-keyword">function</span> <span class="cm-variable">match</span>(<span class="cm-def">pattern</span>) {</span>
-<span class="line" data-line-no="1">  <span class="cm-keyword">return</span> <span class="cm-keyword">new</span> <span class="cm-variable">StringMatchSequence</span>(<span class="cm-keyword">this</span>.<span class="cm-property">source</span>, <span class="cm-variable-2">pattern</span>);</span>
+<span class="line" data-line-no="1">  <span class="cm-keyword">return</span> <span class="cm-keyword">new</span> <span class="cm-variable">StringMatchSequence</span>(<span class="cm-keyword">this</span>, <span class="cm-variable-2">pattern</span>);</span>
 <span class="line" data-line-no="2">}</span></pre>
 
                         <table id="StringLikeSequence#match-parameters">
@@ -12812,7 +12999,7 @@ expect(actual.value()).toEqual(["ab", "ac", "ad", "ab"]);
     spec.actual       = 'Lazy(\"abracadabra\").match(/a[bcd]/)';
     spec.expected     = 'sequence: [\"ab\", \"ac\", \"ad\", \"ab\"]';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 4654;
+    spec.absoluteLine = 4731;
   }());
   (function() {
     var spec = it('Lazy(\"fee fi fo fum\").match(/\\w+/) => sequence: [\"fee\", \"fi\", \"fo\", \"fum\"]', function() {
@@ -12826,7 +13013,7 @@ expect(actual.value()).toEqual(["fee", "fi", "fo", "fum"]);
     spec.actual       = 'Lazy(\"fee fi fo fum\").match(/\\w+/)';
     spec.expected     = 'sequence: [\"fee\", \"fi\", \"fo\", \"fum\"]';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 4655;
+    spec.absoluteLine = 4732;
   }());
   (function() {
     var spec = it('Lazy(\"hello\").match(/xyz/) => sequence: []', function() {
@@ -12840,7 +13027,7 @@ expect(actual.value()).toEqual([]);
     spec.actual       = 'Lazy(\"hello\").match(/xyz/)';
     spec.expected     = 'sequence: []';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 4656;
+    spec.absoluteLine = 4733;
   }());
 });
                     </script>
@@ -12883,7 +13070,7 @@ expect(actual.value()).toEqual("gfedcba");
     spec.actual       = 'Lazy(\"abcdefg\").reverse()';
     spec.expected     = 'sequence: \"gfedcba\"';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 4624;
+    spec.absoluteLine = 4701;
   }());
 });
                     </script>
@@ -12905,7 +13092,7 @@ expression.</p>
                         <pre><span class="line" data-line-no="0"><span class="cm-variable">StringLikeSequence</span>.<span class="cm-property">split</span> = <span class="cm-keyword">function</span>(<span class="cm-def">delimiter</span>) { <span class="cm-comment"><a class="reveal-source" href="#source-StringLikeSequence-split">/*...*/</a></span> }</span></pre>
 
                         <pre class="function-source" id="source-StringLikeSequence-split"><span class="line" data-line-no="0"><span class="cm-variable">StringLikeSequence</span>.<span class="cm-property">split</span> = <span class="cm-keyword">function</span> <span class="cm-variable">split</span>(<span class="cm-def">delimiter</span>) {</span>
-<span class="line" data-line-no="1">  <span class="cm-keyword">return</span> <span class="cm-keyword">new</span> <span class="cm-variable">SplitStringSequence</span>(<span class="cm-keyword">this</span>.<span class="cm-property">source</span>, <span class="cm-variable-2">delimiter</span>);</span>
+<span class="line" data-line-no="1">  <span class="cm-keyword">return</span> <span class="cm-keyword">new</span> <span class="cm-variable">SplitStringSequence</span>(<span class="cm-keyword">this</span>, <span class="cm-variable-2">delimiter</span>);</span>
 <span class="line" data-line-no="2">}</span></pre>
 
                         <table id="StringLikeSequence#split-parameters">
@@ -12970,7 +13157,7 @@ expect(actual.value()).toEqual(["f", "o", "o"]);
     spec.actual       = 'Lazy(\"foo\").split(\"\")';
     spec.expected     = 'sequence: [\"f\", \"o\", \"o\"]';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 4704;
+    spec.absoluteLine = 4781;
   }());
   (function() {
     var spec = it('Lazy(\"yo dawg\").split(\" \") => sequence: [\"yo\", \"dawg\"]', function() {
@@ -12984,7 +13171,7 @@ expect(actual.value()).toEqual(["yo", "dawg"]);
     spec.actual       = 'Lazy(\"yo dawg\").split(\" \")';
     spec.expected     = 'sequence: [\"yo\", \"dawg\"]';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 4705;
+    spec.absoluteLine = 4782;
   }());
   (function() {
     var spec = it('Lazy(\"bah bah\\tblack  sheep\").split(/\\s+/) => sequence: [\"bah\", \"bah\", \"black\", \"sheep\"]', function() {
@@ -12998,7 +13185,7 @@ expect(actual.value()).toEqual(["bah", "bah", "black", "sheep"]);
     spec.actual       = 'Lazy(\"bah bah\\tblack  sheep\").split(/\\s+/)';
     spec.expected     = 'sequence: [\"bah\", \"bah\", \"black\", \"sheep\"]';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 4706;
+    spec.absoluteLine = 4783;
   }());
 });
                     </script>
@@ -13081,7 +13268,7 @@ describe('startsWith', function() {
     spec.actual       = 'Lazy(\'foo\').startsWith(\'fo\')';
     spec.expected     = 'true';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 4538;
+    spec.absoluteLine = 4615;
   }());
   (function() {
     var spec = it('Lazy(\'foo\').startsWith(\'\') => true', function() {
@@ -13095,7 +13282,7 @@ describe('startsWith', function() {
     spec.actual       = 'Lazy(\'foo\').startsWith(\'\')';
     spec.expected     = 'true';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 4539;
+    spec.absoluteLine = 4616;
   }());
   (function() {
     var spec = it('Lazy(\'foo\').startsWith(\'abc\') => false', function() {
@@ -13109,7 +13296,7 @@ describe('startsWith', function() {
     spec.actual       = 'Lazy(\'foo\').startsWith(\'abc\')';
     spec.expected     = 'false';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 4540;
+    spec.absoluteLine = 4617;
   }());
 });
                     </script>
@@ -13201,7 +13388,7 @@ expect(actual.value()).toEqual("oo");
     spec.actual       = 'Lazy(\"foo\").substring(1)';
     spec.expected     = 'sequence: \"oo\"';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 4380;
+    spec.absoluteLine = 4457;
   }());
   (function() {
     var spec = it('Lazy(\"foo\").substring(-1) => sequence: \"foo\"', function() {
@@ -13215,7 +13402,7 @@ expect(actual.value()).toEqual("foo");
     spec.actual       = 'Lazy(\"foo\").substring(-1)';
     spec.expected     = 'sequence: \"foo\"';
     spec.lineNumber   = 1;
-    spec.absoluteLine = 4381;
+    spec.absoluteLine = 4458;
   }());
   (function() {
     var spec = it('Lazy(\"hello\").substring(1, 3) => sequence: \"el\"', function() {
@@ -13229,7 +13416,7 @@ expect(actual.value()).toEqual("el");
     spec.actual       = 'Lazy(\"hello\").substring(1, 3)';
     spec.expected     = 'sequence: \"el\"';
     spec.lineNumber   = 2;
-    spec.absoluteLine = 4382;
+    spec.absoluteLine = 4459;
   }());
   (function() {
     var spec = it('Lazy(\"hello\").substring(1, 9) => sequence: \"ello\"', function() {
@@ -13243,7 +13430,7 @@ expect(actual.value()).toEqual("ello");
     spec.actual       = 'Lazy(\"hello\").substring(1, 9)';
     spec.expected     = 'sequence: \"ello\"';
     spec.lineNumber   = 3;
-    spec.absoluteLine = 4383;
+    spec.absoluteLine = 4460;
   }());
 });
                     </script>
@@ -13327,7 +13514,7 @@ expect(actual.value()).toEqual('foo');
     spec.actual       = 'Lazy(\'FOO\').toLowerCase()';
     spec.expected     = 'sequence: \'foo\'';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 4578;
+    spec.absoluteLine = 4655;
   }());
   (function() {
     var spec = it('Lazy(\'FOO\').substring(1).toLowerCase() => sequence: \'oo\'', function() {
@@ -13341,7 +13528,7 @@ expect(actual.value()).toEqual('oo');
     spec.actual       = 'Lazy(\'FOO\').substring(1).toLowerCase()';
     spec.expected     = 'sequence: \'oo\'';
     spec.lineNumber   = 5;
-    spec.absoluteLine = 4579;
+    spec.absoluteLine = 4656;
   }());
   (function() {
     var spec = it('Lazy(\'ABC\').mapString(nextLetter).toLowerCase() => sequence: \'bcd\'', function() {
@@ -13355,7 +13542,7 @@ expect(actual.value()).toEqual('bcd');
     spec.actual       = 'Lazy(\'ABC\').mapString(nextLetter).toLowerCase()';
     spec.expected     = 'sequence: \'bcd\'';
     spec.lineNumber   = 6;
-    spec.absoluteLine = 4580;
+    spec.absoluteLine = 4657;
   }());
 });
                     </script>
@@ -13439,7 +13626,7 @@ expect(actual.value()).toEqual('FOO');
     spec.actual       = 'Lazy(\'foo\').toUpperCase()';
     spec.expected     = 'sequence: \'FOO\'';
     spec.lineNumber   = 4;
-    spec.absoluteLine = 4558;
+    spec.absoluteLine = 4635;
   }());
   (function() {
     var spec = it('Lazy(\'foo\').substring(1).toUpperCase() => sequence: \'OO\'', function() {
@@ -13453,7 +13640,7 @@ expect(actual.value()).toEqual('OO');
     spec.actual       = 'Lazy(\'foo\').substring(1).toUpperCase()';
     spec.expected     = 'sequence: \'OO\'';
     spec.lineNumber   = 5;
-    spec.absoluteLine = 4559;
+    spec.absoluteLine = 4636;
   }());
   (function() {
     var spec = it('Lazy(\'abc\').mapString(nextLetter).toUpperCase() => sequence: \'BCD\'', function() {
@@ -13467,7 +13654,7 @@ expect(actual.value()).toEqual('BCD');
     spec.actual       = 'Lazy(\'abc\').mapString(nextLetter).toUpperCase()';
     spec.expected     = 'sequence: \'BCD\'';
     spec.lineNumber   = 6;
-    spec.absoluteLine = 4560;
+    spec.absoluteLine = 4637;
   }());
 });
                     </script>
@@ -14016,7 +14203,7 @@ describe('getIterator', function() {
     spec.actual       = 'Lazy([1, 2, 3]).async().getIterator()';
     spec.expected     = 'throws';
     spec.lineNumber   = 0;
-    spec.absoluteLine = 4991;
+    spec.absoluteLine = 5074;
   }());
 });
                     </script>

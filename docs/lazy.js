@@ -59,7 +59,15 @@
  * [@dtao](https://github.com/dtao)
  */
 
-(function(context) {
+(function(root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    define(factory);
+  } else if (typeof exports === 'object') {
+    module.exports = factory();
+  } else {
+    root.Lazy = factory();
+  }
+})(this, function(context) {
   /**
    * Wraps an object and returns a {@link Sequence}. For `null` or `undefined`,
    * simply returns an empty sequence (see {@link Lazy.strict} for a stricter
@@ -114,7 +122,7 @@
     return new ObjectWrapper(source);
   }
 
-  Lazy.VERSION = '0.4.0';
+  Lazy.VERSION = '0.4.2';
 
   /*** Utility methods of questionable value ***/
 
@@ -342,22 +350,28 @@
    * example, `Lazy([1, 2, 3]).async().map(Lazy.identity)` returns a sequence
    * that iterates asynchronously even though it's not an instance of
    * `AsyncSequence`.
+   *
+   * @returns {boolean} Whether or not the current sequence is an asynchronous one.
    */
   Sequence.prototype.isAsync = function isAsync() {
     return this.parent ? this.parent.isAsync() : false;
   };
 
   /**
-   * Evaluates the sequence and produces an appropriate value (an array in most
+   * Evaluates the sequence and produces the appropriate value (an array in most
    * cases, an object for {@link ObjectLikeSequence}s or a string for
    * {@link StringLikeSequence}s).
+   *
+   * @returns {Array|string|Object} The value resulting from fully evaluating
+   *     the sequence.
    */
   Sequence.prototype.value = function value() {
     return this.toArray();
   };
 
   /**
-   * Applies the current transformation chain to a given source.
+   * Applies the current transformation chain to a given source, returning the
+   * resulting value.
    *
    * @examples
    * var sequence = Lazy([])
@@ -551,6 +565,8 @@
    * @aka forEach
    * @param {Function} fn The function to call on each element in the sequence.
    *     Return false from the function to end the iteration.
+   * @returns {boolean} `true` if the iteration evaluated the entire sequence,
+   *     or `false` if iteration was ended early.
    *
    * @examples
    * Lazy([1, 2, 3, 4]).each(fn) // calls fn 4 times
@@ -579,12 +595,16 @@
    * @public
    * @aka collect
    * @param {Function} mapFn The mapping function used to project this sequence's
-   *     elements onto a new sequence.
+   *     elements onto a new sequence. This function takes up to two arguments:
+   *     the element, and the current index.
    * @returns {Sequence} The new sequence.
    *
    * @examples
-   * Lazy([]).map(increment)        // sequence: []
-   * Lazy([1, 2, 3]).map(increment) // sequence: [2, 3, 4]
+   * function addIndexToValue(e, i) { return e + i; }
+   *
+   * Lazy([]).map(increment)              // sequence: []
+   * Lazy([1, 2, 3]).map(increment)       // sequence: [2, 3, 4]
+   * Lazy([1, 2, 3]).map(addIndexToValue) // sequence: [1, 3, 5]
    *
    * @benchmarks
    * function increment(x) { return x + 1; }
@@ -1020,8 +1040,8 @@
     var count = this.count,
         i     = 0;
 
+    var result;
     var handle = this.parent.each(function(e) {
-      var result;
       if (i < count) { result = fn(e, i++); }
       if (i >= count) { return false; }
       return result;
@@ -1031,7 +1051,7 @@
       return handle;
     }
 
-    return i === count;
+    return i === count && result !== false;
   };
 
   /**
@@ -1400,18 +1420,26 @@
    * @param {Function|string} keyFn The function to call on the elements in this
    *     sequence to obtain a key by which to group them, or a string representing
    *     a parameter to read from all the elements in this sequence.
-   * @returns {Sequence} The new sequence.
+   * @param {Function|string} valFn (Optional) The function to call on the elements
+   *     in this sequence to assign to the value for each instance to appear in the
+   *     group, or a string representing a parameter to read from all the elements
+   *     in this sequence.
+   * @returns {ObjectLikeSequence} The new sequence.
    *
    * @examples
    * function oddOrEven(x) {
    *   return x % 2 === 0 ? 'even' : 'odd';
    * }
+   * function square(x) {
+   *   return x*x;
+   * }
    *
    * var numbers = [1, 2, 3, 4, 5];
    *
-   * Lazy(numbers).groupBy(oddOrEven)            // sequence: { odd: [1, 3, 5], even: [2, 4] }
-   * Lazy(numbers).groupBy(oddOrEven).get("odd") // => [1, 3, 5]
-   * Lazy(numbers).groupBy(oddOrEven).get("foo") // => undefined
+   * Lazy(numbers).groupBy(oddOrEven)                     // sequence: { odd: [1, 3, 5], even: [2, 4] }
+   * Lazy(numbers).groupBy(oddOrEven).get("odd")          // => [1, 3, 5]
+   * Lazy(numbers).groupBy(oddOrEven).get("foo")          // => undefined
+   * Lazy(numbers).groupBy(oddOrEven, square).get("even") // => [4, 16]
    *
    * Lazy([
    *   { name: 'toString' },
@@ -1424,16 +1452,17 @@
    *   ]
    * }
    */
-  Sequence.prototype.groupBy = function groupBy(keyFn) {
-    return new GroupedSequence(this, keyFn);
+  Sequence.prototype.groupBy = function groupBy(keyFn, valFn) {
+    return new GroupedSequence(this, keyFn, valFn);
   };
 
   /**
    * @constructor
    */
-  function GroupedSequence(parent, keyFn) {
+  function GroupedSequence(parent, keyFn, valFn) {
     this.parent = parent;
     this.keyFn  = keyFn;
+    this.valFn  = valFn;
   }
 
   // GroupedSequence must have its prototype set after ObjectLikeSequence has
@@ -1447,6 +1476,9 @@
    * @param {Function|string} keyFn The function to call on the elements in this
    *     sequence to obtain a key by which to index them, or a string
    *     representing a property to read from all the elements in this sequence.
+   * @param {Function|string} valFn (Optional) The function to call on the elements
+   *     in this sequence to assign to the value of the indexed object, or a string
+   *     representing a parameter to read from all the elements in this sequence.
    * @returns {Sequence} The new sequence.
    *
    * @examples
@@ -1458,18 +1490,20 @@
    * var bob  = people[0],
    *     fred = people[1];
    *
-   * Lazy(people).indexBy('name') // sequence: { 'Bob': bob, 'Fred': fred }
+   * Lazy(people).indexBy('name')        // sequence: { 'Bob': bob, 'Fred': fred }
+   * Lazy(people).indexBy('name', 'age') // sequence: { 'Bob': 25, 'Fred': 34 }
    */
-  Sequence.prototype.indexBy = function(keyFn) {
-    return new IndexedSequence(this, keyFn);
+  Sequence.prototype.indexBy = function(keyFn, valFn) {
+    return new IndexedSequence(this, keyFn, valFn);
   };
 
   /**
    * @constructor
    */
-  function IndexedSequence(parent, keyFn) {
+  function IndexedSequence(parent, keyFn, valFn) {
     this.parent = parent;
     this.keyFn  = keyFn;
+    this.valFn  = valFn;
   }
 
   // IndexedSequence must have its prototype set after ObjectLikeSequence has
@@ -1518,10 +1552,18 @@
    *
    * @public
    * @aka unique
+   * @param {Function} keyFn An optional function to produce the key for each
+   *     object. This key is then tested for uniqueness as  opposed to the
+   *     object reference.
    * @returns {Sequence} The new sequence.
    *
    * @examples
    * Lazy([1, 2, 2, 3, 3, 3]).uniq() // sequence: [1, 2, 3]
+   * Lazy([{ name: 'mike' }, 
+   * 	{ name: 'sarah' }, 
+   * 	{ name: 'mike' }
+   * ]).uniq('name')
+   * // sequence: [{ name: 'mike' }, { name: 'sarah' }]
    *
    * @benchmarks
    * function randomOf(array) {
@@ -1666,7 +1708,7 @@
         j = 0;
 
     for (var i = shuffled.length - 1; i > 0; --i) {
-      swap(shuffled, i, floor(random() * i));
+      swap(shuffled, i, floor(random() * (i + 1)));
       if (fn(shuffled[i], j++) === false) {
         return;
       }
@@ -3759,11 +3801,19 @@
    * Produces an {@link ObjectLikeSequence} consisting of all the recursively
    * merged values from this and the given object(s) or sequence(s).
    *
+   * Note that by default this method only merges "vanilla" objects (bags of
+   * key/value pairs), not arrays or any other custom object types. To customize
+   * how merging works, you can provide the mergeFn argument, e.g. to handling
+   * merging arrays, strings, or other types of objects.
+   *
    * @public
    * @param {...Object|ObjectLikeSequence} others The other object(s) or
    *     sequence(s) whose values will be merged into this one.
    * @param {Function=} mergeFn An optional function used to customize merging
-   *     behavior.
+   *     behavior. The function should take two values as parameters and return
+   *     whatever the "merged" form of those values is. If the function returns
+   *     undefined then the new value will simply replace the old one in the
+   *     final result.
    * @returns {ObjectLikeSequence} The new sequence consisting of merged values.
    *
    * @examples
@@ -3884,19 +3934,27 @@
    * mergeObjects({ foo: { bar: 1 } }, { foo: { baz: 2 } }); // => { foo: { bar: 1, baz: 2 } }
    * mergeObjects({ foo: { bar: 1 } }, { foo: undefined }); // => { foo: { bar: 1 } }
    * mergeObjects({ foo: { bar: 1 } }, { foo: null }); // => { foo: null }
+   * mergeObjects({ array: [0, 1, 2] }, { array: [3, 4, 5] }).array; // instanceof Array
+   * mergeObjects({ date: new Date() }, { date: new Date() }).date; // instanceof Date
+   * mergeObjects([{ foo: 1 }], [{ bar: 2 }]); // => [{ foo: 1, bar: 2 }]
    */
   function mergeObjects(a, b) {
+    var merged, prop;
+
     if (typeof b === 'undefined') {
       return a;
     }
 
-    // Unless we're dealing with two objects, there's no merging to do --
-    // just replace a w/ b.
-    if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null) {
+    // Check that we're dealing with two objects or two arrays.
+    if (isVanillaObject(a) && isVanillaObject(b)) {
+      merged = {};
+    } else if (a instanceof Array && b instanceof Array) {
+      merged = [];
+    } else {
+      // Otherwise there's no merging to do -- just replace a w/ b.
       return b;
     }
 
-    var merged = {}, prop;
     for (prop in a) {
       merged[prop] = mergeObjects(a[prop], b[prop]);
     }
@@ -3906,6 +3964,20 @@
       }
     }
     return merged;
+  }
+
+  /**
+   * Checks whether an object is a "vanilla" object, i.e. {'foo': 'bar'} as
+   * opposed to an array, date, etc.
+   *
+   * @private
+   * @examples
+   * isVanillaObject({foo: 'bar'}); // => true
+   * isVanillaObject(new Date());   // => false
+   * isVanillaObject([1, 2, 3]);    // => false
+   */
+  function isVanillaObject(object) {
+    return object && object.constructor === Object;
   }
 
   /**
@@ -4099,14 +4171,16 @@
 
   GroupedSequence.prototype.each = function each(fn) {
     var keyFn   = createCallback(this.keyFn),
+        valFn   = createCallback(this.valFn),
         result;
 
     result = this.parent.reduce(function(grouped,e) {
-      var key = keyFn(e);
+      var key = keyFn(e),
+          val = valFn(e);
       if (!(grouped[key] instanceof Array)) {
-        grouped[key] = [e];
+        grouped[key] = [val];
       } else {
-        grouped[key].push(e);
+        grouped[key].push(val);
       }
       return grouped;
     },{});
@@ -4124,13 +4198,16 @@
 
   IndexedSequence.prototype.each = function each(fn) {
     var keyFn   = createCallback(this.keyFn),
+        valFn   = createCallback(this.valFn),
         indexed = {};
 
     return this.parent.each(function(e) {
-      var key = keyFn(e);
+      var key = keyFn(e),
+          val = valFn(e);
+
       if (!indexed[key]) {
-        indexed[key] = e;
-        return fn(e, key);
+        indexed[key] = val;
+        return fn(val, key);
       }
     });
   };
@@ -4657,21 +4734,21 @@
    * Lazy("hello").match(/xyz/)          // sequence: []
    */
   StringLikeSequence.prototype.match = function match(pattern) {
-    return new StringMatchSequence(this.source, pattern);
+    return new StringMatchSequence(this, pattern);
   };
 
   /**
    * @constructor
    */
-  function StringMatchSequence(source, pattern) {
-    this.source = source;
+  function StringMatchSequence(parent, pattern) {
+    this.parent = parent;
     this.pattern = pattern;
   }
 
   StringMatchSequence.prototype = new Sequence();
 
   StringMatchSequence.prototype.getIterator = function getIterator() {
-    return new StringMatchIterator(this.source, this.pattern);
+    return new StringMatchIterator(this.parent.toString(), this.pattern);
   };
 
   /**
@@ -4707,30 +4784,32 @@
    * Lazy("bah bah\tblack  sheep").split(/\s+/) // sequence: ["bah", "bah", "black", "sheep"]
    */
   StringLikeSequence.prototype.split = function split(delimiter) {
-    return new SplitStringSequence(this.source, delimiter);
+    return new SplitStringSequence(this, delimiter);
   };
 
   /**
    * @constructor
    */
-  function SplitStringSequence(source, pattern) {
-    this.source = source;
+  function SplitStringSequence(parent, pattern) {
+    this.parent = parent;
     this.pattern = pattern;
   }
 
   SplitStringSequence.prototype = new Sequence();
 
   SplitStringSequence.prototype.getIterator = function getIterator() {
+    var source = this.parent.toString();
+
     if (this.pattern instanceof RegExp) {
       if (this.pattern.source === "" || this.pattern.source === "(?:)") {
-        return new CharIterator(this.source);
+        return new CharIterator(source);
       } else {
-        return new SplitWithRegExpIterator(this.source, this.pattern);
+        return new SplitWithRegExpIterator(source, this.pattern);
       }
     } else if (this.pattern === "") {
-      return new CharIterator(this.source);
+      return new CharIterator(source);
     } else {
-      return new SplitWithStringIterator(this.source, this.pattern);
+      return new SplitWithStringIterator(source, this.pattern);
     }
   };
 
@@ -4828,6 +4907,10 @@
 
   StringWrapper.prototype.length = function length() {
     return this.source.length;
+  };
+
+  StringWrapper.prototype.toString = function toString() {
+    return this.source;
   };
 
   /**
@@ -6325,15 +6408,5 @@
     return ctor;
   }
 
-  /*** Exposing Lazy to the world ***/
-
-  // For Node.js
-  if (typeof module === "object" && module && module.exports === context) {
-    module.exports = Lazy;
-
-  // For browsers
-  } else {
-    context.Lazy = Lazy;
-  }
-
-}(this));
+  return Lazy;
+});
