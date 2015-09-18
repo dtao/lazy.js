@@ -4294,9 +4294,14 @@
 
   ObjectWrapper.prototype.each = function each(fn) {
     var source = this.source,
-        key;
+        keys = source ? Object.keys(source) : [],
+        length = keys.length,
+        key,
+        index;
 
-    for (key in source) {
+    for (index = 0; index < length; ++index) {
+      key = keys[index];
+
       if (fn(source[key], key) === false) {
         return false;
       }
