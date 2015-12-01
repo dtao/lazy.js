@@ -6,19 +6,6 @@
     Lazy = require('../lazy.js');
   }
 
-  var GeneratorConstructor = (function() {
-    try {
-      return eval('(function*() {})').constructor;
-
-    } catch (e) {
-      // If the above throws a SyntaxError, that means generators aren't
-      // supported on the current platform, which means isES6Generator should
-      // always return false. So we'll return an anonymous function here, so
-      // that instanceof checks will always return false.
-      return function() {};
-    }
-  }());
-
   /**
    * Checks whether a function is an ES6 Harmony generator.
    *
@@ -27,7 +14,9 @@
    * @returns {boolean}
    */
   function isES6Generator(fn) {
-    return fn instanceof GeneratorConstructor;
+    return typeof fn === 'function' &&
+    fn.constructor &&
+    fn.constructor.name === 'GeneratorFunction'
   }
 
   /**
