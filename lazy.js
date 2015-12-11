@@ -2256,7 +2256,7 @@
 
   /**
    * Groups this sequence into consecutive (overlapping) segments of a specified
-   * length. If the underlying sequence has fewer elements than the specfied
+   * length. If the underlying sequence has fewer elements than the specified
    * length, then this sequence will be empty.
    *
    * @public
@@ -4914,7 +4914,7 @@
   };
 
   /**
-   * A `GeneratedSequence` does not wrap an in-memory colllection but rather
+   * A `GeneratedSequence` does not wrap an in-memory collection but rather
    * determines its elements on-the-fly during iteration according to a generator
    * function.
    *
