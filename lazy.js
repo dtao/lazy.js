@@ -1647,7 +1647,7 @@
    * _.each(_.zip(lgArrL, lgArrR), _.noop)    // lodash - zipping 100-element arrays
    */
   Sequence.prototype.zip = function zip(var_args) {
-    if (arguments.length === 1) {
+    if (arguments.length === 1 && var_args instanceof Array) {
       return new SimpleZippedSequence(this, (/** @type {Array} */ var_args));
     } else {
       return new ZippedSequence(this, arraySlice.call(arguments, 0));
@@ -1658,24 +1658,34 @@
    * @constructor
    */
   function ZippedSequence(parent, arrays) {
-    this.parent = parent;
-    this.arrays = arrays;
+    this.zippers = ([parent].concat(arrays)).map(function(zipper) {
+      if (typeof (zipper.head) === 'function' && typeof (zipper.tail) === 'function') {
+        return zipper;
+      } else {
+        // Convert anything that is not a sequence into such.
+        return Lazy(zipper);
+      }
+    });
   }
 
   ZippedSequence.prototype = new Sequence();
 
   ZippedSequence.prototype.each = function each(fn) {
-    var arrays = this.arrays,
+    var tails = this.zippers,
         i = 0;
-    this.parent.each(function(e) {
-      var group = [e];
-      for (var j = 0; j < arrays.length; ++j) {
-        if (arrays[j].length > i) {
-          group.push(arrays[j][i]);
-        }
+    while(tails[0].head()) {
+      var heads = tails.map(function(seq) {
+        return seq.head();
+      });
+      tails = tails.map(function(seq) {
+        return seq.tail();
+      });
+      if (fn(heads, i++) === false) {
+        return false;
       }
-      return fn(group, i++);
-    });
+    }
+
+    return true;
   };
 
   /**
