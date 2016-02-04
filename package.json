@@ -33,13 +33,13 @@
     "jasmine-async": "*",
     "jasmine-node": "1.13.x",
     "jsdoc": "3.2.x",
-    "lodash": "2.0.0",
+    "lodash": "4.2.1",
     "memorystream": ">= 0.2.0",
     "promises-aplus-tests": ">= 2.0.4",
     "race.js": "0.1.4",
     "requirejs": "^2.1.20",
     "string-table": "0.1.2",
-    "underscore": "1.5.2"
+    "underscore": "1.8.3"
   },
   "scripts": {
     "test": "npm run-script 'autodoc' && npm run-script 'jasmine' && npm run-script 'amd' && npm run-script 'promise'",

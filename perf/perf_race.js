@@ -7,6 +7,8 @@ var Lazy        = require('../lazy.js'),
     Race        = require('race.js'),
     stringTable = require('string-table');
 
+console.log('Racing Lazy.js ' + Lazy.VERSION + ' against Lodash ' + lodash.VERSION);
+
 Benchmark.options.maxTime = 0.5;
 
 var selectedRace = null;
