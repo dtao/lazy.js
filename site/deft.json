@@ -8,8 +8,8 @@
     ["pivotal/jasmine", "v1.3.1", "lib/jasmine-core/jasmine.js"],
     ["bestiejs/benchmark.js", "v1.0.0", "benchmark.js"],
 
-    ["jashkenas/underscore", "1.7.0", "underscore.js"],
-    ["lodash/lodash", "2.4.1", "lodash.js"],
+    ["jashkenas/underscore", "1.8.3", "underscore.js"],
+    ["lodash/lodash", "4.2.1", "lodash.js"],
     ["andrewplummer/Sugar", "1.4.1", {
       "release/sugar-full.development.js": "sugar.js"
     }],

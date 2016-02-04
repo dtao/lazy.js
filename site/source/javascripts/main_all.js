@@ -1,5 +1,5 @@
-//= require common
 //= require boot
+//= require common
 //= require spec_reporter
 //= require specs
 //= require lib/spec/support/person
