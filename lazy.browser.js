@@ -98,7 +98,7 @@
     var listener = function(e) {
       if (fn(e) === false) {
         for (var i = 0; i < elements.length; ++i) {
-          elements.removeEventListener(eventName, listener);
+          elements[i].removeEventListener(eventName, listener);
         }
       }
     };
