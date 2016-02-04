@@ -3663,8 +3663,9 @@
    *     sequence plus the contents of `other`.
    *
    * @examples
-   * Lazy({ "uno": 1, "dos": 2 }).assign({ "tres": 3 }) // sequence: { uno: 1, dos: 2, tres: 3 }
-   * Lazy({ foo: "bar" }).assign({ foo: "baz" });       // sequence: { foo: "baz" }
+   * Lazy({ "uno": 1, "dos": 2 }).assign({ "tres": 3 })     // sequence: { uno: 1, dos: 2, tres: 3 }
+   * Lazy({ foo: "bar" }).assign({ foo: "baz" });           // sequence: { foo: "baz" }
+   * Lazy({ foo: 'foo' }).assign({ foo: false }).get('foo') // false
    */
   ObjectLikeSequence.prototype.assign = function assign(other) {
     return new AssignSequence(this, other);
@@ -3685,7 +3686,7 @@
   AssignSequence.prototype = new ObjectLikeSequence();
 
   AssignSequence.prototype.get = function get(key) {
-    return this.other[key] || this.parent.get(key);
+    return key in this.other ? this.other[key] : this.parent.get(key);
   };
 
   AssignSequence.prototype.each = function each(fn) {
@@ -3724,6 +3725,7 @@
    *
    * @examples
    * Lazy({ name: "Dan" }).defaults({ name: "User", password: "passw0rd" }) // sequence: { name: "Dan", password: "passw0rd" }
+   * Lazy({ foo: false }).defaults({ foo: 'foo' }).get('foo') // false
    */
   ObjectLikeSequence.prototype.defaults = function defaults(defaults) {
     return new DefaultsSequence(this, defaults);
@@ -3740,7 +3742,8 @@
   DefaultsSequence.prototype = new ObjectLikeSequence();
 
   DefaultsSequence.prototype.get = function get(key) {
-    return this.parent.get(key) || this.defaults[key];
+    var parentValue = this.parent.get(key);
+    return parentValue !== undefined ? parentValue : this.defaults[key];
   };
 
   DefaultsSequence.prototype.each = function each(fn) {
