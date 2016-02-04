@@ -5,17 +5,9 @@ Like Underscore, but lazier
 [![Bower version](https://badge.fury.io/bo/lazy.js.svg)](http://badge.fury.io/bo/lazy.js)
 [![NPM version](https://badge.fury.io/js/lazy.js.svg)](http://badge.fury.io/js/lazy.js)
 
-**Lazy.js** is a functional utility library for JavaScript, similar to [Underscore](http://underscorejs.org/) and [Lo-Dash](http://lodash.com/), but with an underlying engine that supports many more use cases than those libraries, while offering comparable or superior performance in most scenarios.
+Lazy.js is a functional utility library for JavaScript, similar to [Underscore](http://underscorejs.org/) and [Lodash](http://lodash.com/), but with a **lazy engine** under the hood that strives to do as little work as possible while being as flexible as possible.
 
-The following chart illustrates the performance of Lazy.js versus Underscore and Lo-Dash for several common operations using arrays with 10 elements each on Chrome 39:
-
-![Lazy.js versus Underscore/Lo-Dash](http://i.imgur.com/9vP6sVG.png)
-
-You can see that the performance difference becomes much more significant for methods that don't require iterating an entire collection (e.g., `indexOf`, `take`) as the arrays get larger:
-
-![Lazy.js versus Underscore/Lo-Dash](http://i.imgur.com/oGPlPug.png)
-
-Intrigued? Great! Lazy.js has no external dependencies, so you can get started right away with:
+It has no external dependencies, so you can get started right away with:
 
 ```html
 <script type="text/javascript" src="lazy.js"></script>
@@ -26,8 +18,8 @@ Intrigued? Great! Lazy.js has no external dependencies, so you can get started r
 
 Or, if you're using Node.js:
 
-```bash
-npm install lazy.js
+```javascript
+var Lazy = require('lazy.js');
 ```
 
 Now let's look at what you can do with Lazy.js. (For more thorough information, take a look at the [API Docs](http://dtao.github.io/lazy.js/docs/).)
@@ -41,7 +33,7 @@ Let's start with an array of objects representing people.
 var people = getBigArrayOfPeople();
 ```
 
-Now let's suppose we're using this array to back some sort of search-as-you-type functionality, where users can search for people by their last names. Naturally we want to put some reasonable constraints on our problem space, so we'll provide up to 5 results at a time. Supposing the user types "Smith", we could therefore fetch results using something like this (using Underscore):
+Suppose we're using this array to back some sort of search-as-you-type functionality, where users can search for people by their last names. Naturally we want to put some reasonable constraints on our problem space, so we'll provide up to 5 results at a time. Supposing the user types "Smith", we could therefore fetch results using something like this (using Underscore):
 
 ```javascript
 var results = _.chain(people)
@@ -62,9 +54,8 @@ So if performance and/or efficiency were a concern for you, you would probably *
 ```javascript
 var results = [];
 for (var i = 0; i < people.length; ++i) {
-  var lastName = people[i].lastName;
-  if (lastName.startsWith('Smith')) {
-    results.push(value);
+  if (people[i].lastName.startsWith('Smith')) {
+    results.push(people[i].lastName);
     if (results.length === 5) {
       break;
     }
@@ -74,7 +65,7 @@ for (var i = 0; i < people.length; ++i) {
 
 There&mdash;now we haven't created any extraneous arrays, and we did all of the work in one iteration. Any problems?
 
-Well, yeah. The main problem is that this is one-off code, which isn't reusable and took a bit of time to write. If only we could somehow leverage the expressive power of Underscore but still get the performance of the hand-written procedural solution...
+Well, yeah. The main problem is that this is one-off code, which isn't reusable or particularly readable. If only we could somehow leverage the expressive power of Underscore but still get the performance of the hand-written procedural solution...
 
 ***
 
@@ -87,18 +78,18 @@ var result = Lazy(people)
   .take(5);
 ```
 
-Looks almost identical, right? That's the idea: Lazy.js aims to be completely familiar to experienced JavaScript devs. Every method from Underscore should have the same name and (almost) identical behavior in Lazy.js, except that instead of returning a fully-populated array on every call, it creates a *sequence* object with an `each` method.
+Looks almost identical, right? That's the idea: Lazy.js aims to be completely familiar to JavaScript devs experienced with Underscore or Lodash. Every method from Underscore should have the same name and (almost) identical behavior in Lazy.js, except that instead of returning a fully-populated array on every call, it creates a *sequence* object with an `each` method.
 
-What's important here is that **no iteration takes place until you call `each`**, and **no intermediate arrays are created**. Essentially Lazy.js combines all query operations into a sequence that behaves quite a bit like the procedural code we wrote a moment ago. (If you ever *do* want an array, simply call `toArray` on the resulting sequence.)
+What's important here is that **no iteration takes place until you call `each`**, and **no intermediate arrays are created**. Essentially Lazy.js combines all query operations into a "sequence" that behaves quite a bit like the procedural code we wrote a moment ago. (If you ever *do* want an array, simply call `toArray` on the resulting sequence.)
 
-Of course, *unlike* the procedural approach, Lazy.js lets you keep your code clean and functional, and focus on building an application instead of optimizing array traversals.
+Of course, *unlike* the procedural approach, Lazy.js lets you keep your code clean and functional, and focus on solving whatever problem you're actually trying to solve instead of optimizing array traversals.
 
 Features
 --------
 
 So, Lazy.js is basically Underscore with lazy evaluation. Is that it?
 
-Of course not!
+Nope!
 
 ### Indefinite sequence generation
 
@@ -107,13 +98,11 @@ The sequence-based paradigm of Lazy.js lets you do some pretty cool things that 
 Here's an example. Let's say we want 300 unique random numbers between 1 and 1000.
 
 ```javascript
-var uniqueRandsFrom1To1000 = Lazy.generate(Math.random)
+Lazy.generate(Math.random)
   .map(function(e) { return Math.floor(e * 1000) + 1; })
   .uniq()
-  .take(300);
-
-// Output: see for yourself!
-uniqueRandsFrom1To1000.each(function(e) { console.log(e); });
+  .take(300)
+  .each(function(e) { console.log(e); });
 ```
 
 Here's a slightly more advanced example: let's use Lazy.js to make a [Fibonacci sequence](http://en.wikipedia.org/wiki/Fibonacci_number).
@@ -130,9 +119,6 @@ var fibonacci = Lazy.generate(function() {
   };
 }());
 
-// Output: undefined
-var length = fibonacci.length();
-
 // Output: [1, 1, 2, 3, 5, 8, 13, 21, 34, 55]
 fibonacci.take(10).toArray();
 ```
@@ -141,29 +127,21 @@ OK, what else?
 
 ### Asynchronous iteration
 
-You've probably [seen code snippets before](https://gist.github.com/dtao/2351944) that show how to iterate over an array asynchronously in JavaScript. But have you seen an example packed full of map-y, filter-y goodness like this?
+You've probably [seen code snippets before](https://gist.github.com/dtao/2351944) that show how to iterate over an array asynchronously in JavaScript. But have you seen an example with functional goodness like this?
 
 ```javascript
-var asyncSequence = Lazy(array)
-  .async(100) // specifies a 100-millisecond interval between each element
-  .map(inc)
-  .filter(isEven)
-  .take(20);
-
-// This function returns immediately and begins iterating over the sequence asynchronously.
-asyncSequence.each(function(e) {
-  console.log(new Date().getMilliseconds() + ": " + e);
-});
-
-function inc(x) { return x + 1; }
-function isEven(x) { return x % 2 === 0; }
+Lazy.generate(Lazy.identity)
+  .async(1000) // specifies a 1-second interval between each element
+  .map(function(x) { return String.fromCharCode(x + 65); })
+  .take(26)
+  .each(function(char) { console.log(char); });
 ```
 
 All right... what else?
 
 ### Event sequences
 
-With indefinite sequences, we saw that unlike Underscore and Lo-Dash, Lazy.js doesn't actually need an in-memory collection to iterate over. And asynchronous sequences demonstrate that it also doesn't need to do all its iteration at once.
+With indefinite sequences, we saw that unlike Underscore and Lodash, Lazy.js doesn't actually need an in-memory collection to iterate over. And asynchronous sequences demonstrate that it also doesn't need to do all its iteration at once.
 
 Now here's a really cool combination of these two features: with a small extension to Lazy.js (lazy.browser.js, a separate file to include in browser-based environments), you can apply all of the power of Lazy.js to **handling DOM events**. In other words, Lazy.js lets you think of DOM events as a *sequence*&mdash;just like any other&mdash;and apply the usual `map`, `filter`, etc. functions on that sequence.
 
