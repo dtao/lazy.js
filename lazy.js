@@ -4194,6 +4194,7 @@
           return false;
         }
       }
+      return true;
     }, result);
   };
 
