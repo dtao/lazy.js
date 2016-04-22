@@ -1559,8 +1559,8 @@
    *
    * @examples
    * Lazy([1, 2, 2, 3, 3, 3]).uniq() // sequence: [1, 2, 3]
-   * Lazy([{ name: 'mike' }, 
-   * 	{ name: 'sarah' }, 
+   * Lazy([{ name: 'mike' },
+   * 	{ name: 'sarah' },
    * 	{ name: 'mike' }
    * ]).uniq('name')
    * // sequence: [{ name: 'mike' }, { name: 'sarah' }]
@@ -6111,7 +6111,24 @@
    * @returns {RegExp}
    */
   function cloneRegex(pattern) {
-    return eval("" + pattern + (!pattern.global ? "g" : ""));
+    var flags, global, patternStr;
+    if (typeof pattern === "string") {
+      patternStr = pattern;
+      flags = pattern.substr(pattern.lastIndexOf("/") + 1);
+      global = flags.indexOf("g") >= 0 ? "" : "g";
+    }
+    else {
+      patternStr = pattern.toString();
+      // No widespread RegExp.prototype.flags, unfortuantely;
+      // We use the string approach instead!
+      flags = patternStr.substr(patternStr.lastIndexOf("/") + 1);
+      global = Boolean(pattern.global) ? "" : "g";
+    }
+    var res = new RegExp(
+      patternStr.slice(1, -(flags.length + 1)),
+      flags + global
+    );
+    return res;
   };
 
   /**
