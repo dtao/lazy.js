@@ -138,7 +138,7 @@ if (typeof Stream.Readable !== "undefined") {
 
     this.sequence = sequence;
     this.started  = false;
-    
+
     // Find delimiter on a (parent) sequence object if set
     while (sequence) {
       if (sequence.delimiter) {

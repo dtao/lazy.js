@@ -6104,32 +6104,32 @@
   }
 
   /**
-   * "Clones" a regular expression (but makes it always global).
+   * "Clones" a regular expression, but ensures it is always global.
+   * Will return the passed RegExp if global is already set.
    *
    * @private
    * @param {RegExp|string} pattern
    * @returns {RegExp}
    */
   function cloneRegex(pattern) {
-    var flags, global, patternStr;
-    if (typeof pattern === "string") {
-      patternStr = pattern;
-      flags = pattern.substr(pattern.lastIndexOf("/") + 1);
-      global = flags.indexOf("g") >= 0 ? "" : "g";
+    var patternStr, lsi, flags, global;
+    if (pattern instanceof RegExp) {
+      // Just return the passed in RegExp
+      if (pattern.global)
+        return pattern;
+      patternStr = pattern.toString();
     }
     else {
-      patternStr = pattern.toString();
-      // No widespread RegExp.prototype.flags, unfortuantely;
-      // We use the string approach instead!
-      flags = patternStr.substr(patternStr.lastIndexOf("/") + 1);
-      global = Boolean(pattern.global) ? "" : "g";
+      patternStr = pattern;
     }
-    var res = new RegExp(
-      patternStr.slice(1, -(flags.length + 1)),
-      flags + global
-    );
-    return res;
-  };
+    lsi = patternStr.lastIndexOf("/");
+    // No widespread RegExp.prototype.flags, unfortuantely;
+    // We use the string approach for both argument types!
+    flags = patternStr.substring(lsi + 1);
+    global = flags.indexOf("g") >= 0 ? "" : "g";
+
+    return new RegExp(patternStr.substring(1, lsi), flags + global);
+}
 
   /**
    * A collection of unique elements.
