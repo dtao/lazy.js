@@ -2519,12 +2519,17 @@
   Sequence.prototype.join = function join(delimiter) {
     delimiter = typeof delimiter === "string" ? delimiter : ",";
 
-    return this.reduce(function(str, e, i) {
-      if (i > 0) {
-        str += delimiter;
-      }
-      return str + e;
+    var initialResult = this.reduce(function(str, e, i) {
+      return str + delimiter + e;
     }, "");
+
+    if (this.isAsync()) {
+      return initialResult.then(function(str) {
+        return str.slice(delimiter.length, str.length)
+      })
+    } else {
+      return initialResult.slice(delimiter.length, initialResult.length)
+    }
   };
 
   Sequence.prototype.toString = function toString(delimiter) {
