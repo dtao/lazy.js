@@ -1,7 +1,11 @@
+sudo: false
+
 language: node_js
+
 node_js:
-  - "0.11"
-  - "0.10"
-  - "iojs"
-before_install:
-  - "npm update -g npm"
+  - 6
+  - 4
+
+install:
+  - npm i -g npm@latest
+  - npm install
