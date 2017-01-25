@@ -4508,6 +4508,8 @@
    * Lazy("foo").substring(-1)     // sequence: "foo"
    * Lazy("hello").substring(1, 3) // sequence: "el"
    * Lazy("hello").substring(1, 9) // sequence: "ello"
+   * Lazy("foo").substring(0, 0)   // sequence: ""
+   * Lazy("foo").substring(3, 3)   // sequence: ""
    */
   StringLikeSequence.prototype.substring = function substring(start, stop) {
     return new StringSegment(this, start, stop);
