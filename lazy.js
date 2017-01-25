@@ -1634,6 +1634,8 @@
    *
    * @examples
    * Lazy([1, 2]).zip([3, 4]) // sequence: [[1, 3], [2, 4]]
+   * Lazy([]).zip([0])        // sequence: [[undefined, 0]]
+   * Lazy([0]).zip([])        // sequence: [[0, undefined]]
    *
    * @benchmarks
    * var smArrL = Lazy.range(10).toArray(),
@@ -2618,10 +2620,25 @@
   SimpleZippedSequence.prototype = new Sequence();
 
   SimpleZippedSequence.prototype.each = function each(fn) {
-    var array = this.array;
-    return this.parent.each(function(e, i) {
+    var array = this.array,
+        i = -1;
+
+    var iteratedLeft = this.parent.each(function(e) {
+      ++i;
       return fn([e, array[i]], i);
     });
+
+    if (!iteratedLeft) {
+      return false;
+    }
+
+    while (++i < array.length) {
+      if (fn([undefined, array[i]], i) === false) {
+        return false;
+      }
+    }
+
+    return true;
   };
 
   /**
