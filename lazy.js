@@ -4205,6 +4205,13 @@
 
   GroupedSequence.prototype = new ObjectLikeSequence();
 
+  /**
+   * @examples
+   * var objects = [{a: 'x'}, {a: 'x'}];
+   *
+   * Lazy(objects).groupBy('a') // sequence: {x: [{a: 'x'}, {a: 'x'}]}
+   * Lazy(objects).groupBy('a').each(Lazy.noop) // true
+   */
   GroupedSequence.prototype.each = function each(fn) {
     var keyFn   = createCallback(this.keyFn),
         valFn   = createCallback(this.valFn),
@@ -4227,6 +4234,7 @@
           return false;
         }
       }
+      return true;
     }, result);
   };
 
