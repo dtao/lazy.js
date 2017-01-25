@@ -1687,6 +1687,7 @@
    *
    * @examples
    * Lazy([1, 2, 3, 4, 5]).shuffle().value() // =~ [1, 2, 3, 4, 5]
+   * Lazy([]).shuffle().value()              // => []
    */
   Sequence.prototype.shuffle = function shuffle() {
     return new ShuffledSequence(this);
@@ -1713,7 +1714,10 @@
         return;
       }
     }
-    fn(shuffled[0], j);
+
+    if (shuffled.length) {
+      fn(shuffled[0], j);
+    }
   };
 
   /**
