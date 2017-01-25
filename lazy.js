@@ -1688,6 +1688,8 @@
    * @examples
    * Lazy([1, 2, 3, 4, 5]).shuffle().value() // =~ [1, 2, 3, 4, 5]
    * Lazy([]).shuffle().value()              // => []
+   * Lazy([1]).shuffle().each(Lazy.noop)     // => true
+   * Lazy([]).shuffle().each(Lazy.noop)      // => true
    */
   Sequence.prototype.shuffle = function shuffle() {
     return new ShuffledSequence(this);
@@ -1711,13 +1713,15 @@
     for (var i = shuffled.length - 1; i > 0; --i) {
       swap(shuffled, i, floor(random() * (i + 1)));
       if (fn(shuffled[i], j++) === false) {
-        return;
+        return false;
       }
     }
 
     if (shuffled.length) {
       fn(shuffled[0], j);
     }
+
+    return true;
   };
 
   /**
