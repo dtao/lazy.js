@@ -1633,9 +1633,12 @@
    * @returns {Sequence} The new sequence.
    *
    * @examples
-   * Lazy([1, 2]).zip([3, 4]) // sequence: [[1, 3], [2, 4]]
-   * Lazy([]).zip([0])        // sequence: [[undefined, 0]]
-   * Lazy([0]).zip([])        // sequence: [[0, undefined]]
+   * Lazy([1, 2]).zip([3, 4])     // sequence: [[1, 3], [2, 4]]
+   * Lazy([]).zip([0])            // sequence: [[undefined, 0]]
+   * Lazy([0]).zip([])            // sequence: [[0, undefined]]
+   * Lazy([]).zip([1, 2], [3, 4]) // sequence: [[undefined, 1, 3], [undefined, 2, 4]]
+   * Lazy([]).zip([1], [2, 3])    // sequence: [[undefined, 1, 2], [undefined, undefined, 3]]
+   * Lazy([1, 2]).zip([3], [4])   // sequence: [[1, 3, 4], [2, undefined, undefined]]
    *
    * @benchmarks
    * var smArrL = Lazy.range(10).toArray(),
@@ -1669,15 +1672,40 @@
   ZippedSequence.prototype.each = function each(fn) {
     var arrays = this.arrays,
         i = 0;
-    this.parent.each(function(e) {
+
+    var iteratedLeft = this.parent.each(function(e) {
       var group = [e];
       for (var j = 0; j < arrays.length; ++j) {
-        if (arrays[j].length > i) {
-          group.push(arrays[j][i]);
-        }
+        group.push(arrays[j][i]);
       }
       return fn(group, i++);
     });
+
+    if (!iteratedLeft) {
+      return false;
+    }
+
+    var group,
+        keepGoing = true;
+
+    while (keepGoing) {
+      keepGoing = false;
+      group = [undefined];
+      for (var j = 0; j < arrays.length; ++j) {
+        group.push(arrays[j][i]);
+
+        // Check if *any* of the arrays have more elements to iterate.
+        if (arrays[j].length > i) {
+          keepGoing = true;
+        }
+      }
+
+      if (keepGoing && (fn(group, i++) === false)) {
+        return false;
+      }
+    }
+
+    return true;
   };
 
   /**
