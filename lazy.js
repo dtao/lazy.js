@@ -3589,10 +3589,27 @@
    * @returns {Sequence} The sequence based on this sequence's keys.
    *
    * @examples
-   * Lazy({ hello: "hola", goodbye: "hasta luego" }).keys() // sequence: ["hello", "goodbye"]
+   * var obj = { hello: "hola", goodbye: "hasta luego" };
+   *
+   * Lazy(obj).keys() // sequence: ["hello", "goodbye"]
+   * Lazy(obj).keys().map(function(v, i) { return [v, i]; }) // sequence: [["hello", 0], ["goodbye", 1]]
    */
   ObjectLikeSequence.prototype.keys = function keys() {
-    return this.map(function(v, k) { return k; });
+    return new KeySequence(this);
+  };
+
+  function KeySequence(parent) {
+    this.parent = parent;
+  }
+
+  KeySequence.prototype = new Sequence();
+
+  KeySequence.prototype.each = function each(fn) {
+    var i = -1;
+
+    return this.parent.each(function(v, k) {
+      return fn(k, ++i);
+    });
   };
 
   /**
