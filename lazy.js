@@ -2515,6 +2515,8 @@
    * Lazy([1, 2, 3]).join()         // => "1,2,3"
    * Lazy([1, 2, 3]).join("")       // => "123"
    * Lazy(["", "", ""]).join(",")   // => ",,"
+   * Lazy({foo: 1, bar: 2}).values().join() // "1,2"
+   * Lazy({foo: 1, bar: 2}).keys().join() // "foo,bar"
    */
   Sequence.prototype.join = function join(delimiter) {
     delimiter = typeof delimiter === "string" ? delimiter : ",";
@@ -3623,7 +3625,21 @@
    * Lazy({ hello: "hola", goodbye: "hasta luego" }).values() // sequence: ["hola", "hasta luego"]
    */
   ObjectLikeSequence.prototype.values = function values() {
-    return this.map(function(v, k) { return v; });
+    return new ValuesSequence(this);
+  };
+
+  function ValuesSequence(parent) {
+    this.parent = parent;
+  }
+
+  ValuesSequence.prototype = new Sequence();
+
+  ValuesSequence.prototype.each = function each(fn) {
+    var i = -1;
+
+    return this.parent.each(function(v, k) {
+      return fn(v, ++i);
+    });
   };
 
   /**
