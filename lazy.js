@@ -2515,11 +2515,13 @@
    * Lazy([1, 2, 3]).join()         // => "1,2,3"
    * Lazy([1, 2, 3]).join("")       // => "123"
    * Lazy(["", "", ""]).join(",")   // => ",,"
+   * Lazy([1, 2]).join(0)           // => "102"
+   * Lazy(["cons", "d"]).join(true) // => "construed"
    * Lazy({foo: 1, bar: 2}).values().join() // "1,2"
    * Lazy({foo: 1, bar: 2}).keys().join() // "foo,bar"
    */
   Sequence.prototype.join = function join(delimiter) {
-    delimiter = typeof delimiter === "string" ? delimiter : ",";
+    delimiter = typeof delimiter === "undefined" ? "," : String(delimiter);
 
     return this.reduce(function(str, e, i) {
       if (i > 0) {
