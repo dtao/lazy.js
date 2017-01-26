@@ -2916,6 +2916,21 @@
   };
 
   /**
+   * Returns a new sequence with the same elements as this one, plus the
+   * specified element at the end.
+   *
+   * @public
+   * @returns {ArrayLikeSequence} The new array-like sequence.
+   *
+   * @examples
+   * Lazy([1, 2]).push(3) // sequence: [1, 2, 3]
+   * Lazy([]).push(1)     // sequence: [1]
+   */
+  ArrayLikeSequence.prototype.push = function push(value) {
+    return this.concat([value]);
+  };
+
+  /**
    * Returns a new sequence with the same elements as this one, minus the last
    * element.
    *
@@ -2928,6 +2943,21 @@
    */
   ArrayLikeSequence.prototype.pop = function pop() {
     return this.initial();
+  };
+
+  /**
+   * Returns a new sequence with the same elements as this one, plus the
+   * specified element at the beginning.
+   *
+   * @public
+   * @returns {ArrayLikeSequence} The new array-like sequence.
+   *
+   * @examples
+   * Lazy([1, 2]).unshift(3) // sequence: [3, 1, 2]
+   * Lazy([]).unshift(1)     // sequence: [1]
+   */
+  ArrayLikeSequence.prototype.unshift = function unshift(value) {
+    return Lazy([value]).concat(this);
   };
 
   /**
