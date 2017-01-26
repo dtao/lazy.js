@@ -2456,21 +2456,30 @@
    * @param {Function=} valueFn The function by which the value for comparison is
    *     calculated for each element in the sequence.
    * @returns {*} The element with the lowest value in the sequence, or
-   *     `Infinity` if the sequence is empty.
+   *     undefined` if the sequence is empty.
    *
    * @examples
    * function negate(x) { return x * -1; }
    *
-   * Lazy([]).min()                       // => Infinity
+   * Lazy([]).min()                       // => undefined
+   * Lazy([1]).min()                      // => 1
+   * Lazy([1, 2]).min()                   // => 1
+   * Lazy([2, 1]).min()                   // => 1
    * Lazy([6, 18, 2, 49, 34]).min()       // => 2
    * Lazy([6, 18, 2, 49, 34]).min(negate) // => 49
+   * Lazy(['b', 'a', 'c']).min()          // => 'a'
    */
   Sequence.prototype.min = function min(valueFn) {
     if (typeof valueFn !== "undefined") {
       return this.minBy(valueFn);
     }
 
-    return this.reduce(function(x, y) { return y < x ? y : x; }, Infinity);
+    return this.reduce(function(prev, current, i) {
+      if (typeof prev === "undefined") {
+        return current;
+      }
+      return current < prev ? current : prev;
+    });
   };
 
   Sequence.prototype.minBy = function minBy(valueFn) {
@@ -2485,23 +2494,32 @@
    * @param {Function=} valueFn The function by which the value for comparison is
    *     calculated for each element in the sequence.
    * @returns {*} The element with the highest value in the sequence, or
-   *     `-Infinity` if the sequence is empty.
+   *     undefined if the sequence is empty.
    *
    * @examples
    * function reverseDigits(x) {
    *   return Number(String(x).split('').reverse().join(''));
    * }
    *
-   * Lazy([]).max()                              // => -Infinity
+   * Lazy([]).max()                              // => undefined
+   * Lazy([1]).max()                             // => 1
+   * Lazy([1, 2]).max()                          // => 2
+   * Lazy([2, 1]).max()                          // => 2
    * Lazy([6, 18, 2, 48, 29]).max()              // => 48
    * Lazy([6, 18, 2, 48, 29]).max(reverseDigits) // => 29
+   * Lazy(['b', 'c', 'a']).max()                 // => 'c'
    */
   Sequence.prototype.max = function max(valueFn) {
     if (typeof valueFn !== "undefined") {
       return this.maxBy(valueFn);
     }
 
-    return this.reduce(function(x, y) { return y > x ? y : x; }, -Infinity);
+    return this.reduce(function(prev, current, i) {
+      if (typeof prev === "undefined") {
+        return current;
+      }
+      return current > prev ? current : prev;
+    });
   };
 
   Sequence.prototype.maxBy = function maxBy(valueFn) {

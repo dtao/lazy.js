@@ -1,8 +1,4 @@
 describe("max", function() {
-  it("returns -Infinity for an empty collection", function() {
-    expect(Lazy([]).max()).toBe(-Infinity);
-  });
-
   it("returns the maximum value from the collection", function() {
     expect(Lazy(people).map(Person.getAge).max()).toEqual(63);
   });
