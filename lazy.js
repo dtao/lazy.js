@@ -4148,7 +4148,8 @@
 
   /**
    * Creates an {@link ObjectLikeSequence} consisting of the key/value pairs from
-   * this sequence excluding those with the specified keys.
+   * this sequence excluding those with the specified keys. Non-string keys are
+   * effectively ignored.
    *
    * @public
    * @param {Array} properties An array of the properties to *omit* from this
@@ -4163,6 +4164,9 @@
    * };
    *
    * Lazy(players).omit(["who", "what"]) // sequence: { "i don't know": "third" }
+   *
+   * // Example to show handling of non-string keys
+   * Lazy({1: 2, true: false}).omit([1, true]) // sequence: { "1": 2, "true": false }
    */
   ObjectLikeSequence.prototype.omit = function omit(properties) {
     return new OmitSequence(this, properties);
