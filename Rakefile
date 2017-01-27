@@ -8,7 +8,7 @@ end
 def update_json(file_path, updates)
   json = JSON.parse(File.read(file_path))
   json.merge!(updates)
-  File.write(file_path, JSON.pretty_generate(json))
+  File.write(file_path, JSON.pretty_generate(json) + "\n")
 end
 
 def format_options(options)
