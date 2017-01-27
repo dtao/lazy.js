@@ -3,6 +3,21 @@ Lazy.js Changelog
 
 This file includes at least a partial list of the major changes in each version.
 
+v0.4.3
+------
+
+- added `push` and `unshift` to `ArrayLikeSequence` (#173)
+- changed behavior of `min` and `max` to return `undefined` for empty sequences (#194)
+- made `zip` and `intersection` communicative (#196 and #197)
+- fixed bug w/ shuffling empty array returning `[undefined]` (#198)
+- added support for non-string delimiters in `join` (#193)
+- fixed bug w/ missing return value in full iteration of `groupBy` (#179)
+- fixed bug w/ ignoring delimiter in `values().join` (#184)
+- fixed behavior of `ObjectLikeSequence.keys` (#164)
+- fixed broken `DomEventSequence.each` (#163)
+- fixed handling of falsey values in `get` (#170)
+- changed behavior of `ObjectLikeSequence.each` (see #165)
+
 v0.4.2
 ------
 

@@ -122,7 +122,7 @@
     return new ObjectWrapper(source);
   }
 
-  Lazy.VERSION = '0.4.2';
+  Lazy.VERSION = '0.4.3';
 
   /*** Utility methods of questionable value ***/
 
