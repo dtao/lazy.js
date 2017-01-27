@@ -1880,6 +1880,10 @@
    * @examples
    * Lazy(["foo", "bar"]).intersection([])             // sequence: []
    * Lazy(["foo", "bar"]).intersection(["bar", "baz"]) // sequence: ["bar"]
+   * Lazy(["a", "a"]).intersection(["a"])              // sequence: ["a"]
+   * Lazy(["a"]).intersection(["a", "a"])              // sequence: ["a"]
+   * Lazy(["a", "a"]).intersection(["a", "a"])         // sequence: ["a"]
+   * Lazy(["a", "a"]).intersection(["a"], ["a"])       // sequence: ["a"]
    */
   Sequence.prototype.intersection = function intersection(var_args) {
     if (arguments.length === 1 && arguments[0] instanceof Array) {
@@ -1907,7 +1911,7 @@
     var setIterator = new UniqueMemoizer(sets.getIterator()),
         i = 0;
 
-    return this.parent.each(function(e) {
+    return this.parent.uniq().each(function(e) {
       var includedInAll = true;
       setIterator.each(function(set) {
         if (!set.contains(e)) {
@@ -2623,7 +2627,7 @@
     var iterator = new UniqueMemoizer(Lazy(this.array).getIterator()),
         i = 0;
 
-    return this.parent.each(function(e) {
+    return this.parent.uniq().each(function(e) {
       if (iterator.contains(e)) {
         return fn(e, i++);
       }
@@ -2635,7 +2639,7 @@
         find  = arrayContains,
         i = 0;
 
-    return this.parent.each(function(e) {
+    return this.parent.uniq().each(function(e) {
       if (find(array, e)) {
         return fn(e, i++);
       }
