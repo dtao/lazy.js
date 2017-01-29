@@ -91,6 +91,11 @@
    * function isPositive(x) { return x > 0; }
    * function isNegative(x) { return x < 0; }
    *
+   * // HACK!
+   * // autodoc tests for private methods don't pull in all variables defined
+   * // within the current scope :(
+   * var isArray = Array.isArray;
+   *
    * @examples
    * Lazy([1, 2, 4])       // instanceof Lazy.ArrayLikeSequence
    * Lazy({ foo: "bar" })  // instanceof Lazy.ObjectLikeSequence
@@ -99,7 +104,7 @@
    * Lazy(null)            // sequence: []
    */
   function Lazy(source) {
-    if (source instanceof Array) {
+    if (isArray(source)) {
       return new ArrayWrapper(source);
 
     } else if (typeof source === "string") {
@@ -1783,7 +1788,7 @@
     var index = 0;
 
     return this.parent.each(function recurseVisitor(e) {
-      if (e instanceof Array) {
+      if (isArray(e)) {
         return forEach(e, recurseVisitor);
       }
 
@@ -1886,7 +1891,7 @@
    * Lazy(["a", "a"]).intersection(["a"], ["a"])       // sequence: ["a"]
    */
   Sequence.prototype.intersection = function intersection(var_args) {
-    if (arguments.length === 1 && arguments[0] instanceof Array) {
+    if (arguments.length === 1 && isArray(arguments[0])) {
       return new SimpleIntersectionSequence(this, (/** @type {Array} */ var_args));
     } else {
       return new IntersectionSequence(this, arraySlice.call(arguments, 0));
@@ -3184,7 +3189,7 @@
    * Lazy([1, 2]).concat([3, 4]) // sequence: [1, 2, 3, 4]
    */
   ArrayLikeSequence.prototype.concat = function concat(var_args) {
-    if (arguments.length === 1 && arguments[0] instanceof Array) {
+    if (arguments.length === 1 && isArray(arguments[0])) {
       return new IndexedConcatenatedSequence(this, (/** @type {Array} */ var_args));
     } else {
       return Sequence.prototype.concat.apply(this, arguments);
@@ -3366,7 +3371,7 @@
    * @param {...*} var_args
    */
   ArrayWrapper.prototype.concat = function concat(var_args) {
-    if (arguments.length === 1 && arguments[0] instanceof Array) {
+    if (arguments.length === 1 && isArray(arguments[0])) {
       return new ConcatArrayWrapper(this, (/** @type {Array} */ var_args));
     } else {
       return ArrayLikeSequence.prototype.concat.apply(this, arguments);
@@ -4091,7 +4096,7 @@
     // Check that we're dealing with two objects or two arrays.
     if (isVanillaObject(a) && isVanillaObject(b)) {
       merged = {};
-    } else if (a instanceof Array && b instanceof Array) {
+    } else if (isArray(a) && isArray(b)) {
       merged = [];
     } else {
       // Otherwise there's no merging to do -- just replace a w/ b.
@@ -4331,7 +4336,7 @@
     result = this.parent.reduce(function(grouped,e) {
       var key = keyFn(e),
           val = valFn(e);
-      if (!(grouped[key] instanceof Array)) {
+      if (!isArray(grouped[key])) {
         grouped[key] = [val];
       } else {
         grouped[key].push(val);
@@ -5647,7 +5652,7 @@
 
     if (!propertyNames) {
       propertyNames = Lazy(object).keys().toArray();
-    } else if (!(propertyNames instanceof Array)) {
+    } else if (!isArray(propertyNames)) {
       propertyNames = [propertyNames];
     }
 
@@ -6007,7 +6012,8 @@
     };
   };
 
-  var arrayPop   = Array.prototype.pop,
+  var isArray    = Array.isArray || function(x) { return x instanceof Array; },
+      arrayPop   = Array.prototype.pop,
       arraySlice = Array.prototype.slice;
 
   /**
