@@ -9,6 +9,11 @@ var util   = require("util");
 // Node.js)
 var Lazy = require("./lazy.js");
 
+var isHarmonySupported = require('./util.js').isHarmonySupported;
+if (isHarmonySupported()) {
+  require('./experimental/lazy.es6.js');
+}
+
 /**
  * @constructor
  */

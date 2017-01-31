@@ -1,7 +1,8 @@
 var fs           = require("fs"),
     path         = require("path"),
     Stream       = require("stream"),
-    MemoryStream = require("memorystream");
+    MemoryStream = require("memorystream"),
+    util         = require('../util.js');
 
 require("./lazy_spec.js");
 require("./map_spec.js");
@@ -29,25 +30,9 @@ require("./watch_spec.js");
 require("./merge_spec.js");
 require("./join_spec.js");
 
-if (isHarmonySupported()) {
+if (util.isHarmonySupported()) {
   require('../experimental/lazy.es6.js');
   require('./es6_spec.js');
-}
-
-function isHarmonySupported() {
-  var version = process.version.split('.');
-
-  // We'll only bother checking Node versions 0.10 and greater
-  if (version[0] == 'v0' && Number(version[1]) < 10) {
-    return false;
-  }
-
-  try {
-    eval('(function*() {})');
-    return true;
-  } catch (e) {
-    return false;
-  }
 }
 
 // Sequence types
