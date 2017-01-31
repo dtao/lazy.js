@@ -113,27 +113,6 @@
   }
 
   /**
-   * @constructor
-   */
-  function SetWrapper(set) {
-    this.set = set;
-  }
-
-  SetWrapper.prototype = new Lazy.Sequence();
-
-  SetWrapper.prototype.each = function each(fn) {
-    var set = this.set;
-
-    for (var item of set) {
-      if (fn(item) === false) {
-        return false;
-      }
-    }
-
-    return true;
-  };
-
-  /**
    * Checks whether an object is an ES6 Iterator.
    *
    * @private
@@ -147,13 +126,13 @@
   /**
    * @constructor
    */
-  function IteratorWrapper(iterable) {
+  function IterableWrapper(iterable) {
     this.iterable = iterable;
   }
 
-  IteratorWrapper.prototype = new Lazy.Sequence();
+  IterableWrapper.prototype = new Lazy.Sequence();
 
-  IteratorWrapper.prototype.each = function each(fn) {
+  IterableWrapper.prototype.each = function each(fn) {
     var iterable = this.iterable;
 
     for (var item of iterable) {
@@ -177,11 +156,8 @@
     } else if (isES6Map(source)) {
       return new MapWrapper(source);
 
-    } else if (isES6Set(source)) {
-      return new SetWrapper(source);
-
-    } else if (isES6Iterator(source)) {
-      return new IteratorWrapper(source);
+    } else if (isES6Set(source) || isES6Iterator(source)) {
+      return new IterableWrapper(source);
     }
   });
 
