@@ -27,6 +27,7 @@ require("./max_spec.js");
 require("./sum_spec.js");
 require("./watch_spec.js");
 require("./merge_spec.js");
+require("./join_spec.js");
 
 if (isHarmonySupported()) {
   require('../experimental/lazy.es6.js');
