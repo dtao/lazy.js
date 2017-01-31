@@ -51,9 +51,16 @@ describe('support for ES6 features', function() {
   });
 
   describe('sets', function() {
+    var sequence = Lazy(new Set([1, 2, 2, 3, 3, 3]));
+
     it('can wrap sets', function() {
-      var sequence = Lazy(new Set([1, 2, 2, 3, 3, 3]));
       expect(sequence).toComprise([1, 2, 3]);
+    });
+
+    it('includes index in iteration', function() {
+      var indexes = [];
+      sequence.each(function(e, i) { indexes.push(i); });
+      expect(indexes).toEqual([0, 1, 2]);
     });
   });
 
@@ -61,6 +68,11 @@ describe('support for ES6 features', function() {
     it('can wrap maps', function() {
       var sequence = Lazy(new Map([['foo', 1], ['bar', 2]]));
       expect(sequence).toComprise({foo: 1, bar: 2});
+    });
+
+    it('provides keys', function() {
+      var sequence = Lazy(new Map([['foo', 1], ['bar', 2]]));
+      expect(sequence.keys()).toComprise(['foo', 'bar']);
     });
   });
 });

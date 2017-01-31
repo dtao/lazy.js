@@ -133,10 +133,11 @@
   IterableWrapper.prototype = new Lazy.Sequence();
 
   IterableWrapper.prototype.each = function each(fn) {
-    var iterable = this.iterable;
+    var iterable = this.iterable,
+        i = -1;
 
     for (var item of iterable) {
-      if (fn(item) === false) {
+      if (fn(item, ++i) === false) {
         return false;
       }
     }
