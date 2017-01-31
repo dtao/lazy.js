@@ -1,5 +1,4 @@
 var fs           = require("fs"),
-    path         = require("path"),
     Stream       = require("stream"),
     MemoryStream = require("memorystream"),
     util         = require('../util.js');
