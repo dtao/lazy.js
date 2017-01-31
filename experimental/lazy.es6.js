@@ -6,6 +6,24 @@
     Lazy = require('../lazy.js');
   }
 
+  if (typeof Symbol !== 'undefined') {
+    Lazy.Sequence.prototype[Symbol.iterator] = function() {
+      return new IteratorAdapter(this.getIterator());
+    }
+
+    function IteratorAdapter(iterator) {
+      this.iterator = iterator;
+    }
+
+    IteratorAdapter.prototype.next = function next() {
+      if (this.iterator.moveNext()) {
+        return { value: this.iterator.current() };
+      }
+
+      return { done: true };
+    };
+  }
+
   var GeneratorConstructor = (function() {
     try {
       return eval('(function*() {})').constructor;

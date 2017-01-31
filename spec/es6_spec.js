@@ -1,4 +1,34 @@
 describe('support for ES6 features', function() {
+  describe('iterables', function() {
+    it('supports the iterable interface', function() {
+      var sequence = Lazy([1.1, 1.9, 2.5]).map(Math.round);
+
+      var result = [];
+      for (var x of sequence) {
+        result.push(x);
+      }
+
+      expect(result).toEqual([1, 2, 3]);
+    });
+
+    it('preserves laziness', function() {
+      var sideEffects = [];
+
+      var sequence = Lazy([1, 2, 3]).map(function(x) {
+        sideEffects.push('foo');
+        return x;
+      });
+
+      var result = [];
+      for (var e of sequence.take(2)) {
+        result.push(e);
+      }
+
+      expect(result).toEqual([1, 2]);
+      expect(sideEffects).toEqual(['foo', 'foo']);
+    });
+  });
+
   describe('generators', function() {
     var sequence = Lazy(function*() {
       yield 1;
