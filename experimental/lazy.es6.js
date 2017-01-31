@@ -93,7 +93,7 @@
     var map = this.map;
 
     for (var pair of map) {
-      if (fn(pair[0], pair[1]) === false) {
+      if (fn(pair[1], pair[0]) === false) {
         return false;
       }
     }

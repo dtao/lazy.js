@@ -56,4 +56,11 @@ describe('support for ES6 features', function() {
       expect(sequence).toComprise([1, 2, 3]);
     });
   });
+
+  describe('maps', function() {
+    it('can wrap maps', function() {
+      var sequence = Lazy(new Map([['foo', 1], ['bar', 2]]));
+      expect(sequence).toComprise({foo: 1, bar: 2});
+    });
+  });
 });
