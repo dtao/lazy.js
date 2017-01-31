@@ -31,7 +31,6 @@ require("./merge_spec.js");
 require("./join_spec.js");
 
 if (util.isHarmonySupported()) {
-  require('../experimental/lazy.es6.js');
   require('./es6_spec.js');
 }
 
