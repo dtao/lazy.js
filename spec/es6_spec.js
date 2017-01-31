@@ -49,4 +49,11 @@ describe('support for ES6 features', function() {
       expect(sequence).toComprise([2, 3, 4]);
     });
   });
+
+  describe('sets', function() {
+    it('can wrap sets', function() {
+      var sequence = Lazy(new Set([1, 2, 2, 3, 3, 3]));
+      expect(sequence).toComprise([1, 2, 3]);
+    });
+  });
 });
