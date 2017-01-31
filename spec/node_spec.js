@@ -38,7 +38,7 @@ function isHarmonySupported() {
   var version = process.version.split('.');
 
   // We'll only bother checking Node versions 0.10 and greater
-  if (Number(version[1]) < 10) {
+  if (version[0] == 'v0' && Number(version[1]) < 10) {
     return false;
   }
 
