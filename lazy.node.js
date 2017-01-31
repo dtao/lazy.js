@@ -6,9 +6,11 @@ var URL    = require("url");
 var util   = require("util");
 
 // The starting point is everything that works in any environment (browser OR
-// Node.js)
+// Node.js).
 var Lazy = require("./lazy.js");
 
+// Check if ES6 features are supported and, if so, include ES6-specific Lazy.js
+// features.
 var isHarmonySupported = require('./util.js').isHarmonySupported;
 if (isHarmonySupported()) {
   require('./experimental/lazy.es6.js');
