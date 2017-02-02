@@ -9,6 +9,12 @@ describe('memoize', function() {
 
     var memoized = sequence.memoize();
 
+    expect(memoized.get(0)).toEqual(1);
+    expect(visited).toEqual([1]);
+
+    expect(memoized.get(1)).toEqual(2);
+    expect(visited).toEqual([1, 2]);
+
     expect(memoized.take(3)).toComprise([1, 2, 3]);
     expect(visited).toEqual([1, 2, 3]);
 
