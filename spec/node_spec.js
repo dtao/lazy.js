@@ -308,6 +308,31 @@ describe("working with streams", function() {
           expect(contents).toEqual(expected);
         });
       });
+
+      it('supports passing in an encoding', function() {
+        function testEncoding(encoding, expectedOutput) {
+          var lines = [];
+
+          runs(function() {
+            Lazy.readFile('./spec/data/unicode.txt', encoding)
+              .lines()
+              .each(function(line) {
+                lines.push(line);
+              });
+          });
+
+          waitsFor(function() {
+            return lines.length > 0;
+          });
+
+          runs(function() {
+            expect(lines[0]).toEqual(expectedOutput);
+          });
+        }
+
+        testEncoding('base64', 'SSDinaQgTlkK')
+        testEncoding('utf8', 'I ❤ NY');
+      });
     });
   }
 });

@@ -38,13 +38,14 @@ StreamedSequence.prototype.openStream = function(callback) {
  *     the stream.
  */
 StreamedSequence.prototype.each = function(fn) {
-  var cancelled = false;
+  var cancelled = false,
+      encoding = this.encoding;
 
   var handle = new Lazy.AsyncHandle(function cancel() { cancelled = true; });
 
   this.openStream(function(stream) {
     if (stream.setEncoding) {
-      stream.setEncoding(this.encoding || 'utf8');
+      stream.setEncoding(encoding || 'utf8');
     }
 
     var listener = function(e) {
