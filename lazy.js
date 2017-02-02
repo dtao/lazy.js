@@ -3955,6 +3955,9 @@
    * @examples
    * Lazy({ name: "Dan" }).defaults({ name: "User", password: "passw0rd" }) // sequence: { name: "Dan", password: "passw0rd" }
    * Lazy({ foo: false }).defaults({ foo: 'foo' }).get('foo') // false
+   * Lazy({ a: 1 }).defaults({ b: 2 }).defaults({ c: 3 }) // sequence: { a: 1, b: 2, c: 3 }
+   * Lazy({ a: 1 }).defaults({ b: 2 }).defaults({ a: 3 }) // sequence: { a: 1, b: 2 }
+   * Lazy({ a: 1, b: 2 }).defaults({ b: 5 }).defaults({ c: 3, d: 4 }) // sequence: { a: 1, b: 2, c: 3, d: 4 }
    */
   ObjectLikeSequence.prototype.defaults = function defaults(defaults) {
     return new DefaultsSequence(this, defaults);
@@ -3964,15 +3967,15 @@
    * @constructor
    */
   function DefaultsSequence(parent, defaults) {
-    this.parent   = parent;
-    this.defaults = defaults;
+    this.parent        = parent;
+    this.defaultValues = defaults;
   }
 
   DefaultsSequence.prototype = new ObjectLikeSequence();
 
   DefaultsSequence.prototype.get = function get(key) {
     var parentValue = this.parent.get(key);
-    return parentValue !== undefined ? parentValue : this.defaults[key];
+    return parentValue !== undefined ? parentValue : this.defaultValues[key];
   };
 
   DefaultsSequence.prototype.each = function each(fn) {
@@ -3991,7 +3994,7 @@
     });
 
     if (!done) {
-      Lazy(this.defaults).each(function(value, key) {
+      Lazy(this.defaultValues).each(function(value, key) {
         if (!merged.contains(key) && fn(value, key) === false) {
           return false;
         }
