@@ -28,6 +28,7 @@ require("./sum_spec.js");
 require("./watch_spec.js");
 require("./merge_spec.js");
 require("./join_spec.js");
+require("./memoize_spec.js");
 
 if (util.isHarmonySupported()) {
   require('./es6_spec.js');

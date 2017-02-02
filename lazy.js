@@ -535,7 +535,10 @@
    * @constructor
    */
   function MemoizedSequence(parent) {
-    this.parent = parent;
+    this.parent   = parent;
+    this.memo     = [];
+    this.iterator = undefined;
+    this.complete = false;
   }
 
   // MemoizedSequence needs to have its prototype set up after ArrayLikeSequence
@@ -1934,6 +1937,38 @@
   /**
    * @constructor
    */
+  function Memoizer(memo, iterator) {
+    this.iterator     = iterator;
+    this.memo         = memo;
+    this.currentIndex = 0;
+    this.currentValue = undefined;
+  }
+
+  Memoizer.prototype.current = function current() {
+    return this.currentValue;
+  };
+
+  Memoizer.prototype.moveNext = function moveNext() {
+    var iterator = this.iterator,
+        memo = this.memo,
+        current;
+
+    if (this.currentIndex < memo.length) {
+      this.currentValue = memo[this.currentIndex++];
+      return true;
+    }
+
+    if (iterator.moveNext()) {
+      this.currentValue = memo[this.currentIndex++] = iterator.current();
+      return true;
+    }
+
+    return false;
+  };
+
+  /**
+   * @constructor
+   */
   function UniqueMemoizer(iterator) {
     this.iterator     = iterator;
     this.set          = new Set();
@@ -3275,26 +3310,75 @@
   // Now that we've fully initialized the ArrayLikeSequence prototype, we can
   // set the prototype for MemoizedSequence.
 
-  MemoizedSequence.prototype = new ArrayLikeSequence();
+  MemoizedSequence.prototype = new Sequence();
 
-  MemoizedSequence.prototype.cache = function cache() {
-    return this.cachedResult || (this.cachedResult = this.parent.toArray());
+  MemoizedSequence.prototype.getParentIterator = function getParentIterator() {
+    // Since the premise of this sequence is that it only iterates over each
+    // element of its parent a grand total of one (1) time, we should only ever
+    // need to get the parent iterator once.
+    if (!this.iterator) {
+      this.iterator = this.parent.getIterator();
+    }
+
+    return this.iterator;
+  };
+
+  MemoizedSequence.prototype.getIterator = function getIterator() {
+    return new Memoizer(this.memo, this.getParentIterator());
+  };
+
+  MemoizedSequence.prototype.iterateTo = function iterateTo(i) {
+    var memo = this.memo,
+        iterator = this.getParentIterator();
+
+    while (i >= memo.length) {
+      if (!iterator.moveNext()) {
+        this.complete = true;
+        return false;
+      }
+
+      memo.push(iterator.current());
+    }
+
+    return true;
   };
 
   MemoizedSequence.prototype.get = function get(i) {
-    return this.cache()[i];
+    var memo = this.memo;
+
+    if (i < memo.length) {
+      return memo[i];
+    }
+
+    if (!this.iterateTo(i)) {
+      return undefined;
+    }
+
+    return memo[i];
   };
 
   MemoizedSequence.prototype.length = function length() {
-    return this.cache().length;
+    if (!this.complete) {
+      this.iterateTo(Infinity);
+    }
+
+    return this.memo.length;
   };
 
   MemoizedSequence.prototype.slice = function slice(begin, end) {
-    return this.cache().slice(begin, end);
+    if (!this.complete) {
+      this.iterateTo(end);
+    }
+
+    return Lazy(this.memo.slice(begin, end));
   };
 
   MemoizedSequence.prototype.toArray = function toArray() {
-    return this.cache().slice(0);
+    if (!this.complete) {
+      this.iterateTo(Infinity);
+    }
+
+    return this.memo.slice(0);
   };
 
   /**
