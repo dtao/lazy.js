@@ -3,6 +3,15 @@ Lazy.js Changelog
 
 This file includes at least a partial list of the major changes in each version.
 
+v0.5.0
+------
+
+- sequences now support ES6 [iterable protocol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols) (#186)
+- added support for ES6 [Set](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set) and [Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) objects
+- `memoize().get` no longer iterates entire sequence (#191)
+- fixed bug causing failure on `defaults().defaults()` (#183)
+- fixed bug with setting encoding in `Lazy.readFile` (#160)
+
 v0.4.3
 ------
 
