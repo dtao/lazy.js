@@ -641,7 +641,7 @@
     this.mapFn  = mapFn;
   }
 
-  MappedSequence.prototype = new Sequence();
+  MappedSequence.prototype = Object.create(Sequence.prototype);
 
   MappedSequence.prototype.getIterator = function getIterator() {
     return new MappingIterator(this.parent, this.mapFn);
@@ -768,7 +768,7 @@
     this.filterFn = filterFn;
   }
 
-  FilteredSequence.prototype = new Sequence();
+  FilteredSequence.prototype = Object.create(Sequence.prototype);
 
   FilteredSequence.prototype.getIterator = function getIterator() {
     return new FilteringIterator(this.parent, this.filterFn);
@@ -909,7 +909,7 @@
     this.parent = parent;
   }
 
-  ReversedSequence.prototype = new Sequence();
+  ReversedSequence.prototype = Object.create(Sequence.prototype);
 
   ReversedSequence.prototype.getIterator = function getIterator() {
     return new ReversedIterator(this.parent);
@@ -974,7 +974,7 @@
     this.arrays = arrays;
   }
 
-  ConcatenatedSequence.prototype = new Sequence();
+  ConcatenatedSequence.prototype = Object.create(Sequence.prototype);
 
   ConcatenatedSequence.prototype.each = function each(fn) {
     var done = false,
@@ -1038,7 +1038,7 @@
     this.count  = count;
   }
 
-  TakeSequence.prototype = new Sequence();
+  TakeSequence.prototype = Object.create(Sequence.prototype);
 
   TakeSequence.prototype.getIterator = function getIterator() {
     return new TakeIterator(this.parent, this.count);
@@ -1109,7 +1109,7 @@
     this.predicate = predicate;
   }
 
-  TakeWhileSequence.prototype = new Sequence();
+  TakeWhileSequence.prototype = Object.create(Sequence.prototype);
 
   TakeWhileSequence.prototype.each = function each(fn) {
     var predicate = this.predicate,
@@ -1155,7 +1155,7 @@
     this.count = typeof count === "number" ? count : 1;
   }
 
-  InitialSequence.prototype = new Sequence();
+  InitialSequence.prototype = Object.create(Sequence.prototype);
 
   InitialSequence.prototype.each = function each(fn) {
     var index = this.parent.getIndex();
@@ -1238,7 +1238,7 @@
     this.count  = typeof count === "number" ? count : 1;
   }
 
-  DropSequence.prototype = new Sequence();
+  DropSequence.prototype = Object.create(Sequence.prototype);
 
   DropSequence.prototype.each = function each(fn) {
     var count   = this.count,
@@ -1277,7 +1277,7 @@
     this.predicate = predicate;
   }
 
-  DropWhileSequence.prototype = new Sequence();
+  DropWhileSequence.prototype = Object.create(Sequence.prototype);
 
   DropWhileSequence.prototype.each = function each(fn) {
     var predicate = this.predicate,
@@ -1393,7 +1393,7 @@
     this.sortFn = sortFn;
   }
 
-  SortedSequence.prototype = new Sequence();
+  SortedSequence.prototype = Object.create(Sequence.prototype);
 
   SortedSequence.prototype.each = function each(fn) {
     var sortFn = this.sortFn,
@@ -1607,7 +1607,7 @@
     this.keyFn  = keyFn;
   }
 
-  UniqueSequence.prototype = new Sequence();
+  UniqueSequence.prototype = Object.create(Sequence.prototype);
 
   UniqueSequence.prototype.each = function each(fn) {
     var cache = new Set(),
@@ -1675,7 +1675,7 @@
     this.arrays = arrays;
   }
 
-  ZippedSequence.prototype = new Sequence();
+  ZippedSequence.prototype = Object.create(Sequence.prototype);
 
   ZippedSequence.prototype.each = function each(fn) {
     var arrays = this.arrays,
@@ -1740,7 +1740,7 @@
     this.parent = parent;
   }
 
-  ShuffledSequence.prototype = new Sequence();
+  ShuffledSequence.prototype = Object.create(Sequence.prototype);
 
   ShuffledSequence.prototype.each = function each(fn) {
     var shuffled = this.parent.toArray(),
@@ -1785,7 +1785,7 @@
     this.parent = parent;
   }
 
-  FlattenedSequence.prototype = new Sequence();
+  FlattenedSequence.prototype = Object.create(Sequence.prototype);
 
   FlattenedSequence.prototype.each = function each(fn) {
     var index = 0;
@@ -1847,7 +1847,7 @@
     this.values = values;
   }
 
-  WithoutSequence.prototype = new Sequence();
+  WithoutSequence.prototype = Object.create(Sequence.prototype);
 
   WithoutSequence.prototype.each = function each(fn) {
     var set = createSet(this.values),
@@ -1909,7 +1909,7 @@
     this.arrays = arrays;
   }
 
-  IntersectionSequence.prototype = new Sequence();
+  IntersectionSequence.prototype = Object.create(Sequence.prototype);
 
   IntersectionSequence.prototype.each = function each(fn) {
     var sets = Lazy(this.arrays).map(function(values) {
@@ -2393,7 +2393,7 @@
     this.chunkSize = size;
   }
 
-  ChunkedSequence.prototype = new Sequence();
+  ChunkedSequence.prototype = Object.create(Sequence.prototype);
 
   ChunkedSequence.prototype.getIterator = function getIterator() {
     return new ChunkedIterator(this.parent, this.chunkSize);
@@ -2455,7 +2455,7 @@
     this.callback = callback;
   }
 
-  TappedSequence.prototype = new Sequence();
+  TappedSequence.prototype = Object.create(Sequence.prototype);
 
   TappedSequence.prototype.each = function each(fn) {
     var callback = this.callback;
@@ -2661,7 +2661,7 @@
     this.each   = getEachForIntersection(array);
   }
 
-  SimpleIntersectionSequence.prototype = new Sequence();
+  SimpleIntersectionSequence.prototype = Object.create(Sequence.prototype);
 
   SimpleIntersectionSequence.prototype.eachMemoizerCache = function eachMemoizerCache(fn) {
     var iterator = new UniqueMemoizer(Lazy(this.array).getIterator()),
@@ -2707,7 +2707,7 @@
     this.array  = array;
   }
 
-  SimpleZippedSequence.prototype = new Sequence();
+  SimpleZippedSequence.prototype = Object.create(Sequence.prototype);
 
   SimpleZippedSequence.prototype.each = function each(fn) {
     var array = this.array,
@@ -2830,7 +2830,7 @@
    */
   function ArrayLikeSequence() {}
 
-  ArrayLikeSequence.prototype = new Sequence();
+  ArrayLikeSequence.prototype = Object.create(Sequence.prototype);
 
   /**
    * Create a new constructor function for a type inheriting from
@@ -3077,7 +3077,7 @@
     this.mapFn  = mapFn;
   }
 
-  IndexedMappedSequence.prototype = new ArrayLikeSequence();
+  IndexedMappedSequence.prototype = Object.create(ArrayLikeSequence.prototype);
 
   IndexedMappedSequence.prototype.get = function get(i) {
     if (i < 0 || i >= this.parent.length()) {
@@ -3102,7 +3102,7 @@
     this.filterFn = filterFn;
   }
 
-  IndexedFilteredSequence.prototype = new FilteredSequence();
+  IndexedFilteredSequence.prototype = Object.create(FilteredSequence.prototype);
 
   IndexedFilteredSequence.prototype.each = function each(fn) {
     var parent = this.parent,
@@ -3142,7 +3142,7 @@
     this.parent = parent;
   }
 
-  IndexedReversedSequence.prototype = new ArrayLikeSequence();
+  IndexedReversedSequence.prototype = Object.create(ArrayLikeSequence.prototype);
 
   IndexedReversedSequence.prototype.get = function get(i) {
     return this.parent.get(this.length() - i - 1);
@@ -3173,7 +3173,7 @@
     this.count  = count;
   }
 
-  IndexedTakeSequence.prototype = new ArrayLikeSequence();
+  IndexedTakeSequence.prototype = Object.create(ArrayLikeSequence.prototype);
 
   IndexedTakeSequence.prototype.length = function length() {
     var parentLength = this.parent.length();
@@ -3201,7 +3201,7 @@
     this.count  = typeof count === "number" ? count : 1;
   }
 
-  IndexedDropSequence.prototype = new ArrayLikeSequence();
+  IndexedDropSequence.prototype = Object.create(ArrayLikeSequence.prototype);
 
   IndexedDropSequence.prototype.get = function get(i) {
     return this.parent.get(this.count + i);
@@ -3239,7 +3239,7 @@
     this.other  = other;
   }
 
-  IndexedConcatenatedSequence.prototype = new ArrayLikeSequence();
+  IndexedConcatenatedSequence.prototype = Object.create(ArrayLikeSequence.prototype);
 
   IndexedConcatenatedSequence.prototype.get = function get(i) {
     var parentLength = this.parent.length();
@@ -3271,7 +3271,7 @@
     this.keyFn  = keyFn;
   }
 
-  IndexedUniqueSequence.prototype = new Sequence();
+  IndexedUniqueSequence.prototype = Object.create(Sequence.prototype);
 
   IndexedUniqueSequence.prototype.eachArrayCache = function eachArrayCache(fn) {
     // Basically the same implementation as w/ the set, but using an array because
@@ -3310,7 +3310,7 @@
   // Now that we've fully initialized the ArrayLikeSequence prototype, we can
   // set the prototype for MemoizedSequence.
 
-  MemoizedSequence.prototype = new Sequence();
+  MemoizedSequence.prototype = Object.create(Sequence.prototype);
 
   MemoizedSequence.prototype.getParentIterator = function getParentIterator() {
     // Since the premise of this sequence is that it only iterates over each
@@ -3392,7 +3392,7 @@
     this.source = source;
   }
 
-  ArrayWrapper.prototype = new ArrayLikeSequence();
+  ArrayWrapper.prototype = Object.create(ArrayLikeSequence.prototype);
 
   ArrayWrapper.prototype.root = function root() {
     return this;
@@ -3477,7 +3477,7 @@
     this.mapFn  = mapFn;
   }
 
-  MappedArrayWrapper.prototype = new ArrayLikeSequence();
+  MappedArrayWrapper.prototype = Object.create(ArrayLikeSequence.prototype);
 
   MappedArrayWrapper.prototype.get = function get(i) {
     var source = this.parent.source;
@@ -3516,7 +3516,7 @@
     this.filterFn = filterFn;
   }
 
-  FilteredArrayWrapper.prototype = new FilteredSequence();
+  FilteredArrayWrapper.prototype = Object.create(FilteredSequence.prototype);
 
   FilteredArrayWrapper.prototype.each = function each(fn) {
     var source = this.parent.source,
@@ -3545,7 +3545,7 @@
     this.keyFn  = keyFn;
   }
 
-  UniqueArrayWrapper.prototype = new Sequence();
+  UniqueArrayWrapper.prototype = Object.create(Sequence.prototype);
 
   UniqueArrayWrapper.prototype.eachNoCache = function eachNoCache(fn) {
     var source = this.parent.source,
@@ -3637,7 +3637,7 @@
     this.other  = other;
   }
 
-  ConcatArrayWrapper.prototype = new ArrayLikeSequence();
+  ConcatArrayWrapper.prototype = Object.create(ArrayLikeSequence.prototype);
 
   ConcatArrayWrapper.prototype.get = function get(i) {
     var source = this.parent.source,
@@ -3699,7 +3699,7 @@
    */
   function ObjectLikeSequence() {}
 
-  ObjectLikeSequence.prototype = new Sequence();
+  ObjectLikeSequence.prototype = Object.create(Sequence.prototype);
 
   /**
    * Create a new constructor function for a type inheriting from
@@ -3800,7 +3800,7 @@
     this.parent = parent;
   }
 
-  KeySequence.prototype = new Sequence();
+  KeySequence.prototype = Object.create(Sequence.prototype);
 
   KeySequence.prototype.each = function each(fn) {
     var i = -1;
@@ -3828,7 +3828,7 @@
     this.parent = parent;
   }
 
-  ValuesSequence.prototype = new Sequence();
+  ValuesSequence.prototype = Object.create(Sequence.prototype);
 
   ValuesSequence.prototype.each = function each(fn) {
     var i = -1;
@@ -3859,7 +3859,7 @@
     this.filterFn = filterFn;
   }
 
-  FilteredObjectLikeSequence.prototype = new ObjectLikeSequence();
+  FilteredObjectLikeSequence.prototype = Object.create(ObjectLikeSequence.prototype);
 
   FilteredObjectLikeSequence.prototype.each = function each(fn) {
     var filterFn = this.filterFn;
@@ -3912,7 +3912,7 @@
     this.other  = other;
   }
 
-  AssignSequence.prototype = new ObjectLikeSequence();
+  AssignSequence.prototype = Object.create(ObjectLikeSequence.prototype);
 
   AssignSequence.prototype.get = function get(key) {
     return key in this.other ? this.other[key] : this.parent.get(key);
@@ -3971,7 +3971,7 @@
     this.defaultValues = defaults;
   }
 
-  DefaultsSequence.prototype = new ObjectLikeSequence();
+  DefaultsSequence.prototype = Object.create(ObjectLikeSequence.prototype);
 
   DefaultsSequence.prototype.get = function get(key) {
     var parentValue = this.parent.get(key);
@@ -4024,7 +4024,7 @@
     this.parent = parent;
   }
 
-  InvertedSequence.prototype = new ObjectLikeSequence();
+  InvertedSequence.prototype = Object.create(ObjectLikeSequence.prototype);
 
   InvertedSequence.prototype.each = function each(fn) {
     this.parent.each(function(value, key) {
@@ -4124,7 +4124,7 @@
     this.mergeFn = mergeFn;
   }
 
-  MergedSequence.prototype = new ObjectLikeSequence();
+  MergedSequence.prototype = Object.create(ObjectLikeSequence.prototype);
 
   MergedSequence.prototype.each = function each(fn) {
     var others  = this.others,
@@ -4273,7 +4273,7 @@
     this.properties = properties;
   }
 
-  PickSequence.prototype = new ObjectLikeSequence();
+  PickSequence.prototype = Object.create(ObjectLikeSequence.prototype);
 
   PickSequence.prototype.get = function get(key) {
     return arrayContains(this.properties, key) ? this.parent.get(key) : undefined;
@@ -4324,7 +4324,7 @@
     this.properties = properties;
   }
 
-  OmitSequence.prototype = new ObjectLikeSequence();
+  OmitSequence.prototype = Object.create(ObjectLikeSequence.prototype);
 
   OmitSequence.prototype.get = function get(key) {
     return arrayContains(this.properties, key) ? undefined : this.parent.get(key);
@@ -4406,7 +4406,7 @@
   // actually set the prototypes for GroupedSequence, IndexedSequence, and
   // CountedSequence.
 
-  GroupedSequence.prototype = new ObjectLikeSequence();
+  GroupedSequence.prototype = Object.create(ObjectLikeSequence.prototype);
 
   /**
    * @examples
@@ -4441,7 +4441,7 @@
     }, result);
   };
 
-  IndexedSequence.prototype = new ObjectLikeSequence();
+  IndexedSequence.prototype = Object.create(ObjectLikeSequence.prototype);
 
   IndexedSequence.prototype.each = function each(fn) {
     var keyFn   = createCallback(this.keyFn),
@@ -4459,7 +4459,7 @@
     });
   };
 
-  CountedSequence.prototype = new ObjectLikeSequence();
+  CountedSequence.prototype = Object.create(ObjectLikeSequence.prototype);
 
   CountedSequence.prototype.each = function each(fn) {
     var keyFn   = createCallback(this.keyFn),
@@ -4525,7 +4525,7 @@
     this.source = source;
   }
 
-  ObjectWrapper.prototype = new ObjectLikeSequence();
+  ObjectWrapper.prototype = Object.create(ObjectLikeSequence.prototype);
 
   ObjectWrapper.prototype.root = function root() {
     return this;
@@ -4588,7 +4588,7 @@
    */
   function StringLikeSequence() {}
 
-  StringLikeSequence.prototype = new ArrayLikeSequence();
+  StringLikeSequence.prototype = Object.create(ArrayLikeSequence.prototype);
 
   /**
    * Create a new constructor function for a type inheriting from
@@ -4727,7 +4727,7 @@
     this.stop   = stop;
   }
 
-  StringSegment.prototype = new StringLikeSequence();
+  StringSegment.prototype = Object.create(StringLikeSequence.prototype);
 
   StringSegment.prototype.get = function get(i) {
     return this.parent.get(i + this.start);
@@ -4943,7 +4943,7 @@
     this.mapFn  = mapFn;
   }
 
-  MappedStringLikeSequence.prototype = new StringLikeSequence();
+  MappedStringLikeSequence.prototype = Object.create(StringLikeSequence.prototype);
   MappedStringLikeSequence.prototype.get = IndexedMappedSequence.prototype.get;
   MappedStringLikeSequence.prototype.length = IndexedMappedSequence.prototype.length;
 
@@ -4966,7 +4966,7 @@
     this.parent = parent;
   }
 
-  ReversedStringLikeSequence.prototype = new StringLikeSequence();
+  ReversedStringLikeSequence.prototype = Object.create(StringLikeSequence.prototype);
   ReversedStringLikeSequence.prototype.get = IndexedReversedSequence.prototype.get;
   ReversedStringLikeSequence.prototype.length = IndexedReversedSequence.prototype.length;
 
@@ -4999,7 +4999,7 @@
     this.pattern = pattern;
   }
 
-  StringMatchSequence.prototype = new Sequence();
+  StringMatchSequence.prototype = Object.create(Sequence.prototype);
 
   StringMatchSequence.prototype.getIterator = function getIterator() {
     return new StringMatchIterator(this.parent.toString(), this.pattern);
@@ -5049,7 +5049,7 @@
     this.pattern = pattern;
   }
 
-  SplitStringSequence.prototype = new Sequence();
+  SplitStringSequence.prototype = Object.create(Sequence.prototype);
 
   SplitStringSequence.prototype.getIterator = function getIterator() {
     var source = this.parent.toString();
@@ -5145,7 +5145,7 @@
     this.source = source;
   }
 
-  StringWrapper.prototype = new StringLikeSequence();
+  StringWrapper.prototype = Object.create(StringLikeSequence.prototype);
 
   StringWrapper.prototype.root = function root() {
     return this;
@@ -5186,7 +5186,7 @@
     this.fixedLength = length;
   }
 
-  GeneratedSequence.prototype = new Sequence();
+  GeneratedSequence.prototype = Object.create(Sequence.prototype);
 
   GeneratedSequence.prototype.isAsync = function isAsync() {
     return false;
@@ -5314,7 +5314,7 @@
     this.cancelCallback = getCancelCallback(interval);
   }
 
-  AsyncSequence.prototype = new Sequence();
+  AsyncSequence.prototype = Object.create(Sequence.prototype);
 
   AsyncSequence.prototype.isAsync = function isAsync() {
     return true;
@@ -5767,7 +5767,7 @@
     });
   }
 
-  WatchedPropertySequence.prototype = new AsyncSequence();
+  WatchedPropertySequence.prototype = Object.create(AsyncSequence.prototype);
 
   WatchedPropertySequence.prototype.each = function each(fn) {
     this.listeners.push(fn);
@@ -5781,7 +5781,7 @@
    */
   function StreamLikeSequence() {}
 
-  StreamLikeSequence.prototype = new AsyncSequence();
+  StreamLikeSequence.prototype = Object.create(AsyncSequence.prototype);
 
   StreamLikeSequence.prototype.isAsync = function isAsync() {
     return true;
@@ -5800,7 +5800,7 @@
     this.each      = this.getEachForDelimiter(delimiter);
   }
 
-  SplitStreamSequence.prototype = new Sequence();
+  SplitStreamSequence.prototype = Object.create(Sequence.prototype);
 
   SplitStreamSequence.prototype.getEachForDelimiter = function getEachForDelimiter(delimiter) {
     if (delimiter instanceof RegExp) {
@@ -5883,7 +5883,7 @@
     this.pattern = cloneRegex(pattern);
   }
 
-  MatchedStreamSequence.prototype = new AsyncSequence();
+  MatchedStreamSequence.prototype = Object.create(AsyncSequence.prototype);
 
   MatchedStreamSequence.prototype.each = function each(fn) {
     var pattern = this.pattern,
@@ -5955,7 +5955,7 @@
       this.listeners = [];
     };
 
-    ctor.prototype = new StreamLikeSequence();
+    ctor.prototype = Object.create(StreamLikeSequence.prototype);
 
     ctor.prototype.each = function(listener) {
       this.listeners.push(listener);
