@@ -1,0 +1,12 @@
+#chunks .chunk {
+  position: relative;
+  height: 64px;
+  width: 64px;
+  background-color: #888;
+  padding: 8px;
+  margin-right: 12px;
+  margin-bottom: 12px;
+  display: inline-block;
+  word-wrap: break-word;
+  overflow: hidden;
+}

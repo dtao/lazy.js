@@ -1,0 +1,18 @@
+<% content_for(:head) do %>
+  <title>Lazy Primes</title>
+
+  <%= stylesheet_link_tag("demos/xhr") %>
+  <%= javascript_include_tag("lib/lazy") %>
+  <%= javascript_include_tag("lib/lazy.browser") %>
+  <%= javascript_include_tag("demos/xhr") %>
+<% end %>
+
+<% content_for(:body) do %>
+  <p>
+    This demo uses <code>Lazy.makeHttpRequest</code> against
+    <a href="https://httpbin.org/">https://httpbin.org/drip</a> to show how
+    Lazy can turn an HTTP request into a sequence of chunks.
+  </p>
+
+  <div id="chunks"></div>
+<% end %>
