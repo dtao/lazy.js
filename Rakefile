@@ -16,7 +16,7 @@ def format_options(options)
 end
 
 desc "Concat and uglify JavaScript"
-task :build => [ 'lazy.js' ] do |task|
+task :build => [ 'lazy.js', 'lazy.browser.js' ] do |task|
   version = package_info['version']
 
   File.open('lazy.min.js', 'w') { |f|
