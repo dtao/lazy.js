@@ -2609,6 +2609,10 @@
    * @returns {string} The delimited string.
    *
    * @examples
+   * function toParam(v, k) {
+   *   return k + '=' + v;
+   * }
+   *
    * Lazy([6, 29, 1984]).join("/")  // => "6/29/1984"
    * Lazy(["a", "b", "c"]).join()   // => "a,b,c"
    * Lazy(["a", "b", "c"]).join("") // => "abc"
@@ -2617,14 +2621,16 @@
    * Lazy(["", "", ""]).join(",")   // => ",,"
    * Lazy([1, 2]).join(0)           // => "102"
    * Lazy(["cons", "d"]).join(true) // => "construed"
-   * Lazy({foo: 1, bar: 2}).values().join() // "1,2"
-   * Lazy({foo: 1, bar: 2}).keys().join() // "foo,bar"
+   * Lazy({foo: 1, bar: 2}).values().join()        // "1,2"
+   * Lazy({foo: 1, bar: 2}).keys().join()          // "foo,bar"
+   * Lazy({foo: 1, bar: 2}).map(toParam).join('&') // 'foo=1&bar=2'
    */
   Sequence.prototype.join = function join(delimiter) {
     delimiter = typeof delimiter === "undefined" ? "," : String(delimiter);
 
-    return this.reduce(function(str, e, i) {
-      if (i > 0) {
+    var i = -1;
+    return this.reduce(function(str, e) {
+      if (++i > 0) {
         str += delimiter;
       }
       return str + e;
