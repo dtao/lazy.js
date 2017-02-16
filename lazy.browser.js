@@ -163,6 +163,10 @@
     request.send();
   };
 
+  Lazy.makeHttpRequest = function(url) {
+    return new StreamingHttpSequence(url);
+  };
+
   /*
    * Add support for `Lazy(NodeList)` and `Lazy(HTMLCollection)`.
    */
