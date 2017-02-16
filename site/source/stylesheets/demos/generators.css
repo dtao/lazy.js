@@ -11,6 +11,7 @@ body > div {
 
 .important {
   background-color: #ff8;
+  font-weight: bold;
   padding: 8px;
 }
 
