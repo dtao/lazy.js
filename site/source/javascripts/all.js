@@ -21,6 +21,7 @@
 // ----- You know... Lazy -----
 //= require lib/lazy
 //= require lib/lazy.browser
+//= require lib/lazy.min
 
 // ----- Google Analytics -----
 //= require ga
