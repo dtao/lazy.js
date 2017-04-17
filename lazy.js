@@ -1567,8 +1567,8 @@
    *
    * @examples
    * Lazy([1, 2, 2, 3, 3, 3]).uniq() // sequence: [1, 2, 3]
-   * Lazy([{ name: 'mike' }, 
-   * 	{ name: 'sarah' }, 
+   * Lazy([{ name: 'mike' },
+   * 	{ name: 'sarah' },
    * 	{ name: 'mike' }
    * ]).uniq('name')
    * // sequence: [{ name: 'mike' }, { name: 'sarah' }]
@@ -6188,8 +6188,7 @@
 
   /**
    * Takes a function and returns a function with the same logic but the
-   * arguments reversed. Only applies to functions w/ arity=2 as this is private
-   * and I can do what I want.
+   * arguments reversed.
    *
    * @private
    * @param {Function} fn The function to "reverse"
@@ -6199,8 +6198,12 @@
    * reverseArguments(function(x, y) { return x + y; })('a', 'b'); // => 'ba'
    */
   function reverseArguments(fn) {
-    return function(x, y) { return fn(y, x); };
-  }
+						return function() {
+										var map = Array.prototype.map;
+										var args = map.call(arguments, function(x) { return x; }); // create a new arguments array from the `arguments` object
+										return fn.apply(this, args.reverse()); // apply the function with arguments reversed
+						}
+		}
 
   /**
    * Creates a Set containing the specified values.
