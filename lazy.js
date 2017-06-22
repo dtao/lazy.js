@@ -6700,18 +6700,5 @@
     return ctor;
   }
 
-  // (function(){
-  //   var a = Lazy([1, 2])
-  //   var b = Lazy([3, 4])
-  //   var c = Lazy([5, 6])
-  //   var d = Lazy([a, b])
-  //   var e = Lazy([c])
-  //   var f = Lazy([d, e])
-  //   var g = Lazy(f)
-  //   var h = g.flatten();
-  //
-  //   [a, b, c, d, e, f, g, h].forEach(it => console.log(it))
-  // }())
-
   return Lazy;
 });
