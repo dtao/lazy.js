@@ -2572,11 +2572,11 @@
   };
 
   /**
-   * Gets the sum of the values in the sequence.
+   * Gets the sum of the numeric values in the sequence.
    *
    * @public
-   * @param {Function=} valueFn The function used to select the values that will
-   *     be summed up.
+   * @param {Function=} valueFn The function used to select the numeric values
+   *     that will be summed up.
    * @returns {*} The sum.
    *
    * @examples
