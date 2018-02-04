@@ -9,17 +9,19 @@ Lazy.js is a functional utility library for JavaScript, similar to [Underscore](
 
 It has no external dependencies, so you can get started right away with:
 
+```javascript
+npm install lazy.js
+```
+
+(Note the package is called "lazy.js", with a dot.)
+
+Or, if you're using Lazy.js in the browser:
+
 ```html
 <script type="text/javascript" src="lazy.js"></script>
 
 <!-- optional: if you want support for DOM event and AJAX-based sequences: -->
 <script type="text/javascript" src="lazy.browser.js"></script>
-```
-
-Or, if you're using Node.js:
-
-```javascript
-var Lazy = require('lazy.js');
 ```
 
 Now let's look at what you can do with Lazy.js. (For more thorough information, take a look at the [API Docs](http://dtao.github.io/lazy.js/docs/).)
