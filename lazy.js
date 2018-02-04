@@ -6129,7 +6129,7 @@
    * Lazy.createCallback({ foo: 'bar' })({ foo: 'bar' }) // => true
    * Lazy.createCallback({ foo: 'bar' })({ foo: 'baz' }) // => false
    */
-  Lazy.createCallback = function createCallback(callback, defaultValue) {
+  function createCallback(callback, defaultValue) {
     switch (typeof callback) {
       case "function":
         return callback;
@@ -6156,13 +6156,12 @@
     }
   }
 
-  var createCallback = Lazy.createCallback;
+  Lazy.createCallback = createCallback;
 
   /**
    * Takes a function that returns a value for one argument and produces a
    * function that compares two arguments.
    *
-   * @private
    * @param {Function|string|Object} callback A function, string, or object to
    *     convert to a callback using `createCallback`.
    * @returns {Function} A function that accepts two values and returns 1 if
@@ -6170,12 +6169,12 @@
    *     equivalent.
    *
    * @examples
-   * createComparator('a')({ a: 1 }, { a: 2 });       // => -1
-   * createComparator('a')({ a: 6 }, { a: 2 });       // => 1
-   * createComparator('a')({ a: 1 }, { a: 1 });       // => 0
-   * createComparator()(3, 5);                        // => -1
-   * createComparator()(7, 5);                        // => 1
-   * createComparator()(3, 3);                        // => 0
+   * Lazy.createComparator('a')({ a: 1 }, { a: 2 });       // => -1
+   * Lazy.createComparator('a')({ a: 6 }, { a: 2 });       // => 1
+   * Lazy.createComparator('a')({ a: 1 }, { a: 1 });       // => 0
+   * Lazy.createComparator()(3, 5);                        // => -1
+   * Lazy.createComparator()(7, 5);                        // => 1
+   * Lazy.createComparator()(3, 3);                        // => 0
    */
   function createComparator(callback, descending) {
     if (!callback) { return compare; }
@@ -6186,6 +6185,8 @@
       return compare(callback(x), callback(y));
     };
   }
+
+  Lazy.createComparator = createComparator;
 
   /**
    * Takes a function and returns a function with the same logic but the
