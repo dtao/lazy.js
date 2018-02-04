@@ -6176,7 +6176,7 @@
    * Lazy.createComparator()(7, 5);                        // => 1
    * Lazy.createComparator()(3, 3);                        // => 0
    */
-  function createComparator(callback, descending) {
+  function createComparator(callback) {
     if (!callback) { return compare; }
 
     callback = createCallback(callback);
