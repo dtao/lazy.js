@@ -1768,26 +1768,50 @@
    * values.
    *
    * @public
+   * @param {boolean} shallow Option to flatten only one level deep (default is
+   *     recursive).
    * @returns {Sequence} The new sequence.
    *
    * @examples
-   * Lazy([1, [2, 3], [4, [5]]]).flatten() // sequence: [1, 2, 3, 4, 5]
-   * Lazy([1, Lazy([2, 3])]).flatten()     // sequence: [1, 2, 3]
+   * Lazy([1, [2, 3], [4, [5]]]).flatten()     // sequence: [1, 2, 3, 4, 5]
+   * Lazy([1, [2, 3], [4, [5]]]).flatten(true) // sequence: [1, 2, 3, 4, [5]]
+   * Lazy([1, Lazy([2, 3])]).flatten()         // sequence: [1, 2, 3]
    */
-  Sequence.prototype.flatten = function flatten() {
-    return new FlattenedSequence(this);
+  Sequence.prototype.flatten = function flatten(shallow) {
+    return new FlattenedSequence(this, shallow);
   };
 
   /**
    * @constructor
    */
-  function FlattenedSequence(parent) {
+  function FlattenedSequence(parent, shallow) {
     this.parent = parent;
+    this.each = shallow ? this.eachShallow : this.eachRecursive;
   }
 
   FlattenedSequence.prototype = Object.create(Sequence.prototype);
 
-  FlattenedSequence.prototype.each = function each(fn) {
+  FlattenedSequence.prototype.eachShallow = function(fn) {
+    var index = 0;
+
+    return this.parent.each(function(e) {
+      if (isArray(e)) {
+        return forEach(e, function(val) {
+          return fn(val, index++);
+        });
+      }
+
+      if (e instanceof Sequence) {
+        return e.each(function(val) {
+          return fn(val, index++);
+        });
+      }
+
+      return fn(e, index++);
+    });
+  };
+
+  FlattenedSequence.prototype.eachRecursive = function each(fn) {
     var index = 0;
 
     return this.parent.each(function recurseVisitor(e) {
