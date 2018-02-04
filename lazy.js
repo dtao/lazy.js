@@ -6135,6 +6135,40 @@
       arraySlice = Array.prototype.slice;
 
   /**
+   * If you know what function currying is, then you know what this does.
+   *
+   * @param {Function} fn The function to curry.
+   * @returns {Function} The curried function.
+   *
+   * @examples
+   * function abc(a, b, c) { return [a, b, c]; }
+   * var curried = Lazy.curry(abc);
+   *
+   * curried(1)(2)(3) // => [1, 2, 3]
+   * curried(1, 2)(3) // => [1, 2, 3]
+   * curried(1)(2, 3) // => [1, 2, 3]
+   * curried(1, 2, 3) // => [1, 2, 3]
+   * Lazy([1, 2, 3]).map(curried(1, 2)) // sequence: [[1, 2, 1], [1, 2, 2], [1, 2, 3]]
+   */
+  function curry(fn, arity) {
+    arity || (arity = fn.length);
+
+    function curried(args) {
+      if (args.length < arity) {
+        return function() {
+          return curried(args.concat(arraySlice.call(arguments, 0)));
+        };
+      }
+
+      return fn.apply(null, args);
+    }
+
+    return curried([]);
+  }
+
+  Lazy.curry = curry;
+
+  /**
    * Creates a callback... you know, Lo-Dash style.
    *
    * - for functions, just returns the function
