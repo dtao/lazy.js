@@ -1,5 +1,6 @@
 /*
  * @name Lazy.js
+ * Licensed under the MIT License (see LICENSE.txt)
  *
  * @fileOverview
  * Lazy.js is a lazy evaluation library for JavaScript.
