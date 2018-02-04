@@ -1567,8 +1567,8 @@
    *
    * @examples
    * Lazy([1, 2, 2, 3, 3, 3]).uniq() // sequence: [1, 2, 3]
-   * Lazy([{ name: 'mike' }, 
-   * 	{ name: 'sarah' }, 
+   * Lazy([{ name: 'mike' },
+   * 	{ name: 'sarah' },
    * 	{ name: 'mike' }
    * ]).uniq('name')
    * // sequence: [{ name: 'mike' }, { name: 'sarah' }]
@@ -6628,6 +6628,37 @@
 
     return snapshot;
   };
+
+  Sequence.prototype.flatten = function flatten () {
+    var source
+    var queue
+    var results
+    var item
+
+    source = this.source
+    queue = []
+    results = []
+
+    source.forEach(it => queue.push(it))
+
+    while (queue.length) handle(queue.shift())
+
+    this.source = results
+
+    return this
+
+    function handle (it) {
+      if (exists(it.source)) {
+        queue = queue.concat(it.source)
+      } else {
+        results.push(it)
+      }
+    }
+
+    function exists (it) {
+      return it !== null && it !== undefined
+    }
+  }
 
   /**
    * Shared base method for defining new sequence types.
