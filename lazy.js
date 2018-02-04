@@ -6116,7 +6116,6 @@
    * - for strings, returns a pluck-style callback
    * - for objects, returns a where-style callback
    *
-   * @private
    * @param {Function|string|Object} callback A function, string, or object to
    *     convert to a callback.
    * @param {*} defaultReturn If the callback is undefined, a default return
@@ -6124,13 +6123,13 @@
    * @returns {Function} The callback function.
    *
    * @examples
-   * createCallback(function() {})                  // instanceof Function
-   * createCallback('foo')                          // instanceof Function
-   * createCallback('foo')({ foo: 'bar'})           // => 'bar'
-   * createCallback({ foo: 'bar' })({ foo: 'bar' }) // => true
-   * createCallback({ foo: 'bar' })({ foo: 'baz' }) // => false
+   * Lazy.createCallback(function() {})                  // instanceof Function
+   * Lazy.createCallback('foo')                          // instanceof Function
+   * Lazy.createCallback('foo')({ foo: 'bar'})           // => 'bar'
+   * Lazy.createCallback({ foo: 'bar' })({ foo: 'bar' }) // => true
+   * Lazy.createCallback({ foo: 'bar' })({ foo: 'baz' }) // => false
    */
-  function createCallback(callback, defaultValue) {
+  Lazy.createCallback = function createCallback(callback, defaultValue) {
     switch (typeof callback) {
       case "function":
         return callback;
@@ -6156,6 +6155,8 @@
         throw new Error("Don't know how to make a callback from a " + typeof callback + "!");
     }
   }
+
+  var createCallback = Lazy.createCallback;
 
   /**
    * Takes a function that returns a value for one argument and produces a
