@@ -3,6 +3,12 @@ Lazy.js Changelog
 
 This file includes at least a partial list of the major changes in each version.
 
+Unreleased
+----------
+
+- added public `Lazy.createCallback` and `Lazy.createComparator` methods (#140)
+- added shallow option to `flatten()` (#125)
+
 v0.5.0
 ------
 
