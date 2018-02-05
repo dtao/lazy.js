@@ -5350,8 +5350,13 @@
    * @param {Sequence} parent A {@link Sequence} to wrap, to expose asynchronous
    *     iteration.
    * @param {number=} interval How many milliseconds should elapse between each
-   *     element when iterating over this sequence. If this argument is omitted,
-   *     asynchronous iteration will be executed as fast as possible.
+   *     element when iterating over this sequence. Note that this interval
+   *     applies even to the first value in the sequence; i.e., when calling
+   *     each(), this much time will elapse before the first element is
+   *     iterated.
+   *
+   *     If this argument is omitted, asynchronous iteration will be executed
+   *     as fast as possible.
    */
   function AsyncSequence(parent, interval) {
     if (parent instanceof AsyncSequence) {
