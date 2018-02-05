@@ -4298,7 +4298,7 @@
    * this sequence whose keys are included in the given array of property names.
    *
    * @public
-   * @param {Array} properties An array of the properties to "pick" from this
+   * @param {Array.<string>} properties An array of the properties to "pick" from this
    *     sequence.
    * @returns {ObjectLikeSequence} The new sequence.
    *
