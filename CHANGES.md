@@ -6,7 +6,7 @@ This file includes at least a partial list of the major changes in each version.
 Unreleased
 ----------
 
-- added public `Lazy.curry` method (#24)
+- added public `Lazy.curry` and `Lazy.curryRight` methods (#24)
 - added public `Lazy.createCallback` and `Lazy.createComparator` methods (#140)
 - added shallow option to `flatten()` (#125)
 

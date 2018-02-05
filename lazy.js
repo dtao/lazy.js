@@ -6166,7 +6166,40 @@
     return curried([]);
   }
 
+  /**
+   * Same as Lazy.curry, but... you know... from the right.
+   *
+   * @param {Function} fn The function to curry from the right.
+   * @returns {Function} The curried-from-the-right function.
+   *
+   * @examples
+   * function abc(a, b, c) { return [a, b, c]; }
+   * var curriedRight = Lazy.curryRight(abc);
+   *
+   * curriedRight(3)(2)(1) // => [1, 2, 3]
+   * curriedRight(2, 3)(1) // => [1, 2, 3]
+   * curriedRight(3)(1, 2) // => [1, 2, 3]
+   * curriedRight(1, 2, 3) // => [1, 2, 3]
+   * Lazy([1, 2, 3]).map(curriedRight(3)) // sequence: [[1, 0, 3], [2, 1, 3], [3, 2, 3]]
+   */
+  function curryRight(fn, arity) {
+    arity || (arity = fn.length);
+
+    function curriedRight(args) {
+      if (args.length < arity) {
+        return function() {
+          return curriedRight(arraySlice.call(arguments, 0).concat(args));
+        };
+      }
+
+      return fn.apply(null, args);
+    }
+
+    return curriedRight([]);
+  }
+
   Lazy.curry = curry;
+  Lazy.curryRight = curryRight;
 
   /**
    * Creates a callback... you know, Lo-Dash style.
