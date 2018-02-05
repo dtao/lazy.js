@@ -9,6 +9,7 @@ Unreleased
 - added public `Lazy.curry` and `Lazy.curryRight` methods (#24)
 - added public `Lazy.createCallback` and `Lazy.createComparator` methods (#140)
 - added shallow option to `flatten()` (#125)
+- fixed bug with return value from `consecutive()` not being reusable (#212)
 
 v0.5.0
 ------

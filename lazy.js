@@ -2371,6 +2371,13 @@
    * @returns {Sequence} The resulting sequence of consecutive segments.
    *
    * @examples
+   * function sum(vals) { return Lazy(vals).sum(); }
+   * var pairs = Lazy([1, 2, 3, 4]).consecutive(2);
+   *
+   * // Make sure consecutive sequences are reusable.
+   * pairs.map(sum) // => sequence: [3, 5, 7]
+   * pairs.map(sum) // => sequence: [3, 5, 7]
+   *
    * Lazy([]).consecutive(2)        // => sequence: []
    * Lazy([1]).consecutive(2)       // => sequence: []
    * Lazy([1, 2]).consecutive(2)    // => sequence: [[1, 2]]
@@ -2379,13 +2386,25 @@
    * Lazy([1, 2, 3]).consecutive(1) // => sequence: [[1], [2], [3]]
    */
   Sequence.prototype.consecutive = function consecutive(count) {
-    var queue    = new Queue(count);
-    var segments = this.map(function(element) {
+    return new ConsecutiveSequence(this, count);
+  };
+
+  function ConsecutiveSequence(parent, count) {
+    this.parent = parent;
+    this.count = count;
+  }
+
+  ConsecutiveSequence.prototype = Object.create(Sequence.prototype);
+
+  ConsecutiveSequence.prototype.each = function each(fn) {
+    var count = this.count,
+        queue = new Queue(count);
+    var segments = this.parent.map(function(element) {
       if (queue.add(element).count === count) {
         return queue.toArray();
       }
     });
-    return segments.compact();
+    return segments.compact().each(fn);
   };
 
   /**
