@@ -1561,7 +1561,7 @@
    *
    * @public
    * @aka unique
-   * @param {Function} keyFn An optional function to produce the key for each
+   * @param {Function=} keyFn An optional function to produce the key for each
    *     object. This key is then tested for uniqueness as  opposed to the
    *     object reference.
    * @returns {Sequence} The new sequence.
