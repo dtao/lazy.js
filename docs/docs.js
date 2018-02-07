@@ -15,7 +15,7 @@ window.addEventListener('load', function() {
         var lastElement = $(matchingEditor);
         _(spec.results().getItems())
           .filter(function(item) { return item.passed && !item.passed(); })
-          .pluck('message')
+          .map('message')
           .each(function(errorMessage) {
             lastElement = $('<pre>')
               .text(errorMessage)
