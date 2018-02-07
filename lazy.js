@@ -471,6 +471,34 @@
   };
 
   /**
+   * Compare this to another sequence for equality.
+   *
+   * @public
+   * @param {Sequence} other The other sequence to compare this one to.
+   * @returns {boolean} Whether the two sequences contain the same values in
+   *     the same order.
+   *
+   * @examples
+   * Lazy([1, 2]).equals(Lazy([1, 2]))   // => true
+   * Lazy([1, 2]).equals(Lazy([2, 1]))   // => false
+   * Lazy([1]).equals(Lazy([1, 2]))      // => false
+   * Lazy([1, 2]).equals(Lazy([1]))      // => false
+   * Lazy([]).equals(Lazy([]))           // => true
+   * Lazy(['foo']).equals(Lazy(['foo'])) // => true
+   * Lazy(['1']).equals(Lazy([1]))       // => false
+   * Lazy([false]).equals(Lazy([0]))     // => false
+   */
+  Sequence.prototype.equals = function equals(other) {
+    var it = other.getIterator();
+    var result = this.reduce(function(res, val) {
+      return res && it.moveNext() && val === it.current();
+    }, true);
+    return transform(function(res) {
+      return res && !it.moveNext();
+    }, result);
+  };
+
+  /**
    * Provides an indexed view into the sequence.
    *
    * For sequences that are already indexed, this will simply return the
