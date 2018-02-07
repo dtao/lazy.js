@@ -293,7 +293,7 @@
   };
 
   beforeEach(function() {
-    context.people = [
+    var people = [
       context.david  = new Person("David", 63, "M"),
       context.mary   = new Person("Mary", 62, "F"),
       context.lauren = new Person("Lauren", 32, "F"),
@@ -301,6 +301,30 @@
       context.daniel = new Person("Daniel", 28, "M"),
       context.happy  = new Person("Happy", 25, "F")
     ];
+
+    context.people = people.slice(0);
+
+    var personsAccessed = [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ];
+
+    context.personsAccessed = function() {
+      return Lazy(personsAccessed).compact().value().length;
+    };
+
+    Lazy.range(context.people.length).forEach(function(index) {
+      Object.defineProperty(context.people, index, {
+        get: function() {
+          personsAccessed[index] = true;
+          return people[index];
+        }
+      });
+    });
 
     Person.reset(people);
 

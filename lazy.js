@@ -494,13 +494,17 @@
     if (!(other instanceof Sequence)) {
       return false;
     }
-    var it = other.getIterator();
-    var result = this.reduce(function(res, val) {
-      return res && it.moveNext() && val === it.current();
-    }, true);
-    return transform(function(res) {
-      return res && !it.moveNext();
-    }, result);
+    var it  = this.getIterator(),
+        oit = other.getIterator();
+    while (it.moveNext()) {
+      if (!oit.moveNext()) {
+        return false;
+      }
+      if (it.current() !== oit.current()) {
+        return false;
+      }
+    }
+    return !oit.moveNext();
   };
 
   /**
