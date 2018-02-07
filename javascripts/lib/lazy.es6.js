@@ -6,6 +6,24 @@
     Lazy = require('../lazy.js');
   }
 
+  if (typeof Symbol !== 'undefined') {
+    Lazy.Sequence.prototype[Symbol.iterator] = function() {
+      return new IteratorAdapter(this.getIterator());
+    }
+
+    function IteratorAdapter(iterator) {
+      this.iterator = iterator;
+    }
+
+    IteratorAdapter.prototype.next = function next() {
+      if (this.iterator.moveNext()) {
+        return { value: this.iterator.current() };
+      }
+
+      return { done: true };
+    };
+  }
+
   var GeneratorConstructor = (function() {
     try {
       return eval('(function*() {})').constructor;
@@ -75,7 +93,7 @@
     var map = this.map;
 
     for (var pair of map) {
-      if (fn(pair[0], pair[1]) === false) {
+      if (fn(pair[1], pair[0]) === false) {
         return false;
       }
     }
@@ -95,27 +113,6 @@
   }
 
   /**
-   * @constructor
-   */
-  function SetWrapper(set) {
-    this.set = set;
-  }
-
-  SetWrapper.prototype = new Lazy.Sequence();
-
-  SetWrapper.prototype.each = function each(fn) {
-    var set = this.set;
-
-    for (var item of set) {
-      if (fn(item) === false) {
-        return false;
-      }
-    }
-
-    return true;
-  };
-
-  /**
    * Checks whether an object is an ES6 Iterator.
    *
    * @private
@@ -129,17 +126,18 @@
   /**
    * @constructor
    */
-  function IteratorWrapper(iterable) {
+  function IterableWrapper(iterable) {
     this.iterable = iterable;
   }
 
-  IteratorWrapper.prototype = new Lazy.Sequence();
+  IterableWrapper.prototype = new Lazy.Sequence();
 
-  IteratorWrapper.prototype.each = function each(fn) {
-    var iterable = this.iterable;
+  IterableWrapper.prototype.each = function each(fn) {
+    var iterable = this.iterable,
+        i = -1;
 
     for (var item of iterable) {
-      if (fn(item) === false) {
+      if (fn(item, ++i) === false) {
         return false;
       }
     }
@@ -159,11 +157,8 @@
     } else if (isES6Map(source)) {
       return new MapWrapper(source);
 
-    } else if (isES6Set(source)) {
-      return new SetWrapper(source);
-
-    } else if (isES6Iterator(source)) {
-      return new IteratorWrapper(source);
+    } else if (isES6Set(source) || isES6Iterator(source)) {
+      return new IterableWrapper(source);
     }
   });
 

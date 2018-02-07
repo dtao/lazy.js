@@ -30,22 +30,12 @@ describe("map", function() {
       var min = Lazy([1, 2, 3]).map(increment).min();
       expect(min).toEqual(2);
     });
-
-    it("returns Infinity for an empty sequence", function() {
-      var min = Lazy([]).map(function(d) { return d.foo; }).min();
-      expect(min).toBe(Infinity);
-    });
   });
 
   describe("map -> max", function() {
     it("works as expected", function() {
       var max = Lazy([1, 2, 3]).map(increment).max();
       expect(max).toEqual(4);
-    });
-
-    it("returns -Infinity for an empty sequence", function() {
-      var max = Lazy([]).map(function(d) { return d.foo; }).max();
-      expect(max).toBe(-Infinity);
     });
   });
 });

@@ -98,7 +98,7 @@
     var listener = function(e) {
       if (fn(e) === false) {
         for (var i = 0; i < elements.length; ++i) {
-          elements.removeEventListener(eventName, listener);
+          elements[i].removeEventListener(eventName, listener);
         }
       }
     };
@@ -146,21 +146,38 @@
 
     request.open("GET", this.url);
 
+    var handle = new Lazy.AsyncHandle();
+
     var listener = function listener(data) {
       if (!aborted) {
         data = request.responseText.substring(index);
-        if (fn(data) === false) {
-          request.removeEventListener("progress", listener, false);
-          request.abort();
-          aborted = true;
+        try {
+          if (fn(data) === false) {
+            request.removeEventListener("progress", listener, false);
+            request.abort();
+            aborted = true;
+            handle._resolve(false);
+          }
+          index += data.length;
+        } catch (e) {
+          handle._reject(e);
         }
-        index += data.length;
       }
     };
 
     request.addEventListener("progress", listener, false);
 
+    request.addEventListener("load", function() {
+      handle._resolve(true);
+    });
+
     request.send();
+
+    return handle;
+  };
+
+  Lazy.makeHttpRequest = function(url) {
+    return new StreamingHttpSequence(url);
   };
 
   /*

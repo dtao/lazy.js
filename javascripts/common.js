@@ -30,4 +30,7 @@ $(document).ready(function() {
 
     return false;
   });
+
+  $(".underscore-version").text(_.VERSION);
+  $(".lodash-version").text(lodash.VERSION);
 });

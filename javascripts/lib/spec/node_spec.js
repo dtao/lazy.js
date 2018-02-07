@@ -1,7 +1,7 @@
 var fs           = require("fs"),
-    path         = require("path"),
     Stream       = require("stream"),
-    MemoryStream = require("memorystream");
+    MemoryStream = require("memorystream"),
+    util         = require('../util.js');
 
 require("./lazy_spec.js");
 require("./map_spec.js");
@@ -27,29 +27,18 @@ require("./max_spec.js");
 require("./sum_spec.js");
 require("./watch_spec.js");
 require("./merge_spec.js");
+require("./join_spec.js");
+require("./memoize_spec.js");
+require("./equals_spec.js");
+require("./index_of_spec.js");
+require("./contains_spec.js");
 
-if (isHarmonySupported()) {
-  require('../experimental/lazy.es6.js');
+if (util.isHarmonySupported()) {
   require('./es6_spec.js');
 }
 
-function isHarmonySupported() {
-  var version = process.version.split('.');
-
-  // We'll only bother checking Node versions 0.10 and greater
-  if (Number(version[1]) < 10) {
-    return false;
-  }
-
-  try {
-    eval('(function*() {})');
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
 // Sequence types
+require("./object_like_sequence_spec.js");
 require("./string_like_sequence_spec.js");
 require("./async_sequence_spec.js");
 require("./async_handle_spec.js");
@@ -322,6 +311,31 @@ describe("working with streams", function() {
           var expected = Lazy.repeat('The quick brown fox jumped over the lazy dog.', 5).join('\n');
           expect(contents).toEqual(expected);
         });
+      });
+
+      it('supports passing in an encoding', function() {
+        function testEncoding(encoding, expectedOutput) {
+          var lines = [];
+
+          runs(function() {
+            Lazy.readFile('./spec/data/unicode.txt', encoding)
+              .lines()
+              .each(function(line) {
+                lines.push(line);
+              });
+          });
+
+          waitsFor(function() {
+            return lines.length > 0;
+          });
+
+          runs(function() {
+            expect(lines[0]).toEqual(expectedOutput);
+          });
+        }
+
+        testEncoding('base64', 'SSDinaQgTlkK')
+        testEncoding('utf8', 'I ❤ NY');
       });
     });
   }

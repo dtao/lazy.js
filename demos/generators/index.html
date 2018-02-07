@@ -6,8 +6,7 @@
         <title>Lazy.js ES6 Generators Demo</title>
     <link href="../../stylesheets/lib/codemirror.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="../../stylesheets/demos/generators.css" media="screen" rel="stylesheet" type="text/css" />
-    <script src="../../javascripts/lib/lazy.js" type="text/javascript"></script>
-    <script src="../../javascripts/lib/lazy.es6.js" type="text/javascript"></script>
+    <script src="../../javascripts/lib/lazy.min.js" type="text/javascript"></script>
     <script src="../../javascripts/lib/codemirror.js" type="text/javascript"></script>
     <script src="../../javascripts/lib/codemirror/javascript.js" type="text/javascript"></script>
     <script src="../../javascripts/lib/lemming.js" type="text/javascript"></script>
@@ -31,18 +30,8 @@
         </p>
 
         <p class="important">
-            <strong>This demo requires a <em>very</em> recent release of a
-            modern browser</strong>, one which supports
-            <a href="https://wiki.mozilla.org/ES6_plans#Harmony_infrastructure">ECMAScript 6 "Harmony"</a>
-            features. One such browser that I'm aware of is
-            <a href="https://www.google.com/intl/en/chrome/browser/beta.html">the current beta release of Google Chrome</a>.
-            And even then you need to enable "Experimental JavaScript" at
-            chrome://flags.
-        </p>
-
-        <p>
-            For more info on generators, see the
-            <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators#Generators.3A_a_better_way_to_build_Iterators">MDN article</a>.
+            This demo requires a browser which supports
+            <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators">ES6 Generators</a>.
         </p>
 
         <p>
@@ -68,7 +57,7 @@
                 <textarea id="sequence">// The numbers from 1-100 in random order
 Lazy(generateRandoms(1, 100))
   .uniq()
-  .take(100);
+  .take(10);
 </textarea>
             </div>
 

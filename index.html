@@ -2,71 +2,85 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>Lazy.js - v0.4.2</title>
+  <title>Lazy.js - v0.5.1</title>
 
   <link href="stylesheets/all.css" media="screen" rel="stylesheet" type="text/css" />
   <script src="javascripts/all.js" type="text/javascript"></script>
   <script src="javascripts/main_all.js" type="text/javascript"></script>
   
+  <script src="javascripts/lib/spec/sort_by_spec.js" type="text/javascript"></script>
+  
   <script src="javascripts/lib/spec/async_handle_spec.js" type="text/javascript"></script>
-  
-  <script src="javascripts/lib/spec/async_sequence_spec.js" type="text/javascript"></script>
-  
-  <script src="javascripts/lib/spec/concat_spec.js" type="text/javascript"></script>
-  
-  <script src="javascripts/lib/spec/count_by_spec.js" type="text/javascript"></script>
-  
-  <script src="javascripts/lib/spec/drop_spec.js" type="text/javascript"></script>
-  
-  <script src="javascripts/lib/spec/filter_spec.js" type="text/javascript"></script>
-  
-  <script src="javascripts/lib/spec/find_spec.js" type="text/javascript"></script>
-  
-  <script src="javascripts/lib/spec/flatten_spec.js" type="text/javascript"></script>
-  
-  <script src="javascripts/lib/spec/group_by_spec.js" type="text/javascript"></script>
-  
-  <script src="javascripts/lib/spec/initial_spec.js" type="text/javascript"></script>
-  
-  <script src="javascripts/lib/spec/intersection_spec.js" type="text/javascript"></script>
   
   <script src="javascripts/lib/spec/lazy_spec.js" type="text/javascript"></script>
   
-  <script src="javascripts/lib/spec/map_spec.js" type="text/javascript"></script>
-  
-  <script src="javascripts/lib/spec/max_spec.js" type="text/javascript"></script>
-  
-  <script src="javascripts/lib/spec/merge_spec.js" type="text/javascript"></script>
-  
   <script src="javascripts/lib/spec/min_spec.js" type="text/javascript"></script>
   
-  <script src="javascripts/lib/spec/reverse_spec.js" type="text/javascript"></script>
+  <script src="javascripts/lib/spec/flatten_spec.js" type="text/javascript"></script>
   
   <script src="javascripts/lib/spec/shuffle_spec.js" type="text/javascript"></script>
   
-  <script src="javascripts/lib/spec/sort_by_spec.js" type="text/javascript"></script>
+  <script src="javascripts/lib/spec/intersection_spec.js" type="text/javascript"></script>
   
-  <script src="javascripts/lib/spec/string_like_sequence_spec.js" type="text/javascript"></script>
-  
-  <script src="javascripts/lib/spec/sum_spec.js" type="text/javascript"></script>
+  <script src="javascripts/lib/spec/join_spec.js" type="text/javascript"></script>
   
   <script src="javascripts/lib/spec/take_spec.js" type="text/javascript"></script>
   
-  <script src="javascripts/lib/spec/union_spec.js" type="text/javascript"></script>
+  <script src="javascripts/lib/spec/drop_spec.js" type="text/javascript"></script>
   
-  <script src="javascripts/lib/spec/uniq_spec.js" type="text/javascript"></script>
-  
-  <script src="javascripts/lib/spec/watch_spec.js" type="text/javascript"></script>
+  <script src="javascripts/lib/spec/concat_spec.js" type="text/javascript"></script>
   
   <script src="javascripts/lib/spec/without_spec.js" type="text/javascript"></script>
   
+  <script src="javascripts/lib/spec/merge_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/filter_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/union_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/reverse_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/equals_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/initial_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/uniq_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/async_sequence_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/memoize_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/find_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/object_like_sequence_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/string_like_sequence_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/index_of_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/contains_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/count_by_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/amd_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/group_by_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/map_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/watch_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/sum_spec.js" type="text/javascript"></script>
+  
   <script src="javascripts/lib/spec/zip_spec.js" type="text/javascript"></script>
+  
+  <script src="javascripts/lib/spec/max_spec.js" type="text/javascript"></script>
   
 </head>
 
 <body>
   <header>
-    <h1><a href="./">lazy.js</a> <small class="version">0.4.2</small></h1>
+    <h1><a href="./">lazy.js</a> <small class="version">0.5.1</small></h1>
     <a href="https://github.com/dtao/lazy.js" class="github-ribbon"></a>
   </header>
 
@@ -84,7 +98,6 @@
     <h1>Like Underscore, but lazier</h1>
 
 <p class="sharing"><a href="https://travis-ci.org/dtao/lazy.js"><img src="https://travis-ci.org/dtao/lazy.js.svg?branch=master" alt="Build Status"></a>
-<!-- GitHub stars & forks -->
 <iframe src="http://ghbtns.com/github-btn.html?user=dtao&amp;repo=lazy.js&amp;type=watch&amp;count=true" allowtransparency="true" frameborder="0" scrolling="0" height="20" style="width: 100px;">
 </iframe>
 <iframe src="http://ghbtns.com/github-btn.html?user=dtao&amp;repo=lazy.js&amp;type=fork&amp;count=true" allowtransparency="true" frameborder="0" scrolling="0" height="20">
@@ -124,24 +137,18 @@
 </script>
 </p>
 
-<p><strong>Lazy.js</strong> is a functional utility library for JavaScript, similar to <a href="http://underscorejs.org/">Underscore</a> and <a href="http://lodash.com/">Lo-Dash</a>, but with an underlying engine that supports many more use cases than those libraries, while offering comparable or superior performance in most scenarios.</p>
+<p>Lazy.js is a functional utility library for JavaScript, similar to <a href="http://underscorejs.org/">Underscore</a> and <a href="http://lodash.com/">Lodash</a>, but with a <strong>lazy engine</strong> under the hood that strives to do as little work as possible while being as flexible as possible.</p>
 
-<p>The following chart illustrates the performance of Lazy.js versus Underscore and Lo-Dash for several common operations using arrays with 10 elements each on Chrome 39:</p>
+<p>It has no external dependencies, so you can get started right away with:</p>
+<div class="highlight"><pre><span class="nx">npm</span> <span class="nx">install</span> <span class="nx">lazy</span><span class="p">.</span><span class="nx">js</span>
+</pre></div>
+<p>(Note the package is called "lazy.js", with a dot.)</p>
 
-<p><img src="http://i.imgur.com/9vP6sVG.png" alt="Lazy.js versus Underscore/Lo-Dash"></p>
-
-<p>You can see that the performance difference becomes much more significant for methods that don't require iterating an entire collection (e.g., <code>indexOf</code>, <code>take</code>) as the arrays get larger:</p>
-
-<p><img src="http://i.imgur.com/oGPlPug.png" alt="Lazy.js versus Underscore/Lo-Dash"></p>
-
-<p>Intrigued? Great! Lazy.js has no external dependencies, so you can get started right away with:</p>
+<p>Or, if you're using Lazy.js in the browser:</p>
 <div class="highlight"><pre><span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span> <span class="na">src=</span><span class="s">"lazy.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
 
 <span class="c">&lt;!-- optional: if you want support for DOM event and AJAX-based sequences: --&gt;</span>
 <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span> <span class="na">src=</span><span class="s">"lazy.browser.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
-</pre></div>
-<p>Or, if you're using Node.js:</p>
-<div class="highlight"><pre>npm install lazy.js
 </pre></div>
 <p>Now let's look at what you can do with Lazy.js. (For more thorough information, take a look at the <a href="http://dtao.github.io/lazy.js/docs/">API Docs</a>.)</p>
 
@@ -150,7 +157,7 @@
 <p>Let's start with an array of objects representing people.</p>
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">people</span> <span class="o">=</span> <span class="nx">getBigArrayOfPeople</span><span class="p">();</span>
 </pre></div>
-<p>Now let's suppose we're using this array to back some sort of search-as-you-type functionality, where users can search for people by their last names. Naturally we want to put some reasonable constraints on our problem space, so we'll provide up to 5 results at a time. Supposing the user types "Smith", we could therefore fetch results using something like this (using Underscore):</p>
+<p>Suppose we're using this array to back some sort of search-as-you-type functionality, where users can search for people by their last names. Naturally we want to put some reasonable constraints on our problem space, so we'll provide up to 5 results at a time. Supposing the user types "Smith", we could therefore fetch results using something like this (using Underscore):</p>
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">results</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">chain</span><span class="p">(</span><span class="nx">people</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">pluck</span><span class="p">(</span><span class="s1">'lastName'</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">name</span><span class="p">.</span><span class="nx">startsWith</span><span class="p">(</span><span class="s1">'Smith'</span><span class="p">);</span> <span class="p">})</span>
@@ -171,9 +178,8 @@
 <p>So if performance and/or efficiency were a concern for you, you would probably <em>not</em> do things that way using Underscore. Instead, you'd likely go the procedural route:</p>
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">results</span> <span class="o">=</span> <span class="p">[];</span>
 <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">people</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="o">++</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
-  <span class="kd">var</span> <span class="nx">lastName</span> <span class="o">=</span> <span class="nx">people</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">lastName</span><span class="p">;</span>
-  <span class="k">if</span> <span class="p">(</span><span class="nx">lastName</span><span class="p">.</span><span class="nx">startsWith</span><span class="p">(</span><span class="s1">'Smith'</span><span class="p">))</span> <span class="p">{</span>
-    <span class="nx">results</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">people</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">lastName</span><span class="p">.</span><span class="nx">startsWith</span><span class="p">(</span><span class="s1">'Smith'</span><span class="p">))</span> <span class="p">{</span>
+    <span class="nx">results</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">people</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">lastName</span><span class="p">);</span>
     <span class="k">if</span> <span class="p">(</span><span class="nx">results</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">5</span><span class="p">)</span> <span class="p">{</span>
       <span class="k">break</span><span class="p">;</span>
     <span class="p">}</span>
@@ -182,7 +188,7 @@
 </pre></div>
 <p>There—now we haven't created any extraneous arrays, and we did all of the work in one iteration. Any problems?</p>
 
-<p>Well, yeah. The main problem is that this is one-off code, which isn't reusable and took a bit of time to write. If only we could somehow leverage the expressive power of Underscore but still get the performance of the hand-written procedural solution...</p>
+<p>Well, yeah. The main problem is that this is one-off code, which isn't reusable or particularly readable. If only we could somehow leverage the expressive power of Underscore but still get the performance of the hand-written procedural solution...</p>
 
 <hr>
 
@@ -192,30 +198,28 @@
   <span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">name</span><span class="p">.</span><span class="nx">startsWith</span><span class="p">(</span><span class="s1">'Smith'</span><span class="p">);</span> <span class="p">})</span>
   <span class="p">.</span><span class="nx">take</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
 </pre></div>
-<p>Looks almost identical, right? That's the idea: Lazy.js aims to be completely familiar to experienced JavaScript devs. Every method from Underscore should have the same name and (almost) identical behavior in Lazy.js, except that instead of returning a fully-populated array on every call, it creates a <em>sequence</em> object with an <code>each</code> method.</p>
+<p>Looks almost identical, right? That's the idea: Lazy.js aims to be completely familiar to JavaScript devs experienced with Underscore or Lodash. Every method from Underscore should have the same name and (almost) identical behavior in Lazy.js, except that instead of returning a fully-populated array on every call, it creates a <em>sequence</em> object with an <code>each</code> method.</p>
 
-<p>What's important here is that <strong>no iteration takes place until you call <code>each</code></strong>, and <strong>no intermediate arrays are created</strong>. Essentially Lazy.js combines all query operations into a sequence that behaves quite a bit like the procedural code we wrote a moment ago. (If you ever <em>do</em> want an array, simply call <code>toArray</code> on the resulting sequence.)</p>
+<p>What's important here is that <strong>no iteration takes place until you call <code>each</code></strong>, and <strong>no intermediate arrays are created</strong>. Essentially Lazy.js combines all query operations into a "sequence" that behaves quite a bit like the procedural code we wrote a moment ago. (If you ever <em>do</em> want an array, simply call <code>toArray</code> on the resulting sequence.)</p>
 
-<p>Of course, <em>unlike</em> the procedural approach, Lazy.js lets you keep your code clean and functional, and focus on building an application instead of optimizing array traversals.</p>
+<p>Of course, <em>unlike</em> the procedural approach, Lazy.js lets you keep your code clean and functional, and focus on solving whatever problem you're actually trying to solve instead of optimizing array traversals.</p>
 
 <h2>Features</h2>
 
 <p>So, Lazy.js is basically Underscore with lazy evaluation. Is that it?</p>
 
-<p>Of course not!</p>
+<p>Nope!</p>
 
 <h3>Indefinite sequence generation</h3>
 
 <p>The sequence-based paradigm of Lazy.js lets you do some pretty cool things that simply aren't possible with Underscore's array-based approach. One of these is the generation of <strong>indefinite sequences</strong>, which can go on forever, yet still support all of Lazy's built-in mapping and filtering capabilities.</p>
 
 <p>Here's an example. Let's say we want 300 unique random numbers between 1 and 1000.</p>
-<div class="highlight"><pre><span class="kd">var</span> <span class="nx">uniqueRandsFrom1To1000</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">generate</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">)</span>
+<div class="highlight"><pre><span class="nx">Lazy</span><span class="p">.</span><span class="nx">generate</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nx">e</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="p">})</span>
   <span class="p">.</span><span class="nx">uniq</span><span class="p">()</span>
-  <span class="p">.</span><span class="nx">take</span><span class="p">(</span><span class="mi">300</span><span class="p">);</span>
-
-<span class="c1">// Output: see for yourself!</span>
-<span class="nx">uniqueRandsFrom1To1000</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span> <span class="p">});</span>
+  <span class="p">.</span><span class="nx">take</span><span class="p">(</span><span class="mi">300</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span> <span class="p">});</span>
 </pre></div>
 <p>Here's a slightly more advanced example: let's use Lazy.js to make a <a href="http://en.wikipedia.org/wiki/Fibonacci_number">Fibonacci sequence</a>.</p>
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">fibonacci</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">.</span><span class="nx">generate</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
@@ -229,9 +233,6 @@
   <span class="p">};</span>
 <span class="p">}());</span>
 
-<span class="c1">// Output: undefined</span>
-<span class="kd">var</span> <span class="nx">length</span> <span class="o">=</span> <span class="nx">fibonacci</span><span class="p">.</span><span class="nx">length</span><span class="p">();</span>
-
 <span class="c1">// Output: [1, 1, 2, 3, 5, 8, 13, 21, 34, 55]</span>
 <span class="nx">fibonacci</span><span class="p">.</span><span class="nx">take</span><span class="p">(</span><span class="mi">10</span><span class="p">).</span><span class="nx">toArray</span><span class="p">();</span>
 </pre></div>
@@ -239,26 +240,18 @@
 
 <h3>Asynchronous iteration</h3>
 
-<p>You've probably <a href="https://gist.github.com/dtao/2351944">seen code snippets before</a> that show how to iterate over an array asynchronously in JavaScript. But have you seen an example packed full of map-y, filter-y goodness like this?</p>
-<div class="highlight"><pre><span class="kd">var</span> <span class="nx">asyncSequence</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">array</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">async</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span> <span class="c1">// specifies a 100-millisecond interval between each element</span>
-  <span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">inc</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">isEven</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">take</span><span class="p">(</span><span class="mi">20</span><span class="p">);</span>
-
-<span class="c1">// This function returns immediately and begins iterating over the sequence asynchronously.</span>
-<span class="nx">asyncSequence</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
-  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getMilliseconds</span><span class="p">()</span> <span class="o">+</span> <span class="s2">": "</span> <span class="o">+</span> <span class="nx">e</span><span class="p">);</span>
-<span class="p">});</span>
-
-<span class="kd">function</span> <span class="nx">inc</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="p">}</span>
-<span class="kd">function</span> <span class="nx">isEven</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">0</span><span class="p">;</span> <span class="p">}</span>
+<p>You've probably <a href="https://gist.github.com/dtao/2351944">seen code snippets before</a> that show how to iterate over an array asynchronously in JavaScript. But have you seen an example with functional goodness like this?</p>
+<div class="highlight"><pre><span class="nx">Lazy</span><span class="p">.</span><span class="nx">generate</span><span class="p">(</span><span class="nx">Lazy</span><span class="p">.</span><span class="nx">identity</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">async</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span> <span class="c1">// specifies a 1-second interval between each element</span>
+  <span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">String</span><span class="p">.</span><span class="nx">fromCharCode</span><span class="p">(</span><span class="nx">x</span> <span class="o">+</span> <span class="mi">65</span><span class="p">);</span> <span class="p">})</span>
+  <span class="p">.</span><span class="nx">take</span><span class="p">(</span><span class="mi">26</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="kr">char</span><span class="p">)</span> <span class="p">{</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="kr">char</span><span class="p">);</span> <span class="p">});</span>
 </pre></div>
 <p>All right... what else?</p>
 
 <h3>Event sequences</h3>
 
-<p>With indefinite sequences, we saw that unlike Underscore and Lo-Dash, Lazy.js doesn't actually need an in-memory collection to iterate over. And asynchronous sequences demonstrate that it also doesn't need to do all its iteration at once.</p>
+<p>With indefinite sequences, we saw that unlike Underscore and Lodash, Lazy.js doesn't actually need an in-memory collection to iterate over. And asynchronous sequences demonstrate that it also doesn't need to do all its iteration at once.</p>
 
 <p>Now here's a really cool combination of these two features: with a small extension to Lazy.js (lazy.browser.js, a separate file to include in browser-based environments), you can apply all of the power of Lazy.js to <strong>handling DOM events</strong>. In other words, Lazy.js lets you think of DOM events as a <em>sequence</em>—just like any other—and apply the usual <code>map</code>, <code>filter</code>, etc. functions on that sequence.</p>
 
@@ -343,6 +336,7 @@
       <li><a href="demos/json">Parsing JSON lazily</a></li>
       <li><a href="demos/primes">Generating prime numbers asynchronously</a></li>
       <li><a href="demos/generators">Wrapping ES6 Harmony generators</a></li>
+      <li><a href="demos/xhr">Making HTTP requests</a></li>
     </ul>
   </section>
 
@@ -362,16 +356,15 @@
         <label><input id="test-to-array" type="radio"><code>toArray</code></input></label>
         <a class="why-to-array-vs-each" href="javascript:void(0);">(why?)</a>, and
         <button class="start-benchmarking">start benchmarking</button>
-        to compare Lazy.js, Underscore, and Lo-Dash. For a more comprehensive comparison of several
-        more libraries that accomplish similar goals, see the
-        <a href="comparisons.html">comparisons</a> page.
+        to compare Lazy.js, Underscore <span class="underscore-version"></span>,
+        and Lodash <span class="lodash-version"></span>.
       </p>
 
       <p>
         You can also choose to display results in
         <label><input id="test-absolute" type="radio" checked="checked">absolute ops/second</input></label>,
         <label><input id="test-proportional" type="radio">in proportion to the fastest method</input></label>, or
-        <label><input id="test-proportional-lodash" type="radio">in proportion to Lo-Dash</input></label>
+        <label><input id="test-proportional-lodash" type="radio">in proportion to Lodash</input></label>
         (which is generally the fastest of the popular JS utility libraries). Proportional results
         will likely be easier to read when you've selected many benchmarks.
       </p>
@@ -379,7 +372,7 @@
 
     <div id="why-to-array-vs-each">
       <p>
-        Comparing the performance of Lazy.js to other libraries like Underscore and Lo-Dash is
+        Comparing the performance of Lazy.js to other libraries like Underscore and Lodash is
         unfortunately not black and white. On the one hand, calling <code>toArray</code> on the
         result of a Lazy sequence will give you an actual JavaScript array, which you might need if,
         e.g., you're passing the result to a function from an external library. However, in most
@@ -418,7 +411,7 @@
           <tr>
             <th>Test</th>
             <th>Underscore</th>
-            <th>Lo-Dash</th>
+            <th>Lodash</th>
             <th>Lazy.js</th>
           </tr>
         </table>
@@ -446,7 +439,7 @@
           <tr>
             <th>Test</th>
             <th>Underscore</th>
-            <th>Lo-Dash</th>
+            <th>Lodash</th>
             <th>Lazy.js</th>
           </tr>
         </table>
@@ -474,7 +467,7 @@
           <tr>
             <th>Test</th>
             <th>Underscore</th>
-            <th>Lo-Dash</th>
+            <th>Lodash</th>
             <th>Lazy.js</th>
           </tr>
         </table>
