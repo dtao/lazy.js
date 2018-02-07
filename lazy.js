@@ -487,8 +487,13 @@
    * Lazy(['foo']).equals(Lazy(['foo'])) // => true
    * Lazy(['1']).equals(Lazy([1]))       // => false
    * Lazy([false]).equals(Lazy([0]))     // => false
+   * Lazy([1, 2]).equals([1, 2])         // => false
+   * Lazy([1, 2]).equals('[1, 2]')       // => false
    */
   Sequence.prototype.equals = function equals(other) {
+    if (!(other instanceof Sequence)) {
+      return false;
+    }
     var it = other.getIterator();
     var result = this.reduce(function(res, val) {
       return res && it.moveNext() && val === it.current();
