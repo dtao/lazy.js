@@ -3,8 +3,8 @@ Lazy.js Changelog
 
 This file includes at least a partial list of the major changes in each version.
 
-Unreleased
-----------
+v0.5.1
+------
 
 - added public `equals()` method (#139)
 - added public `Lazy.curry` and `Lazy.curryRight` methods (#24)
