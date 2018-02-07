@@ -1002,9 +1002,11 @@
    * var left  = [1, 2, 3];
    * var right = [4, 5, 6];
    *
-   * Lazy(left).concat(right)         // sequence: [1, 2, 3, 4, 5, 6]
-   * Lazy(left).concat(Lazy(right))   // sequence: [1, 2, 3, 4, 5, 6]
-   * Lazy(left).concat(right, [7, 8]) // sequence: [1, 2, 3, 4, 5, 6, 7, 8]
+   * Lazy(left).concat(right)             // sequence: [1, 2, 3, 4, 5, 6]
+   * Lazy(left).concat(Lazy(right))       // sequence: [1, 2, 3, 4, 5, 6]
+   * Lazy(left).concat(right, [7, 8])     // sequence: [1, 2, 3, 4, 5, 6, 7, 8]
+   * Lazy(left).concat([4, [5, 6]])       // sequence: [1, 2, 3, 4, [5, 6]]
+   * Lazy(left).concat(Lazy([4, [5, 6]])) // sequence: [1, 2, 3, 4, [5, 6]]
    */
   Sequence.prototype.concat = function concat(var_args) {
     return new ConcatenatedSequence(this, arraySlice.call(arguments, 0));
@@ -1032,7 +1034,7 @@
     });
 
     if (!done) {
-      Lazy(this.arrays).flatten().each(function(e) {
+      Lazy(this.arrays).flatten(true).each(function(e) {
         if (fn(e, i++) === false) {
           return false;
         }

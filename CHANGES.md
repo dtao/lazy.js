@@ -12,6 +12,7 @@ Unreleased
 - added shallow option to `flatten()` (#125)
 - added equalityFn paramter to `indexOf`, `lastIndexOf`, and `contains`
 - fixed bug with return value from `consecutive()` not being reusable (#212)
+- fixed bug with `concat()` unexpectedly flattening results (#127)
 
 v0.5.0
 ------
