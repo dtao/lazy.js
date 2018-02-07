@@ -30,6 +30,8 @@ require("./merge_spec.js");
 require("./join_spec.js");
 require("./memoize_spec.js");
 require("./equals_spec.js");
+require("./index_of_spec.js");
+require("./contains_spec.js");
 
 if (util.isHarmonySupported()) {
   require('./es6_spec.js');

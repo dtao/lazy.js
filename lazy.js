@@ -498,14 +498,15 @@
     if (!(other instanceof Sequence)) {
       return false;
     }
-    equalityFn || (equalityFn = Lazy.equality);
+
     var it  = this.getIterator(),
-        oit = other.getIterator();
+        oit = other.getIterator(),
+        eq  = equalityFn || Lazy.equality;
     while (it.moveNext()) {
       if (!oit.moveNext()) {
         return false;
       }
-      if (!equalityFn(it.current(), oit.current())) {
+      if (!eq(it.current(), oit.current())) {
         return false;
       }
     }
@@ -2213,6 +2214,9 @@
    *
    * @public
    * @param {*} value The element to search for in the sequence.
+   * @param {Function=} equalityFn An optional equality function, which should
+   *     take two arguments and return true or false to indicate whether those
+   *     values are considered equal.
    * @returns {number} The index within this sequence where the given value is
    *     located, or -1 if the sequence doesn't contain the value.
    *
@@ -2223,10 +2227,12 @@
    * Lazy([1, 2, 3]).indexOf(4)                   // => -1
    * Lazy([1, 2, 3]).map(reciprocal).indexOf(0.5) // => 1
    */
-  Sequence.prototype.indexOf = function indexOf(value) {
-    var foundIndex = -1;
+  Sequence.prototype.indexOf = function indexOf(value, equalityFn) {
+    var eq = equalityFn || Lazy.equality,
+        foundIndex = -1;
+
     this.each(function(e, i) {
-      if (e === value) {
+      if (eq(e, value)) {
         foundIndex = i;
         return false;
       }
@@ -2248,9 +2254,9 @@
    * Lazy([1, 2, 3]).lastIndexOf(0)                      // => -1
    * Lazy([2, 2, 1, 2, 4]).filter(isEven).lastIndexOf(2) // 2
    */
-  Sequence.prototype.lastIndexOf = function lastIndexOf(value) {
+  Sequence.prototype.lastIndexOf = function lastIndexOf(value, equalityFn) {
     var reversed = this.getIndex().reverse(),
-        index    = reversed.indexOf(value);
+        index    = reversed.indexOf(value, equalityFn);
     if (index !== -1) {
       index = reversed.length() - index - 1;
     }
@@ -2297,6 +2303,9 @@
    *
    * @public
    * @param {*} value The element to search for in the sequence.
+   * @param {Function=} equalityFn An optional equality function, which should
+   *     take two arguments and return true or false to indicate whether those
+   *     values are considered equal.
    * @returns {boolean} True if the sequence contains the value, false if not.
    *
    * @examples
@@ -2305,8 +2314,8 @@
    * Lazy(numbers).contains(15) // => true
    * Lazy(numbers).contains(13) // => false
    */
-  Sequence.prototype.contains = function contains(value) {
-    return this.indexOf(value) !== -1;
+  Sequence.prototype.contains = function contains(value, equalityFn) {
+    return this.indexOf(value, equalityFn) !== -1;
   };
 
   /**
