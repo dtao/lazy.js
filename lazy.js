@@ -134,6 +134,7 @@
 
   Lazy.noop = function noop() {};
   Lazy.identity = function identity(x) { return x; };
+  Lazy.equality = function equality(x, y) { return x === y; };
 
   /**
    * Provides a stricter version of {@link Lazy} which throws an error when
@@ -475,6 +476,9 @@
    *
    * @public
    * @param {Sequence} other The other sequence to compare this one to.
+   * @param {Function=} equalityFn An optional equality function, which should
+   *     take two arguments and return true or false to indicate whether those
+   *     values are considered equal.
    * @returns {boolean} Whether the two sequences contain the same values in
    *     the same order.
    *
@@ -490,17 +494,18 @@
    * Lazy([1, 2]).equals([1, 2])         // => false
    * Lazy([1, 2]).equals('[1, 2]')       // => false
    */
-  Sequence.prototype.equals = function equals(other) {
+  Sequence.prototype.equals = function equals(other, equalityFn) {
     if (!(other instanceof Sequence)) {
       return false;
     }
+    equalityFn || (equalityFn = Lazy.equality);
     var it  = this.getIterator(),
         oit = other.getIterator();
     while (it.moveNext()) {
       if (!oit.moveNext()) {
         return false;
       }
-      if (it.current() !== oit.current()) {
+      if (!equalityFn(it.current(), oit.current())) {
         return false;
       }
     }
