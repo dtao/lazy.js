@@ -1481,8 +1481,11 @@
    * @returns {ObjectLikeSequence} The new sequence.
    *
    * @examples
+   * function modulo2(x) {
+   *   return x % 2;
+   * }
    * function oddOrEven(x) {
-   *   return x % 2 === 0 ? 'even' : 'odd';
+   *   return modulo2(x) ? 'odd' : 'even';
    * }
    * function square(x) {
    *   return x*x;
@@ -1494,6 +1497,7 @@
    * Lazy(numbers).groupBy(oddOrEven).get("odd")          // => [1, 3, 5]
    * Lazy(numbers).groupBy(oddOrEven).get("foo")          // => undefined
    * Lazy(numbers).groupBy(oddOrEven, square).get("even") // => [4, 16]
+   * Lazy(numbers).groupBy(modulo2).get(1)                // => [1, 3, 5]
    *
    * Lazy([
    *   { name: 'toString' },
@@ -1575,8 +1579,11 @@
    * @returns {Sequence} The new sequence.
    *
    * @examples
+   * function modulo2(x) {
+   *   return x % 2;
+   * }
    * function oddOrEven(x) {
-   *   return x % 2 === 0 ? 'even' : 'odd';
+   *   return modulo2(x) ? 'odd' : 'even';
    * }
    *
    * var numbers = [1, 2, 3, 4, 5];
@@ -1584,6 +1591,7 @@
    * Lazy(numbers).countBy(oddOrEven)            // sequence: { odd: 3, even: 2 }
    * Lazy(numbers).countBy(oddOrEven).get("odd") // => 3
    * Lazy(numbers).countBy(oddOrEven).get("foo") // => undefined
+   * Lazy(numbers).countBy(modulo2).get(1)       // => 3
    */
   Sequence.prototype.countBy = function countBy(keyFn) {
     return new CountedSequence(this, keyFn);
@@ -3873,10 +3881,15 @@
    * Lazy({ foo: 1, bar: 2 }).pick(["foo"]).get("bar")        // => undefined
    * Lazy({ foo: 1, bar: 2 }).omit(["foo"]).get("bar")        // => 2
    * Lazy({ foo: 1, bar: 2 }).omit(["foo"]).get("foo")        // => undefined
+   * Lazy({ "1": "foo", "2": "bar"}).get(1)                   // => "foo"
+   * Lazy({ "1": "foo", "2": "bar"}).defaults({}).get(2)      // => "bar"
+   * Lazy({}).defaults({ "1": "foo", "2": "bar"}).get(2)      // => "bar"
+   * Lazy({ "1": "foo" }).extend({ "2": "bar" }).get(2)       // => "bar"
    */
   ObjectLikeSequence.prototype.get = function get(key) {
     var pair = this.pairs().find(function(pair) {
-      return pair[0] === key;
+      // Follow JavaScript's lead and coerce keys to strings.
+      return String(pair[0]) === String(key);
     });
 
     return pair ? pair[1] : undefined;
