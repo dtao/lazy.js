@@ -1621,8 +1621,8 @@
    *
    * @examples
    * Lazy([1, 2, 2, 3, 3, 3]).uniq() // sequence: [1, 2, 3]
-   * Lazy([{ name: 'mike' }, 
-   * 	{ name: 'sarah' }, 
+   * Lazy([{ name: 'mike' },
+   * 	{ name: 'sarah' },
    * 	{ name: 'mike' }
    * ]).uniq('name')
    * // sequence: [{ name: 'mike' }, { name: 'sarah' }]
@@ -6546,15 +6546,32 @@
   }
 
   /**
-   * "Clones" a regular expression (but makes it always global).
+   * "Clones" a regular expression, but ensures it is always global.
+   * Will return the passed RegExp if global is already set.
    *
    * @private
    * @param {RegExp|string} pattern
    * @returns {RegExp}
    */
   function cloneRegex(pattern) {
-    return eval("" + pattern + (!pattern.global ? "g" : ""));
-  };
+    var patternStr, lsi, flags, global;
+    if (pattern instanceof RegExp) {
+      // Just return the passed in RegExp
+      if (pattern.global)
+        return pattern;
+      patternStr = pattern.toString();
+    }
+    else {
+      patternStr = pattern;
+    }
+    lsi = patternStr.lastIndexOf("/");
+    // No widespread RegExp.prototype.flags, unfortuantely;
+    // We use the string approach for both argument types!
+    flags = patternStr.substring(lsi + 1);
+    global = flags.indexOf("g") >= 0 ? "" : "g";
+
+    return new RegExp(patternStr.substring(1, lsi), flags + global);
+}
 
   /**
    * A collection of unique elements.
