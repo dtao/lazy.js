@@ -402,6 +402,10 @@
     return result;
   };
 
+  Sequence.prototype.mapThen = function mapThen() {
+    return new PromiseSequence(this);
+  };
+
   /**
    * The Iterator object provides an API for iterating over a sequence.
    *
@@ -5492,6 +5496,56 @@
       }
     });
 
+    return handle;
+  };
+
+  function PromiseSequence(parent) {
+    if (parent instanceof AsyncSequence) {
+      throw new Error("Sequence is already asynchronous!");
+    }
+
+    this.parent = parent;
+  }
+  PromiseSequence.prototype = new AsyncSequence();
+  PromiseSequence.prototype.each = function each(fn) {
+    var iterator = this.parent.getIterator(),
+        currentPromise = null,
+        isCancelled = false,
+        i = 0;
+    var handle = new AsyncHandle(function cancel() {
+      if (currentPromise) {
+        currentPromise.cancel();
+      }
+      isCancelled = true;
+    });
+    function iterate() {
+      if (isCancelled) {
+        return;
+      }
+      try {
+        if (iterator.moveNext()) {
+          currentPromise = iterator.current();
+          currentPromise.onComplete(onComplete);
+          currentPromise.onError(onError);
+        } else {
+          handle._resolve();
+        }
+
+      } catch (e) {
+        handle._reject(e);
+      }
+    }
+    function onComplete(value) {
+      if (fn(value,i++) !== false) {
+        iterate();
+      } else {
+        handle._resolve();
+      }
+    }
+    function onError(e) {
+      handle._reject(e);
+    }
+    setImmediate(iterate);
     return handle;
   };
 

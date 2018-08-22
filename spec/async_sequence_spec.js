@@ -1,4 +1,16 @@
 describe('AsyncSequence', function() {
+  function createPromise(value) {
+    var handle = new Lazy.AsyncHandle(function() {
+      clearTimeout(handle.timeoutId);
+    });
+    handle.start = function() {
+      handle.timeoutId = setTimeout(function() {
+        handle._resolve(value);
+      },0);
+    };
+    handle.start();
+    return handle;
+  }
   function testAsyncCallback(description, array, options) {
     testAllSequenceTypes(description, array, function(sequence) {
       var callback = jasmine.createSpy();
@@ -9,6 +21,20 @@ describe('AsyncSequence', function() {
 
       runs(function() {
         expect(callback.calls[0].args).toEqual(options.expectedArgs);
+      });
+    });
+
+    describe('PromiseSequence', function() {
+      testAllSequenceTypes(description, array, function(sequence) {
+        var callback = jasmine.createSpy();
+
+        options.setup(sequence.map(createPromise).mapThen(), callback);
+
+        waitsFor(toBeCalled(callback));
+
+        runs(function() {
+          expect(callback.calls[0].args).toEqual(options.expectedArgs);
+        });
       });
     });
   }
