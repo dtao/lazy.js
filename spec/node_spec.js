@@ -38,6 +38,7 @@ if (util.isHarmonySupported()) {
 }
 
 // Sequence types
+require("./array_like_sequence_spec.js");
 require("./object_like_sequence_spec.js");
 require("./string_like_sequence_spec.js");
 require("./async_sequence_spec.js");
