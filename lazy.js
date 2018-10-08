@@ -3335,7 +3335,7 @@
    * Lazy([1, 2]).concat([3, 4]) // sequence: [1, 2, 3, 4]
    */
   ArrayLikeSequence.prototype.concat = function concat(var_args) {
-    if (arguments.length === 1 && isArray(arguments[0])) {
+    if (arguments.length === 1 && (isArray(arguments[0]) || arguments[0] instanceof Lazy.ArrayLikeSequence)) {
       return new IndexedConcatenatedSequence(this, (/** @type {Array} */ var_args));
     } else {
       return Sequence.prototype.concat.apply(this, arguments);
@@ -3347,7 +3347,7 @@
    */
   function IndexedConcatenatedSequence(parent, other) {
     this.parent = parent;
-    this.other  = other;
+    this.other  = other instanceof Lazy.ArrayLikeSequence ? other : Lazy(other);
   }
 
   IndexedConcatenatedSequence.prototype = Object.create(ArrayLikeSequence.prototype);
@@ -3357,12 +3357,12 @@
     if (i < parentLength) {
       return this.parent.get(i);
     } else {
-      return this.other[i - parentLength];
+      return this.other.get(i - parentLength);
     }
   };
 
   IndexedConcatenatedSequence.prototype.length = function length() {
-    return this.parent.length() + this.other.length;
+    return this.parent.length() + this.other.length();
   };
 
   /**
