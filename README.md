@@ -233,7 +233,3 @@ Lazy.makeHttpRequest("http://example.com")
 ```
 
 In each case, the elements in the sequence will be "chunks" of data most likely comprising multiple lines. The `lines()` method splits each chunk into lines (lazily, of course).
-
-***
-
-**This library is experimental and still a work in progress.**
