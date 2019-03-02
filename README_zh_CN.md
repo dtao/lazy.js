@@ -253,7 +253,3 @@ Lazy.makeHttpRequest("http://example.com")
 ```
 
 `lines()`方法将每段切割成行（当然了，切割是惰性的）。
-
-----
-
-Lazy.js是试验性的，仍在开发中。[项目主页在此](http://danieltao.com/lazy.js/)
