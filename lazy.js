@@ -2571,7 +2571,7 @@
   };
 
   /**
-   * Seaches for the first element in the sequence satisfying a given predicate.
+   * Searches for the first element in the sequence satisfying a given predicate.
    *
    * @public
    * @aka detect
