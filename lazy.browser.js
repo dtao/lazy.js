@@ -1,7 +1,7 @@
 (function(Lazy) {
 
   /**
-   * A seqence of DOM nodes.
+   * A sequence of DOM nodes.
    *
    * You can get a `DomSequence` by wrapping a `NodeList` or `HTMLCollection`
    * with `Lazy`:
